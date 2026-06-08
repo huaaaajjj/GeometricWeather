@@ -23,10 +23,10 @@
 
 -dontskipnonpubliclibraryclassmembers
 -printconfiguration
--keep,allowobfuscation @interface android.support.annotation.Keep
--keep @android.support.annotation.Keep class *
+-keep,allowobfuscation @interface androidx.annotation.Keep
+-keep @androidx.annotation.Keep class *
 -keepclassmembers class * {
-    @android.support.annotation.Keep *;
+    @androidx.annotation.Keep *;
 }
 
 -optimizationpasses 5
@@ -41,7 +41,7 @@
 -optimizations !code/simplification/cast,!field/*,!class/merging/*
 
 -keep public class * extends android.app.Activity
--keep public class * extends android.app.Appliction
+-keep public class * extends android.app.Application
 -keep public class * extends android.app.Service
 -keep public class * extends android.content.BroadcastReceiver
 -keep public class * extends android.content.ContentProvider
@@ -50,13 +50,8 @@
 -keep public class * extends android.view.View
 -keep public class com.android.vending.licensing.ILicensingService
 
--keep class android.support.** {*;}
+-keep class androidx.** {*;}
 -keep class androidx.lifecycle.** {*;}
--keep class android.arch.lifecycle.** {*;}
-
--keep public class * extends android.support.v4.**
--keep public class * extends android.support.v7.**
--keep public class * extends android.support.annotation.**
 
 -keep class **.R$* {*;}
 
@@ -132,17 +127,6 @@
 -keep class com.loc.**{*;}
 -keep class com.autonavi.aps.amapapi.model.**{*;}
 
-# ButterKnife
--keep class butterknife.** { *; }
--dontwarn butterknife.internal.**
--keep class **$$ViewBinder { *; }
--keepclasseswithmembernames class * {
-    @butterknife.* <fields>;
-}
--keepclasseswithmembernames class * {
-    @butterknife.* <methods>;
-}
-
 # Glide
 -keep public class * implements com.bumptech.glide.module.GlideModule
 -keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
@@ -207,16 +191,8 @@ public static java.lang.String TABLENAME;
 -keepattributes Signature
 -keepattributes Exceptions
 
-# Retrolambda
--dontwarn java.lang.invoke.*
--dontwarn **$$Lambda$*
-
 # CircularProgressView
 -keep class com.github.rahatarmanahmed.cpv.** { *; }
-
-# Cyanogenmod
--keep class cyanogenmod.** { *; }
--dontwarn cyanogenmod.**
 
 # Bugly
 -dontwarn com.tencent.bugly.**

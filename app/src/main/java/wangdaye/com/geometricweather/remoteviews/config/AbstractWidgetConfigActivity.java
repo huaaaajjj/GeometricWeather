@@ -39,7 +39,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.xw.repo.BubbleSeekBar;
+import com.google.android.material.slider.Slider;
 
 import javax.inject.Inject;
 
@@ -307,19 +307,14 @@ public abstract class AbstractWidgetConfigActivity extends GeoActivity
 
         mCardAlphaContainer = findViewById(R.id.activity_widget_config_cardAlphaContainer);
         mCardAlphaContainer.setVisibility(View.GONE);
-        BubbleSeekBar cardAlphaSeekBar = findViewById(R.id.activity_widget_config_cardAlphaSeekBar);
-        cardAlphaSeekBar.setCustomSectionTextArray((sectionCount, array) -> {
-            array.clear();
-            array.put(0, "0%");
-            array.put(1, "20%");
-            array.put(2, "40%");
-            array.put(3, "60%");
-            array.put(4, "80%");
-            array.put(5, "100%");
-            return array;
+        Slider cardAlphaSeekBar = findViewById(R.id.activity_widget_config_cardAlphaSeekBar);
+        cardAlphaSeekBar.addOnChangeListener((slider, value, fromUser) -> {
+            if (fromUser) {
+                cardAlpha = (int) value;
+                updateHostView();
+            }
         });
-        cardAlphaSeekBar.setOnProgressChangedListener(new CardAlphaChangedListener());
-        cardAlphaSeekBar.setProgress(cardAlpha);
+        cardAlphaSeekBar.setValue(cardAlpha);
 
         mHideSubtitleContainer = findViewById(R.id.activity_widget_config_hideSubtitleContainer);
         mHideSubtitleContainer.setVisibility(View.GONE);
@@ -350,17 +345,14 @@ public abstract class AbstractWidgetConfigActivity extends GeoActivity
 
         mTextSizeContainer = findViewById(R.id.activity_widget_config_textSizeContainer);
         mTextSizeContainer.setVisibility(View.GONE);
-        BubbleSeekBar textSizeSeekBar = findViewById(R.id.activity_widget_config_textSizeSeekBar);
-        textSizeSeekBar.setCustomSectionTextArray((sectionCount, array) -> {
-            array.clear();
-            array.put(0, "0%");
-            array.put(1, "100%");
-            array.put(2, "200%");
-            array.put(3, "300%");
-            return array;
+        Slider textSizeSeekBar = findViewById(R.id.activity_widget_config_textSizeSeekBar);
+        textSizeSeekBar.addOnChangeListener((slider, value, fromUser) -> {
+            if (fromUser) {
+                textSize = (int) value;
+                updateHostView();
+            }
         });
-        textSizeSeekBar.setOnProgressChangedListener(new TextSizeChangedListener());
-        textSizeSeekBar.setProgress(textSize);
+        textSizeSeekBar.setValue(textSize);
 
         mClockFontContainer = findViewById(R.id.activity_widget_config_clockFontContainer);
         mClockFontContainer.setVisibility(View.GONE);
@@ -795,23 +787,4 @@ public abstract class AbstractWidgetConfigActivity extends GeoActivity
         }
     }
 
-    private class CardAlphaChangedListener extends BubbleSeekBar.OnProgressChangedListenerAdapter {
-        @Override
-        public void getProgressOnActionUp(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat) {
-            if (cardAlpha != progress) {
-                cardAlpha = progress;
-                updateHostView();
-            }
-        }
-    }
-
-    private class TextSizeChangedListener extends BubbleSeekBar.OnProgressChangedListenerAdapter {
-        @Override
-        public void getProgressOnActionUp(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat) {
-            if (textSize != progress) {
-                textSize = progress;
-                updateHostView();
-            }
-        }
-    }
 }
