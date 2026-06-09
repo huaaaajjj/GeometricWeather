@@ -1,10 +1,8 @@
 package wangdaye.com.geometricweather.weather.converters;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.text.TextUtils;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -12,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.weather.AirQuality;
@@ -35,127 +34,75 @@ import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
 import wangdaye.com.geometricweather.common.basic.models.weather.WeatherCode;
 import wangdaye.com.geometricweather.common.basic.models.weather.Wind;
 import wangdaye.com.geometricweather.common.basic.models.weather.WindDegree;
-import wangdaye.com.geometricweather.weather.json.caiyun.CaiYunForecastResult;
-import wangdaye.com.geometricweather.weather.json.caiyun.CaiYunMainlyResult;
+import wangdaye.com.geometricweather.weather.json.caiyun.CaiYunWeatherResult;
 import wangdaye.com.geometricweather.weather.services.WeatherService;
 
 public class CaiyunResultConverter {
 
     @NonNull
     public static WeatherService.WeatherResultWrapper convert(Context context, Location location,
-                                                               CaiYunMainlyResult mainlyResult,
-                                                               CaiYunForecastResult forecastResult) {
+                                                               CaiYunWeatherResult result) {
         try {
-            if (mainlyResult.current == null) {
+            if (result == null || result.result == null || result.result.realtime == null) {
                 return new WeatherService.WeatherResultWrapper(null);
             }
 
-            Date currentPubTime = mainlyResult.current.pubTime;
-            String currentWeather = mainlyResult.current.weather;
+            CaiYunWeatherResult.RealtimeBean r = result.result.realtime;
+            CaiYunWeatherResult.DailyBean daily = result.result.daily;
+            CaiYunWeatherResult.HourlyBean hourly = result.result.hourly;
+
+            Date now = new Date(result.server_time * 1000);
+            String skycon = r.skycon != null ? r.skycon : "CLEAR_DAY";
 
             Weather weather = new Weather(
                     new Base(
                             location.getCityId(),
-                            System.currentTimeMillis(),
-                            currentPubTime,
-                            currentPubTime != null ? currentPubTime.getTime() : System.currentTimeMillis(),
-                            new Date(System.currentTimeMillis()),
-                            System.currentTimeMillis()
+                            now.getTime(),
+                            now,
+                            now.getTime(),
+                            now,
+                            now.getTime()
                     ),
                     new Current(
-                            getWeatherText(currentWeather),
-                            getWeatherCode(currentWeather),
+                            getWeatherText(skycon),
+                            getWeatherCode(skycon),
                             new Temperature(
-                                    mainlyResult.current.temperature != null
-                                            ? Integer.parseInt(mainlyResult.current.temperature.value)
-                                            : 0,
-                                    mainlyResult.current.feelsLike != null
-                                            ? Integer.parseInt(mainlyResult.current.feelsLike.value)
+                                    (int) Math.round(r.temperature),
+                                    r.life_index != null
+                                            ? (int) Math.round(r.apparent_temperature)
                                             : null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null
+                                    null, null, null, null, null
                             ),
-                            new Precipitation(null, null, null, null, null),
+                            new Precipitation(
+                                    r.precipitation != null && r.precipitation.local != null
+                                            ? (float) r.precipitation.local.intensity : null,
+                                    null, null, null, null
+                            ),
                             new PrecipitationProbability(null, null, null, null, null),
-                            mainlyResult.current.wind != null
-                                    ? new Wind(
-                                        getWindDirection(Float.parseFloat(mainlyResult.current.wind.direction.value)),
-                                        new WindDegree(
-                                                Float.parseFloat(mainlyResult.current.wind.direction.value),
-                                                false
-                                        ),
-                                        Float.parseFloat(mainlyResult.current.wind.speed.value),
-                                        CommonConverter.getWindLevel(
-                                                context,
-                                                Float.parseFloat(mainlyResult.current.wind.speed.value)
-                                        )
-                                    )
-                                    : new Wind(null, null, null, null),
+                            new Wind(
+                                    getWindDirection(r.wind.direction),
+                                    new WindDegree((float) r.wind.direction, false),
+                                    (float) r.wind.speed,
+                                    CommonConverter.getWindLevel(context, (float) r.wind.speed)
+                            ),
                             new UV(
-                                    mainlyResult.current.uvIndex != null
-                                            ? Integer.parseInt(mainlyResult.current.uvIndex)
-                                            : 0,
+                                    r.life_index != null && r.life_index.ultraviolet != null
+                                            ? r.life_index.ultraviolet.index : null,
                                     null,
                                     null
                             ),
-                            getAirQuality(context, mainlyResult),
-                            mainlyResult.current.humidity != null
-                                    && !TextUtils.isEmpty(mainlyResult.current.humidity.value)
-                                    ? Float.parseFloat(mainlyResult.current.humidity.value)
-                                    : null,
-                            mainlyResult.current.pressure != null
-                                    && !TextUtils.isEmpty(mainlyResult.current.pressure.value)
-                                    ? Float.parseFloat(mainlyResult.current.pressure.value)
-                                    : null,
-                            mainlyResult.current.visibility != null
-                                    && !TextUtils.isEmpty(mainlyResult.current.visibility.value)
-                                    ? Float.parseFloat(mainlyResult.current.visibility.value)
-                                    : null,
+                            getAirQuality(context, r.air_quality),
+                            (float) r.humidity,
+                            (float) r.pressure,
+                            (float) r.visibility,
                             null, null, null, null,
-                            forecastResult != null && forecastResult.precipitation != null
-                                    ? forecastResult.precipitation.description
-                                    : null
+                            result.result.forecast_keypoint
                     ),
-                    getYesterday(mainlyResult),
-                    getDailyList(context, currentPubTime, mainlyResult.forecastDaily),
-                    getHourlyList(
-                            context,
-                            currentPubTime,
-                            mainlyResult.forecastDaily != null
-                                    && mainlyResult.forecastDaily.sunRiseSet != null
-                                    && mainlyResult.forecastDaily.sunRiseSet.value != null
-                                    && mainlyResult.forecastDaily.sunRiseSet.value.size() > 0
-                                    ? mainlyResult.forecastDaily.sunRiseSet.value.get(0).from
-                                    : null,
-                            mainlyResult.forecastDaily != null
-                                    && mainlyResult.forecastDaily.sunRiseSet != null
-                                    && mainlyResult.forecastDaily.sunRiseSet.value != null
-                                    && mainlyResult.forecastDaily.sunRiseSet.value.size() > 0
-                                    ? mainlyResult.forecastDaily.sunRiseSet.value.get(0).to
-                                    : null,
-                            mainlyResult.forecastHourly
-                    ),
-                    getMinutelyList(
-                            mainlyResult.forecastDaily != null
-                                    && mainlyResult.forecastDaily.sunRiseSet != null
-                                    && mainlyResult.forecastDaily.sunRiseSet.value != null
-                                    && mainlyResult.forecastDaily.sunRiseSet.value.size() > 0
-                                    ? mainlyResult.forecastDaily.sunRiseSet.value.get(0).from
-                                    : null,
-                            mainlyResult.forecastDaily != null
-                                    && mainlyResult.forecastDaily.sunRiseSet != null
-                                    && mainlyResult.forecastDaily.sunRiseSet.value != null
-                                    && mainlyResult.forecastDaily.sunRiseSet.value.size() > 0
-                                    ? mainlyResult.forecastDaily.sunRiseSet.value.get(0).to
-                                    : null,
-                            getWeatherText(currentWeather),
-                            getWeatherCode(currentWeather),
-                            forecastResult
-                    ),
-                    getAlertList(mainlyResult)
+                    null,
+                    getDailyList(context, daily, result.timezone),
+                    getHourlyList(context, hourly, result.timezone),
+                    null,
+                    null
             );
             return new WeatherService.WeatherResultWrapper(weather);
         } catch (Exception e) {
@@ -164,740 +111,263 @@ public class CaiyunResultConverter {
         }
     }
 
-    private static AirQuality getAirQuality(Context context, CaiYunMainlyResult result) {
-        if (result.aqi == null) {
+    private static AirQuality getAirQuality(Context context, CaiYunWeatherResult.AirQualityBean aq) {
+        if (aq == null) {
             return new AirQuality(null, null, null, null, null, null, null, null);
         }
-
-        String quality;
+        String quality = null;
+        Integer index = null;
         try {
-            quality = CommonConverter.getAqiQuality(
-                    context, Integer.parseInt(result.aqi.aqi));
-        } catch (Exception e) {
-            quality = null;
-        }
-
-        Integer index;
-        try {
-            index = (int) Double.parseDouble(result.aqi.aqi);
-        } catch (Exception e) {
-            index = null;
-        }
-
-        Float pm25;
-        try {
-            pm25 = Float.parseFloat(result.aqi.pm25);
-        } catch (Exception e) {
-            pm25 = null;
-        }
-
-        Float pm10;
-        try {
-            pm10 = Float.parseFloat(result.aqi.pm10);
-        } catch (Exception e) {
-            pm10 = null;
-        }
-
-        Float so2;
-        try {
-            so2 = Float.parseFloat(result.aqi.so2);
-        } catch (Exception e) {
-            so2 = null;
-        }
-
-        Float no2;
-        try {
-            no2 = Float.parseFloat(result.aqi.no2);
-        } catch (Exception e) {
-            no2 = null;
-        }
-
-        Float o3;
-        try {
-            o3 = Float.parseFloat(result.aqi.o3);
-        } catch (Exception e) {
-            o3 = null;
-        }
-
-        Float co;
-        try {
-            co = Float.parseFloat(result.aqi.co);
-        } catch (Exception e) {
-            co = null;
-        }
-
-        return new AirQuality(quality, index, pm25, pm10, so2, no2, o3, co);
-    }
-
-    @Nullable
-    private static History getYesterday(CaiYunMainlyResult result) {
-        if (result.yesterday == null) return null;
-        try {
-            return new History(
-                    new Date(result.updateTime - 24 * 60 * 60 * 1000),
-                    result.updateTime - 24 * 60 * 60 * 1000,
-                    Integer.parseInt(result.yesterday.tempMax),
-                    Integer.parseInt(result.yesterday.tempMin)
-            );
-        } catch (Exception ignore) {
-            return null;
-        }
+            index = aq.aqi != null ? aq.aqi.chn : null;
+            quality = CommonConverter.getAqiQuality(context, index);
+        } catch (Exception ignored) {}
+        return new AirQuality(
+                quality, index,
+                (float) aq.pm25, (float) aq.pm10,
+                (float) aq.so2, (float) aq.no2,
+                (float) aq.o3, (float) aq.co
+        );
     }
 
     private static List<Daily> getDailyList(Context context,
-                                            Date publishDate, CaiYunMainlyResult.ForecastDailyBean forecast) {
-        if (forecast == null || forecast.weather == null || forecast.weather.value == null
-                || forecast.temperature == null || forecast.temperature.value == null
-                || forecast.wind == null || forecast.wind.direction == null || forecast.wind.direction.value == null
-                || forecast.wind.speed == null || forecast.wind.speed.value == null
-                || forecast.sunRiseSet == null || forecast.sunRiseSet.value == null) {
-            return new ArrayList<>();
+                                            CaiYunWeatherResult.DailyBean daily,
+                                            String timezone) {
+        List<Daily> list = new ArrayList<>();
+        if (daily == null || daily.skycon == null || daily.temperature == null) {
+            return list;
         }
-        List<Daily> dailyList = new ArrayList<>(forecast.weather.value.size());
-        for (int i = 0; i < forecast.weather.value.size(); i ++) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(publishDate);
-            calendar.add(Calendar.DATE, i);
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
+        int count = Math.min(daily.skycon.size(), daily.temperature.size());
+        for (int i = 0; i < count; i++) {
+            String daySkycon = daily.skycon.get(i).value;
+            String nightSkycon = daily.skycon_20h_32h != null && i < daily.skycon_20h_32h.size()
+                    ? daily.skycon_20h_32h.get(i).value : daySkycon;
+            Double tempMax = daily.temperature.get(i).max;
+            Double tempMin = daily.temperature.get(i).min;
+            if (tempMax == null) tempMax = 0.0;
+            if (tempMin == null) tempMin = 0.0;
 
-            dailyList.add(
-                    new Daily(
-                            calendar.getTime(),
-                            calendar.getTimeInMillis(),
-                            new HalfDay(
-                                    getWeatherText(forecast.weather.value.get(i).from),
-                                    getWeatherText(forecast.weather.value.get(i).from),
-                                    getWeatherCode(forecast.weather.value.get(i).from),
-                                    new Temperature(
-                                            Integer.parseInt(forecast.temperature.value.get(i).from),
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            null
-                                    ),
-                                    new Precipitation(
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            null
-                                    ),
-                                    new PrecipitationProbability(
-                                            getPrecipitationProbability(forecast, i),
-                                            null,
-                                            null,
-                                            null,
-                                            null
-                                    ),
-                                    new PrecipitationDuration(
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            null
-                                    ),
-                                    new Wind(
-                                            getWindDirection(Float.parseFloat(forecast.wind.direction.value.get(i).from)),
-                                            new WindDegree(
-                                                    Float.parseFloat(forecast.wind.direction.value.get(i).from),
-                                                    false
-                                            ),
-                                            Float.parseFloat(forecast.wind.speed.value.get(i).from),
-                                            CommonConverter.getWindLevel(
-                                                    context,
-                                                    Float.parseFloat(forecast.wind.speed.value.get(i).from)
-                                            )
-                                    ),
-                                    null
+            Calendar calendar = Calendar.getInstance();
+            try {
+                calendar.setTime(parseDate(daily.skycon.get(i).date, timezone));
+            } catch (Exception e) {
+                calendar.setTime(new Date());
+                calendar.add(Calendar.DAY_OF_YEAR, i);
+            }
+
+            list.add(new Daily(
+                    calendar.getTime(),
+                    calendar.getTimeInMillis(),
+                    new HalfDay(
+                            getWeatherText(daySkycon), getWeatherText(daySkycon),
+                            getWeatherCode(daySkycon),
+                            new Temperature(
+                                    (int) Math.round(tempMax), null, null, null, null, null, null
                             ),
-                            new HalfDay(
-                                    getWeatherText(forecast.weather.value.get(i).to),
-                                    getWeatherText(forecast.weather.value.get(i).to),
-                                    getWeatherCode(forecast.weather.value.get(i).to),
-                                    new Temperature(
-                                            Integer.parseInt(forecast.temperature.value.get(i).to),
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            null
-                                    ),
-                                    new Precipitation(
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            null
-                                    ),
-                                    new PrecipitationProbability(
-                                            getPrecipitationProbability(forecast, i),
-                                            null,
-                                            null,
-                                            null,
-                                            null
-                                    ),
-                                    new PrecipitationDuration(
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            null
-                                    ),
-                                    new Wind(
-                                            getWindDirection(Float.parseFloat(forecast.wind.direction.value.get(i).to)),
-                                            new WindDegree(
-                                                    Float.parseFloat(forecast.wind.direction.value.get(i).to),
-                                                    false
-                                            ),
-                                            Float.parseFloat(forecast.wind.speed.value.get(i).to),
-                                            CommonConverter.getWindLevel(
-                                                    context,
-                                                    Float.parseFloat(forecast.wind.speed.value.get(i).to)
-                                            )
-                                    ),
-                                    null
+                            new Precipitation(null, null, null, null, null),
+                            new PrecipitationProbability(null, null, null, null, null),
+                            new PrecipitationDuration(null, null, null, null, null),
+                            getWind(context, daily, i, true),
+                            null
+                    ),
+                    new HalfDay(
+                            getWeatherText(nightSkycon), getWeatherText(nightSkycon),
+                            getWeatherCode(nightSkycon),
+                            new Temperature(
+                                    (int) Math.round(tempMin), null, null, null, null, null, null
                             ),
-                            new Astro(
-                                    forecast.sunRiseSet.value.get(i).from,
-                                    forecast.sunRiseSet.value.get(i).to
-                            ),
-                            new Astro(null, null),
-                            new MoonPhase(null, null),
-                            new AirQuality(
-                                    forecast.aqi != null && forecast.aqi.value != null && forecast.aqi.value.size() > i
-                                            ? CommonConverter.getAqiQuality(context, forecast.aqi.value.get(i))
-                                            : null,
-                                    forecast.aqi != null && forecast.aqi.value != null && forecast.aqi.value.size() > i
-                                            ? forecast.aqi.value.get(i)
-                                            : null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null
-                            ),
-                            new Pollen(
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null
-                            ),
-                            new UV(
-                                    null,
-                                    null,
-                                    null
-                            ),
-                            (float) (
-                                    (forecast.sunRiseSet.value.get(i).to.getTime()
-                                            - forecast.sunRiseSet.value.get(i).from.getTime()) // millisecond.
-                                            / 1000 // second.
-                                            / 60 // minute.
-                                            / 60.0 // hour.
-                            )
-                    )
-            );
+                            new Precipitation(null, null, null, null, null),
+                            new PrecipitationProbability(null, null, null, null, null),
+                            new PrecipitationDuration(null, null, null, null, null),
+                            getWind(context, daily, i, false),
+                            null
+                    ),
+                    getAstro(daily, i),
+                    new Astro(null, null),
+                    new MoonPhase(null, null),
+                    getDailyAirQuality(context, daily, i),
+                    new Pollen(null, null, null, null, null, null, null, null, null, null, null, null),
+                    new UV(null, null, null),
+                    0f
+            ));
         }
-        return dailyList;
+        return list;
     }
 
-    private static Float getPrecipitationProbability(CaiYunMainlyResult.ForecastDailyBean forecast, int index) {
+    @Nullable
+    private static Astro getAstro(CaiYunWeatherResult.DailyBean daily, int i) {
         try {
-            if (index < forecast.precipitationProbability.value.size()) {
-                return Float.parseFloat(forecast.precipitationProbability.value.get(index));
+            if (daily.astro != null && i < daily.astro.size()) {
+                return new Astro(
+                        parseTime(daily.astro.get(i).sunrise.time),
+                        parseTime(daily.astro.get(i).sunset.time)
+                );
+            }
+        } catch (Exception ignored) {}
+        return null;
+    }
+
+    @Nullable
+    private static Wind getWind(Context context, CaiYunWeatherResult.DailyBean daily, int i, boolean day) {
+        try {
+            CaiYunWeatherResult.WindDailyBean windData;
+            if (daily.wind != null && i < daily.wind.size()) {
+                windData = daily.wind.get(i);
+            } else if (daily.wind_08h_20h != null && i < daily.wind_08h_20h.size() && day) {
+                windData = daily.wind_08h_20h.get(i);
+            } else if (daily.wind_20h_32h != null && i < daily.wind_20h_32h.size() && !day) {
+                windData = daily.wind_20h_32h.get(i);
             } else {
+                return new Wind(null, null, null, null);
+            }
+            double speed = windData.avg != null ? windData.avg.speed : 0;
+            double dir = windData.avg != null ? windData.avg.direction : 0;
+            return new Wind(
+                    getWindDirection((float) dir),
+                    new WindDegree((float) dir, false),
+                    (float) speed,
+                    CommonConverter.getWindLevel(context, (float) speed)
+            );
+        } catch (Exception e) {
+            return new Wind(null, null, null, null);
+        }
+    }
+
+    private static AirQuality getDailyAirQuality(Context context, CaiYunWeatherResult.DailyBean daily, int i) {
+        try {
+            if (daily.air_quality != null && daily.air_quality.size() > 0) {
+                int index = Math.min(i, daily.air_quality.size() - 1);
+                CaiYunWeatherResult.AirQualityDailyBean aqDay = daily.air_quality.get(index);
+                int aqiValue = 0;
+                if (aqDay.aqi != null && aqDay.aqi.size() > 0) {
+                    int aqiIndex = Math.min(i, aqDay.aqi.size() - 1);
+                    CaiYunWeatherResult.AqiBean aqiObj = aqDay.aqi.get(aqiIndex).avg;
+                    aqiValue = aqiObj != null ? aqiObj.chn : 0;
+                }
+                Integer pm25 = null;
+                if (aqDay.pm25 != null && aqDay.pm25.size() > 0) {
+                    int pmIndex = Math.min(i, aqDay.pm25.size() - 1);
+                    pm25 = aqDay.pm25.get(pmIndex).avg;
+                }
+                return new AirQuality(
+                        CommonConverter.getAqiQuality(context, aqiValue), aqiValue,
+                        pm25 != null ? (float) pm25 : null, null,
+                        null, null, null, null
+                );
+            }
+        } catch (Exception ignored) {}
+        return new AirQuality(null, null, null, null, null, null, null, null);
+    }
+
+    private static List<Hourly> getHourlyList(Context context,
+                                               CaiYunWeatherResult.HourlyBean hourly,
+                                               String timezone) {
+        List<Hourly> list = new ArrayList<>();
+        if (hourly == null || hourly.temperature == null || hourly.skycon == null) {
+            return list;
+        }
+        int count = Math.min(hourly.temperature.size(), hourly.skycon.size());
+        for (int i = 0; i < count; i++) {
+            String skycon = hourly.skycon.get(i).value;
+            double tempValue = hourly.temperature.get(i).value;
+            Calendar calendar = Calendar.getInstance();
+            try {
+                calendar.setTime(parseDate(hourly.skycon.get(i).datetime, timezone));
+            } catch (Exception e) {
+                calendar.setTime(new Date());
+                calendar.add(Calendar.HOUR_OF_DAY, i);
+            }
+
+            list.add(new Hourly(
+                    calendar.getTime(),
+                    calendar.getTimeInMillis(),
+                    skycon != null && (skycon.contains("DAY") || !skycon.contains("NIGHT")),
+                    getWeatherText(skycon),
+                    getWeatherCode(skycon),
+                    new Temperature(
+                            (int) Math.round(tempValue), null, null, null, null, null, null
+                    ),
+                    new Precipitation(null, null, null, null, null),
+                    new PrecipitationProbability(null, null, null, null, null),
+                    new Wind(null, null, null, null),
+                    new UV(null, null, null)
+            ));
+        }
+        return list;
+    }
+
+    private static String getWeatherText(String skycon) {
+        if (TextUtils.isEmpty(skycon)) return "未知";
+        switch (skycon) {
+            case "CLEAR_DAY": return "晴";
+            case "CLEAR_NIGHT": return "晴";
+            case "PARTLY_CLOUDY_DAY": return "多云";
+            case "PARTLY_CLOUDY_NIGHT": return "多云";
+            case "CLOUDY": return "阴";
+            case "LIGHT_RAIN": return "小雨";
+            case "MODERATE_RAIN": return "中雨";
+            case "HEAVY_RAIN": return "大雨";
+            case "STORM_RAIN": return "暴雨";
+            case "LIGHT_SNOW": return "小雪";
+            case "MODERATE_SNOW": return "中雪";
+            case "HEAVY_SNOW": return "大雪";
+            case "STORM_SNOW": return "暴雪";
+            case "LIGHT_HAIL": return "冰雹";
+            case "HAIL": return "冰雹";
+            case "LIGHT_SLEET": return "雨夹雪";
+            case "SLEET": return "雨夹雪";
+            case "THUNDERSTORM": return "雷阵雨";
+            case "THUNDER": return "雷雨";
+            case "FOG": return "雾";
+            case "HAZE": return "霾";
+            case "WIND": return "大风";
+            case "DUST": return "扬沙";
+            case "SAND": return "沙尘暴";
+            default: return "未知";
+        }
+    }
+
+    private static WeatherCode getWeatherCode(String skycon) {
+        return WeatherCode.getInstance(skycon != null ? skycon : "");
+    }
+
+    private static String getWindDirection(double degree) {
+        String[] directions = {"N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
+                "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"};
+        int index = (int) Math.round(degree / 22.5) % 16;
+        if (index < 0) index = 0;
+        return directions[index];
+    }
+
+    @Nullable
+    private static Date parseDate(String dateStr, String timezone) {
+        if (dateStr == null) return null;
+        try {
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(
+                    "yyyy-MM-dd'T'HH:mm", java.util.Locale.getDefault());
+            sdf.setTimeZone(TimeZone.getTimeZone(timezone != null ? timezone : "Asia/Shanghai"));
+            return sdf.parse(dateStr);
+        } catch (Exception e) {
+            try {
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(
+                        "yyyy-MM-dd", java.util.Locale.getDefault());
+                sdf.setTimeZone(TimeZone.getTimeZone(timezone != null ? timezone : "Asia/Shanghai"));
+                return sdf.parse(dateStr);
+            } catch (Exception e2) {
                 return null;
             }
-        } catch (Exception ignore) {
-            return null;
-        }
-    }
-
-    private static List<Hourly> getHourlyList(Context context, Date publishDate,
-                                              Date sunrise, Date sunset,
-                                              CaiYunMainlyResult.ForecastHourlyBean forecast) {
-        if (forecast == null || forecast.weather == null || forecast.weather.value == null
-                || forecast.temperature == null || forecast.temperature.value == null
-                || forecast.wind == null || forecast.wind.value == null) {
-            return new ArrayList<>();
-        }
-        List<Hourly> hourlyList = new ArrayList<>(forecast.weather.value.size());
-        for (int i = 0; i < forecast.weather.value.size(); i ++) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(publishDate);
-            calendar.add(Calendar.HOUR_OF_DAY, i);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-
-            Date date = calendar.getTime();
-            hourlyList.add(
-                    new Hourly(
-                            date,
-                            date.getTime(),
-                            CommonConverter.isDaylight(sunrise, sunset, date),
-                            getWeatherText(String.valueOf(forecast.weather.value.get(i))),
-                            getWeatherCode(String.valueOf(forecast.weather.value.get(i))),
-                            new Temperature(
-                                    forecast.temperature.value.get(i),
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null
-                            ),
-                            new Precipitation(
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null
-                            ),
-                            new PrecipitationProbability(
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null
-                            ),
-                            new Wind(
-                                    getWindDirection(Float.parseFloat(forecast.wind.value.get(i).direction)),
-                                    new WindDegree(
-                                            Float.parseFloat(forecast.wind.value.get(i).direction),
-                                            false
-                                    ),
-                                    Float.parseFloat(forecast.wind.value.get(i).speed),
-                                    CommonConverter.getWindLevel(
-                                            context,
-                                            Float.parseFloat(forecast.wind.value.get(i).speed)
-                                    )
-                            ),
-                            new UV(null, null, null)
-                    )
-            );
-        }
-        return hourlyList;
-    }
-
-    private static List<Minutely> getMinutelyList(Date sunrise, Date sunset,
-                                                  String currentWeatherText,
-                                                  WeatherCode currentWeatherCode,
-                                                  CaiYunForecastResult result) {
-        if (result == null || result.precipitation == null || result.precipitation.value == null) {
-            return new ArrayList<>();
-        }
-        Date current = result.precipitation.pubTime;
-
-        List<Minutely> minutelyList = new ArrayList<>(result.precipitation.value.size());
-        for (int i = 0; i < result.precipitation.value.size(); i ++) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(current);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-
-            minutelyList.add(
-                    new Minutely(
-                            calendar.getTime(),
-                            calendar.getTimeInMillis(),
-                            CommonConverter.isDaylight(sunrise, sunset, calendar.getTime()),
-                            getMinuteWeatherText(
-                                    result.precipitation.value.get(i),
-                                    currentWeatherText,
-                                    currentWeatherCode
-                            ),
-                            getMinuteWeatherCode(
-                                    result.precipitation.value.get(i),
-                                    currentWeatherCode
-                            ),
-                            1,
-                            null,
-                            null
-                    )
-            );
-        }
-        return minutelyList;
-    }
-
-    private static String getMinuteWeatherText(double precipitation,
-                                               String currentWeatherText,
-                                               WeatherCode currentWeatherCode) {
-        if (precipitation > 0) {
-            if (isPrecipitation(currentWeatherCode)) {
-                return currentWeatherText;
-            } else {
-                return "阴";
-            }
-        } else {
-            if (isPrecipitation(currentWeatherCode)) {
-                return "阴";
-            } else {
-                return currentWeatherText;
-            }
-        }
-    }
-
-    private static WeatherCode getMinuteWeatherCode(double precipitation,
-                                                    WeatherCode currentWeatherCode) {
-        if (precipitation > 0) {
-            if (isPrecipitation(currentWeatherCode)) {
-                return currentWeatherCode;
-            } else {
-                return WeatherCode.CLOUDY;
-            }
-        } else {
-            if (isPrecipitation(currentWeatherCode)) {
-                return WeatherCode.CLOUDY;
-            } else {
-                return currentWeatherCode;
-            }
-        }
-    }
-
-    private static boolean isPrecipitation(WeatherCode code) {
-        return code == WeatherCode.RAIN
-                || code == WeatherCode.SNOW
-                || code == WeatherCode.HAIL
-                || code == WeatherCode.SLEET
-                || code == WeatherCode.THUNDERSTORM;
-    }
-
-    private static List<Alert> getAlertList(CaiYunMainlyResult result) {
-        if (result.alerts == null) return new ArrayList<>();
-        List<Alert> alertList = new ArrayList<>(result.alerts.size());
-        for (CaiYunMainlyResult.AlertsBean a : result.alerts) {
-            alertList.add(
-                    new Alert(
-                            a.pubTime.getTime(),
-                            a.pubTime,
-                            a.pubTime.getTime(),
-                            a.title,
-                            a.detail,
-                            a.type,
-                            getAlertPriority(a.level),
-                            getAlertColor(a.level)
-                    )
-            );
-        }
-        Alert.deduplication(alertList);
-        Alert.descByTime(alertList);
-        return alertList;
-    }
-
-    private static String getWeatherText(String icon) {
-        if (TextUtils.isEmpty(icon)) {
-            return "未知";
-        }
-
-        switch (icon) {
-            case "0":
-            case "00":
-                return "晴";
-
-            case "1":
-            case "01":
-                return "多云";
-
-            case "2":
-            case "02":
-                return "阴";
-
-            case "3":
-            case "03":
-                return "阵雨";
-
-            case "4":
-            case "04":
-                return "雷阵雨";
-
-            case "5":
-            case "05":
-                return "雷阵雨伴有冰雹";
-
-            case "6":
-            case "06":
-                return "雨夹雪";
-
-            case "7":
-            case "07":
-                return "小雨";
-
-            case "8":
-            case "08":
-                return  "中雨";
-
-            case "9":
-            case "09":
-                return  "大雨";
-
-            case "10":
-                return  "暴雨";
-
-            case "11":
-                return  "大暴雨";
-
-            case "12":
-                return  "特大暴雨";
-
-            case "13":
-                return  "阵雪";
-
-            case "14":
-                return  "小雪";
-
-            case "15":
-                return  "中雪";
-
-            case "16":
-                return  "大雪";
-
-            case "17":
-                return  "暴雪";
-
-            case "18":
-                return  "雾";
-
-            case "19":
-                return  "冻雨";
-
-            case "20":
-                return  "沙尘暴";
-
-            case "21":
-                return  "小到中雨";
-
-            case "22":
-                return  "中到大雨";
-
-            case "23":
-                return  "大到暴雨";
-
-            case "24":
-                return  "暴雨到大暴雨";
-
-            case "25":
-                return  "大暴雨到特大暴雨";
-
-            case "26":
-                return  "小到中雪";
-
-            case "27":
-                return  "中到大雪";
-
-            case "28":
-                return  "大到暴雪";
-
-            case "29":
-                return  "浮尘";
-
-            case "30":
-                return  "扬沙";
-
-            case "31":
-                return  "强沙尘暴";
-
-            case "53":
-            case "54":
-            case "55":
-            case "56":
-                return  "霾";
-
-            default:
-                return "未知";
-        }
-    }
-
-    private static WeatherCode getWeatherCode(String icon) {
-        if (TextUtils.isEmpty(icon)) {
-            return WeatherCode.CLOUDY;
-        }
-
-        switch (icon) {
-            case "0":
-            case "00":
-                return WeatherCode.CLEAR;
-
-            case "1":
-            case "01":
-                return WeatherCode.PARTLY_CLOUDY;
-
-            case "3":
-            case "7":
-            case "8":
-            case "9":
-            case "03":
-            case "07":
-            case "08":
-            case "09":
-            case "10":
-            case "11":
-            case "12":
-            case "21":
-            case "22":
-            case "23":
-            case "24":
-            case "25":
-                return WeatherCode.RAIN;
-
-            case "4":
-            case "04":
-                return WeatherCode.THUNDERSTORM;
-
-            case "5":
-            case "05":
-                return WeatherCode.HAIL;
-
-            case "6":
-            case "06":
-            case "19":
-                return WeatherCode.SLEET;
-
-            case "13":
-            case "14":
-            case "15":
-            case "16":
-            case "17":
-            case "26":
-            case "27":
-            case "28":
-                return WeatherCode.SNOW;
-
-            case "18":
-            case "32":
-            case "49":
-            case "57":
-                return WeatherCode.FOG;
-
-            case "20":
-            case "29":
-            case "30":
-                return WeatherCode.WIND;
-
-            case "53":
-            case "54":
-            case "55":
-            case "56":
-                return WeatherCode.HAZE;
-
-            default:
-                return WeatherCode.CLOUDY;
-        }
-    }
-
-    private static String getWindDirection(float degree) {
-        if (degree < 0) {
-            return "无风向";
-        }if (22.5 < degree && degree <= 67.5) {
-            return "东北风";
-        } else if (67.5 < degree && degree <= 112.5) {
-            return "东风";
-        } else if (112.5 < degree && degree <= 157.5) {
-            return "东南风";
-        } else if (157.5 < degree && degree <= 202.5) {
-            return "南风";
-        } else if (202.5 < degree && degree <= 247.5) {
-            return "西南风";
-        } else if (247.5 < degree && degree <= 292.5) {
-            return "西风";
-        } else if (292. < degree && degree <= 337.5) {
-            return "西北风";
-        } else {
-            return "北风";
         }
     }
 
     @Nullable
-    private static String getUVDescription(String index) {
+    private static Date parseTime(String timeStr) {
+        if (timeStr == null) return null;
         try {
-            int num = Integer.parseInt(index);
-            if (num <= 2) {
-                return "最弱";
-            } else if (num <= 4) {
-                return "弱";
-            } else if (num <= 6) {
-                return "中等";
-            } else if (num <= 9) {
-                return "强";
-            } else {
-                return "很强";
-            }
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(
+                    "HH:mm", java.util.Locale.getDefault());
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return sdf.parse(timeStr);
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
-    }
-
-    @ColorInt
-    private static int getAlertPriority(@Nullable String color) {
-        if (TextUtils.isEmpty(color)) {
-            return 0;
-        }
-        switch (color) {
-            case "蓝":
-            case "蓝色":
-                return 1;
-
-            case "黄":
-            case "黄色":
-                return 2;
-
-            case "橙":
-            case "橙色":
-            case "橘":
-            case "橘色":
-            case "橘黄":
-            case "橘黄色":
-                return 3;
-
-            case "红":
-            case "红色":
-                return 4;
-        }
-
-        return 0;
-    }
-
-    @ColorInt
-    private static int getAlertColor(@Nullable String color) {
-        if (TextUtils.isEmpty(color)) {
-            return Color.TRANSPARENT;
-        }
-        switch (color) {
-            case "蓝":
-            case "蓝色":
-                return Color.rgb(51, 100, 255);
-
-            case "黄":
-            case "黄色":
-                return Color.rgb(250, 237, 36);
-
-            case "橙":
-            case "橙色":
-            case "橘":
-            case "橘色":
-            case "橘黄":
-            case "橘黄色":
-                return Color.rgb(249, 138, 30);
-
-            case "红":
-            case "红色":
-                return Color.rgb(215, 48, 42);
-        }
-
-        return Color.TRANSPARENT;
     }
 }

@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.disposables.CompositeDisposable;
+import wangdaye.com.geometricweather.BuildConfig;
 import wangdaye.com.geometricweather.common.basic.models.ChineseCity;
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.rxjava.BaseObserver;
@@ -21,8 +22,7 @@ import wangdaye.com.geometricweather.common.utils.LanguageUtils;
 import wangdaye.com.geometricweather.db.DatabaseHelper;
 import wangdaye.com.geometricweather.weather.apis.CaiYunApi;
 import wangdaye.com.geometricweather.weather.converters.CaiyunResultConverter;
-import wangdaye.com.geometricweather.weather.json.caiyun.CaiYunForecastResult;
-import wangdaye.com.geometricweather.weather.json.caiyun.CaiYunMainlyResult;
+import wangdaye.com.geometricweather.weather.json.caiyun.CaiYunWeatherResult;
 
 public class CaiYunWeatherService extends WeatherService {
 
@@ -38,38 +38,18 @@ public class CaiYunWeatherService extends WeatherService {
     @Override
     public void requestWeather(Context context,
                                Location location, @NonNull RequestWeatherCallback callback) {
-        Observable<CaiYunMainlyResult> mainly = mApi.getMainlyWeather(
-                String.valueOf(location.getLatitude()),
+        mApi.getWeather(
+                BuildConfig.CAIYUN_WEATHER_KEY,
                 String.valueOf(location.getLongitude()),
-                location.isCurrentPosition(),
-                "weathercn%3A" + location.getCityId(),
-                15,
-                "weather20151024",
-                "zUFJoAR2ZVrDy1vF3D07",
-                "V10.0.1.0.OAACNFH",
-                "10010002",
-                false,
-                false,
-                "gemini",
-                "",
-                "zh_cn"
-        );
-        Observable<CaiYunForecastResult> forecast = mApi.getForecastWeather(
                 String.valueOf(location.getLatitude()),
-                String.valueOf(location.getLongitude()),
-                "zh_cn",
-                false,
-                "weather20151024",
-                "weathercn%3A" + location.getCityId(),
-                "zUFJoAR2ZVrDy1vF3D07"
-        );
-
-        Observable.zip(mainly, forecast, (mainlyResult, forecastResult) ->
-                CaiyunResultConverter.convert(context, location, mainlyResult, forecastResult)
+                true
         ).compose(SchedulerTransformer.create())
-                .subscribe(new ObserverContainer<>(mCompositeDisposable, new BaseObserver<WeatherResultWrapper>() {
+                .subscribe(new ObserverContainer<>(mCompositeDisposable,
+                        new BaseObserver<CaiYunWeatherResult>() {
                     @Override
-                    public void onSucceed(WeatherResultWrapper wrapper) {
+                    public void onSucceed(CaiYunWeatherResult result) {
+                        WeatherResultWrapper wrapper =
+                                CaiyunResultConverter.convert(context, location, result);
                         if (wrapper.result != null) {
                             callback.requestWeatherSuccess(
                                     Location.copy(location, wrapper.result)
@@ -105,7 +85,8 @@ public class CaiYunWeatherService extends WeatherService {
     }
 
     @Override
-    public void requestLocation(Context context, Location location, @NonNull RequestLocationCallback callback) {
+    public void requestLocation(Context context, Location location,
+                                @NonNull RequestLocationCallback callback) {
 
         final boolean hasGeocodeInformation = location.hasGeocodeInformation();
 
@@ -137,7 +118,8 @@ public class CaiYunWeatherService extends WeatherService {
             emitter.onNext(locationList);
 
         }).compose(SchedulerTransformer.create())
-                .subscribe(new ObserverContainer<>(mCompositeDisposable, new BaseObserver<List<Location>>() {
+                .subscribe(new ObserverContainer<>(mCompositeDisposable,
+                        new BaseObserver<List<Location>>() {
                     @Override
                     public void onSucceed(List<Location> locations) {
                         if (locations.size() > 0) {

@@ -69,7 +69,7 @@ fun Material3Scaffold(
 
 // list items.
 
-val defaultCardListItemElevation = 0.dp
+val defaultCardListItemElevation = 2.dp
 
 fun getCardListItemMarginDp(context: Context) = context
     .resources
@@ -79,8 +79,8 @@ fun getCardListItemMarginDp(context: Context) = context
 @Composable
 fun Material3CardListItem(
     elevation: Dp = defaultCardListItemElevation,
-    content: @Composable ColumnScope.() -> Unit,
-) = Card(
+    content: @Composable () -> Unit,
+) = Surface(
     modifier = Modifier
         .padding(
             start = dimensionResource(R.dimen.little_margin),
@@ -91,9 +91,8 @@ fun Material3CardListItem(
     shape = RoundedCornerShape(
         size = dimensionResource(R.dimen.material3_card_list_item_corner_radius)
     ),
-    colors = CardDefaults.cardColors(
-        containerColor = getWidgetSurfaceColor(elevation),
-        contentColor = MaterialTheme.colorScheme.onSurface,
-    ),
+    color = getWidgetSurfaceColor(elevation),
+    tonalElevation = 0.dp,
+    shadowElevation = 0.dp,
     content = content
 )

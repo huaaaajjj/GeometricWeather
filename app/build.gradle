@@ -14,7 +14,7 @@ def decodeBase64(String encoded) {
 // Embedded API keys (base64 encoded to avoid secret scanning)
 def EMBEDDED_ACCU_KEY = decodeBase64("enBrYV8wYTM0YTEzMTY2OWM0NDBhODc0YTYzY2E1M2Q5Yjk1Yl81ZTdkYjUzMg==")
 def EMBEDDED_OWM_KEY = decodeBase64("NmI5NDNlMjJhN2Q0YTM4ODg4ZjY3MzI1YzFlNzQxOWU=")
-def EMBEDDED_CAIYUN_KEY = decodeBase64("SFlNbzJkV2tiQjczTjdydA==")
+def EMBEDDED_CAIYUN_KEY = decodeBase64("VEFraGpmOGQxbmxTbHNwTg==")
 def EMBEDDED_WEATHERAPI_KEY = decodeBase64("ZjlhOTJmYjQ4NzI3NDg3NmEwYjgyMzA1MjYwOTA2")
 
 // Load local.properties first, fall back to gradle.properties
@@ -69,6 +69,7 @@ android {
     buildTypes.each {
         it.buildConfigField "String", "CN_WEATHER_BASE_URL", localProperties.getProperty("CN_WEATHER_BASE_URL", CN_WEATHER_BASE_URL)
         it.buildConfigField "String", "CAIYUN_WEATHER_BASE_URL", localProperties.getProperty("CAIYUN_WEATHER_BASE_URL", CAIYUN_WEATHER_BASE_URL)
+        it.buildConfigField "String", "CAIYUN_WEATHER_KEY", localProperties.getProperty("CAIYUN_WEATHER_KEY", "\"$EMBEDDED_CAIYUN_KEY\"")
         it.buildConfigField "String", "ACCU_WEATHER_BASE_URL", localProperties.getProperty("ACCU_WEATHER_BASE_URL", ACCU_WEATHER_BASE_URL)
         it.buildConfigField "String", "ACCU_WEATHER_KEY", localProperties.getProperty("ACCU_WEATHER_KEY", "\"$EMBEDDED_ACCU_KEY\"")
         it.buildConfigField "String", "ACCU_CURRENT_KEY", localProperties.getProperty("ACCU_CURRENT_KEY", "\"$EMBEDDED_ACCU_KEY\"")

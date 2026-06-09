@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
@@ -23,7 +22,6 @@ import wangdaye.com.geometricweather.R
 import wangdaye.com.geometricweather.common.basic.GeoActivity
 import wangdaye.com.geometricweather.common.bus.EventBus
 import wangdaye.com.geometricweather.common.ui.widgets.Material3Scaffold
-import wangdaye.com.geometricweather.common.ui.widgets.generateCollapsedScrollBehavior
 import wangdaye.com.geometricweather.common.ui.widgets.insets.FitStatusBarTopAppBar
 import wangdaye.com.geometricweather.common.utils.helpers.IntentHelper
 import wangdaye.com.geometricweather.settings.SettingsChangedMessage
@@ -72,10 +70,7 @@ class SettingsActivity : GeoActivity() {
 
     @Composable
     private fun ContentView() {
-        val scrollBehavior = generateCollapsedScrollBehavior()
-
         Material3Scaffold(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 FitStatusBarTopAppBar(
                     title = stringResource(R.string.action_settings),
@@ -93,7 +88,6 @@ class SettingsActivity : GeoActivity() {
                             )
                         }
                     },
-                    scrollBehavior = scrollBehavior,
                 )
             },
         ) { innerPadding ->

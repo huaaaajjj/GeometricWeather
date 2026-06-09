@@ -42,6 +42,8 @@
 - 设置页面顶部栏 MediumTopAppBar → SmallTopAppBar (减少遮挡)
 - 修复设置页面 Scaffold innerPadding 未传入 NavHost 导致内容被顶部栏遮挡
 - 发布版本切换为 Prerelease
+- 优化设置页面滑动性能 (移除不必要的 nestedScroll、Card → Surface、pinnedScrollBehavior)
+- 修复彩云天气: 小米市场API失效 → 官方 v2.6 API (api.caiyunapp.com)
 
 ## 禁止
 
