@@ -10,3 +10,4 @@
 /local.properties
 build_output.txt
 hs_err_pid*.log
+error_log.txt
