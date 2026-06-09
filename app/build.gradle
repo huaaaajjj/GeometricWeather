@@ -141,6 +141,8 @@ allprojects {
 configurations {
     cleanedAnnotations
     compile.exclude group: "org.jetbrains" , module:"annotations"
+    all*.exclude group: 'com.android.support', module: 'support-v4'
+    all*.exclude group: 'com.android.support', module: 'support-compat'
 }
 
 greendao {
