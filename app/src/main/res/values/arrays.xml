@@ -11,18 +11,30 @@
         <item>accuweather.com</item>
         <item>OpenWeather</item>
         <item>Météo France</item>
+        <item>和风天气 (QWeather)</item>
+        <item>Open-Meteo</item>
+        <item>WeatherAPI</item>
+        <item>Visual Crossing</item>
     </string-array>
     <string-array name="weather_source_voices">
         <item>CaiYun App.com</item>
         <item>ACCU weather.com</item>
         <item>Open Weather</item>
         <item>Météo France</item>
+        <item>Q Weather</item>
+        <item>Open Meteo</item>
+        <item>Weather API</item>
+        <item>Visual Crossing</item>
     </string-array>
     <string-array name="weather_source_values">
         <item>caiyun</item>
         <item>accu</item>
         <item>owm</item>
         <item>mf</item>
+        <item>qweather</item>
+        <item>open_meteo</item>
+        <item>weatherapi</item>
+        <item>visual_crossing</item>
     </string-array>
 
     <!-- Location service. -->

@@ -13,7 +13,11 @@ import wangdaye.com.geometricweather.weather.apis.AccuWeatherApi;
 import wangdaye.com.geometricweather.weather.apis.AtmoAuraIqaApi;
 import wangdaye.com.geometricweather.weather.apis.CaiYunApi;
 import wangdaye.com.geometricweather.weather.apis.MfWeatherApi;
+import wangdaye.com.geometricweather.weather.apis.OpenMeteoApi;
 import wangdaye.com.geometricweather.weather.apis.OwmApi;
+import wangdaye.com.geometricweather.weather.apis.QWeatherApi;
+import wangdaye.com.geometricweather.weather.apis.VisualCrossingApi;
+import wangdaye.com.geometricweather.weather.apis.WeatherApiApi;
 
 @InstallIn(SingletonComponent.class)
 @Module
@@ -82,5 +86,57 @@ public class ApiModule {
                 .addCallAdapterFactory(callAdapterFactory)
                 .build()
                 .create((AtmoAuraIqaApi.class));
+    }
+
+    @Provides
+    public OpenMeteoApi provideOpenMeteoApi(OkHttpClient client,
+                                            GsonConverterFactory converterFactory,
+                                            RxJava2CallAdapterFactory callAdapterFactory) {
+        return new Retrofit.Builder()
+                .baseUrl(BuildConfig.OPEN_METEO_BASE_URL)
+                .client(client)
+                .addConverterFactory(converterFactory)
+                .addCallAdapterFactory(callAdapterFactory)
+                .build()
+                .create((OpenMeteoApi.class));
+    }
+
+    @Provides
+    public QWeatherApi provideQWeatherApi(OkHttpClient client,
+                                          GsonConverterFactory converterFactory,
+                                          RxJava2CallAdapterFactory callAdapterFactory) {
+        return new Retrofit.Builder()
+                .baseUrl(BuildConfig.QWEATHER_BASE_URL)
+                .client(client)
+                .addConverterFactory(converterFactory)
+                .addCallAdapterFactory(callAdapterFactory)
+                .build()
+                .create((QWeatherApi.class));
+    }
+
+    @Provides
+    public WeatherApiApi provideWeatherApiApi(OkHttpClient client,
+                                              GsonConverterFactory converterFactory,
+                                              RxJava2CallAdapterFactory callAdapterFactory) {
+        return new Retrofit.Builder()
+                .baseUrl(BuildConfig.WEATHERAPI_BASE_URL)
+                .client(client)
+                .addConverterFactory(converterFactory)
+                .addCallAdapterFactory(callAdapterFactory)
+                .build()
+                .create((WeatherApiApi.class));
+    }
+
+    @Provides
+    public VisualCrossingApi provideVisualCrossingApi(OkHttpClient client,
+                                                      GsonConverterFactory converterFactory,
+                                                      RxJava2CallAdapterFactory callAdapterFactory) {
+        return new Retrofit.Builder()
+                .baseUrl(BuildConfig.VISUAL_CROSSING_BASE_URL)
+                .client(client)
+                .addConverterFactory(converterFactory)
+                .addCallAdapterFactory(callAdapterFactory)
+                .build()
+                .create((VisualCrossingApi.class));
     }
 }

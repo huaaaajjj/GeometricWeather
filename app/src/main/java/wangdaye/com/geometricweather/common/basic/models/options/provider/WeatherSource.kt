@@ -15,7 +15,11 @@ enum class WeatherSource(
     ACCU("accu", -0x10a7dd, "accuweather.com"),
     OWM("owm", -0x1491b5, "openweathermap.org"),
     MF("mf", -0xffa76e, "meteofrance.com"),
-    CAIYUN("caiyun", -0xa14472, " caiyunapp.com");
+    CAIYUN("caiyun", -0xa14472, "caiyunapp.com"),
+    QWEATHER("qweather", -0x1a1a1a, "qweather.com"),
+    OPEN_METEO("open_meteo", -0x7a3a1a, "open-meteo.com"),
+    WEATHERAPI("weatherapi", -0x2a5a2a, "weatherapi.com"),
+    VISUAL_CROSSING("visual_crossing", -0x3a2a5a, "visualcrossing.com");
 
     companion object {
 
@@ -32,6 +36,18 @@ enum class WeatherSource(
             if (value.lowercase().contains("caiyun")
                 || value.lowercase().contains("cn")) {
                 return CAIYUN
+            }
+            if (value.lowercase().contains("qweather")) {
+                return QWEATHER
+            }
+            if (value.lowercase().contains("open_meteo")) {
+                return OPEN_METEO
+            }
+            if (value.lowercase().contains("weatherapi")) {
+                return WEATHERAPI
+            }
+            if (value.lowercase().contains("visual_crossing")) {
+                return VISUAL_CROSSING
             }
             return ACCU
         }
