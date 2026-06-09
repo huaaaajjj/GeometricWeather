@@ -73,13 +73,13 @@ android {
         it.buildConfigField "String", "IQA_ATMO_AURA_KEY", localProperties.getProperty("IQA_ATMO_AURA_KEY", IQA_ATMO_AURA_KEY)
         it.buildConfigField "String", "IQA_ATMO_AURA_URL", localProperties.getProperty("IQA_ATMO_AURA_URL", IQA_ATMO_AURA_URL)
         it.buildConfigField "String", "IQA_ATMO_SUD_URL", localProperties.getProperty("IQA_ATMO_SUD_URL", IQA_ATMO_SUD_URL)
-        it.buildConfigField "String", "QWEATHER_BASE_URL", localProperties.getProperty("QWEATHER_BASE_URL", "https://devapi.qweather.com/")
-        it.buildConfigField "String", "QWEATHER_KEY", localProperties.getProperty("QWEATHER_KEY", "YOUR_QWEATHER_KEY")
-        it.buildConfigField "String", "OPEN_METEO_BASE_URL", localProperties.getProperty("OPEN_METEO_BASE_URL", "https://api.open-meteo.com/")
-        it.buildConfigField "String", "WEATHERAPI_BASE_URL", localProperties.getProperty("WEATHERAPI_BASE_URL", "https://api.weatherapi.com/")
-        it.buildConfigField "String", "WEATHERAPI_KEY", localProperties.getProperty("WEATHERAPI_KEY", "YOUR_WEATHERAPI_KEY")
-        it.buildConfigField "String", "VISUAL_CROSSING_BASE_URL", localProperties.getProperty("VISUAL_CROSSING_BASE_URL", "https://weather.visualcrossing.com/")
-        it.buildConfigField "String", "VISUAL_CROSSING_KEY", localProperties.getProperty("VISUAL_CROSSING_KEY", "YOUR_VISUAL_CROSSING_KEY")
+        it.buildConfigField "String", "QWEATHER_BASE_URL", localProperties.getProperty("QWEATHER_BASE_URL", "\"https://devapi.qweather.com/\"")
+        it.buildConfigField "String", "QWEATHER_KEY", localProperties.getProperty("QWEATHER_KEY", "\"YOUR_QWEATHER_KEY\"")
+        it.buildConfigField "String", "OPEN_METEO_BASE_URL", localProperties.getProperty("OPEN_METEO_BASE_URL", "\"https://api.open-meteo.com/\"")
+        it.buildConfigField "String", "WEATHERAPI_BASE_URL", localProperties.getProperty("WEATHERAPI_BASE_URL", "\"https://api.weatherapi.com/\"")
+        it.buildConfigField "String", "WEATHERAPI_KEY", localProperties.getProperty("WEATHERAPI_KEY", "\"YOUR_WEATHERAPI_KEY\"")
+        it.buildConfigField "String", "VISUAL_CROSSING_BASE_URL", localProperties.getProperty("VISUAL_CROSSING_BASE_URL", "\"https://weather.visualcrossing.com/\"")
+        it.buildConfigField "String", "VISUAL_CROSSING_KEY", localProperties.getProperty("VISUAL_CROSSING_KEY", "\"YOUR_VISUAL_CROSSING_KEY\"")
     }
     lintOptions {
         checkReleaseBuilds false
