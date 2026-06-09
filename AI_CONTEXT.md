@@ -40,6 +40,7 @@
 - 修复 MfResultConverter province/country 字段 null 崩溃
 - 更换 AccuWeather base URL → dataservice.accuweather.com (api. 域名 key 失效)
 - 设置页面顶部栏 MediumTopAppBar → SmallTopAppBar (减少遮挡)
+- 修复设置页面 Scaffold innerPadding 未传入 NavHost 导致内容被顶部栏遮挡
 - 发布版本切换为 Prerelease
 
 ## 禁止

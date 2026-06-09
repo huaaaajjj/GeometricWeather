@@ -3,6 +3,7 @@ package wangdaye.com.geometricweather.settings.activities
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -48,11 +49,12 @@ class SelectProviderActivity : GeoActivity() {
                     scrollBehavior = scrollBehavior,
                 )
             },
-        ) {
+        ) { innerPadding ->
             val navController = rememberNavController()
             NavHost(
                 navController = navController,
-                startDestination = SettingsScreenRouter.ServiceProvider.route
+                startDestination = SettingsScreenRouter.ServiceProvider.route,
+                modifier = Modifier.padding(innerPadding)
             ) {
                 composable(SettingsScreenRouter.ServiceProvider.route) {
                     ServiceProviderSettingsScreen(
