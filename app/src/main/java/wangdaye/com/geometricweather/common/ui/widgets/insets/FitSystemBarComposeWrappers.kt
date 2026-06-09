@@ -49,12 +49,12 @@ fun FitStatusBarTopAppBar(
             .windowInsetsTopHeight(WindowInsets.statusBars)
             .fillMaxWidth(),
     )
-    MediumTopAppBar(
+    SmallTopAppBar(
         title = title,
         modifier = modifier,
         navigationIcon = navigationIcon,
         actions = actions,
-        colors = TopAppBarDefaults.mediumTopAppBarColors(
+        colors = TopAppBarDefaults.smallTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.surface,
             scrolledContainerColor = MaterialTheme.colorScheme.applyTonalElevation(
                 backgroundColor = MaterialTheme.colorScheme.surface,
