@@ -56,6 +56,8 @@
 
 | 组件 | 版本 |
 |------|------|
+| 应用版本 | **v3.2.0** (正式版) |
+| 包名 | `huajiii.com.geometricweather` |
 | Gradle | 7.6.4 |
 | AGP | 7.4.2 |
 | Kotlin | 1.8.22 |
@@ -64,9 +66,15 @@
 | targetSdk | 34 |
 | minSdk | 21 |
 
+## 版本号规则
+
+- **v3.2.x**: 小更新和 bug 修复
+- **v3.x**: 大版本更新
+- 从 v3.2.0 开始，Release 为正式版（非 prerelease）
+
 ## 发布策略
 
-- 所有远程 Release 都发布为 **Prerelease**
+- 所有远程 Release 都发布为 **正式版**
 - 每次完成一项任务写入本文件
 
 ### 修复记录
