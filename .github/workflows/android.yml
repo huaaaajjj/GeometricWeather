@@ -43,7 +43,7 @@ jobs:
           echo "$KEYSTORE_BASE64" | base64 -d > app/geometricweather.jks
 
       - name: Build Debug APK
-        if: github.event_name == 'pull_request' || (github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/v'))
+        if: github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/v')
         run: ./gradlew assembleFdroidDebug --no-daemon
 
       - name: Build Release APKs
@@ -54,7 +54,7 @@ jobs:
           ./gradlew assemblePubRelease --no-daemon
 
       - name: Upload Debug APK
-        if: github.event_name == 'pull_request' || (github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/v'))
+        if: github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-artifact@v4
         with:
           name: GeometricWeather-fdroid-debug
