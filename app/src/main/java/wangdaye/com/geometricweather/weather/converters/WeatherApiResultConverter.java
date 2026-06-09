@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import wangdaye.com.geometricweather.common.basic.models.Location;
@@ -25,6 +26,7 @@ import wangdaye.com.geometricweather.common.basic.models.weather.UV;
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
 import wangdaye.com.geometricweather.common.basic.models.weather.WeatherCode;
 import wangdaye.com.geometricweather.common.basic.models.weather.Wind;
+import wangdaye.com.geometricweather.common.basic.models.weather.WindDegree;
 import wangdaye.com.geometricweather.weather.json.weatherapi.WeatherApiResult;
 
 /**
@@ -42,13 +44,12 @@ public class WeatherApiResultConverter {
         try {
             return new Weather(
                     convertBase(result),
-                    convertCurrent(result),
-                    convertDailyList(result),
-                    convertHourlyList(result),
-                    null, // minutely
+                    convertCurrent(context, result),
+                    convertDailyList(context, result),
+                    convertHourlyList(context, result),
+                    new ArrayList<>(), // minutely
                     convertAlertList(result),
-                    convertAirQuality(result.current.airQuality),
-                    null // yesterday
+                    null  // yesterday
             );
         } catch (Exception e) {
             return null;
@@ -57,19 +58,18 @@ public class WeatherApiResultConverter {
 
     @NonNull
     private static Base convertBase(WeatherApiResult result) {
-        String timezone = "UTC";
-        if (result.location != null && result.location.tzId != null) {
-            timezone = result.location.tzId;
-        }
         return new Base(
                 result.location != null ? result.location.name : "",
-                timezone,
+                System.currentTimeMillis(),
+                new Date(),
+                System.currentTimeMillis(),
+                new Date(),
                 System.currentTimeMillis()
         );
     }
 
     @Nullable
-    private static Current convertCurrent(WeatherApiResult result) {
+    private static Current convertCurrent(Context context, WeatherApiResult result) {
         if (result.current == null) {
             return null;
         }
@@ -77,28 +77,39 @@ public class WeatherApiResultConverter {
         WeatherApiResult.Current current = result.current;
 
         return new Current(
-                current.tempC != null ? current.tempC : 0,
-                current.feelslikeC,
-                new Precipitation(current.precipMm, null, null, null),
-                new Wind(
-                        current.windKph != null ? current.windKph : 0,
-                        current.windDegree != null ? current.windDegree : 0,
-                        current.gustKph
-                ),
-                new UV(current.uv != null ? current.uv : 0, null),
-                convertAirQuality(current.airQuality),
-                current.humidity,
-                current.pressureMb != null ? current.pressureMb : 0,
-                current.visKm,
-                null, // dewPoint
-                current.cloud,
+                current.condition != null ? current.condition.text : "Unknown",
                 convertWeatherCode(current.condition != null ? current.condition.code : null),
-                current.condition != null ? current.condition.text : null
+                new Temperature(
+                        current.tempC != null ? current.tempC.intValue() : 0,
+                        current.feelslikeC != null ? current.feelslikeC.intValue() : null,
+                        null, null, null, null, null
+                ),
+                new Precipitation(
+                        current.precipMm != null ? current.precipMm.floatValue() : null,
+                        null, null, null, null
+                ),
+                new PrecipitationProbability(null, null, null, null, null),
+                new Wind(
+                        current.windDir != null ? current.windDir : "N",
+                        new WindDegree(current.windDegree != null ? current.windDegree : 0, false),
+                        current.windKph != null ? current.windKph.floatValue() : null,
+                        CommonConverter.getWindLevel(context, current.windKph != null ? current.windKph.floatValue() : 0)
+                ),
+                new UV(current.uv != null ? current.uv.intValue() : null, null, null),
+                convertAirQuality(current.airQuality),
+                current.humidity != null ? current.humidity.floatValue() : null,
+                current.pressureMb != null ? current.pressureMb.floatValue() : null,
+                current.visKm != null ? current.visKm.floatValue() : null,
+                null, // dewPoint
+                current.cloud != null ? current.cloud : null,
+                null, // ceiling
+                null, // dailyForecast
+                null  // hourlyForecast
         );
     }
 
     @NonNull
-    private static List<Daily> convertDailyList(WeatherApiResult result) {
+    private static List<Daily> convertDailyList(Context context, WeatherApiResult result) {
         List<Daily> dailyList = new ArrayList<>();
 
         if (result.forecast == null || result.forecast.forecastday == null) {
@@ -117,36 +128,58 @@ public class WeatherApiResultConverter {
                     forecastDay.date,
                     new HalfDay(
                             "Day",
-                            convertWeatherCode(day.condition != null ? day.condition.code : null),
                             day.condition != null ? day.condition.text : null,
-                            new Temperature(day.maxtempC, null, null, null),
-                            new Precipitation(day.totalprecipMm, null, null, null),
-                            new PrecipitationProbability(
-                                    (double) day.dailyChanceOfRain,
+                            convertWeatherCode(day.condition != null ? day.condition.code : null),
+                            new Temperature(
+                                    day.maxtempC != null ? day.maxtempC.intValue() : 0,
+                                    null, null, null, null, null, null
+                            ),
+                            new Precipitation(
+                                    day.totalprecipMm != null ? day.totalprecipMm.floatValue() : null,
                                     null, null, null, null
                             ),
-                            new Wind(day.maxwindKph != null ? day.maxwindKph : 0, 0, null),
+                            new PrecipitationProbability(
+                                    day.dailyChanceOfRain != null ? (float) day.dailyChanceOfRain : null,
+                                    null, null, null, null
+                            ),
+                            new Wind(
+                                    "N",
+                                    new WindDegree(0, false),
+                                    day.maxwindKph != null ? day.maxwindKph.floatValue() : null,
+                                    CommonConverter.getWindLevel(context, day.maxwindKph != null ? day.maxwindKph.floatValue() : 0)
+                            ),
                             null, // cloudCover
                             null  // weatherDescription
                     ),
                     new HalfDay(
                             "Night",
-                            convertWeatherCode(day.condition != null ? day.condition.code : null),
                             day.condition != null ? day.condition.text : null,
-                            new Temperature(null, null, day.mintempC, null),
-                            new Precipitation(day.totalprecipMm, null, null, null),
-                            new PrecipitationProbability(
-                                    (double) day.dailyChanceOfRain,
+                            convertWeatherCode(day.condition != null ? day.condition.code : null),
+                            new Temperature(
+                                    day.mintempC != null ? day.mintempC.intValue() : 0,
+                                    null, null, null, null, null, null
+                            ),
+                            new Precipitation(
+                                    day.totalprecipMm != null ? day.totalprecipMm.floatValue() : null,
                                     null, null, null, null
                             ),
-                            new Wind(day.maxwindKph != null ? day.maxwindKph : 0, 0, null),
+                            new PrecipitationProbability(
+                                    day.dailyChanceOfRain != null ? (float) day.dailyChanceOfRain : null,
+                                    null, null, null, null
+                            ),
+                            new Wind(
+                                    "N",
+                                    new WindDegree(0, false),
+                                    day.maxwindKph != null ? day.maxwindKph.floatValue() : null,
+                                    CommonConverter.getWindLevel(context, day.maxwindKph != null ? day.maxwindKph.floatValue() : 0)
+                            ),
                             null, // cloudCover
                             null  // weatherDescription
                     ),
                     astro != null ? new Astro(astro.sunrise, astro.sunset) : null,
                     astro != null ? new Astro(astro.moonrise, astro.moonset) : null,
                     astro != null ? convertMoonPhase(astro.moonPhase) : null,
-                    new UV(day.uv != null ? day.uv : 0, null),
+                    new UV(day.uv != null ? day.uv.intValue() : null, null, null),
                     convertAirQuality(day.airQuality),
                     null, // pollen
                     null  // hoursOfSun
@@ -157,7 +190,7 @@ public class WeatherApiResultConverter {
     }
 
     @NonNull
-    private static List<Hourly> convertHourlyList(WeatherApiResult result) {
+    private static List<Hourly> convertHourlyList(Context context, WeatherApiResult result) {
         List<Hourly> hourlyList = new ArrayList<>();
 
         if (result.forecast == null || result.forecast.forecastday == null) {
@@ -172,20 +205,29 @@ public class WeatherApiResultConverter {
             for (WeatherApiResult.Hour hour : forecastDay.hour) {
                 hourlyList.add(new Hourly(
                         hour.time,
-                        new Temperature(hour.tempC, hour.feelslikeC, null, null),
-                        new Precipitation(hour.precipMm, null, null, null),
+                        hour.condition != null ? hour.condition.text : null,
+                        convertWeatherCode(hour.condition != null ? hour.condition.code : null),
+                        new Temperature(
+                                hour.tempC != null ? hour.tempC.intValue() : 0,
+                                hour.feelslikeC != null ? hour.feelslikeC.intValue() : null,
+                                null, null, null, null, null
+                        ),
+                        new Precipitation(
+                                hour.precipMm != null ? hour.precipMm.floatValue() : null,
+                                null, null, null, null
+                        ),
                         new PrecipitationProbability(
-                                (double) hour.chanceOfRain,
+                                hour.chanceOfRain != null ? (float) hour.chanceOfRain : null,
                                 null, null, null, null
                         ),
                         new Wind(
-                                hour.windKph != null ? hour.windKph : 0,
-                                hour.windDegree != null ? hour.windDegree : 0,
-                                hour.gustKph
+                                hour.windDir != null ? hour.windDir : "N",
+                                new WindDegree(hour.windDegree != null ? hour.windDegree : 0, false),
+                                hour.windKph != null ? hour.windKph.floatValue() : null,
+                                CommonConverter.getWindLevel(context, hour.windKph != null ? hour.windKph.floatValue() : 0)
                         ),
-                        new UV(hour.uv != null ? hour.uv : 0, null),
-                        convertWeatherCode(hour.condition != null ? hour.condition.code : null),
-                        hour.cloud,
+                        new UV(hour.uv != null ? hour.uv.intValue() : null, null, null),
+                        null, // airQuality
                         hour.isDay != null && hour.isDay == 1
                 ));
             }
@@ -194,13 +236,14 @@ public class WeatherApiResultConverter {
         return hourlyList;
     }
 
-    @Nullable
+    @NonNull
     private static List<Alert> convertAlertList(WeatherApiResult result) {
+        List<Alert> alertList = new ArrayList<>();
+
         if (result.alerts == null || result.alerts.alert == null) {
-            return null;
+            return alertList;
         }
 
-        List<Alert> alertList = new ArrayList<>();
         for (WeatherApiResult.Alert alert : result.alerts.alert) {
             alertList.add(new Alert(
                     alert.headline,
@@ -224,12 +267,13 @@ public class WeatherApiResultConverter {
 
         return new AirQuality(
                 airQuality.usEpaIndex,
-                airQuality.pm25,
-                airQuality.pm10,
-                airQuality.so2,
-                airQuality.no2,
-                airQuality.o3,
-                airQuality.co
+                airQuality.pm25 != null ? airQuality.pm25.floatValue() : null,
+                airQuality.pm10 != null ? airQuality.pm10.floatValue() : null,
+                airQuality.so2 != null ? airQuality.so2.floatValue() : null,
+                airQuality.no2 != null ? airQuality.no2.floatValue() : null,
+                airQuality.o3 != null ? airQuality.o3.floatValue() : null,
+                airQuality.co != null ? airQuality.co.floatValue() : null,
+                null // description
         );
     }
 
@@ -239,8 +283,6 @@ public class WeatherApiResultConverter {
             return null;
         }
 
-        // WeatherAPI condition codes
-        // https://www.weatherapi.com/docs/weather-conditions.json
         if (code == 1000) {
             return WeatherCode.CLEAR;
         } else if (code >= 1003 && code <= 1009) {
@@ -290,8 +332,6 @@ public class WeatherApiResultConverter {
             return null;
         }
 
-        // WeatherAPI moon phases
-        // https://www.weatherapi.com/docs/astronomy-api.json
         switch (moonPhase.toLowerCase()) {
             case "new moon":
                 return MoonPhase.NEW_MOON;
