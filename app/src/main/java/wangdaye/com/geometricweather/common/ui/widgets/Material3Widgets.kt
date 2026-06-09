@@ -36,7 +36,7 @@ fun getWidgetSurfaceColor(elevation: Dp): Color {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun generateCollapsedScrollBehavior(): TopAppBarScrollBehavior {
-    return TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    return TopAppBarDefaults.pinnedScrollBehavior()
 }
 
 // scaffold.
@@ -69,7 +69,7 @@ fun Material3Scaffold(
 
 // list items.
 
-val defaultCardListItemElevation = 2.dp
+val defaultCardListItemElevation = 0.dp
 
 fun getCardListItemMarginDp(context: Context) = context
     .resources
