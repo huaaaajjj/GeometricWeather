@@ -65,7 +65,7 @@ fun ServiceProviderSettingsScreen(
         } else if (BuildConfig.FLAVOR.contains("gplay")) {
             // Remove closed source providers if building the Google Play flavor
             valueList = arrayOf(valueList[0], valueList[1], valueList[3])
-            nameList = arrayOf(valueList[0], nameList[1], nameList[3])
+            nameList = arrayOf(nameList[0], nameList[1], nameList[3])
         }
         if (!valueList.contains(currentSelectedKey)) {
             currentSelectedKey = LocationProvider.NATIVE.id

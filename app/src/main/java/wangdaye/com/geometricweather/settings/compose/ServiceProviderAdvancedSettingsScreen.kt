@@ -139,5 +139,56 @@ fun SettingsProviderAdvancedSettingsScreen(
     }
     sectionFooterItem(R.string.settings_provider_mf)
 
+    sectionHeaderItem(R.string.settings_provider_qweather)
+    editTextPreferenceItem(R.string.settings_provider_qweather_key) { id ->
+        EditTextPreferenceView(
+            titleId = id,
+            summary = { context, content ->
+                content.ifEmpty {
+                    context.getString(R.string.settings_provider_default_value)
+                }
+            },
+            content = SettingsManager.getInstance(context).customQWeatherKey,
+            onValueChanged = {
+                SettingsManager.getInstance(context).customQWeatherKey = it
+            }
+        )
+    }
+    sectionFooterItem(R.string.settings_provider_qweather)
+
+    sectionHeaderItem(R.string.settings_provider_weatherapi)
+    editTextPreferenceItem(R.string.settings_provider_weatherapi_key) { id ->
+        EditTextPreferenceView(
+            titleId = id,
+            summary = { context, content ->
+                content.ifEmpty {
+                    context.getString(R.string.settings_provider_default_value)
+                }
+            },
+            content = SettingsManager.getInstance(context).customWeatherApiKey,
+            onValueChanged = {
+                SettingsManager.getInstance(context).customWeatherApiKey = it
+            }
+        )
+    }
+    sectionFooterItem(R.string.settings_provider_weatherapi)
+
+    sectionHeaderItem(R.string.settings_provider_visual_crossing)
+    editTextPreferenceItem(R.string.settings_provider_visual_crossing_key) { id ->
+        EditTextPreferenceView(
+            titleId = id,
+            summary = { context, content ->
+                content.ifEmpty {
+                    context.getString(R.string.settings_provider_default_value)
+                }
+            },
+            content = SettingsManager.getInstance(context).customVisualCrossingKey,
+            onValueChanged = {
+                SettingsManager.getInstance(context).customVisualCrossingKey = it
+            }
+        )
+    }
+    sectionFooterItem(R.string.settings_provider_visual_crossing)
+
     bottomInsetItem()
 }
