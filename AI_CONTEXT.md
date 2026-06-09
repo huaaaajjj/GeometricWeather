@@ -34,6 +34,7 @@
 - 发布 v3.104 Release (含4个新天气提供商)
 - 添加新提供商 API Key 设置界面
 - 修复设置界面位置服务下拉菜单 bug
+- 内置 API Keys (AccuWeather, OpenWeather, 彩云, QWeather, WeatherAPI)
 
 ## 禁止
 
