@@ -31,6 +31,7 @@
 - 添加 QWeather (和风天气) 提供商
 - 添加 WeatherAPI 提供商
 - 添加 Visual Crossing 提供商
+- 发布 v3.104 Release (含4个新天气提供商)
 
 ## 禁止
 
