@@ -82,9 +82,10 @@ public class MfResultConverter {
                     result.geometry.coordinates.get(1),
                     result.geometry.coordinates.get(0),
                     TimeZone.getTimeZone(result.properties.timezone),
-                    result.properties.country,
-                    result.properties.frenchDepartment, // Domain (département)
-                    result.properties.name,
+                    result.properties.country != null ? result.properties.country : "",
+                    result.properties.frenchDepartment != null
+                            ? result.properties.frenchDepartment : "", // Domain (département)
+                    result.properties.name != null ? result.properties.name : "",
                     "",
                     null,
                     WeatherSource.MF,
@@ -135,9 +136,9 @@ public class MfResultConverter {
                     (float) result.lat,
                     (float) result.lon,
                     TimeZone.getTimeZone("Europe/Paris"), // TODO
-                    result.country,
-                    result.admin2, // Domain (département)
-                    result.name + (result.postCode == null ? "" : (" (" + result.postCode + ")")),
+                    result.country != null ? result.country : "",
+                    result.admin2 != null ? result.admin2 : "", // Domain (département)
+                    result.name != null ? result.name + (result.postCode == null ? "" : (" (" + result.postCode + ")")) : "",
                     "",
                     null,
                     WeatherSource.MF,
