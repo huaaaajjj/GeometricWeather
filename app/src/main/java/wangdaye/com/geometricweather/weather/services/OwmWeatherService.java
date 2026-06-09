@@ -102,9 +102,10 @@ public class OwmWeatherService extends WeatherService {
 
         List<Location> locationList = new ArrayList<>();
         if (resultList != null && resultList.size() != 0) {
-            for (OwmLocationResult r : resultList) {
-                locationList.add(OwmResultConverter.convert(null, r, zipCode));
-            }
+                        for (OwmLocationResult r : resultList) {
+                            Location loc = OwmResultConverter.convert(null, r, zipCode);
+                            if (loc != null) locationList.add(loc);
+                        }
         }
         return locationList;
     }
@@ -121,7 +122,8 @@ public class OwmWeatherService extends WeatherService {
                     public void onSucceed(List<OwmLocationResult> owmLocationResultList) {
                         if (owmLocationResultList != null && !owmLocationResultList.isEmpty()) {
                             List<Location> locationList = new ArrayList<>();
-                            locationList.add(OwmResultConverter.convert(location, owmLocationResultList.get(0), null));
+                            Location loc = OwmResultConverter.convert(location, owmLocationResultList.get(0), null);
+                            if (loc != null) locationList.add(loc);
                             callback.requestLocationSuccess(
                                     location.getLatitude() + "," + location.getLongitude(), locationList);
                         } else {

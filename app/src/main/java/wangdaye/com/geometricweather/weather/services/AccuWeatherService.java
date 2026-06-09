@@ -134,9 +134,10 @@ public class AccuWeatherService extends WeatherService {
 
         List<Location> locationList = new ArrayList<>();
         if (resultList != null && resultList.size() != 0) {
-            for (AccuLocationResult r : resultList) {
-                locationList.add(AccuResultConverter.convert(null, r, zipCode));
-            }
+                for (AccuLocationResult r : resultList) {
+                    Location loc = AccuResultConverter.convert(null, r, zipCode);
+                    if (loc != null) locationList.add(loc);
+                }
         }
         return locationList;
     }
@@ -158,7 +159,8 @@ public class AccuWeatherService extends WeatherService {
                     public void onSucceed(AccuLocationResult accuLocationResult) {
                         if (accuLocationResult != null) {
                             List<Location> locationList = new ArrayList<>();
-                            locationList.add(AccuResultConverter.convert(location, accuLocationResult, null));
+                            Location loc = AccuResultConverter.convert(location, accuLocationResult, null);
+                            if (loc != null) locationList.add(loc);
                             callback.requestLocationSuccess(
                                     location.getLatitude() + "," + location.getLongitude(),
                                     locationList

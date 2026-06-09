@@ -45,6 +45,7 @@ public class OwmResultConverter {
     @NonNull
     public static Location convert(@Nullable Location location, OwmLocationResult result,
                                    @Nullable String zipCode) {
+        if (result == null) return null;
         if (location != null
                 && !TextUtils.isEmpty(location.getProvince())
                 && !TextUtils.isEmpty(location.getCity())

@@ -53,6 +53,7 @@ public class AccuResultConverter {
     @NonNull
     public static Location convert(@Nullable Location location, AccuLocationResult result,
                                    @Nullable String zipCode) {
+        if (result == null || TextUtils.isEmpty(result.Key)) return null;
         if (location != null
                 && !TextUtils.isEmpty(location.getProvince())
                 && !TextUtils.isEmpty(location.getCity())

@@ -43,91 +43,116 @@ public class CaiyunResultConverter {
 
     @NonNull
     public static WeatherService.WeatherResultWrapper convert(Context context, Location location,
-                                                              CaiYunMainlyResult mainlyResult,
-                                                              CaiYunForecastResult forecastResult) {
+                                                               CaiYunMainlyResult mainlyResult,
+                                                               CaiYunForecastResult forecastResult) {
         try {
+            if (mainlyResult.current == null) {
+                return new WeatherService.WeatherResultWrapper(null);
+            }
+
+            Date currentPubTime = mainlyResult.current.pubTime;
+            String currentWeather = mainlyResult.current.weather;
+
             Weather weather = new Weather(
                     new Base(
                             location.getCityId(),
                             System.currentTimeMillis(),
-                            mainlyResult.current.pubTime,
-                            mainlyResult.current.pubTime.getTime(),
+                            currentPubTime,
+                            currentPubTime != null ? currentPubTime.getTime() : System.currentTimeMillis(),
                             new Date(System.currentTimeMillis()),
                             System.currentTimeMillis()
                     ),
                     new Current(
-                            getWeatherText(mainlyResult.current.weather),
-                            getWeatherCode(mainlyResult.current.weather),
+                            getWeatherText(currentWeather),
+                            getWeatherCode(currentWeather),
                             new Temperature(
-                                    Integer.parseInt(mainlyResult.current.temperature.value),
-                                    Integer.parseInt(mainlyResult.current.feelsLike.value),
+                                    mainlyResult.current.temperature != null
+                                            ? Integer.parseInt(mainlyResult.current.temperature.value)
+                                            : 0,
+                                    mainlyResult.current.feelsLike != null
+                                            ? Integer.parseInt(mainlyResult.current.feelsLike.value)
+                                            : null,
                                     null,
                                     null,
                                     null,
                                     null,
                                     null
                             ),
-                            new Precipitation(
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null
-                            ),
-                            new PrecipitationProbability(
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null
-                            ),
-                            new Wind(
-                                    getWindDirection(Float.parseFloat(mainlyResult.current.wind.direction.value)),
-                                    new WindDegree(
-                                            Float.parseFloat(mainlyResult.current.wind.direction.value),
-                                            false
-                                    ),
-                                    Float.parseFloat(mainlyResult.current.wind.speed.value),
-                                    CommonConverter.getWindLevel(
-                                            context,
-                                            Float.parseFloat(mainlyResult.current.wind.speed.value)
+                            new Precipitation(null, null, null, null, null),
+                            new PrecipitationProbability(null, null, null, null, null),
+                            mainlyResult.current.wind != null
+                                    ? new Wind(
+                                        getWindDirection(Float.parseFloat(mainlyResult.current.wind.direction.value)),
+                                        new WindDegree(
+                                                Float.parseFloat(mainlyResult.current.wind.direction.value),
+                                                false
+                                        ),
+                                        Float.parseFloat(mainlyResult.current.wind.speed.value),
+                                        CommonConverter.getWindLevel(
+                                                context,
+                                                Float.parseFloat(mainlyResult.current.wind.speed.value)
+                                        )
                                     )
-                            ),
+                                    : new Wind(null, null, null, null),
                             new UV(
-                                    Integer.parseInt(mainlyResult.current.uvIndex),
-                                    getUVDescription(mainlyResult.current.uvIndex),
+                                    mainlyResult.current.uvIndex != null
+                                            ? Integer.parseInt(mainlyResult.current.uvIndex)
+                                            : 0,
+                                    null,
                                     null
                             ),
                             getAirQuality(context, mainlyResult),
-                            !TextUtils.isEmpty(mainlyResult.current.humidity.value)
+                            mainlyResult.current.humidity != null
+                                    && !TextUtils.isEmpty(mainlyResult.current.humidity.value)
                                     ? Float.parseFloat(mainlyResult.current.humidity.value)
                                     : null,
-                            !TextUtils.isEmpty(mainlyResult.current.pressure.value)
+                            mainlyResult.current.pressure != null
+                                    && !TextUtils.isEmpty(mainlyResult.current.pressure.value)
                                     ? Float.parseFloat(mainlyResult.current.pressure.value)
                                     : null,
-                            !TextUtils.isEmpty(mainlyResult.current.visibility.value)
+                            mainlyResult.current.visibility != null
+                                    && !TextUtils.isEmpty(mainlyResult.current.visibility.value)
                                     ? Float.parseFloat(mainlyResult.current.visibility.value)
                                     : null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            forecastResult.precipitation.description
+                            null, null, null, null,
+                            forecastResult != null && forecastResult.precipitation != null
+                                    ? forecastResult.precipitation.description
+                                    : null
                     ),
                     getYesterday(mainlyResult),
-                    getDailyList(context, mainlyResult.current.pubTime, mainlyResult.forecastDaily),
+                    getDailyList(context, currentPubTime, mainlyResult.forecastDaily),
                     getHourlyList(
                             context,
-                            mainlyResult.current.pubTime,
-                            mainlyResult.forecastDaily.sunRiseSet.value.get(0).from,
-                            mainlyResult.forecastDaily.sunRiseSet.value.get(0).to,
+                            currentPubTime,
+                            mainlyResult.forecastDaily != null
+                                    && mainlyResult.forecastDaily.sunRiseSet != null
+                                    && mainlyResult.forecastDaily.sunRiseSet.value != null
+                                    && mainlyResult.forecastDaily.sunRiseSet.value.size() > 0
+                                    ? mainlyResult.forecastDaily.sunRiseSet.value.get(0).from
+                                    : null,
+                            mainlyResult.forecastDaily != null
+                                    && mainlyResult.forecastDaily.sunRiseSet != null
+                                    && mainlyResult.forecastDaily.sunRiseSet.value != null
+                                    && mainlyResult.forecastDaily.sunRiseSet.value.size() > 0
+                                    ? mainlyResult.forecastDaily.sunRiseSet.value.get(0).to
+                                    : null,
                             mainlyResult.forecastHourly
                     ),
                     getMinutelyList(
-                            mainlyResult.forecastDaily.sunRiseSet.value.get(0).from,
-                            mainlyResult.forecastDaily.sunRiseSet.value.get(0).to,
-                            getWeatherText(mainlyResult.current.weather),
-                            getWeatherCode(mainlyResult.current.weather),
+                            mainlyResult.forecastDaily != null
+                                    && mainlyResult.forecastDaily.sunRiseSet != null
+                                    && mainlyResult.forecastDaily.sunRiseSet.value != null
+                                    && mainlyResult.forecastDaily.sunRiseSet.value.size() > 0
+                                    ? mainlyResult.forecastDaily.sunRiseSet.value.get(0).from
+                                    : null,
+                            mainlyResult.forecastDaily != null
+                                    && mainlyResult.forecastDaily.sunRiseSet != null
+                                    && mainlyResult.forecastDaily.sunRiseSet.value != null
+                                    && mainlyResult.forecastDaily.sunRiseSet.value.size() > 0
+                                    ? mainlyResult.forecastDaily.sunRiseSet.value.get(0).to
+                                    : null,
+                            getWeatherText(currentWeather),
+                            getWeatherCode(currentWeather),
                             forecastResult
                     ),
                     getAlertList(mainlyResult)
@@ -140,6 +165,10 @@ public class CaiyunResultConverter {
     }
 
     private static AirQuality getAirQuality(Context context, CaiYunMainlyResult result) {
+        if (result.aqi == null) {
+            return new AirQuality(null, null, null, null, null, null, null, null);
+        }
+
         String quality;
         try {
             quality = CommonConverter.getAqiQuality(
@@ -202,6 +231,7 @@ public class CaiyunResultConverter {
 
     @Nullable
     private static History getYesterday(CaiYunMainlyResult result) {
+        if (result.yesterday == null) return null;
         try {
             return new History(
                     new Date(result.updateTime - 24 * 60 * 60 * 1000),
@@ -216,6 +246,13 @@ public class CaiyunResultConverter {
 
     private static List<Daily> getDailyList(Context context,
                                             Date publishDate, CaiYunMainlyResult.ForecastDailyBean forecast) {
+        if (forecast == null || forecast.weather == null || forecast.weather.value == null
+                || forecast.temperature == null || forecast.temperature.value == null
+                || forecast.wind == null || forecast.wind.direction == null || forecast.wind.direction.value == null
+                || forecast.wind.speed == null || forecast.wind.speed.value == null
+                || forecast.sunRiseSet == null || forecast.sunRiseSet.value == null) {
+            return new ArrayList<>();
+        }
         List<Daily> dailyList = new ArrayList<>(forecast.weather.value.size());
         for (int i = 0; i < forecast.weather.value.size(); i ++) {
             Calendar calendar = Calendar.getInstance();
@@ -393,6 +430,11 @@ public class CaiyunResultConverter {
     private static List<Hourly> getHourlyList(Context context, Date publishDate,
                                               Date sunrise, Date sunset,
                                               CaiYunMainlyResult.ForecastHourlyBean forecast) {
+        if (forecast == null || forecast.weather == null || forecast.weather.value == null
+                || forecast.temperature == null || forecast.temperature.value == null
+                || forecast.wind == null || forecast.wind.value == null) {
+            return new ArrayList<>();
+        }
         List<Hourly> hourlyList = new ArrayList<>(forecast.weather.value.size());
         for (int i = 0; i < forecast.weather.value.size(); i ++) {
             Calendar calendar = Calendar.getInstance();
@@ -456,6 +498,9 @@ public class CaiyunResultConverter {
                                                   String currentWeatherText,
                                                   WeatherCode currentWeatherCode,
                                                   CaiYunForecastResult result) {
+        if (result == null || result.precipitation == null || result.precipitation.value == null) {
+            return new ArrayList<>();
+        }
         Date current = result.precipitation.pubTime;
 
         List<Minutely> minutelyList = new ArrayList<>(result.precipitation.value.size());
@@ -532,6 +577,7 @@ public class CaiyunResultConverter {
     }
 
     private static List<Alert> getAlertList(CaiYunMainlyResult result) {
+        if (result.alerts == null) return new ArrayList<>();
         List<Alert> alertList = new ArrayList<>(result.alerts.size());
         for (CaiYunMainlyResult.AlertsBean a : result.alerts) {
             alertList.add(

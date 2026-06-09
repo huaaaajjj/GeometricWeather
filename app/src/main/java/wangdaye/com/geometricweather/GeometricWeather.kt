@@ -230,7 +230,16 @@ class GeometricWeather : MultiDexApplication(),
 
     fun recreateAllActivities() {
         for (a in activitySet) {
-            a.recreate()
+            try {
+                a.recreate()
+            } catch (e: RuntimeException) {
+                e.printStackTrace()
+                val intent = a.intent
+                if (intent != null) {
+                    a.finish()
+                    a.startActivity(intent)
+                }
+            }
         }
     }
 
