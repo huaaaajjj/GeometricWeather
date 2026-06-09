@@ -101,8 +101,8 @@ public class CaiyunResultConverter {
                     null,
                     getDailyList(context, daily, result.timezone),
                     getHourlyList(context, hourly, result.timezone),
-                    null,
-                    null
+                    new ArrayList<Minutely>(),
+                    new ArrayList<Alert>()
             );
             return new WeatherService.WeatherResultWrapper(weather);
         } catch (Exception e) {
@@ -217,7 +217,7 @@ public class CaiyunResultConverter {
             } else if (daily.wind_20h_32h != null && i < daily.wind_20h_32h.size() && !day) {
                 windData = daily.wind_20h_32h.get(i);
             } else {
-                return new Wind(null, null, null, null);
+                return new Wind("", new WindDegree(0, true), null, "");
             }
             double speed = windData.avg != null ? windData.avg.speed : 0;
             double dir = windData.avg != null ? windData.avg.direction : 0;
@@ -288,7 +288,7 @@ public class CaiyunResultConverter {
                     ),
                     new Precipitation(null, null, null, null, null),
                     new PrecipitationProbability(null, null, null, null, null),
-                    new Wind(null, null, null, null),
+                    new Wind("", new WindDegree(0, true), null, ""),
                     new UV(null, null, null)
             ));
         }
