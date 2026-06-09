@@ -27,7 +27,7 @@ if (localPropertiesFile.exists()) {
 
 android {
     namespace "wangdaye.com.geometricweather"
-    compileSdk 35
+    compileSdk 34
     defaultConfig {
         applicationId "wangdaye.com.geometricweather"
         minSdk 21
