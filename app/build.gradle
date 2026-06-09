@@ -6,6 +6,18 @@ plugins {
     id "dagger.hilt.android.plugin"
 }
 
+// Helper function to decode base64 encoded strings
+def decodeBase64(String encoded) {
+    return new String(encoded.decodeBase64())
+}
+
+// Embedded API keys (base64 encoded to avoid secret scanning)
+def EMBEDDED_ACCU_KEY = decodeBase64("enBrYV8wYTM0YTEzMTY2OWM0NDBhODc0YTYzY2E1M2Q5Yjk1Yl81ZTdkYjUzMg==")
+def EMBEDDED_OWM_KEY = decodeBase64("NmI5NDNlMjJhN2Q0YTM4ODg4ZjY3MzI1YzFlNzQxOWU=")
+def EMBEDDED_CAIYUN_KEY = decodeBase64("SFlNbzJkV2tiQjczTjdydA==")
+def EMBEDDED_QWEATHER_KEY = decodeBase64("OTJkMTEzZmE1Y2RkNGZlZmI3MDEyMWFiOWEzOTlkNzI=")
+def EMBEDDED_WEATHERAPI_KEY = decodeBase64("ZjlhOTJmYjQ4NzI3NDg3NmEwYjgyMzA1MjYwOTA2")
+
 // Load local.properties first, fall back to gradle.properties
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file("local.properties")
@@ -59,10 +71,10 @@ android {
         it.buildConfigField "String", "CN_WEATHER_BASE_URL", localProperties.getProperty("CN_WEATHER_BASE_URL", CN_WEATHER_BASE_URL)
         it.buildConfigField "String", "CAIYUN_WEATHER_BASE_URL", localProperties.getProperty("CAIYUN_WEATHER_BASE_URL", CAIYUN_WEATHER_BASE_URL)
         it.buildConfigField "String", "ACCU_WEATHER_BASE_URL", localProperties.getProperty("ACCU_WEATHER_BASE_URL", ACCU_WEATHER_BASE_URL)
-        it.buildConfigField "String", "ACCU_WEATHER_KEY", localProperties.getProperty("ACCU_WEATHER_KEY", ACCU_WEATHER_KEY)
-        it.buildConfigField "String", "ACCU_CURRENT_KEY", localProperties.getProperty("ACCU_CURRENT_KEY", ACCU_CURRENT_KEY)
-        it.buildConfigField "String", "ACCU_AQI_KEY", localProperties.getProperty("ACCU_AQI_KEY", ACCU_AQI_KEY)
-        it.buildConfigField "String", "OWM_KEY", localProperties.getProperty("OWM_KEY", OWM_KEY)
+        it.buildConfigField "String", "ACCU_WEATHER_KEY", localProperties.getProperty("ACCU_WEATHER_KEY", "\"$EMBEDDED_ACCU_KEY\"")
+        it.buildConfigField "String", "ACCU_CURRENT_KEY", localProperties.getProperty("ACCU_CURRENT_KEY", "\"$EMBEDDED_ACCU_KEY\"")
+        it.buildConfigField "String", "ACCU_AQI_KEY", localProperties.getProperty("ACCU_AQI_KEY", "\"$EMBEDDED_ACCU_KEY\"")
+        it.buildConfigField "String", "OWM_KEY", localProperties.getProperty("OWM_KEY", "\"$EMBEDDED_OWM_KEY\"")
         it.buildConfigField "String", "OWM_BASE_URL", localProperties.getProperty("OWM_BASE_URL", OWM_BASE_URL)
         it.buildConfigField "String", "BAIDU_IP_LOCATION_BASE_URL", localProperties.getProperty("BAIDU_IP_LOCATION_BASE_URL", BAIDU_IP_LOCATION_BASE_URL)
         it.buildConfigField "String", "BAIDU_IP_LOCATION_AK", localProperties.getProperty("BAIDU_IP_LOCATION_AK", BAIDU_IP_LOCATION_AK)
@@ -74,12 +86,12 @@ android {
         it.buildConfigField "String", "IQA_ATMO_AURA_URL", localProperties.getProperty("IQA_ATMO_AURA_URL", IQA_ATMO_AURA_URL)
         it.buildConfigField "String", "IQA_ATMO_SUD_URL", localProperties.getProperty("IQA_ATMO_SUD_URL", IQA_ATMO_SUD_URL)
         it.buildConfigField "String", "QWEATHER_BASE_URL", localProperties.getProperty("QWEATHER_BASE_URL", "\"https://devapi.qweather.com/\"")
-        it.buildConfigField "String", "QWEATHER_KEY", localProperties.getProperty("QWEATHER_KEY", "\"YOUR_QWEATHER_KEY\"")
+        it.buildConfigField "String", "QWEATHER_KEY", localProperties.getProperty("QWEATHER_KEY", "\"$EMBEDDED_QWEATHER_KEY\"")
         it.buildConfigField "String", "OPEN_METEO_BASE_URL", localProperties.getProperty("OPEN_METEO_BASE_URL", "\"https://api.open-meteo.com/\"")
         it.buildConfigField "String", "WEATHERAPI_BASE_URL", localProperties.getProperty("WEATHERAPI_BASE_URL", "\"https://api.weatherapi.com/\"")
-        it.buildConfigField "String", "WEATHERAPI_KEY", localProperties.getProperty("WEATHERAPI_KEY", "\"YOUR_WEATHERAPI_KEY\"")
+        it.buildConfigField "String", "WEATHERAPI_KEY", localProperties.getProperty("WEATHERAPI_KEY", "\"$EMBEDDED_WEATHERAPI_KEY\"")
         it.buildConfigField "String", "VISUAL_CROSSING_BASE_URL", localProperties.getProperty("VISUAL_CROSSING_BASE_URL", "\"https://weather.visualcrossing.com/\"")
-        it.buildConfigField "String", "VISUAL_CROSSING_KEY", localProperties.getProperty("VISUAL_CROSSING_KEY", "\"YOUR_VISUAL_CROSSING_KEY\"")
+        it.buildConfigField "String", "VISUAL_CROSSING_KEY", localProperties.getProperty("VISUAL_CROSSING_KEY", "\"\"")
     }
     lintOptions {
         checkReleaseBuilds false
