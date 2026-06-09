@@ -5,9 +5,12 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.weather.AirQuality;
@@ -19,6 +22,7 @@ import wangdaye.com.geometricweather.common.basic.models.weather.HalfDay;
 import wangdaye.com.geometricweather.common.basic.models.weather.Hourly;
 import wangdaye.com.geometricweather.common.basic.models.weather.Minutely;
 import wangdaye.com.geometricweather.common.basic.models.weather.Precipitation;
+import wangdaye.com.geometricweather.common.basic.models.weather.PrecipitationDuration;
 import wangdaye.com.geometricweather.common.basic.models.weather.PrecipitationProbability;
 import wangdaye.com.geometricweather.common.basic.models.weather.Temperature;
 import wangdaye.com.geometricweather.common.basic.models.weather.UV;
@@ -33,10 +37,6 @@ import wangdaye.com.geometricweather.weather.json.qweather.QWeatherMinutelyResul
 import wangdaye.com.geometricweather.weather.json.qweather.QWeatherNowResult;
 import wangdaye.com.geometricweather.weather.json.qweather.QWeatherWarningResult;
 
-/**
- * QWeather result converter.
- */
-
 public class QWeatherResultConverter {
 
     @Nullable
@@ -47,19 +47,18 @@ public class QWeatherResultConverter {
                                   QWeatherMinutelyResult minutelyResult,
                                   QWeatherAirResult airResult,
                                   QWeatherWarningResult warningResult) {
-        if (nowResult == null || !"200".equals(nowResult.code)) {
-            return null;
-        }
-
+        if (nowResult == null || !"200".equals(nowResult.code)) return null;
         try {
             return new Weather(
-                    convertBase(location, nowResult),
+                    new Base(location.getCityId(), System.currentTimeMillis(),
+                            new Date(), System.currentTimeMillis(),
+                            new Date(), System.currentTimeMillis()),
                     convertCurrent(context, nowResult),
+                    null,
                     convertDailyList(context, dailyResult),
                     convertHourlyList(context, hourlyResult),
                     convertMinutelyList(minutelyResult),
-                    convertAlertList(warningResult),
-                    null // yesterday
+                    convertAlertList(warningResult)
             );
         } catch (Exception e) {
             return null;
@@ -67,324 +66,218 @@ public class QWeatherResultConverter {
     }
 
     @NonNull
-    private static Base convertBase(Location location, QWeatherNowResult result) {
-        return new Base(
-                location.getCityId(),
-                System.currentTimeMillis(),
-                new Date(),
-                System.currentTimeMillis(),
-                new Date(),
-                System.currentTimeMillis()
-        );
-    }
-
-    @Nullable
     private static Current convertCurrent(Context context, QWeatherNowResult result) {
-        if (result.now == null) {
-            return null;
-        }
+        QWeatherNowResult.Now n = result.now;
+        int temp = parseFloat(n.temp);
+        Integer feelsLike = parseInt2(n.feelsLike);
+        Float precip = parseFloat2(n.precip);
+        float windSpeed = parseFloat(n.windSpeed);
+        int windDir = parseInt(n.wind360);
+        Float humidity = parseFloat2(n.humidity);
+        Float pressure = parseFloat2(n.pressure);
+        Float visibility = parseFloat2(n.vis);
+        Integer dew = parseInt2(n.dew);
+        Integer cloud = parseInt2(n.cloud);
 
         return new Current(
-                result.now.text != null ? result.now.text : "Unknown",
-                convertWeatherCode(result.now.icon),
-                new Temperature(
-                        parseFloat(result.now.temp),
-                        parseFloat(result.now.feelsLike),
-                        null, null, null, null, null
-                ),
-                new Precipitation(
-                        parseFloat(result.now.precip),
-                        null, null, null, null
-                ),
+                n.text != null ? n.text : "Unknown",
+                convertWeatherCode(n.icon),
+                new Temperature(temp, feelsLike, null, null, null, null, null),
+                new Precipitation(precip, null, null, null, null),
                 new PrecipitationProbability(null, null, null, null, null),
-                new Wind(
-                        result.now.windDir != null ? result.now.windDir : "N",
-                        new WindDegree(parseInt(result.now.wind360), false),
-                        parseFloat(result.now.windSpeed),
-                        CommonConverter.getWindLevel(context, parseFloat(result.now.windSpeed))
-                ),
+                new Wind(n.windDir != null ? n.windDir : "N",
+                        new WindDegree(windDir, false), windSpeed,
+                        CommonConverter.getWindLevel(context, windSpeed)),
                 new UV(null, null, null),
                 new AirQuality(null, null, null, null, null, null, null, null),
-                parseFloat(result.now.humidity),
-                parseFloat(result.now.pressure),
-                parseFloat(result.now.vis),
-                parseFloat(result.now.dew),
-                parseInt(result.now.cloud),
-                null, // ceiling
-                null, // dailyForecast
-                null  // hourlyForecast
+                humidity, pressure, visibility, dew, cloud, null, null, null
         );
     }
 
     @NonNull
     private static List<Daily> convertDailyList(Context context, QWeatherDailyResult result) {
-        List<Daily> dailyList = new ArrayList<>();
+        List<Daily> list = new ArrayList<>();
+        if (result == null || result.daily == null) return list;
 
-        if (result == null || result.daily == null) {
-            return dailyList;
+        for (QWeatherDailyResult.Daily d : result.daily) {
+            Date date = parseDate(d.fxDate);
+            if (date == null) continue;
+
+            float windSpeedDay = parseFloat(d.windSpeedDay);
+            int windDirDay = parseInt(d.wind360Day);
+            float windSpeedNight = parseFloat(d.windSpeedNight);
+            int windDirNight = parseInt(d.wind360Night);
+            Integer uvIndex = parseInt2(d.uvIndex);
+            Float precip = parseFloat2(d.precip);
+
+            HalfDay day = new HalfDay(
+                    d.textDay != null ? d.textDay : "Unknown", "Day", convertWeatherCode(d.iconDay),
+                    new Temperature(parseInt(d.tempMax), null, null, null, null, null, null),
+                    new Precipitation(precip, null, null, null, null),
+                    new PrecipitationProbability(null, null, null, null, null),
+                    new PrecipitationDuration(null, null, null, null),
+                    new Wind(d.windDirDay != null ? d.windDirDay : "N",
+                            new WindDegree(windDirDay, false), windSpeedDay,
+                            CommonConverter.getWindLevel(context, windSpeedDay)),
+                    null
+            );
+            HalfDay night = new HalfDay(
+                    d.textNight != null ? d.textNight : "Unknown", "Night", convertWeatherCode(d.iconNight),
+                    new Temperature(parseInt(d.tempMin), null, null, null, null, null, null),
+                    new Precipitation(precip, null, null, null, null),
+                    new PrecipitationProbability(null, null, null, null, null),
+                    new PrecipitationDuration(null, null, null, null),
+                    new Wind(d.windDirNight != null ? d.windDirNight : "N",
+                            new WindDegree(windDirNight, false), windSpeedNight,
+                            CommonConverter.getWindLevel(context, windSpeedNight)),
+                    null
+            );
+            list.add(new Daily(date, date.getTime(), day, night, null, null, null, null, null,
+                    new UV(uvIndex, null, null), 0f));
         }
-
-        for (QWeatherDailyResult.Daily daily : result.daily) {
-            dailyList.add(new Daily(
-                    daily.fxDate,
-                    new HalfDay(
-                            "Day",
-                            daily.textDay,
-                            convertWeatherCode(daily.iconDay),
-                            new Temperature(
-                                    parseFloat(daily.tempMax),
-                                    null, null, null, null, null, null
-                            ),
-                            new Precipitation(
-                                    parseFloat(daily.precip),
-                                    null, null, null, null
-                            ),
-                            new PrecipitationProbability(null, null, null, null, null),
-                            new Wind(
-                                    daily.windDirDay != null ? daily.windDirDay : "N",
-                                    new WindDegree(parseInt(daily.wind360Day), false),
-                                    parseFloat(daily.windSpeedDay),
-                                    CommonConverter.getWindLevel(context, parseFloat(daily.windSpeedDay))
-                            ),
-                            null, // cloudCover
-                            null  // weatherDescription
-                    ),
-                    new HalfDay(
-                            "Night",
-                            daily.textNight,
-                            convertWeatherCode(daily.iconNight),
-                            new Temperature(
-                                    parseFloat(daily.tempMin),
-                                    null, null, null, null, null, null
-                            ),
-                            new Precipitation(
-                                    parseFloat(daily.precip),
-                                    null, null, null, null
-                            ),
-                            new PrecipitationProbability(null, null, null, null, null),
-                            new Wind(
-                                    daily.windDirNight != null ? daily.windDirNight : "N",
-                                    new WindDegree(parseInt(daily.wind360Night), false),
-                                    parseFloat(daily.windSpeedNight),
-                                    CommonConverter.getWindLevel(context, parseFloat(daily.windSpeedNight))
-                            ),
-                            null, // cloudCover
-                            null  // weatherDescription
-                    ),
-                    null, // sun
-                    null, // moon
-                    null, // moonPhase
-                    new UV(parseFloat(daily.uvIndex), null, null),
-                    null, // airQuality
-                    null, // pollen
-                    null  // hoursOfSun
-            ));
-        }
-
-        return dailyList;
+        return list;
     }
 
     @NonNull
     private static List<Hourly> convertHourlyList(Context context, QWeatherHourlyResult result) {
-        List<Hourly> hourlyList = new ArrayList<>();
+        List<Hourly> list = new ArrayList<>();
+        if (result == null || result.hourly == null) return list;
 
-        if (result == null || result.hourly == null) {
-            return hourlyList;
-        }
+        for (QWeatherHourlyResult.Hourly h : result.hourly) {
+            Date date = parseDateTime(h.fxTime);
+            if (date == null) continue;
 
-        for (QWeatherHourlyResult.Hourly hourly : result.hourly) {
-            hourlyList.add(new Hourly(
-                    hourly.fxTime,
-                    hourly.text,
-                    convertWeatherCode(hourly.icon),
-                    new Temperature(
-                            parseFloat(hourly.temp),
-                            null, null, null, null, null, null
-                    ),
-                    new Precipitation(
-                            parseFloat(hourly.precip),
-                            null, null, null, null
-                    ),
-                    new PrecipitationProbability(
-                            parseFloat(hourly.pop),
-                            null, null, null, null
-                    ),
-                    new Wind(
-                            hourly.windDir != null ? hourly.windDir : "N",
-                            new WindDegree(parseInt(hourly.wind360), false),
-                            parseFloat(hourly.windSpeed),
-                            CommonConverter.getWindLevel(context, parseFloat(hourly.windSpeed))
-                    ),
-                    new UV(null, null, null),
-                    null, // airQuality
-                    null  // isDaylight
+            float windSpeed = parseFloat(h.windSpeed);
+            int windDir = parseInt(h.wind360);
+            Float precip = parseFloat2(h.precip);
+            Float pop = parseFloat2(h.pop);
+
+            list.add(new Hourly(
+                    date, date.getTime(), true,
+                    h.text != null ? h.text : "Unknown", convertWeatherCode(h.icon),
+                    new Temperature(parseInt(h.temp), null, null, null, null, null, null),
+                    new Precipitation(precip, null, null, null, null),
+                    new PrecipitationProbability(pop, null, null, null, null),
+                    new Wind(h.windDir != null ? h.windDir : "N",
+                            new WindDegree(windDir, false), windSpeed,
+                            CommonConverter.getWindLevel(context, windSpeed)),
+                    new UV(null, null, null)
             ));
         }
-
-        return hourlyList;
+        return list;
     }
 
     @NonNull
     private static List<Minutely> convertMinutelyList(QWeatherMinutelyResult result) {
-        List<Minutely> minutelyList = new ArrayList<>();
+        List<Minutely> list = new ArrayList<>();
+        if (result == null || result.minutely == null) return list;
 
-        if (result == null || result.minutely == null) {
-            return minutelyList;
+        for (QWeatherMinutelyResult.Minutely m : result.minutely) {
+            Date date = parseDateTime(m.fxTime);
+            if (date == null) continue;
+            Float precip = parseFloat2(m.precip);
+            list.add(new Minutely(date, date.getTime(), true, null, null, 5, null, null));
         }
-
-        for (QWeatherMinutelyResult.Minutely minutely : result.minutely) {
-            minutelyList.add(new Minutely(
-                    minutely.fxTime,
-                    null, // weatherCode
-                    null, // weatherText
-                    parseFloat(minutely.precip),
-                    null, // dBz
-                    null  // cloudCover
-            ));
-        }
-
-        return minutelyList;
+        return list;
     }
 
     @NonNull
     private static List<Alert> convertAlertList(QWeatherWarningResult result) {
-        List<Alert> alertList = new ArrayList<>();
+        List<Alert> list = new ArrayList<>();
+        if (result == null || result.warning == null) return list;
 
-        if (result == null || result.warning == null) {
-            return alertList;
+        long id = 0;
+        for (QWeatherWarningResult.Warning w : result.warning) {
+            Date startDate = parseDateTime(w.startTime);
+            long time = startDate != null ? startDate.getTime() : System.currentTimeMillis();
+            int priority = convertAlertPriority(w.level);
+            int color = convertAlertColor(w.level);
+            list.add(new Alert(id++, startDate != null ? startDate : new Date(), time,
+                    w.title, w.text, w.type, priority, color));
         }
-
-        for (QWeatherWarningResult.Warning warning : result.warning) {
-            alertList.add(new Alert(
-                    warning.id,
-                    warning.title,
-                    warning.startTime,
-                    warning.endTime,
-                    warning.text,
-                    warning.level,
-                    convertAlertColor(warning.level)
-            ));
-        }
-
-        return alertList;
+        return list;
     }
 
     @Nullable
     private static WeatherCode convertWeatherCode(@Nullable String icon) {
-        if (icon == null) {
-            return null;
-        }
-
+        if (icon == null) return null;
         switch (icon) {
-            case "100":
-                return WeatherCode.CLEAR;
-            case "101":
-            case "102":
-            case "103":
-            case "104":
-                return WeatherCode.CLOUDY;
-            case "300":
-            case "301":
-            case "302":
-            case "303":
-            case "304":
-            case "305":
-            case "306":
-            case "307":
-            case "308":
-            case "309":
-            case "310":
-            case "311":
-            case "312":
-            case "313":
-            case "314":
-            case "315":
-            case "316":
-            case "317":
-            case "318":
-            case "399":
-                return WeatherCode.RAIN;
-            case "400":
-            case "401":
-            case "402":
-            case "403":
-            case "404":
-            case "405":
-            case "406":
-            case "407":
-            case "408":
-            case "409":
-            case "410":
-            case "499":
-                return WeatherCode.SNOW;
-            case "500":
-            case "501":
-            case "502":
-            case "503":
-            case "504":
-            case "507":
-            case "508":
-            case "509":
-            case "510":
-            case "511":
-            case "512":
-            case "513":
-            case "514":
-            case "515":
-                return WeatherCode.FOG;
-            case "900":
-            case "901":
-                return WeatherCode.CLEAR;
-            default:
-                return WeatherCode.CLEAR;
+            case "100": return WeatherCode.CLEAR;
+            case "101": case "102": case "103": case "104": return WeatherCode.CLOUDY;
+            case "300": case "301": case "302": case "303": case "304":
+            case "305": case "306": case "307": case "308": case "309":
+            case "310": case "311": case "312": case "313": case "314":
+            case "315": case "316": case "317": case "318": case "399": return WeatherCode.RAIN;
+            case "400": case "401": case "402": case "403": case "404":
+            case "405": case "406": case "407": case "408": case "409":
+            case "410": case "499": return WeatherCode.SNOW;
+            case "500": case "501": case "502": case "503": case "504":
+            case "507": case "508": case "509": case "510": case "511":
+            case "512": case "513": case "514": case "515": return WeatherCode.FOG;
+            default: return WeatherCode.CLEAR;
         }
     }
 
-    @Nullable
-    private static Integer convertAlertColor(@Nullable String level) {
-        if (level == null) {
-            return null;
-        }
-
+    private static int convertAlertPriority(@Nullable String level) {
+        if (level == null) return 1;
         switch (level) {
-            case "蓝色":
-            case "Blue":
-                return 1;
-            case "黄色":
-            case "Yellow":
-                return 2;
-            case "橙色":
-            case "Orange":
-                return 3;
-            case "红色":
-            case "Red":
-                return 4;
-            default:
-                return 1;
+            case "蓝色": case "Blue": return 1;
+            case "黄色": case "Yellow": return 2;
+            case "橙色": case "Orange": return 3;
+            case "红色": case "Red": return 4;
+            default: return 1;
         }
     }
 
-    @Nullable
-    private static Float parseFloat(@Nullable String value) {
-        if (value == null || value.isEmpty()) {
-            return null;
-        }
-        try {
-            return Float.parseFloat(value);
-        } catch (NumberFormatException e) {
-            return null;
+    private static int convertAlertColor(@Nullable String level) {
+        if (level == null) return 0xFFFFB82B;
+        switch (level) {
+            case "蓝色": case "Blue": return 0xFF2196F3;
+            case "黄色": case "Yellow": return 0xFFFFEB3B;
+            case "橙色": case "Orange": return 0xFFFF9800;
+            case "红色": case "Red": return 0xFFF44336;
+            default: return 0xFFFFB82B;
         }
     }
 
+    private static int parseFloat(String s) {
+        if (s == null || s.isEmpty()) return 0;
+        try { return (int) Float.parseFloat(s); }
+        catch (NumberFormatException e) { return 0; }
+    }
+
     @Nullable
-    private static Integer parseInt(@Nullable String value) {
-        if (value == null || value.isEmpty()) {
-            return null;
-        }
-        try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            return null;
+    private static Float parseFloat2(String s) {
+        if (s == null || s.isEmpty()) return null;
+        try { return Float.parseFloat(s); }
+        catch (NumberFormatException e) { return null; }
+    }
+
+    private static int parseInt(String s) {
+        if (s == null || s.isEmpty()) return 0;
+        try { return Integer.parseInt(s); }
+        catch (NumberFormatException e) { return 0; }
+    }
+
+    @Nullable
+    private static Integer parseInt2(String s) {
+        if (s == null || s.isEmpty()) return null;
+        try { return Integer.parseInt(s); }
+        catch (NumberFormatException e) { return null; }
+    }
+
+    @Nullable
+    private static Date parseDate(String s) {
+        try { return new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(s); }
+        catch (ParseException e) { return null; }
+    }
+
+    @Nullable
+    private static Date parseDateTime(String s) {
+        try { return new SimpleDateFormat("yyyy-MM-dd'T'HH:mmXXX", Locale.US).parse(s); }
+        catch (ParseException e) {
+            try { return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.US).parse(s); }
+            catch (ParseException e2) { return null; }
         }
     }
 }

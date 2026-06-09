@@ -5,9 +5,12 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.weather.Astro;
@@ -18,6 +21,7 @@ import wangdaye.com.geometricweather.common.basic.models.weather.HalfDay;
 import wangdaye.com.geometricweather.common.basic.models.weather.Hourly;
 import wangdaye.com.geometricweather.common.basic.models.weather.MoonPhase;
 import wangdaye.com.geometricweather.common.basic.models.weather.Precipitation;
+import wangdaye.com.geometricweather.common.basic.models.weather.PrecipitationDuration;
 import wangdaye.com.geometricweather.common.basic.models.weather.PrecipitationProbability;
 import wangdaye.com.geometricweather.common.basic.models.weather.Temperature;
 import wangdaye.com.geometricweather.common.basic.models.weather.UV;
@@ -27,27 +31,22 @@ import wangdaye.com.geometricweather.common.basic.models.weather.Wind;
 import wangdaye.com.geometricweather.common.basic.models.weather.WindDegree;
 import wangdaye.com.geometricweather.weather.json.visualcrossing.VisualCrossingResult;
 
-/**
- * Visual Crossing result converter.
- */
-
 public class VisualCrossingResultConverter {
 
     @Nullable
     public static Weather convert(Context context, Location location, VisualCrossingResult result) {
-        if (result == null) {
-            return null;
-        }
-
+        if (result == null) return null;
         try {
             return new Weather(
-                    convertBase(result),
+                    new Base(result.resolvedAddress != null ? result.resolvedAddress : "",
+                            System.currentTimeMillis(), new Date(), System.currentTimeMillis(),
+                            new Date(), System.currentTimeMillis()),
                     convertCurrent(context, result),
+                    null,
                     convertDailyList(context, result),
                     convertHourlyList(context, result),
-                    new ArrayList<>(), // minutely
-                    new ArrayList<>(), // alerts
-                    null  // yesterday
+                    new ArrayList<>(),
+                    new ArrayList<>()
             );
         } catch (Exception e) {
             return null;
@@ -55,248 +54,173 @@ public class VisualCrossingResultConverter {
     }
 
     @NonNull
-    private static Base convertBase(VisualCrossingResult result) {
-        return new Base(
-                result.resolvedAddress != null ? result.resolvedAddress : "",
-                System.currentTimeMillis(),
-                new Date(),
-                System.currentTimeMillis(),
-                new Date(),
-                System.currentTimeMillis()
-        );
-    }
-
-    @Nullable
     private static Current convertCurrent(Context context, VisualCrossingResult result) {
-        if (result.currentConditions == null) {
-            return null;
-        }
-
-        VisualCrossingResult.CurrentConditions current = result.currentConditions;
+        VisualCrossingResult.CurrentConditions c = result.currentConditions;
+        int temp = c.temp != null ? c.temp.intValue() : 0;
+        Integer feelsLike = c.feelslike != null ? c.feelslike.intValue() : null;
+        Float precip = c.precip != null ? c.precip.floatValue() : null;
+        float windSpeed = c.windspeed != null ? c.windspeed.floatValue() : 0f;
+        int windDir = c.winddir != null ? c.winddir.intValue() : 0;
+        Float humidity = c.humidity != null ? c.humidity.floatValue() : null;
+        Float pressure = c.pressure != null ? c.pressure.floatValue() : null;
+        Float visibility = c.visibility != null ? c.visibility.floatValue() : null;
+        Integer dew = c.dew != null ? c.dew.intValue() : null;
+        Integer cloud = c.cloudcover != null ? c.cloudcover.intValue() : null;
+        Integer uvIndex = c.uvindex != null ? c.uvindex.intValue() : null;
 
         return new Current(
-                current.conditions != null ? current.conditions : "Unknown",
-                convertWeatherCode(current.icon),
-                new Temperature(
-                        current.temp != null ? current.temp.intValue() : 0,
-                        current.feelslike != null ? current.feelslike.intValue() : null,
-                        null, null, null, null, null
-                ),
-                new Precipitation(
-                        current.precip != null ? current.precip.floatValue() : null,
-                        null, null, null, null
-                ),
+                c.conditions != null ? c.conditions : "Unknown",
+                convertWeatherCode(c.icon),
+                new Temperature(temp, feelsLike, null, null, null, null, null),
+                new Precipitation(precip, null, null, null, null),
                 new PrecipitationProbability(null, null, null, null, null),
-                new Wind(
-                        "N",
-                        new WindDegree(current.winddir != null ? current.winddir.intValue() : 0, false),
-                        current.windspeed != null ? current.windspeed.floatValue() : null,
-                        CommonConverter.getWindLevel(context, current.windspeed != null ? current.windspeed.floatValue() : 0)
-                ),
-                new UV(current.uvindex != null ? current.uvindex.intValue() : null, null, null),
-                null, // airQuality
-                current.humidity != null ? current.humidity.floatValue() : null,
-                current.pressure != null ? current.pressure.floatValue() : null,
-                current.visibility != null ? current.visibility.floatValue() : null,
-                current.dew != null ? current.dew.intValue() : null,
-                current.cloudcover != null ? current.cloudcover.intValue() : null,
-                null, // ceiling
-                null, // dailyForecast
-                null  // hourlyForecast
+                new Wind("N", new WindDegree(windDir, false), windSpeed,
+                        CommonConverter.getWindLevel(context, windSpeed)),
+                new UV(uvIndex, null, null),
+                null, humidity, pressure, visibility, dew, cloud, null, null, null
         );
     }
 
     @NonNull
     private static List<Daily> convertDailyList(Context context, VisualCrossingResult result) {
-        List<Daily> dailyList = new ArrayList<>();
+        List<Daily> list = new ArrayList<>();
+        if (result.days == null) return list;
 
-        if (result.days == null) {
-            return dailyList;
+        for (VisualCrossingResult.Day d : result.days) {
+            Date date = parseDate(d.datetime);
+            if (date == null) continue;
+
+            int tempMax = d.tempmax != null ? d.tempmax.intValue() : 0;
+            int tempMin = d.tempmin != null ? d.tempmin.intValue() : 0;
+            Float precip = d.precip != null ? d.precip.floatValue() : null;
+            Float precipProb = d.precipprob != null ? d.precipprob.floatValue() : null;
+            float windSpeed = d.windspeed != null ? d.windspeed.floatValue() : 0f;
+            int windDir = d.winddir != null ? d.winddir.intValue() : 0;
+            Integer cloud = d.cloudcover != null ? d.cloudcover.intValue() : null;
+            Integer uvIndex = d.uvindex != null ? d.uvindex.intValue() : null;
+
+            HalfDay day = new HalfDay(
+                    d.description != null ? d.description : "Unknown", "Day", convertWeatherCode(d.icon),
+                    new Temperature(tempMax, null, null, null, null, null, null),
+                    new Precipitation(precip, null, null, null, null),
+                    new PrecipitationProbability(precipProb, null, null, null, null),
+                    new PrecipitationDuration(null, null, null, null),
+                    new Wind("N", new WindDegree(windDir, false), windSpeed,
+                            CommonConverter.getWindLevel(context, windSpeed)),
+                    cloud
+            );
+            HalfDay night = new HalfDay(
+                    d.description != null ? d.description : "Unknown", "Night", convertWeatherCode(d.icon),
+                    new Temperature(tempMin, null, null, null, null, null, null),
+                    new Precipitation(precip, null, null, null, null),
+                    new PrecipitationProbability(precipProb, null, null, null, null),
+                    new PrecipitationDuration(null, null, null, null),
+                    new Wind("N", new WindDegree(windDir, false), windSpeed,
+                            CommonConverter.getWindLevel(context, windSpeed)),
+                    cloud
+            );
+
+            Astro sun = new Astro(parseTime(d.sunrise), parseTime(d.sunset));
+            Astro moon = new Astro(parseTime(d.moonrise), parseTime(d.moonset));
+            MoonPhase moonPhase = convertMoonPhase(d.moonphase);
+
+            list.add(new Daily(date, date.getTime(), day, night, sun, moon, moonPhase, null, null,
+                    new UV(uvIndex, null, null), 0f));
         }
-
-        for (VisualCrossingResult.Day day : result.days) {
-            dailyList.add(new Daily(
-                    day.datetime,
-                    new HalfDay(
-                            "Day",
-                            day.description,
-                            convertWeatherCode(day.icon),
-                            new Temperature(
-                                    day.tempmax != null ? day.tempmax.intValue() : 0,
-                                    null, null, null, null, null, null
-                            ),
-                            new Precipitation(
-                                    day.precip != null ? day.precip.floatValue() : null,
-                                    null, null, null, null
-                            ),
-                            new PrecipitationProbability(
-                                    day.precipprob != null ? day.precipprob.floatValue() : null,
-                                    null, null, null, null
-                            ),
-                            new Wind(
-                                    "N",
-                                    new WindDegree(day.winddir != null ? day.winddir.intValue() : 0, false),
-                                    day.windspeed != null ? day.windspeed.floatValue() : null,
-                                    CommonConverter.getWindLevel(context, day.windspeed != null ? day.windspeed.floatValue() : 0)
-                            ),
-                            day.cloudcover != null ? day.cloudcover.intValue() : null,
-                            null  // weatherDescription
-                    ),
-                    new HalfDay(
-                            "Night",
-                            day.description,
-                            convertWeatherCode(day.icon),
-                            new Temperature(
-                                    day.tempmin != null ? day.tempmin.intValue() : 0,
-                                    null, null, null, null, null, null
-                            ),
-                            new Precipitation(
-                                    day.precip != null ? day.precip.floatValue() : null,
-                                    null, null, null, null
-                            ),
-                            new PrecipitationProbability(
-                                    day.precipprob != null ? day.precipprob.floatValue() : null,
-                                    null, null, null, null
-                            ),
-                            new Wind(
-                                    "N",
-                                    new WindDegree(day.winddir != null ? day.winddir.intValue() : 0, false),
-                                    day.windspeed != null ? day.windspeed.floatValue() : null,
-                                    CommonConverter.getWindLevel(context, day.windspeed != null ? day.windspeed.floatValue() : 0)
-                            ),
-                            day.cloudcover != null ? day.cloudcover.intValue() : null,
-                            null  // weatherDescription
-                    ),
-                    day.sunrise != null || day.sunset != null ? new Astro(day.sunrise, day.sunset) : null,
-                    day.moonrise != null || day.moonset != null ? new Astro(day.moonrise, day.moonset) : null,
-                    convertMoonPhase(day.moonphase),
-                    new UV(day.uvindex != null ? day.uvindex.intValue() : null, null, null),
-                    null, // airQuality
-                    null, // pollen
-                    null  // hoursOfSun
-            ));
-        }
-
-        return dailyList;
+        return list;
     }
 
     @NonNull
     private static List<Hourly> convertHourlyList(Context context, VisualCrossingResult result) {
-        List<Hourly> hourlyList = new ArrayList<>();
+        List<Hourly> list = new ArrayList<>();
+        if (result.days == null) return list;
 
-        if (result.days == null) {
-            return hourlyList;
-        }
+        for (VisualCrossingResult.Day d : result.days) {
+            if (d.hours == null) continue;
+            for (VisualCrossingResult.Hour h : d.hours) {
+                Date date = parseHourDateTime(d.datetime, h.datetime);
+                if (date == null) continue;
 
-        for (VisualCrossingResult.Day day : result.days) {
-            if (day.hours == null) {
-                continue;
-            }
+                int temp = h.temp != null ? h.temp.intValue() : 0;
+                Integer feelsLike = h.feelslike != null ? h.feelslike.intValue() : null;
+                Float precip = h.precip != null ? h.precip.floatValue() : null;
+                Float precipProb = h.precipprob != null ? h.precipprob.floatValue() : null;
+                float windSpeed = h.windspeed != null ? h.windspeed.floatValue() : 0f;
+                int windDir = h.winddir != null ? h.winddir.intValue() : 0;
+                Integer uvIndex = h.uvindex != null ? h.uvindex.intValue() : null;
+                boolean isDay = isDayIcon(h.icon);
 
-            for (VisualCrossingResult.Hour hour : day.hours) {
-                hourlyList.add(new Hourly(
-                        day.datetime + "T" + hour.datetime,
-                        hour.conditions != null ? hour.conditions : null,
-                        convertWeatherCode(hour.icon),
-                        new Temperature(
-                                hour.temp != null ? hour.temp.intValue() : 0,
-                                hour.feelslike != null ? hour.feelslike.intValue() : null,
-                                null, null, null, null, null
-                        ),
-                        new Precipitation(
-                                hour.precip != null ? hour.precip.floatValue() : null,
-                                null, null, null, null
-                        ),
-                        new PrecipitationProbability(
-                                hour.precipprob != null ? hour.precipprob.floatValue() : null,
-                                null, null, null, null
-                        ),
-                        new Wind(
-                                "N",
-                                new WindDegree(hour.winddir != null ? hour.winddir.intValue() : 0, false),
-                                hour.windspeed != null ? hour.windspeed.floatValue() : null,
-                                CommonConverter.getWindLevel(context, hour.windspeed != null ? hour.windspeed.floatValue() : 0)
-                        ),
-                        new UV(hour.uvindex != null ? hour.uvindex.intValue() : null, null, null),
-                        null, // airQuality
-                        isDayIcon(hour.icon)
+                list.add(new Hourly(
+                        date, date.getTime(), isDay,
+                        h.conditions != null ? h.conditions : "Unknown",
+                        convertWeatherCode(h.icon),
+                        new Temperature(temp, feelsLike, null, null, null, null, null),
+                        new Precipitation(precip, null, null, null, null),
+                        new PrecipitationProbability(precipProb, null, null, null, null),
+                        new Wind("N", new WindDegree(windDir, false), windSpeed,
+                                CommonConverter.getWindLevel(context, windSpeed)),
+                        new UV(uvIndex, null, null)
                 ));
             }
         }
-
-        return hourlyList;
+        return list;
     }
 
     @Nullable
     private static WeatherCode convertWeatherCode(@Nullable String icon) {
-        if (icon == null) {
-            return null;
-        }
-
+        if (icon == null) return null;
         switch (icon) {
-            case "clear-day":
-            case "clear-night":
-                return WeatherCode.CLEAR;
-            case "partly-cloudy-day":
-            case "partly-cloudy-night":
-            case "cloudy":
-                return WeatherCode.CLOUDY;
-            case "fog":
-                return WeatherCode.FOG;
-            case "rain":
-            case "showers-day":
-            case "showers-night":
-                return WeatherCode.RAIN;
-            case "snow":
-            case "snow-showers-day":
-            case "snow-showers-night":
-                return WeatherCode.SNOW;
-            case "thunder-rain":
-            case "thunder-showers-day":
-            case "thunder-showers-night":
-                return WeatherCode.THUNDERSTORM;
-            case "sleet":
-            case "sleet-showers-day":
-            case "sleet-showers-night":
-                return WeatherCode.SLEET;
-            case "hail":
-                return WeatherCode.HAIL;
-            case "wind":
-                return WeatherCode.WIND;
-            default:
-                return WeatherCode.CLEAR;
+            case "clear-day": case "clear-night": return WeatherCode.CLEAR;
+            case "partly-cloudy-day": case "partly-cloudy-night": case "cloudy": return WeatherCode.CLOUDY;
+            case "fog": return WeatherCode.FOG;
+            case "rain": case "showers-day": case "showers-night": return WeatherCode.RAIN;
+            case "snow": case "snow-showers-day": case "snow-showers-night": return WeatherCode.SNOW;
+            case "thunder-rain": case "thunder-showers-day": case "thunder-showers-night": return WeatherCode.THUNDERSTORM;
+            case "sleet": case "sleet-showers-day": case "sleet-showers-night": return WeatherCode.SLEET;
+            case "hail": return WeatherCode.HAIL;
+            case "wind": return WeatherCode.WIND;
+            default: return WeatherCode.CLEAR;
         }
     }
 
     @Nullable
-    private static MoonPhase convertMoonPhase(@Nullable Double moonphase) {
-        if (moonphase == null) {
-            return null;
-        }
-
-        if (moonphase < 0.125) {
-            return MoonPhase.NEW_MOON;
-        } else if (moonphase < 0.25) {
-            return MoonPhase.WAXING_CRESCENT;
-        } else if (moonphase < 0.375) {
-            return MoonPhase.FIRST_QUARTER;
-        } else if (moonphase < 0.5) {
-            return MoonPhase.WAXING_GIBBOUS;
-        } else if (moonphase < 0.625) {
-            return MoonPhase.FULL_MOON;
-        } else if (moonphase < 0.75) {
-            return MoonPhase.WANING_GIBBOUS;
-        } else if (moonphase < 0.875) {
-            return MoonPhase.LAST_QUARTER;
-        } else {
-            return MoonPhase.WANING_CRESCENT;
-        }
+    private static MoonPhase convertMoonPhase(@Nullable Double mp) {
+        if (mp == null) return null;
+        if (mp < 0.125) return MoonPhase.NEW_MOON;
+        if (mp < 0.25) return MoonPhase.WAXING_CRESCENT;
+        if (mp < 0.375) return MoonPhase.FIRST_QUARTER;
+        if (mp < 0.5) return MoonPhase.WAXING_GIBBOUS;
+        if (mp < 0.625) return MoonPhase.FULL_MOON;
+        if (mp < 0.75) return MoonPhase.WANING_GIBBOUS;
+        if (mp < 0.875) return MoonPhase.LAST_QUARTER;
+        return MoonPhase.WANING_CRESCENT;
     }
 
     private static boolean isDayIcon(@Nullable String icon) {
-        if (icon == null) {
-            return true;
+        if (icon == null) return true;
+        return icon.contains("day");
+    }
+
+    @Nullable
+    private static Date parseDate(String s) {
+        try { return new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(s); }
+        catch (ParseException e) { return null; }
+    }
+
+    @Nullable
+    private static Date parseTime(String s) {
+        if (s == null || s.isEmpty()) return null;
+        try { return new SimpleDateFormat("HH:mm:ss", Locale.US).parse(s); }
+        catch (ParseException e) {
+            try { return new SimpleDateFormat("hh:mm a", Locale.US).parse(s); }
+            catch (ParseException e2) { return null; }
         }
-        return icon.contains("day") || icon.equals("clear-day") || icon.equals("partly-cloudy-day");
+    }
+
+    @Nullable
+    private static Date parseHourDateTime(String dateStr, String timeStr) {
+        if (dateStr == null || timeStr == null) return null;
+        try { return new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US).parse(dateStr + " " + timeStr); }
+        catch (ParseException e) { return null; }
     }
 }

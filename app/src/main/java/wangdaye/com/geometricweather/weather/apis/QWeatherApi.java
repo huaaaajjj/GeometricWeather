@@ -6,6 +6,7 @@ import retrofit2.http.Query;
 import wangdaye.com.geometricweather.weather.json.qweather.QWeatherAirResult;
 import wangdaye.com.geometricweather.weather.json.qweather.QWeatherDailyResult;
 import wangdaye.com.geometricweather.weather.json.qweather.QWeatherHourlyResult;
+import wangdaye.com.geometricweather.weather.json.qweather.QWeatherLocationResult;
 import wangdaye.com.geometricweather.weather.json.qweather.QWeatherMinutelyResult;
 import wangdaye.com.geometricweather.weather.json.qweather.QWeatherNowResult;
 import wangdaye.com.geometricweather.weather.json.qweather.QWeatherWarningResult;
