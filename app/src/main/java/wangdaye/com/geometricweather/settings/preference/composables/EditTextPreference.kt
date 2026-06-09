@@ -61,7 +61,7 @@ fun EditTextPreferenceView(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .alpha(if (enabled) 1f else 0.5f)
+                .then(if (!enabled) Modifier.alpha(0.5f) else Modifier)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = rememberThemeRipple(),
