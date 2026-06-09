@@ -143,6 +143,13 @@ configurations {
     compile.exclude group: "org.jetbrains" , module:"annotations"
     all*.exclude group: 'com.android.support', module: 'support-v4'
     all*.exclude group: 'com.android.support', module: 'support-compat'
+    all {
+        resolutionStrategy {
+            force "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+            force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+            force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+        }
+    }
 }
 
 greendao {
