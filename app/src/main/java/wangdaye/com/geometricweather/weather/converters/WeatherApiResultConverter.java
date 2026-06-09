@@ -109,7 +109,7 @@ public class WeatherApiResultConverter {
                     new Temperature(tempMax, null, null, null, null, null, null),
                     new Precipitation(precip, null, null, null, null),
                     new PrecipitationProbability(precipProb, null, null, null, null),
-                    new PrecipitationDuration(null, null, null, null),
+                    new PrecipitationDuration(null, null, null, null, null),
                     new Wind("N", new WindDegree(0, false), windSpeed,
                             CommonConverter.getWindLevel(context, windSpeed)),
                     null
@@ -119,7 +119,7 @@ public class WeatherApiResultConverter {
                     new Temperature(tempMin, null, null, null, null, null, null),
                     new Precipitation(precip, null, null, null, null),
                     new PrecipitationProbability(precipProb, null, null, null, null),
-                    new PrecipitationDuration(null, null, null, null),
+                    new PrecipitationDuration(null, null, null, null, null),
                     new Wind("N", new WindDegree(0, false), windSpeed,
                             CommonConverter.getWindLevel(context, windSpeed)),
                     null
@@ -223,15 +223,15 @@ public class WeatherApiResultConverter {
     private static MoonPhase convertMoonPhase(@Nullable String mp) {
         if (mp == null) return null;
         switch (mp.toLowerCase()) {
-            case "new moon": return MoonPhase.NEW_MOON;
-            case "waxing crescent": return MoonPhase.WAXING_CRESCENT;
-            case "first quarter": return MoonPhase.FIRST_QUARTER;
-            case "waxing gibbous": return MoonPhase.WAXING_GIBBOUS;
-            case "full moon": return MoonPhase.FULL_MOON;
-            case "waning gibbous": return MoonPhase.WANING_GIBBOUS;
-            case "last quarter": case "third quarter": return MoonPhase.LAST_QUARTER;
-            case "waning crescent": return MoonPhase.WANING_CRESCENT;
-            default: return MoonPhase.NEW_MOON;
+            case "new moon": return new MoonPhase(0, "new moon");
+            case "waxing crescent": return new MoonPhase(45, "waxing crescent");
+            case "first quarter": return new MoonPhase(90, "first quarter");
+            case "waxing gibbous": return new MoonPhase(135, "waxing gibbous");
+            case "full moon": return new MoonPhase(180, "full moon");
+            case "waning gibbous": return new MoonPhase(225, "waning gibbous");
+            case "last quarter": case "third quarter": return new MoonPhase(270, "last quarter");
+            case "waning crescent": return new MoonPhase(315, "waning crescent");
+            default: return new MoonPhase(0, "new moon");
         }
     }
 

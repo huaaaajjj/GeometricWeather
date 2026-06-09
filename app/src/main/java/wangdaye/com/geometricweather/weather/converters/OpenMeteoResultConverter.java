@@ -105,7 +105,7 @@ public class OpenMeteoResultConverter {
                     new Temperature(tempMax, null, null, null, null, null, null),
                     new Precipitation(precip, null, null, null, null),
                     new PrecipitationProbability(precipProb, null, null, null, null),
-                    new PrecipitationDuration(null, null, null, null),
+                    new PrecipitationDuration(null, null, null, null, null),
                     new Wind(getWindDirection(windDir), new WindDegree(windDir, false),
                             windSpeed, CommonConverter.getWindLevel(context, windSpeed)),
                     null
@@ -115,7 +115,7 @@ public class OpenMeteoResultConverter {
                     new Temperature(tempMin, null, null, null, null, null, null),
                     new Precipitation(precip, null, null, null, null),
                     new PrecipitationProbability(precipProb, null, null, null, null),
-                    new PrecipitationDuration(null, null, null, null),
+                    new PrecipitationDuration(null, null, null, null, null),
                     new Wind(getWindDirection(windDir), new WindDegree(windDir, false),
                             windSpeed, CommonConverter.getWindLevel(context, windSpeed)),
                     null

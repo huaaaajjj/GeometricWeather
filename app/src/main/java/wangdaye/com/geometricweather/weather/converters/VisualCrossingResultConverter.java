@@ -104,7 +104,7 @@ public class VisualCrossingResultConverter {
                     new Temperature(tempMax, null, null, null, null, null, null),
                     new Precipitation(precip, null, null, null, null),
                     new PrecipitationProbability(precipProb, null, null, null, null),
-                    new PrecipitationDuration(null, null, null, null),
+                    new PrecipitationDuration(null, null, null, null, null),
                     new Wind("N", new WindDegree(windDir, false), windSpeed,
                             CommonConverter.getWindLevel(context, windSpeed)),
                     cloud
@@ -114,7 +114,7 @@ public class VisualCrossingResultConverter {
                     new Temperature(tempMin, null, null, null, null, null, null),
                     new Precipitation(precip, null, null, null, null),
                     new PrecipitationProbability(precipProb, null, null, null, null),
-                    new PrecipitationDuration(null, null, null, null),
+                    new PrecipitationDuration(null, null, null, null, null),
                     new Wind("N", new WindDegree(windDir, false), windSpeed,
                             CommonConverter.getWindLevel(context, windSpeed)),
                     cloud
@@ -186,14 +186,14 @@ public class VisualCrossingResultConverter {
     @Nullable
     private static MoonPhase convertMoonPhase(@Nullable Double mp) {
         if (mp == null) return null;
-        if (mp < 0.125) return MoonPhase.NEW_MOON;
-        if (mp < 0.25) return MoonPhase.WAXING_CRESCENT;
-        if (mp < 0.375) return MoonPhase.FIRST_QUARTER;
-        if (mp < 0.5) return MoonPhase.WAXING_GIBBOUS;
-        if (mp < 0.625) return MoonPhase.FULL_MOON;
-        if (mp < 0.75) return MoonPhase.WANING_GIBBOUS;
-        if (mp < 0.875) return MoonPhase.LAST_QUARTER;
-        return MoonPhase.WANING_CRESCENT;
+        if (mp < 0.125) return new MoonPhase(0, "new moon");
+        if (mp < 0.25) return new MoonPhase(45, "waxing crescent");
+        if (mp < 0.375) return new MoonPhase(90, "first quarter");
+        if (mp < 0.5) return new MoonPhase(135, "waxing gibbous");
+        if (mp < 0.625) return new MoonPhase(180, "full moon");
+        if (mp < 0.75) return new MoonPhase(225, "waning gibbous");
+        if (mp < 0.875) return new MoonPhase(270, "last quarter");
+        return new MoonPhase(315, "waning crescent");
     }
 
     private static boolean isDayIcon(@Nullable String icon) {
