@@ -34,6 +34,13 @@
 - 修复设置界面位置服务下拉菜单 bug
 - 内置 API Keys (AccuWeather, OpenWeather, 彩云, WeatherAPI)
 - 移除 QWeather 和 Visual Crossing (API不可用)
+- 重写"数据提供商"设置页面（分区布局，Section Header）
+- 修复 MIUI Activity recreate 崩溃 (ClassCastException BinderProxy)
+- 全面 null 安全改造 (CaiYun/AccuWeather/OWM/MF 转换器)
+- 修复 MfResultConverter province/country 字段 null 崩溃
+- 更换 AccuWeather base URL → dataservice.accuweather.com (api. 域名 key 失效)
+- 设置页面顶部栏 MediumTopAppBar → SmallTopAppBar (减少遮挡)
+- 发布版本切换为 Prerelease
 
 ## 禁止
 
@@ -51,6 +58,11 @@
 | compileSdk | 34 |
 | targetSdk | 34 |
 | minSdk | 21 |
+
+## 发布策略
+
+- 所有远程 Release 都发布为 **Prerelease**
+- 每次完成一项任务写入本文件
 
 ## 待完成
 
