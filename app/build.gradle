@@ -15,7 +15,6 @@ def decodeBase64(String encoded) {
 def EMBEDDED_ACCU_KEY = decodeBase64("enBrYV8wYTM0YTEzMTY2OWM0NDBhODc0YTYzY2E1M2Q5Yjk1Yl81ZTdkYjUzMg==")
 def EMBEDDED_OWM_KEY = decodeBase64("NmI5NDNlMjJhN2Q0YTM4ODg4ZjY3MzI1YzFlNzQxOWU=")
 def EMBEDDED_CAIYUN_KEY = decodeBase64("SFlNbzJkV2tiQjczTjdydA==")
-def EMBEDDED_QWEATHER_KEY = decodeBase64("OTJkMTEzZmE1Y2RkNGZlZmI3MDEyMWFiOWEzOTlkNzI=")
 def EMBEDDED_WEATHERAPI_KEY = decodeBase64("ZjlhOTJmYjQ4NzI3NDg3NmEwYjgyMzA1MjYwOTA2")
 
 // Load local.properties first, fall back to gradle.properties
@@ -32,8 +31,8 @@ android {
         applicationId "wangdaye.com.geometricweather"
         minSdk 21
         targetSdk 34
-        versionCode 30105
-        versionName "3.105"
+        versionCode 30106
+        versionName "3.106"
         multiDexEnabled true
         ndk {
             abiFilters "x86", "armeabi-v7a", "x86_64", "arm64-v8a"
@@ -85,13 +84,10 @@ android {
         it.buildConfigField "String", "IQA_ATMO_AURA_KEY", localProperties.getProperty("IQA_ATMO_AURA_KEY", IQA_ATMO_AURA_KEY)
         it.buildConfigField "String", "IQA_ATMO_AURA_URL", localProperties.getProperty("IQA_ATMO_AURA_URL", IQA_ATMO_AURA_URL)
         it.buildConfigField "String", "IQA_ATMO_SUD_URL", localProperties.getProperty("IQA_ATMO_SUD_URL", IQA_ATMO_SUD_URL)
-        it.buildConfigField "String", "QWEATHER_BASE_URL", localProperties.getProperty("QWEATHER_BASE_URL", "\"https://devapi.qweather.com/\"")
-        it.buildConfigField "String", "QWEATHER_KEY", localProperties.getProperty("QWEATHER_KEY", "\"$EMBEDDED_QWEATHER_KEY\"")
         it.buildConfigField "String", "OPEN_METEO_BASE_URL", localProperties.getProperty("OPEN_METEO_BASE_URL", "\"https://api.open-meteo.com/\"")
         it.buildConfigField "String", "WEATHERAPI_BASE_URL", localProperties.getProperty("WEATHERAPI_BASE_URL", "\"https://api.weatherapi.com/\"")
         it.buildConfigField "String", "WEATHERAPI_KEY", localProperties.getProperty("WEATHERAPI_KEY", "\"$EMBEDDED_WEATHERAPI_KEY\"")
-        it.buildConfigField "String", "VISUAL_CROSSING_BASE_URL", localProperties.getProperty("VISUAL_CROSSING_BASE_URL", "\"https://weather.visualcrossing.com/\"")
-        it.buildConfigField "String", "VISUAL_CROSSING_KEY", localProperties.getProperty("VISUAL_CROSSING_KEY", "\"\"")
+
     }
     lintOptions {
         checkReleaseBuilds false

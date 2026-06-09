@@ -28,13 +28,12 @@
 - 修复坐标系转换 (GCJ-02 → WGS-84)
 - 发布 v3.103 Release (3个APK)
 - 添加 Open-Meteo 天气提供商 (免费，无需API Key)
-- 添加 QWeather (和风天气) 提供商
 - 添加 WeatherAPI 提供商
-- 添加 Visual Crossing 提供商
-- 发布 v3.104 Release (含4个新天气提供商)
+- 发布 v3.104 Release (含新天气提供商)
 - 添加新提供商 API Key 设置界面
 - 修复设置界面位置服务下拉菜单 bug
-- 内置 API Keys (AccuWeather, OpenWeather, 彩云, QWeather, WeatherAPI)
+- 内置 API Keys (AccuWeather, OpenWeather, 彩云, WeatherAPI)
+- 移除 QWeather 和 Visual Crossing (API不可用)
 
 ## 禁止
 

@@ -15,8 +15,7 @@ import wangdaye.com.geometricweather.weather.apis.CaiYunApi;
 import wangdaye.com.geometricweather.weather.apis.MfWeatherApi;
 import wangdaye.com.geometricweather.weather.apis.OpenMeteoApi;
 import wangdaye.com.geometricweather.weather.apis.OwmApi;
-import wangdaye.com.geometricweather.weather.apis.QWeatherApi;
-import wangdaye.com.geometricweather.weather.apis.VisualCrossingApi;
+
 import wangdaye.com.geometricweather.weather.apis.WeatherApiApi;
 
 @InstallIn(SingletonComponent.class)
@@ -102,19 +101,6 @@ public class ApiModule {
     }
 
     @Provides
-    public QWeatherApi provideQWeatherApi(OkHttpClient client,
-                                          GsonConverterFactory converterFactory,
-                                          RxJava2CallAdapterFactory callAdapterFactory) {
-        return new Retrofit.Builder()
-                .baseUrl(BuildConfig.QWEATHER_BASE_URL)
-                .client(client)
-                .addConverterFactory(converterFactory)
-                .addCallAdapterFactory(callAdapterFactory)
-                .build()
-                .create((QWeatherApi.class));
-    }
-
-    @Provides
     public WeatherApiApi provideWeatherApiApi(OkHttpClient client,
                                               GsonConverterFactory converterFactory,
                                               RxJava2CallAdapterFactory callAdapterFactory) {
@@ -127,16 +113,4 @@ public class ApiModule {
                 .create((WeatherApiApi.class));
     }
 
-    @Provides
-    public VisualCrossingApi provideVisualCrossingApi(OkHttpClient client,
-                                                      GsonConverterFactory converterFactory,
-                                                      RxJava2CallAdapterFactory callAdapterFactory) {
-        return new Retrofit.Builder()
-                .baseUrl(BuildConfig.VISUAL_CROSSING_BASE_URL)
-                .client(client)
-                .addConverterFactory(converterFactory)
-                .addCallAdapterFactory(callAdapterFactory)
-                .build()
-                .create((VisualCrossingApi.class));
-    }
 }

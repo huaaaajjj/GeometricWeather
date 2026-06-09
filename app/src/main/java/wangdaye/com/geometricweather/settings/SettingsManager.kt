@@ -414,26 +414,12 @@ class SettingsManager private constructor(context: Context) {
         }
         get() = config.getString("provider_iqa_atmo_aura_key", "") ?: ""
 
-    var customQWeatherKey: String
-        set(value) {
-            config.edit().putString("provider_qweather_key", value).apply()
-            notifySettingsChanged()
-        }
-        get() = config.getString("provider_qweather_key", "") ?: ""
-
     var customWeatherApiKey: String
         set(value) {
             config.edit().putString("provider_weatherapi_key", value).apply()
             notifySettingsChanged()
         }
         get() = config.getString("provider_weatherapi_key", "") ?: ""
-
-    var customVisualCrossingKey: String
-        set(value) {
-            config.edit().putString("provider_visual_crossing_key", value).apply()
-            notifySettingsChanged()
-        }
-        get() = config.getString("provider_visual_crossing_key", "") ?: ""
 
     val providerAccuWeatherKey: String
         get() = getProviderSettingValue(
@@ -483,22 +469,10 @@ class SettingsManager private constructor(context: Context) {
             defaultValue = BuildConfig.IQA_ATMO_AURA_KEY,
         )
 
-    val providerQWeatherKey: String
-        get() = getProviderSettingValue(
-            customValue = customQWeatherKey,
-            defaultValue = BuildConfig.QWEATHER_KEY,
-        )
-
     val providerWeatherApiKey: String
         get() = getProviderSettingValue(
             customValue = customWeatherApiKey,
             defaultValue = BuildConfig.WEATHERAPI_KEY,
-        )
-
-    val providerVisualCrossingKey: String
-        get() = getProviderSettingValue(
-            customValue = customVisualCrossingKey,
-            defaultValue = BuildConfig.VISUAL_CROSSING_KEY,
         )
 
     private fun getProviderSettingValue(

@@ -10,8 +10,7 @@ import wangdaye.com.geometricweather.weather.services.CaiYunWeatherService;
 import wangdaye.com.geometricweather.weather.services.MfWeatherService;
 import wangdaye.com.geometricweather.weather.services.OpenMeteoWeatherService;
 import wangdaye.com.geometricweather.weather.services.OwmWeatherService;
-import wangdaye.com.geometricweather.weather.services.QWeatherService;
-import wangdaye.com.geometricweather.weather.services.VisualCrossingWeatherService;
+
 import wangdaye.com.geometricweather.weather.services.WeatherApiWeatherService;
 import wangdaye.com.geometricweather.weather.services.WeatherService;
 
@@ -25,18 +24,14 @@ public class WeatherServiceSet {
                              MfWeatherService mfWeatherService,
                              OwmWeatherService owmWeatherService,
                              OpenMeteoWeatherService openMeteoWeatherService,
-                             QWeatherService qWeatherService,
-                             WeatherApiWeatherService weatherApiWeatherService,
-                             VisualCrossingWeatherService visualCrossingWeatherService) {
+                             WeatherApiWeatherService weatherApiWeatherService) {
         mWeatherServices = new WeatherService[] {
                 accuWeatherService,
                 caiYunWeatherService,
                 mfWeatherService,
                 owmWeatherService,
                 openMeteoWeatherService,
-                qWeatherService,
-                weatherApiWeatherService,
-                visualCrossingWeatherService
+                weatherApiWeatherService
         };
     }
 
@@ -55,14 +50,8 @@ public class WeatherServiceSet {
             case OPEN_METEO:
                 return mWeatherServices[4];
 
-            case QWEATHER:
-                return mWeatherServices[5];
-
             case WEATHERAPI:
-                return mWeatherServices[6];
-
-            case VISUAL_CROSSING:
-                return mWeatherServices[7];
+                return mWeatherServices[5];
 
             default: // ACCU.
                 return mWeatherServices[0];

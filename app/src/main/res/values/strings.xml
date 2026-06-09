@@ -367,6 +367,9 @@
 
     <!-- settings -->
     <string name="settings_category_basic">Basic</string>
+    <string name="settings_category_weather_data">Weather data</string>
+    <string name="settings_category_location">Location</string>
+    <string name="settings_category_advanced">Advanced</string>
     <string name="settings_title_background_free">Background Free</string>
     <string name="settings_summary_background_free_on">Enabled\nIf widgets and notification cannot refresh automatically, please turn off this option.</string>
     <string name="settings_summary_background_free_off">Disabled\nIf you do not want any services to continue working in background, please turn on this option.</string>
@@ -450,14 +453,8 @@
     <string name="settings_provider_iqa_air_parif_key">Air Parif key</string>
     <string name="settings_provider_iqa_atmo_aura_key">ATMO AURA key</string>
 
-    <string name="settings_provider_qweather">QWeather (和风天气)</string>
-    <string name="settings_provider_qweather_key">QWeather API key</string>
-
     <string name="settings_provider_weatherapi">WeatherAPI</string>
     <string name="settings_provider_weatherapi_key">WeatherAPI key</string>
-
-    <string name="settings_provider_visual_crossing">Visual Crossing</string>
-    <string name="settings_provider_visual_crossing_key">Visual Crossing key</string>
 
     <!--share preference-->
     <!-- Do not translate the following set of strings. -->

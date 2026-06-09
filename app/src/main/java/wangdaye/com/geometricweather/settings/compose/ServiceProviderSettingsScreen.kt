@@ -1,9 +1,15 @@
 package wangdaye.com.geometricweather.settings.compose
 
 import android.content.Context
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import wangdaye.com.geometricweather.BuildConfig
 import wangdaye.com.geometricweather.GeometricWeather.Companion.instance
@@ -18,13 +24,18 @@ import wangdaye.com.geometricweather.settings.preference.clickablePreferenceItem
 import wangdaye.com.geometricweather.settings.preference.composables.ListPreferenceView
 import wangdaye.com.geometricweather.settings.preference.composables.PreferenceScreen
 import wangdaye.com.geometricweather.settings.preference.composables.PreferenceView
+import wangdaye.com.geometricweather.settings.preference.composables.SectionHeader
 import wangdaye.com.geometricweather.settings.preference.listPreferenceItem
+import wangdaye.com.geometricweather.settings.preference.sectionFooterItem
+import wangdaye.com.geometricweather.settings.preference.sectionHeaderItem
 
 @Composable
 fun ServiceProviderSettingsScreen(
     context: Context,
     navController: NavHostController
 ) = PreferenceScreen {
+
+    sectionHeaderItem(R.string.settings_category_weather_data)
 
     listPreferenceItem(R.string.settings_title_weather_source) { id ->
         ListPreferenceView(
@@ -51,19 +62,18 @@ fun ServiceProviderSettingsScreen(
         )
     }
 
+    sectionFooterItem(R.string.settings_category_weather_data)
+    sectionHeaderItem(R.string.settings_category_location)
+
     listPreferenceItem(R.string.settings_title_location_service) { id ->
-        // read configuration from data store.
         var currentSelectedKey = SettingsManager.getInstance(context).locationProvider.id
         var valueList = stringArrayResource(R.array.location_service_values)
         var nameList = stringArrayResource(R.array.location_services)
 
-        // clear invalid config by build flavor.
         if (BuildConfig.FLAVOR.contains("fdroid")) {
-            // Remove closed source providers if building the F-Droid flavor
             valueList = arrayOf(valueList[1], valueList[3])
             nameList = arrayOf(nameList[1], nameList[3])
         } else if (BuildConfig.FLAVOR.contains("gplay")) {
-            // Remove closed source providers if building the Google Play flavor
             valueList = arrayOf(valueList[0], valueList[1], valueList[3])
             nameList = arrayOf(nameList[0], nameList[1], nameList[3])
         }
@@ -90,16 +100,20 @@ fun ServiceProviderSettingsScreen(
                 }
             }
         )
-
-        clickablePreferenceItem(R.string.settings_title_service_provider_advanced) {
-            PreferenceView(
-                titleId = it,
-                summaryId = R.string.settings_summary_service_provider_advanced,
-            ) {
-                navController.navigate(SettingsScreenRouter.ServiceProviderAdvanced.route)
-            }
-        }
-
-        bottomInsetItem()
     }
+
+    sectionFooterItem(R.string.settings_category_location)
+    sectionHeaderItem(R.string.settings_category_advanced)
+
+    clickablePreferenceItem(R.string.settings_title_service_provider_advanced) {
+        PreferenceView(
+            titleId = it,
+            summaryId = R.string.settings_summary_service_provider_advanced,
+        ) {
+            navController.navigate(SettingsScreenRouter.ServiceProviderAdvanced.route)
+        }
+    }
+
+    sectionFooterItem(R.string.settings_category_advanced)
+    bottomInsetItem()
 }
