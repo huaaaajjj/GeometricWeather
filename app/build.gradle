@@ -25,11 +25,20 @@ android {
         viewBinding true
         compose true
     }
+    signingConfigs {
+        release {
+            storeFile file("geometricweather.jks")
+            storePassword "geometricweather123"
+            keyAlias "geometricweather"
+            keyPassword "geometricweather123"
+        }
+    }
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources true
             debuggable false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
 
             android.applicationVariants.all { variant ->
@@ -91,6 +100,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "17"
+        freeCompilerArgs += ["-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"]
     }
     composeOptions {
         kotlinCompilerExtensionVersion "1.5.8"
@@ -211,7 +221,7 @@ dependencies {
 
     // glide.
     implementation "com.github.bumptech.glide:glide:4.16.0"
-    annotationProcessor "com.github.bumptech.glide:compiler:4.16.0"
+    kapt "com.github.bumptech.glide:compiler:4.16.0"
     implementation "com.github.bumptech.glide:okhttp3-integration:4.16.0"
 
     // retrofit.
@@ -223,6 +233,7 @@ dependencies {
 
     // db.
     implementation "org.greenrobot:greendao:3.3.0"
+    implementation "io.github.yuweiguocn:GreenDaoUpgradeHelper:v2.2.1"
 
     // data store
     // implementation "androidx.datastore:datastore-preferences:1.0.0-alpha07"
@@ -244,8 +255,13 @@ dependencies {
     // ui.
     implementation "com.github.rahatarmanahmed:circularprogressview:2.5.0"
     implementation "me.jfenn:AdaptiveIconView:0.0.1"
+    implementation "com.github.turing-tech:MaterialScrollBar:13.3.2"
     implementation "com.gordonwong:material-sheet-fab:1.2.1"
 
     // utils.
     implementation "com.github.XhinLiang:LunarCalendar:3.0.0"
+    implementation("com.github.didikee:AndroidDonate:0.1.0") {
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'appcompat-v7'
+    }
 }
