@@ -58,7 +58,7 @@ public class OpenMeteoWeatherService extends WeatherService {
                     public void onSucceed(OpenMeteoResult result) {
                         Weather weather = OpenMeteoResultConverter.convert(context, location, result);
                         if (weather != null) {
-                            Location newLocation = Location.copy(location, weather, location.isCurrentPosition(), location.isResidentPosition());
+                            Location newLocation = Location.copy(location, weather);
                             callback.requestWeatherSuccess(newLocation);
                         } else {
                             callback.requestWeatherFailed(location);

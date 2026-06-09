@@ -63,7 +63,7 @@ public class QWeatherService extends WeatherService {
                     @Override
                     public void onSucceed(Weather weather) {
                         if (weather != null) {
-                            Location newLocation = Location.copy(location, weather, location.isCurrentPosition(), location.isResidentPosition());
+                            Location newLocation = Location.copy(location, weather);
                             callback.requestWeatherSuccess(newLocation);
                         } else {
                             callback.requestWeatherFailed(location);

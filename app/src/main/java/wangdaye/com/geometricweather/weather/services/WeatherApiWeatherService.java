@@ -53,7 +53,7 @@ public class WeatherApiWeatherService extends WeatherService {
                     public void onSucceed(WeatherApiResult result) {
                         Weather weather = WeatherApiResultConverter.convert(context, location, result);
                         if (weather != null) {
-                            Location newLocation = Location.copy(location, weather, location.isCurrentPosition(), location.isResidentPosition());
+                            Location newLocation = Location.copy(location, weather);
                             callback.requestWeatherSuccess(newLocation);
                         } else {
                             callback.requestWeatherFailed(location);

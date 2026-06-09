@@ -53,7 +53,7 @@ public class VisualCrossingWeatherService extends WeatherService {
                     public void onSucceed(VisualCrossingResult result) {
                         Weather weather = VisualCrossingResultConverter.convert(context, location, result);
                         if (weather != null) {
-                            Location newLocation = Location.copy(location, weather, location.isCurrentPosition(), location.isResidentPosition());
+                            Location newLocation = Location.copy(location, weather);
                             callback.requestWeatherSuccess(newLocation);
                         } else {
                             callback.requestWeatherFailed(location);
