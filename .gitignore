@@ -8,3 +8,5 @@
 /build
 /captures
 /local.properties
+*.jks
+*.keystore

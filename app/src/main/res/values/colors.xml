@@ -40,6 +40,9 @@
 
     <!-- theme. -->
 
+    <color name="colorPrimary">@color/md_theme_primary</color>
+    <color name="colorAccent">@color/md_theme_secondary</color>
+
     <color name="colorTextDark">#000000</color>
     <color name="colorTextDark2nd">#666666</color>
     <color name="colorTextGrey">#4d4d4d</color>

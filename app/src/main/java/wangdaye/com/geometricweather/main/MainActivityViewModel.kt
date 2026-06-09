@@ -63,10 +63,10 @@ class MainActivityViewModel @Inject constructor(
 
         // init live data.
         val totalList = repository.initLocations(
-            context = getApplication(),
+            context = application,
             formattedId = id ?: ""
         )
-        val validList = Location.excludeInvalidResidentLocation(getApplication(), totalList)
+        val validList = Location.excludeInvalidResidentLocation(application, totalList)
 
         id = formattedId ?: validList[0].formattedId
         val current = validList.first { item -> item.formattedId == id }
@@ -90,7 +90,7 @@ class MainActivityViewModel @Inject constructor(
 
         // read weather caches.
         repository.getWeatherCacheForLocations(
-            context = getApplication(),
+            context = application,
             oldList = totalList,
             ignoredFormattedId = id,
         ) { newList, _ ->
@@ -118,7 +118,7 @@ class MainActivityViewModel @Inject constructor(
     private fun updateInnerData(total: List<Location>) {
         // get valid locations and current index.
         val valid = Location.excludeInvalidResidentLocation(
-            getApplication(),
+            application,
             total,
         )
 
@@ -205,7 +205,7 @@ class MainActivityViewModel @Inject constructor(
     }
 
     private fun currentLocationIsValid() = currentLocation.value?.location?.weather?.isValid(
-        SettingsManager.getInstance(getApplication()).updateInterval.intervalInHour
+        SettingsManager.getInstance(application).updateInterval.intervalInHour
     ) ?: false
 
     // update.
@@ -228,7 +228,7 @@ class MainActivityViewModel @Inject constructor(
         ) {
             updating = true
             repository.getWeather(
-                getApplication(),
+                application,
                 currentLocation.value!!.location,
                 currentLocation.value!!.location.isCurrentPosition,
                 this
@@ -242,7 +242,7 @@ class MainActivityViewModel @Inject constructor(
             // already got all permissions -> request data directly.
             updating = true
             repository.getWeather(
-                getApplication(),
+                application,
                 currentLocation.value!!.location,
                 true,
                 this
@@ -261,13 +261,13 @@ class MainActivityViewModel @Inject constructor(
 
     private fun getDeniedPermissionList(): List<String> {
         val permissionList = repository
-            .getLocatePermissionList(getApplication())
+            .getLocatePermissionList(application)
             .toMutableList()
 
         for (i in permissionList.indices.reversed()) {
             if (
                 ActivityCompat.checkSelfPermission(
-                    getApplication(),
+                    application,
                     permissionList[i]
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
@@ -394,7 +394,7 @@ class MainActivityViewModel @Inject constructor(
         total.add(index ?: total.size, location)
 
         updateInnerData(total)
-        repository.writeLocationList(context = getApplication(), locationList = total)
+        repository.writeLocationList(context = application, locationList = total)
 
         return true
     }
@@ -410,7 +410,7 @@ class MainActivityViewModel @Inject constructor(
         updateInnerData(total)
 
         repository.writeLocationList(
-            context = getApplication(),
+            context = application,
             locationList = totalLocationList.value?.locationList ?: emptyList()
         )
     }
@@ -418,7 +418,7 @@ class MainActivityViewModel @Inject constructor(
     fun updateLocation(location: Location) {
         updateInnerData(location)
         repository.writeLocationList(
-            context = getApplication(),
+            context = application,
             locationList = totalLocationList.value?.locationList ?: emptyList(),
         )
     }
@@ -428,7 +428,7 @@ class MainActivityViewModel @Inject constructor(
         val location = total.removeAt(position)
 
         updateInnerData(total)
-        repository.deleteLocation(context = getApplication(), location = location)
+        repository.deleteLocation(context = application, location = location)
 
         return location
     }
