@@ -27,13 +27,13 @@ if (localPropertiesFile.exists()) {
 
 android {
     namespace "wangdaye.com.geometricweather"
-    compileSdk 34
+    compileSdk 35
     defaultConfig {
         applicationId "wangdaye.com.geometricweather"
         minSdk 21
         targetSdk 34
-        versionCode 30104
-        versionName "3.104"
+        versionCode 30105
+        versionName "3.105"
         multiDexEnabled true
         ndk {
             abiFilters "x86", "armeabi-v7a", "x86_64", "arm64-v8a"

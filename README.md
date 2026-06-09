@@ -1,46 +1,50 @@
-# GeometricWeather
+# GeometricWeather (Modified)
 
 ![Geometric Weather](/work/preview-header-android.png?raw=true)
 
-### Download app
-* [CoolAPK](http://www.coolapk.com/apk/wangdaye.com.geometricweather)
-* [GooglePlay](https://play.google.com/store/apps/details?id=wangdaye.com.geometricweather)
-* [F-Droid](https://f-droid.org/packages/wangdaye.com.geometricweather)
+A feature-rich weather app for Android, based on [GeometricWeather](https://github.com/WangDaYeeeeee/GeometricWeather).
 
-### Contact me
-* By Email: wangdayeeeeee@gmail.com
-* Or GitHub issue
+## Features
 
-### How to run
-Clone this project and build it by AndroidStudio.
+- Multiple weather providers: AccuWeather, OpenWeather, Open-Meteo, QWeather, WeatherAPI, Visual Crossing
+- Built-in API keys for immediate use
+- Modern Android stack: Kotlin, MVVM, Material Design
+- Support for Android 5.0+ (API 21)
 
-### Build variants
-You can select a specific build variants in AndroidStudio.
-There are 3 build variants now. Specifically, the `fdroid` variant dose not contain any closed source 3rd-party SDK, such as Baidu Location Service and Bugly. The `gplay` variant integrated the Google Play Service to improve accuracy of location. And finally, the `public` variant contains all closed source 3rd-party SDK which is not exist in `fdroid` version except the Google Play Service.
+## Download
 
-### Weather icon extensions
-If you want to build your own weather icon-pack, please read this document:
-* [IconProvider-For-GeometricWeather](https://github.com/WangDaYeeeeee/IconProvider-For-GeometricWeather)
+Download the latest APK from [Releases](https://github.com/huaaaajjj/GeometricWeather/releases).
 
-Also, you will find some icon-packs made by me here:
-* [IconPacks](https://github.com/WangDaYeeeeee/IconProvider-For-GeometricWeather/tree/master/apk)
+## Build Variants
 
-By the way, GeometricWeather is compatible with Chronus Weather IconPacks. You can download them from Google Play or any other app store you have.
+- **pub**: Contains all features including Baidu Location and Bugly
+- **gplay**: Includes Google Play Services for improved location
+- **fdroid**: No closed-source SDKs (open source only)
 
-### Help me to improve the translation
-You can contact me by Email, or just submit a pull request.
+## Recent Changes (v3.105)
 
-### Contribute code
-If you want to contribute code to help me to improve GeometricWeather, please make changes on the `dev` branch.
+- Upgraded compileSdk to 35
+- Added multiple weather providers (Open-Meteo, QWeather, WeatherAPI, Visual Crossing)
+- Built-in API keys for all providers
+- Fixed coordinate system conversion (GCJ-02 → WGS-84)
 
-### License
-* [LICENSE](/LICENSE)
+## Development
 
-### Also see
-* [GeometricWeather For iOS](https://github.com/WangDaYeeeeee/GeometricWeather-iOS)
+```bash
+# Clone the repository
+git clone https://github.com/huaaaajjj/GeometricWeather.git
 
-### What I gonna do next
-* Complete the migration to Material You.
-* More AppWidget with Material You style.
-* Refactoring the polling process based on Kotlin coroutine.
-* Modularize the entire project.
+# Build debug APK
+./gradlew assembleFdroidDebug
+
+# Build release APK
+./gradlew assemblePubRelease
+```
+
+## License
+
+- [LICENSE](/LICENSE)
+
+## Credits
+
+Original project by [WangDaYeeeeee](https://github.com/WangDaYeeeeee/GeometricWeather)

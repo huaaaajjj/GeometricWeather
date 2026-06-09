@@ -39,12 +39,9 @@ jobs:
         if: github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/v')
         run: ./gradlew assembleFdroidDebug --no-daemon
 
-      - name: Build Release APKs
+      - name: Build Release APK
         if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          ./gradlew assembleFdroidRelease --no-daemon
-          ./gradlew assembleGplayRelease --no-daemon
-          ./gradlew assemblePubRelease --no-daemon
+        run: ./gradlew assemblePubRelease --no-daemon
 
       - name: Upload Debug APK
         if: github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/v')
@@ -53,24 +50,18 @@ jobs:
           name: GeometricWeather-fdroid-debug
           path: app/build/outputs/apk/fdroid/debug/*.apk
 
-      - name: Upload Release APKs
+      - name: Upload Release APK
         if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-artifact@v4
         with:
-          name: GeometricWeather-release-apks
-          path: |
-            app/build/outputs/apk/fdroid/release/*.apk
-            app/build/outputs/apk/gplay/release/*.apk
-            app/build/outputs/apk/pub/release/*.apk
+          name: GeometricWeather-release
+          path: app/build/outputs/apk/pub/release/*.apk
 
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v1
         with:
           generate_release_notes: true
-          files: |
-            app/build/outputs/apk/fdroid/release/*.apk
-            app/build/outputs/apk/gplay/release/*.apk
-            app/build/outputs/apk/pub/release/*.apk
+          files: app/build/outputs/apk/pub/release/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
