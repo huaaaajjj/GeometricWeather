@@ -14,6 +14,7 @@ import com.amap.api.location.CoordinateConverter;
 
 import wangdaye.com.geometricweather.GeometricWeather;
 import wangdaye.com.geometricweather.location.utils.LocationException;
+import wangdaye.com.geometricweather.common.utils.CoordinateUtils;
 import wangdaye.com.geometricweather.common.utils.helpers.BuglyHelper;
 
 /**
@@ -33,9 +34,14 @@ public class AMapLocationService extends LocationService {
             cancel();
             if (mLocationCallback != null) {
                 if (aMapLocation.getErrorCode() == 0) {
+                    // AMap SDK returns GCJ-02, convert to WGS-84 for weather APIs
+                    double[] wgs84 = CoordinateUtils.gcj02ToWgs84(
+                            aMapLocation.getLatitude(),
+                            aMapLocation.getLongitude()
+                    );
                     Result result = new Result(
-                            (float) aMapLocation.getLatitude(),
-                            (float) aMapLocation.getLongitude()
+                            (float) wgs84[0],
+                            (float) wgs84[1]
                     );
                     mLocationCallback.onCompleted(result);
                 } else {

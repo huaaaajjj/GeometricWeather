@@ -11,6 +11,7 @@ import wangdaye.com.geometricweather.location.services.LocationService;
 import wangdaye.com.geometricweather.common.rxjava.SchedulerTransformer;
 import wangdaye.com.geometricweather.common.rxjava.BaseObserver;
 import wangdaye.com.geometricweather.common.rxjava.ObserverContainer;
+import wangdaye.com.geometricweather.common.utils.CoordinateUtils;
 import wangdaye.com.geometricweather.settings.SettingsManager;
 
 public class BaiduIPLocationService extends LocationService {
@@ -33,9 +34,13 @@ public class BaiduIPLocationService extends LocationService {
                     @Override
                     public void onSucceed(BaiduIPLocationResult baiduIPLocationResult) {
                         try {
+                            // Baidu IP API returns GCJ-02, convert to WGS-84 for weather APIs
+                            double gcjLat = Double.parseDouble(baiduIPLocationResult.getContent().getPoint().getY());
+                            double gcjLon = Double.parseDouble(baiduIPLocationResult.getContent().getPoint().getX());
+                            double[] wgs84 = CoordinateUtils.gcj02ToWgs84(gcjLat, gcjLon);
                             Result result = new Result(
-                                    Float.parseFloat(baiduIPLocationResult.getContent().getPoint().getY()),
-                                    Float.parseFloat(baiduIPLocationResult.getContent().getPoint().getX())
+                                    (float) wgs84[0],
+                                    (float) wgs84[1]
                             );
                             callback.onCompleted(result);
                         } catch (Exception ignore) {
