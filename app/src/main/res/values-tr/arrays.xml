@@ -5,14 +5,14 @@
     <string-array name="notification_text_colors">
         <item>Koyu</item>
         <item>Gri</item>
-        <item>A莽谋k</item>
+        <item>Açık</item>
     </string-array>
 
     <!-- widget style. -->
     <string-array name="widget_styles">
-        <item>Dikd枚rtgen</item>
+        <item>Dikdörtgen</item>
         <item>Simetri</item>
-        <item>D枚艧eme</item>
+        <item>Döşeme</item>
         <item>Mini</item>
         <item>Nano</item>
         <item>Pixel</item>

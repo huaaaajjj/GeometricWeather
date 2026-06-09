@@ -1,245 +1,245 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <!-- Chinese source. -->
     <string-array name="weather_sources">
-        <item>褰╀簯澶╂皵锛堜粎涓浗鍦板尯锛</item>
-        <item>Accu Weather</item>
-        <item>M茅t茅o France</item>
+        <item>彩云天气（仅中国地区）</item>
+        <item>Accu Weather</item>
+        <item>OpenWeather</item>
+        <item>Météo France</item>
     </string-array>
     <string-array name="weather_source_voices">
-        <item>褰╀簯澶╂皵</item>
-        <item>ACCU澶╂皵</item>
-        <item>OPEN澶╂皵</item>
-        <item>M茅t茅o France</item>
+        <item>彩云天气</item>
+        <item>ACCU天气</item>
+        <item>OPEN天气</item>
+        <item>Météo France</item>
     </string-array>
 
     <!-- Location service. -->
     <string-array name="location_services">
-        <item>鐧惧害瀹氫綅</item>
-        <item>鐧惧害IP瀹氫綅锛堜粎涓浗鍦板尯锛</item>
-        <item>楂樺痉瀹氫綅</item>
-        <item>鍘熺敓鎺ュ彛</item>
+        <item>百度定位</item>
+        <item>百度IP定位（仅中国地区）</item>
+        <item>高德定位</item>
+        <item>原生接口</item>
     </string-array>
 
     <!-- Dark mode. -->
     <string-array name="dark_modes">
-        <item>鑷姩</item>
-        <item>璺熼殢绯荤粺</item>
-        <item>浜壊涓婚</item>
-        <item>鏆楄壊涓婚</item>
+        <item>自动</item>
+        <item>跟随系统</item>
+        <item>亮色主题</item>
+        <item>暗色主题</item>
     </string-array>
 
     <!-- UI style. -->
     <string-array name="ui_styles">
-        <item>鍦嗙幆鐘跺ぉ绌</item>
-        <item>Material鍔ㄧ敾</item>
+        <item>圆环状天空</item>
+        <item>Material动画</item>
     </string-array>
 
     <!-- automatic refresh rate. -->
     <string-array name="automatic_refresh_rates">
-        <item>鍗婂皬鏃</item>
-        <item>1灏忔椂</item>
-        <item>1.5灏忔椂</item>
-        <item>2灏忔椂</item>
-        <item>2.5灏忔椂</item>
-        <item>3灏忔椂</item>
-        <item>3.5灏忔椂</item>
-        <item>4灏忔椂</item>
-        <item>4.5灏忔椂</item>
-        <item>5灏忔椂</item>
-        <item>5.5灏忔椂</item>
-        <item>6灏忔椂</item>
+        <item>半小时</item>
+        <item>1小时</item>
+        <item>1.5小时</item>
+        <item>2小时</item>
+        <item>2.5小时</item>
+        <item>3小时</item>
+        <item>3.5小时</item>
+        <item>4小时</item>
+        <item>4.5小时</item>
+        <item>5小时</item>
+        <item>5.5小时</item>
+        <item>6小时</item>
     </string-array>
 
     <!-- widget week icon mode. -->
     <string-array name="week_icon_modes">
-        <item>鑷姩</item>
+        <item>自动</item>
         <item>@string/daytime</item>
         <item>@string/nighttime</item>
     </string-array>
 
     <!-- notification style. -->
     <string-array name="notification_styles">
-        <item>鍘熺敓</item>
-        <item>澶氬煄甯</item>
+        <item>原生</item>
+        <item>多城市</item>
         <item>@string/daily_overview</item><!-- do not translate. -->
         <item>@string/hourly_overview</item><!-- do not translate. -->
     </string-array>
 
     <!-- notification text color. -->
     <string-array name="notification_text_colors">
-        <item>娣辫壊</item>
-        <item>鐏拌壊</item>
-        <item>浜壊</item>
+        <item>深色</item>
+        <item>灰色</item>
+        <item>亮色</item>
     </string-array>
 
     <!-- widget style. -->
     <string-array name="widget_styles">
-        <item>鐭╁舰</item>
-        <item>瀵圭О</item>
-        <item>骞抽摵</item>
+        <item>矩形</item>
+        <item>对称</item>
+        <item>平铺</item>
         <item>Mini</item>
         <item>Nano</item>
         <item>Pixel</item>
-        <item>绔栫増</item>
-        <item>濂ュ埄濂</item>
-        <item>濂ュ埄濂ワ紙Google瀛椾綋锛</item>
-        <item>浠呮俯搴</item>
+        <item>竖版</item>
+        <item>奥利奥</item>
+        <item>奥利奥（Google字体）</item>
+        <item>仅温度</item>
     </string-array>
 
     <!-- week widget style. -->
     <string-array name="week_widget_styles">
-        <item>浜斿ぉ</item>
-        <item>涓夊ぉ</item>
+        <item>五天</item>
+        <item>三天</item>
     </string-array>
 
     <!-- Widget subtitle data. -->
     <string-array name="subtitle_data">
-        <item>鏇存柊鏃堕棿</item>
-        <item>绌烘皵璐ㄩ噺 (閮ㄥ垎鍦板尯鏃犳晥)</item>
-        <item>椋庡喌</item>
-        <item>浣撴劅娓╁害</item>
-        <item>鍐滃巻</item>
-        <item>鑷畾涔</item>
+        <item>更新时间</item>
+        <item>空气质量 (部分地区无效)</item>
+        <item>风况</item>
+        <item>体感温度</item>
+        <item>农历</item>
+        <item>自定义</item>
     </string-array>
 
     <!-- widget clock font. -->
     <string-array name="widget_card_styles">
-        <item>鏃犲崱鐗</item>
-        <item>鏃ラ棿澶滈棿妯″紡</item>
-        <item>浜壊鍗＄墖</item>
-        <item>鏆楄壊鍗＄墖</item>
+        <item>无卡片</item>
+        <item>日间夜间模式</item>
+        <item>亮色卡片</item>
+        <item>暗色卡片</item>
     </string-array>
 
     <!-- widget clock font. -->
     <string-array name="widget_text_colors">
-        <item>鐧借壊鏂囧瓧</item>
-        <item>鏆楄壊鏂囧瓧</item>
-        <item>鑷姩鐫€鑹</item>
+        <item>白色文字</item>
+        <item>暗色文字</item>
+        <item>自动着色</item>
     </string-array>
 
     <!-- live wallpaper weather kind. -->
     <string-array name="live_wallpaper_weather_kinds">
-        <item>鑷姩</item>
-        <item>鏅</item>
-        <item>澶氫簯</item>
-        <item>闃</item>
-        <item>闆</item>
-        <item>闆</item>
-        <item>鍐婚洦</item>
-        <item>鍐伴浌</item>
-        <item>闆</item>
-        <item>闇</item>
-        <item>闆锋毚</item>
-        <item>闆烽洦</item>
-        <item>椋</item>
+        <item>自动</item>
+        <item>晴</item>
+        <item>多云</item>
+        <item>阴</item>
+        <item>雨</item>
+        <item>雪</item>
+        <item>冻雨</item>
+        <item>冰雹</item>
+        <item>雾</item>
+        <item>霾</item>
+        <item>雷暴</item>
+        <item>雷雨</item>
+        <item>风</item>
     </string-array>
 
     <!-- live wallpaper weather kind. -->
     <string-array name="live_wallpaper_day_night_types">
-        <item>鑷姩</item>
-        <item>鐧芥樇</item>
-        <item>澶滄櫄</item>
+        <item>自动</item>
+        <item>白昼</item>
+        <item>夜晚</item>
     </string-array>
 
     <!-- speed unit. -->
     <string-array name="speed_units">
-        <item>鍗冪背/鏃</item>
-        <item>绫?绉</item>
-        <item>鑺</item>
-        <item>鑻遍噷/鏃</item>
-        <item>鑻卞昂/绉</item>
+        <item>千米/时</item>
+        <item>米/秒</item>
+        <item>节</item>
+        <item>英里/时</item>
+        <item>英尺/秒</item>
     </string-array>
     <string-array name="speed_unit_voices">
-        <item>鍗冪背姣忓皬鏃</item>
-        <item>绫虫瘡绉</item>
-        <item>鑺</item>
-        <item>鑻遍噷姣忓皬鏃</item>
-        <item>鑻卞昂姣忕</item>
+        <item>千米每小时</item>
+        <item>米每秒</item>
+        <item>节</item>
+        <item>英里每小时</item>
+        <item>英尺每秒</item>
     </string-array>
 
     <!-- precipitation unit. -->
     <string-array name="precipitation_units">
-        <item>姣背</item>
-        <item>鍘樼背</item>
-        <item>鑻卞</item>
-        <item>鍗?绫陈</item>
+        <item>毫米</item>
+        <item>厘米</item>
+        <item>英寸</item>
+        <item>升/米²</item>
     </string-array>
     <string-array name="precipitation_unit_voices">
-        <item>姣背</item>
-        <item>鍘樼背</item>
-        <item>鑻卞</item>
-        <item>鍗囨瘡骞虫柟绫</item>
+        <item>毫米</item>
+        <item>厘米</item>
+        <item>英寸</item>
+        <item>升每平方米</item>
     </string-array>
 
     <!-- distance unit. -->
     <string-array name="distance_units">
-        <item>鍗冪背</item>
-        <item>绫</item>
-        <item>鑻遍噷</item>
-        <item>娴烽噷</item>
-        <item>鑻卞昂</item>
+        <item>千米</item>
+        <item>米</item>
+        <item>英里</item>
+        <item>海里</item>
+        <item>英尺</item>
     </string-array>
     <string-array name="distance_unit_voices">
-        <item>鍗冪背</item>
-        <item>绫</item>
-        <item>鑻遍噷</item>
-        <item>娴烽噷</item>
-        <item>鑻卞昂</item>
+        <item>千米</item>
+        <item>米</item>
+        <item>英里</item>
+        <item>海里</item>
+        <item>英尺</item>
     </string-array>
 
     <!-- pressure unit. -->
     <string-array name="pressure_units">
-        <item>姣反</item>
-        <item>鍗冨笗</item>
-        <item>鐧惧笗</item>
-        <item>鏍囧噯澶ф皵鍘</item>
-        <item>姣背姹炴煴</item>
-        <item>鑻卞姹炴煴</item>
-        <item>鍗冨厠鍔?绫陈</item>
+        <item>毫巴</item>
+        <item>千帕</item>
+        <item>百帕</item>
+        <item>标准大气压</item>
+        <item>毫米汞柱</item>
+        <item>英寸汞柱</item>
+        <item>千克力/米²</item>
     </string-array>
     <string-array name="pressure_unit_voices">
-        <item>姣反</item>
-        <item>鍗冨笗</item>
-        <item>鐧惧笗</item>
-        <item>澶ф皵鍘</item>
-        <item>姣背姹炴煴</item>
-        <item>鑻卞姹炴煴</item>
-        <item>鍗冨厠鍔涙瘡骞虫柟绫</item>
+        <item>毫巴</item>
+        <item>千帕</item>
+        <item>百帕</item>
+        <item>大气压</item>
+        <item>毫米汞柱</item>
+        <item>英寸汞柱</item>
+        <item>千克力每平方米</item>
     </string-array>
 
     <!-- air quality unit. -->
     <string-array name="air_quality_units">
-        <item>寰厠/绫陈</item>
+        <item>微克/米³</item>
     </string-array>
     <string-array name="air_quality_unit_voices">
-        <item>寰厠姣忕珛鏂圭背</item>
+        <item>微克每立方米</item>
     </string-array>
 
     <!-- air quality co unit. -->
     <string-array name="air_quality_co_units">
-        <item>姣厠/绫陈</item>
+        <item>毫克/米³</item>
     </string-array>
     <string-array name="air_quality_co_unit_voices">
-        <item>姣厠姣忕珛鏂圭背</item>
+        <item>毫克每立方米</item>
     </string-array>
 
     <!-- duration unit. -->
     <string-array name="duration_units">
-        <item>灏忔椂</item> <!-- hour -->
+        <item>小时</item> <!-- hour -->
     </string-array>
     <string-array name="duration_unit_voices">
-        <item>灏忔椂</item>
+        <item>小时</item>
     </string-array>
 
     <!-- pollen unit. -->
     <string-array name="pollen_units">
-        <item>/绫陈</item>
+        <item>/米³</item>
     </string-array>
     <string-array name="pollen_unit_voices">
-        <item>姣忕珛鏂圭背</item>
+        <item>每立方米</item>
     </string-array>
 
 </resources>
-

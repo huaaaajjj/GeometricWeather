@@ -9,6 +9,8 @@ import wangdaye.com.geometricweather.weather.services.AccuWeatherService;
 import wangdaye.com.geometricweather.weather.services.CaiYunWeatherService;
 import wangdaye.com.geometricweather.weather.services.MfWeatherService;
 import wangdaye.com.geometricweather.weather.services.OpenMeteoWeatherService;
+import wangdaye.com.geometricweather.weather.services.OwmWeatherService;
+
 import wangdaye.com.geometricweather.weather.services.WeatherApiWeatherService;
 import wangdaye.com.geometricweather.weather.services.WeatherService;
 
@@ -20,12 +22,14 @@ public class WeatherServiceSet {
     public WeatherServiceSet(AccuWeatherService accuWeatherService,
                              CaiYunWeatherService caiYunWeatherService,
                              MfWeatherService mfWeatherService,
+                             OwmWeatherService owmWeatherService,
                              OpenMeteoWeatherService openMeteoWeatherService,
                              WeatherApiWeatherService weatherApiWeatherService) {
         mWeatherServices = new WeatherService[] {
                 accuWeatherService,
                 caiYunWeatherService,
                 mfWeatherService,
+                owmWeatherService,
                 openMeteoWeatherService,
                 weatherApiWeatherService
         };
@@ -34,6 +38,9 @@ public class WeatherServiceSet {
     @NonNull
     public WeatherService get(WeatherSource source) {
         switch (source) {
+            case OWM:
+                return mWeatherServices[3];
+
             case MF:
                 return mWeatherServices[2];
 
@@ -41,10 +48,10 @@ public class WeatherServiceSet {
                 return mWeatherServices[1];
 
             case OPEN_METEO:
-                return mWeatherServices[3];
+                return mWeatherServices[4];
 
             case WEATHERAPI:
-                return mWeatherServices[4];
+                return mWeatherServices[5];
 
             default: // ACCU.
                 return mWeatherServices[0];

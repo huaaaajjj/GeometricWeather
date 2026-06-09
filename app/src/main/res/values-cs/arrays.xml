@@ -3,35 +3,37 @@
 
     <!-- Chinese source. -->
     <string-array name="weather_sources">
-        <item>caiyunapp.com (pouze pro 膶铆nu)</item>
-        <item>accuweather.com</item>
-        <item>M茅t茅o France</item>
+        <item>caiyunapp.com (pouze pro Čínu)</item>
+        <item>accuweather.com</item>
+        <item>OpenWeather</item>
+        <item>Météo France</item>
     </string-array>
     <string-array name="weather_source_voices">
         <item>CaiYun App.com</item>
-        <item>ACCU weather.com</item>
-        <item>M茅t茅o France</item>
+        <item>ACCU weather.com</item>
+        <item>Open Weather</item>
+        <item>Météo France</item>
     </string-array>
 
     <!-- Location service. -->
     <string-array name="location_services">
         <item>Poloha Baidu</item>
-        <item>Poloha IP Baidu IP (pouze pro 膶铆nu)</item>
+        <item>Poloha IP Baidu IP (pouze pro Čínu)</item>
         <item>Poloha AMap</item>
-        <item>Nativn铆 API</item>
+        <item>Nativní API</item>
     </string-array>
 
     <!-- Dark mode. -->
     <string-array name="dark_modes">
         <item>Automaticky</item>
-        <item>Podle syst茅mu</item>
-        <item>V啪dy sv臎tl茅</item>
-        <item>V啪dy tmav茅</item>
+        <item>Podle systému</item>
+        <item>Vždy světlé</item>
+        <item>Vždy tmavé</item>
     </string-array>
 
     <!-- UI style. -->
     <string-array name="ui_styles">
-        <item>Kulat谩 obloha</item>
+        <item>Kulatá obloha</item>
         <item>Material Design animace</item>
     </string-array>
 
@@ -39,35 +41,35 @@
     <!-- Do not translate this array. -->
     <string-array name="languages">
         <item>@string/follow_system</item>
-        <item>涓枃</item>
-        <item>绻侀珨涓枃</item>
+        <item>中文</item>
+        <item>繁體中文</item>
         <item>English (America)</item>
         <item>English (Britain)</item>
         <item>English (Australia)</item>
-        <item>T眉rk莽e</item>
-        <item>Fran莽ais</item>
-        <item>P褍褋褋泻懈泄</item>
+        <item>Türkçe</item>
+        <item>Français</item>
+        <item>Pусский</item>
         <item>Deutsch</item>
-        <item>小褉锌褋泻懈</item>
-        <item>Espa帽ol</item>
+        <item>Српски</item>
+        <item>Español</item>
         <item>Italiano</item>
         <item>Dutch</item>
         <item>Magyar</item>
-        <item>Portugu锚s</item>
-        <item>Portugu锚s (Brasil)</item>
-        <item>Sloven拧膷ina</item>
-        <item>丕賱毓乇亘賷丞</item>
-        <item>膶e拧tina</item>
+        <item>Português</item>
+        <item>Português (Brasil)</item>
+        <item>Slovenščina</item>
+        <item>العربية</item>
+        <item>Čeština</item>
         <item>Polski</item>
-        <item>頃滉淡鞏</item>
-        <item>螘位位畏谓喂魏维</item>
-        <item>鏃ユ湰瑾</item>
-        <item>Rom芒n膬</item>
+        <item>한국어</item>
+        <item>Ελληνικά</item>
+        <item>日本語</item>
+        <item>Română</item>
     </string-array>
 
     <!-- automatic refresh rate. -->
     <string-array name="automatic_refresh_rates">
-        <item>P暖l hodiny</item>
+        <item>Půl hodiny</item>
         <item>1 hodina</item>
         <item>1,5 hodiny</item>
         <item>2 hodiny</item>
@@ -90,28 +92,28 @@
 
     <!-- notification style. -->
     <string-array name="notification_styles">
-        <item>Nativn铆</item>
-        <item>M臎sta</item>
+        <item>Nativní</item>
+        <item>Města</item>
         <item>@string/daily_overview</item><!-- do not translate. -->
         <item>@string/hourly_overview</item><!-- do not translate. -->
     </string-array>
 
     <!-- notification text color. -->
     <string-array name="notification_text_colors">
-        <item>Tmav媒</item>
-        <item>艩ed媒</item>
-        <item>Sv臎tl媒</item>
+        <item>Tmavý</item>
+        <item>Šedý</item>
+        <item>Světlý</item>
     </string-array>
 
     <!-- widget style. -->
     <string-array name="widget_styles">
-        <item>Obd茅ln铆k</item>
-        <item>Symetrick媒</item>
-        <item>Dla啪dice</item>
+        <item>Obdélník</item>
+        <item>Symetrický</item>
+        <item>Dlaždice</item>
         <item>Mini</item>
         <item>Nano</item>
         <item>Pixel</item>
-        <item>Vertik谩ln铆</item>
+        <item>Vertikální</item>
         <item>Oreo</item>
         <item>Oreo (Google Sans)</item>
         <item>Teplota</item>
@@ -119,18 +121,18 @@
 
     <!-- week widget style. -->
     <string-array name="week_widget_styles">
-        <item>5 dn铆</item>
+        <item>5 dní</item>
         <item>3 dny</item>
     </string-array>
 
     <!-- Widget subtitle data. -->
     <string-array name="subtitle_data">
-        <item>膶as obnoven铆</item>
-        <item>AQI (neplatn茅 v n臎kter媒ch oblastech)</item>
-        <item>V铆tr</item>
-        <item>Znateln谩 teplota</item>
-        <item>Lun谩rn铆 kalend谩艡</item>
-        <item>Vlastn铆</item>
+        <item>Čas obnovení</item>
+        <item>AQI (neplatné v některých oblastech)</item>
+        <item>Vítr</item>
+        <item>Znatelná teplota</item>
+        <item>Lunární kalendář</item>
+        <item>Vlastní</item>
     </string-array>
 
     <!-- widget clock font. -->
@@ -143,17 +145,17 @@
 
     <!-- widget card style. -->
     <string-array name="widget_card_styles">
-        <item>沤谩dn媒</item>
-        <item>Denn铆-no膷n铆 re啪im</item>
-        <item>Sv臎tl媒</item>
-        <item>Tmav媒</item>
+        <item>Žádný</item>
+        <item>Denní-noční režim</item>
+        <item>Světlý</item>
+        <item>Tmavý</item>
     </string-array>
 
     <!-- widget clock font. -->
     <string-array name="widget_text_colors">
-        <item>Sv臎tl媒</item>
-        <item>Tmav媒</item>
-        <item>Automatick媒</item>
+        <item>Světlý</item>
+        <item>Tmavý</item>
+        <item>Automatický</item>
     </string-array>
 
     <!-- live wallpaper weather kind. -->
@@ -161,23 +163,23 @@
         <item>Automaticky</item>
         <item>Jasno</item>
         <item>Polojasno</item>
-        <item>Obla膷no</item>
-        <item>D茅拧钮</item>
-        <item>Sn铆h</item>
-        <item>Sn铆h s de拧t臎m</item>
+        <item>Oblačno</item>
+        <item>Déšť</item>
+        <item>Sníh</item>
+        <item>Sníh s deštěm</item>
         <item>Kroupy</item>
         <item>Mhla</item>
         <item>Opar</item>
-        <item>H艡m臎n铆</item>
-        <item>Bou艡ka</item>
-        <item>V铆tr</item>
+        <item>Hřmění</item>
+        <item>Bouřka</item>
+        <item>Vítr</item>
     </string-array>
 
     <!-- live wallpaper weather kind. -->
     <string-array name="live_wallpaper_day_night_types">
-        <item>Automatick媒</item>
-        <item>V啪dy den</item>
-        <item>V啪dy noc</item>
+        <item>Automatický</item>
+        <item>Vždy den</item>
+        <item>Vždy noc</item>
     </string-array>
 
     <!-- speed unit. -->
@@ -192,7 +194,7 @@
         <item>Kilometry za hodinu</item>
         <item>Metry za sekundu</item>
         <item>Uzly</item>
-        <item>M铆le za hodinu</item>
+        <item>Míle za hodinu</item>
         <item>Stopy za sekundu</item>
     </string-array>
 
@@ -201,13 +203,13 @@
         <item>mm</item>
         <item>cm</item>
         <item>inch</item>
-        <item>L/m虏</item>
+        <item>L/m²</item>
     </string-array>
     <string-array name="precipitation_unit_voices">
         <item>Millimetry</item>
         <item>Centimetry</item>
         <item>Palce</item>
-        <item>Litry na metr 膷tvere膷n铆</item>
+        <item>Litry na metr čtvereční</item>
     </string-array>
 
     <!-- distance unit. -->
@@ -221,8 +223,8 @@
     <string-array name="distance_unit_voices">
         <item>Kilometry</item>
         <item>Metry</item>
-        <item>M铆le</item>
-        <item>N谩mo艡n铆 m铆le</item>
+        <item>Míle</item>
+        <item>Námořní míle</item>
         <item>Stopy</item>
     </string-array>
 
@@ -234,32 +236,32 @@
         <item>atm</item>
         <item>mmHg</item>
         <item>inHg</item>
-        <item>kgf/cm虏</item>
+        <item>kgf/cm²</item>
     </string-array>
     <string-array name="pressure_unit_voices">
         <item>Milibary</item>
         <item>Kilo pascaly</item>
         <item>Hekto pascaly</item>
-        <item>Atmosf茅ry</item>
+        <item>Atmosféry</item>
         <item>Milimetry rtuti</item>
         <item>Palce rtuti</item>
-        <item>Kilogram s铆ly na centimetr 膷tvere膷n铆</item>
+        <item>Kilogram síly na centimetr čtvereční</item>
     </string-array>
 
     <!-- air quality unit. -->
     <string-array name="air_quality_units">
-        <item>渭g/m鲁</item>
+        <item>μg/m³</item>
     </string-array>
     <string-array name="air_quality_unit_voices">
-        <item>Mikrogramy na metr krychlov媒</item>
+        <item>Mikrogramy na metr krychlový</item>
     </string-array>
 
     <!-- air quality co unit. -->
     <string-array name="air_quality_co_units">
-        <item>mg/m鲁</item>
+        <item>mg/m³</item>
     </string-array>
     <string-array name="air_quality_co_unit_voices">
-        <item>Milligramy na metr krychlov媒</item>
+        <item>Milligramy na metr krychlový</item>
     </string-array>
 
     <!-- duration unit. -->
@@ -272,11 +274,10 @@
 
     <!-- pollen unit. -->
     <string-array name="pollen_units">
-        <item>/m鲁</item>
+        <item>/m³</item>
     </string-array>
     <string-array name="pollen_unit_voices">
-        <item>Na metr krychlov媒</item>
+        <item>Na metr krychlový</item>
     </string-array>
 
 </resources>
-

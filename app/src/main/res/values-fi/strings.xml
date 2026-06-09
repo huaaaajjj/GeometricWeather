@@ -2,7 +2,7 @@
     tools:ignore="MissingTranslation">
 
     <!-- app. -->
-    <string name="app_name">S盲盲</string>
+    <string name="app_name">Sää</string>
     <string name="geometric_weather">Geometric Weather</string>
 
     <!-- keyword. -->
@@ -10,44 +10,44 @@
     <string name="resident_location">Asuinpaikka</string>
     <string name="default_location">Oletussijainti</string>
     <string name="live">Nyt</string>
-    <string name="today">T盲n盲盲n</string>
-    <string name="refresh_at">P盲ivitetty</string>
+    <string name="today">Tänään</string>
+    <string name="refresh_at">Päivitetty</string>
     <string name="local_time">Paikallinen aika</string>
-    <string name="precipitation">Sadem盲盲r盲</string>
-    <string name="precipitation_probability">Sateen todenn盲k枚isyys</string>
+    <string name="precipitation">Sademäärä</string>
+    <string name="precipitation_probability">Sateen todennäköisyys</string>
     <string name="precipitation_duration">Sateen kesto</string>
-    <string name="maxi_temp">p盲iv盲ll盲</string>
-    <string name="mini_temp">y枚ll盲</string>
+    <string name="maxi_temp">päivällä</string>
+    <string name="mini_temp">yöllä</string>
     <string name="time">aika</string>
-    <string name="day">p盲iv盲ll盲</string>
-    <string name="night">y枚ll盲</string>
-    <string name="temperature">L盲mp枚tila</string>
+    <string name="day">päivällä</string>
+    <string name="night">yöllä</string>
+    <string name="temperature">Lämpötila</string>
     <string name="wind">Tuuli</string>
     <string name="wind_direction">Tuulensuunta</string>
     <string name="wind_speed">Tuulennopeus</string>
     <string name="wind_level">Tuulimittari</string>
-    <string name="sensible_temp">Aistittu l盲mp枚tila</string>
+    <string name="sensible_temp">Aistittu lämpötila</string>
     <string name="humidity">Ilmankosteus</string>
     <string name="uv_index">UV-indeksi</string>
     <string name="hours_of_sun">Auringonpaisteen kesto</string>
     <string name="forecast">Ennuste</string>
     <string name="briefings">Tiedotteet</string>
-    <string name="daytime">P盲iv盲ll盲</string>
-    <string name="nighttime">Y枚ll盲</string>
+    <string name="daytime">Päivällä</string>
+    <string name="nighttime">Yöllä</string>
     <string name="publish_at">Jukaistu</string>
     <string name="feels_like">Tuntuu kuin</string>
-    <string name="follow_system">J盲rjestelm盲n oletus</string>
+    <string name="follow_system">Järjestelmän oletus</string>
     <string name="background_information">Taustatiedot</string>
     <string name="pressure">Ilmanpaine</string>
-    <string name="visibility">N盲kyvyys</string>
+    <string name="visibility">Näkyvyys</string>
     <string name="dew_point">Kastespiste</string>
     <string name="cloud_cover">Pilvisyys</string>
     <string name="ceiling">Pilvipeite</string>
-    <string name="get_more">Lis盲盲鈥</string>
-    <string name="get_more_store">Lis盲盲 sovelluskaupasta</string>
-    <string name="get_more_github">Lis盲盲 GitHubista</string>
-    <string name="refresh">P盲ivit盲</string>
-    <string name="restart">Uudelleenk盲ynnist盲</string>
+    <string name="get_more">Lisää…</string>
+    <string name="get_more_store">Lisää sovelluskaupasta</string>
+    <string name="get_more_github">Lisää GitHubista</string>
+    <string name="refresh">Päivitä</string>
+    <string name="restart">Uudelleenkäynnistä</string>
     <string name="edit">Muokkaa</string>
 
     <!-- The following set of strings should be as short as possible. -->
@@ -63,14 +63,14 @@
     <string name="week_6">La</string>
     <string name="week_7">Su</string>
 
-    <string name="real_feel_temperature">RealFeel庐</string>
-    <string name="real_feel_shade_temperature">RealFeel庐 varjossa</string>
-    <string name="apparent_temperature">N盲enn盲inen</string>
-    <string name="wind_chill_temperature">Tuulen hyyt盲vyys</string>
-    <string name="wet_bulb_temperature">M盲rk盲l盲mp枚tila</string>
-    <string name="degree_day_temperature">Astep盲iv盲</string>
+    <string name="real_feel_temperature">RealFeel®</string>
+    <string name="real_feel_shade_temperature">RealFeel® varjossa</string>
+    <string name="apparent_temperature">Näennäinen</string>
+    <string name="wind_chill_temperature">Tuulen hyytävyys</string>
+    <string name="wet_bulb_temperature">Märkälämpötila</string>
+    <string name="degree_day_temperature">Astepäivä</string>
 
-    <string name="total">Kokonaism盲盲r盲</string>
+    <string name="total">Kokonaismäärä</string>
     <string name="thunderstorm">Ukkonen</string>
     <string name="rain">Sade</string>
     <string name="snow">Lumi</string>
@@ -98,50 +98,50 @@
     <string name="aqi_1">Erinomainen</string>
     <string name="aqi_2">Kohtalainen</string>
     <string name="aqi_3">Heikko</string>
-    <string name="aqi_4">Ep盲terveellinen</string>
-    <string name="aqi_5">Eritt盲in ep盲terveellinen</string>
+    <string name="aqi_4">Epäterveellinen</string>
+    <string name="aqi_5">Erittäin epäterveellinen</string>
     <string name="aqi_6">Vaarallinen</string>
 
     <string name="phase_new">Uusikuu</string>
     <string name="phase_waxing_crescent">Kasvava kuunsirppi</string>
-    <string name="phase_first">Ensimm盲inen nelj盲nnes</string>
+    <string name="phase_first">Ensimmäinen neljännes</string>
     <string name="phase_waxing_gibbous">Kasvava puolikuu</string>
-    <string name="phase_full">T盲ysikuu</string>
-    <string name="phase_waning_gibbous">V盲henev盲 puolikuu</string>
-    <string name="phase_third">Kolmas nelj盲nnes</string>
-    <string name="phase_waning_crescent">V盲henev盲 kuunsirppi</string>
+    <string name="phase_full">Täysikuu</string>
+    <string name="phase_waning_gibbous">Vähenevä puolikuu</string>
+    <string name="phase_third">Kolmas neljännes</string>
+    <string name="phase_waning_crescent">Vähenevä kuunsirppi</string>
 
-    <string name="grass">Hein盲</string>
+    <string name="grass">Heinä</string>
     <string name="mold">Home</string>
     <string name="ragweed">Pujo / Marunatuoksukki</string>
     <string name="tree">Puu</string>
 
-    <string name="daily_overview">P盲ivitt盲inen ennuste</string>
+    <string name="daily_overview">Päivittäinen ennuste</string>
     <string name="hourly_overview">Tuntikohtainen ennuste</string>
     <string name="minutely_overview">Minuuttikohtainen ennuste</string>
     <string name="precipitation_overview">Sade-ennuste</string>
     <string name="air_quality">Ilmanlaatu</string>
     <string name="allergen">Allergeenit</string>
-    <string name="life_details">Lis盲tietoja</string>
+    <string name="life_details">Lisätietoja</string>
     <string name="sunrise_sunset">Aurinko &amp; kuu</string>
 
     <string name="next">SEURAAVA</string>
     <string name="done">VALMIS</string>
     <string name="cancel" tools:ignore="ButtonCase">PERUUTA</string>
-    <string name="on">K盲yt枚ss盲</string>
-    <string name="off">Ei k盲yt枚ss盲</string>
+    <string name="on">Käytössä</string>
+    <string name="off">Ei käytössä</string>
     <string name="go_to_set">ASETA</string>
     <string name="help">OHJE</string>
-    <string name="learn_more">LUE LIS脛脛</string>
+    <string name="learn_more">LUE LISÄÄ</string>
 
     <string name="filter_weather_sources">Suodata</string>
 
     <string name="about_app">TIETOJA SOVELLUKSESTA</string>
     <string name="introduce">esittely</string>
-    <string name="email">S盲hk枚posti</string>
+    <string name="email">Sähköposti</string>
     <string name="donate">Lahjoita</string>
     <string name="gitHub">GitHub</string>
-    <string name="translator">K盲盲nt盲j盲t</string>
+    <string name="translator">Kääntäjät</string>
     <string name="thanks">Kiitos</string>
 
     <string name="alipay">Alipay</string>
@@ -155,7 +155,7 @@
     <string name="date_format_long">MMM d</string>
     <string name="date_format_widget_short">EEEE, MMM d</string>
     <string name="date_format_widget_long">EEEE, MMM d</string>
-    <string name="date_format_widget_oreo_style">EEEE, MMM d鈹</string>
+    <string name="date_format_widget_oreo_style">EEEE, MMM d│</string>
 
     <!-- Do not translate the following set of strings. -->
     <string name="tag_temperature">@string/temperature</string>
@@ -180,137 +180,137 @@
     <string name="about_circular_progress_view">Material style circular progress bar for Android.</string>
 
     <!-- feedback. -->
-    <string name="feedback_request_permission">K盲ytt枚oikeudet</string>
+    <string name="feedback_request_permission">Käyttöoikeudet</string>
     <string name="feedback_request_location">Sijainti</string>
     <string name="feedback_request_location_in_background">Sijaintitiedot taustalla</string>
-    <string name="feedback_request_location_permission_success">Sijaintioikeuspyynt枚 onnistui</string>
-    <string name="feedback_request_location_permission_failed">Sijaintioikeuspyynt枚 ep盲onnistui</string>
+    <string name="feedback_request_location_permission_success">Sijaintioikeuspyyntö onnistui</string>
+    <string name="feedback_request_location_permission_failed">Sijaintioikeuspyyntö epäonnistui</string>
 
-    <string name="feedback_location_permissions_title">P盲盲sy sijaintitietoihin</string>
-    <string name="feedback_location_permissions_statement">eometric Weatherin on ker盲tt盲v盲 sijaintitietosi k盲yt枚ss盲 ollessaan tai taustalla, jotta se voi antaa nykyisen sijaintisi s盲盲tiedot. T盲t盲 varten pyyd盲mme joitakin k盲ytt枚oikeuksia. Sijaintitietojasi k盲ytet盲盲n vain nykyisen sijaintisi s盲盲tietojen saamiseksi. Jos et halua, ett盲 saamme sijaintitietojasi, voit est盲盲 n盲m盲 pyynn枚t ja m盲盲ritt盲盲 sijaintisi manuaalisesti hallintasivulla.</string>
-    <string name="feedback_background_location_title">P盲盲sy sijaintitietoihin taustalla</string>
-    <string name="feedback_background_location_summary">Voidaksemme tarjota p盲tevi盲 s盲盲tietoja sijaintisi muuttuessakin, salli p盲盲sy sijaintitietoihin taustalla. Aseta sijainnin k盲ytt枚oikeudeksi \"Salli aina\".</string>
+    <string name="feedback_location_permissions_title">Pääsy sijaintitietoihin</string>
+    <string name="feedback_location_permissions_statement">eometric Weatherin on kerättävä sijaintitietosi käytössä ollessaan tai taustalla, jotta se voi antaa nykyisen sijaintisi säätiedot. Tätä varten pyydämme joitakin käyttöoikeuksia. Sijaintitietojasi käytetään vain nykyisen sijaintisi säätietojen saamiseksi. Jos et halua, että saamme sijaintitietojasi, voit estää nämä pyynnöt ja määrittää sijaintisi manuaalisesti hallintasivulla.</string>
+    <string name="feedback_background_location_title">Pääsy sijaintitietoihin taustalla</string>
+    <string name="feedback_background_location_summary">Voidaksemme tarjota päteviä säätietoja sijaintisi muuttuessakin, salli pääsy sijaintitietoihin taustalla. Aseta sijainnin käyttöoikeudeksi \"Salli aina\".</string>
 
-    <string name="feedback_location_failed">Sijainin haku ep盲onnistui</string>
-    <string name="feedback_get_weather_failed">S盲盲tietojen haku ep盲onnistui</string>
-    <string name="feedback_location_help_title">Etk枚 saa oikeaa sijaintia?</string>
-    <string name="feedback_check_location_permission">Tarkista sijaintitietojen k盲ytt枚oikeudet</string>
-    <string name="feedback_enable_location_information">Ota sijaintitiedot k盲ytt枚枚n</string>
+    <string name="feedback_location_failed">Sijainin haku epäonnistui</string>
+    <string name="feedback_get_weather_failed">Säätietojen haku epäonnistui</string>
+    <string name="feedback_location_help_title">Etkö saa oikeaa sijaintia?</string>
+    <string name="feedback_check_location_permission">Tarkista sijaintitietojen käyttöoikeudet</string>
+    <string name="feedback_enable_location_information">Ota sijaintitiedot käyttöön</string>
     <string name="feedback_select_location_provider">Valitse sijainnin tarjoaja</string>
-    <string name="feedback_add_location_manually">Lis盲盲 sijainti manuaalisesti ja poista \'$\'</string>
-    <string name="feedback_view_style">N盲yt盲 tyyli</string>
-    <string name="feedback_show_widget_card">Taustav盲ri</string>
-    <string name="feedback_show_widget_card_alpha">L盲pin盲kyvyys</string>
+    <string name="feedback_add_location_manually">Lisää sijainti manuaalisesti ja poista \'$\'</string>
+    <string name="feedback_view_style">Näytä tyyli</string>
+    <string name="feedback_show_widget_card">Taustaväri</string>
+    <string name="feedback_show_widget_card_alpha">Läpinäkyvyys</string>
     <string name="feedback_hide_subtitle">Piilota alaotsikko</string>
     <string name="feedback_subtitle_data">Alaotsikon tiedot</string>
-    <string name="feedback_black_text">Tekstin v盲ri</string>
+    <string name="feedback_black_text">Tekstin väri</string>
     <string name="feedback_text_size">Tekstin koko</string>
     <string name="feedback_clock_font">Kellon fontti</string>
     <string name="feedback_hide_lunar">Piilota kuukalenteri</string>
     <string name="feedback_align_end">Kohdista loppuun</string>
-    <string name="feedback_colorful">Widgetin v盲ri s盲盲n mukaan</string>
-    <string name="feedback_custom_subtitle_explanation">Voit sy枚tt盲盲 mit盲 tahansa, mutta kiinnit盲 huomiota tekstin pituuteen. Jos haluat viitata s盲盲dataan, k盲yt盲 $ viitataksesi vastaavaan avainsanaan.\n\nEsimerkiksi, \"T盲m盲nhetkinen s盲盲 = $cw$\" n盲ytet盲盲n seuraavasti \"t盲m盲nhetkinen s盲盲 = Selke盲 p盲iv盲\".</string>
+    <string name="feedback_colorful">Widgetin väri sään mukaan</string>
+    <string name="feedback_custom_subtitle_explanation">Voit syöttää mitä tahansa, mutta kiinnitä huomiota tekstin pituuteen. Jos haluat viitata säädataan, käytä $ viitataksesi vastaavaan avainsanaan.\n\nEsimerkiksi, \"Tämänhetkinen sää = $cw$\" näytetään seuraavasti \"tämänhetkinen sää = Selkeä päivä\".</string>
     <!-- keep those content with the format "$xxx$". -->
     <!-- keep "\n" -->
-    <string name="feedback_custom_subtitle_keyword_cw">$cw$ : T盲m盲nhetkinen s盲盲\n</string>
-    <string name="feedback_custom_subtitle_keyword_ct">$ct$ : T盲m盲nhetkinen l盲mp枚tila (鈩?鈩?\n</string>
-    <string name="feedback_custom_subtitle_keyword_ctd">$ctd$ : T盲m盲nhetkinen l盲mp枚tila (掳)\n</string>
-    <string name="feedback_custom_subtitle_keyword_at">$at$ : N盲en盲inen l盲mp枚tila (鈩?鈩?\n</string>
-    <string name="feedback_custom_subtitle_keyword_atd">$atd$ : N盲enn盲inen l盲mp枚tila (掳)\n</string>
-    <string name="feedback_custom_subtitle_keyword_cpb">$cpb$ : T盲m盲nhetkinen sateen todenn盲k枚isyys (%)\n</string>
-    <string name="feedback_custom_subtitle_keyword_cp">$cp$ : T盲m盲nhetkinen sadem盲盲r盲 (mm/L/m虏)\n</string>
-    <string name="feedback_custom_subtitle_keyword_cwd">$cwd$ : T盲m盲nhetkinen tuuli\n</string>
-    <string name="feedback_custom_subtitle_keyword_cuv">$cuv$ : T盲m盲nhetkinen UV\n</string>
-    <string name="feedback_custom_subtitle_keyword_ch">$ch$ : T盲m盲nhetkinen ilmankosteus\n</string>
-    <string name="feedback_custom_subtitle_keyword_cps">$cps$ : T盲m盲nhetkinen ilmanpaine\n</string>
-    <string name="feedback_custom_subtitle_keyword_cv">$cv$ : T盲m盲nhetkinen n盲kyvyys\n</string>
-    <string name="feedback_custom_subtitle_keyword_cdp">$cdp$ : T盲m盲nhetkinen kastepiste\n</string>
-    <string name="feedback_custom_subtitle_keyword_al">$al$ : H盲lytykset\n</string>
-    <string name="feedback_custom_subtitle_keyword_als">$als$ : H盲lytykset (Lyhyt)\n</string>
+    <string name="feedback_custom_subtitle_keyword_cw">$cw$ : Tämänhetkinen sää\n</string>
+    <string name="feedback_custom_subtitle_keyword_ct">$ct$ : Tämänhetkinen lämpötila (℃/℉)\n</string>
+    <string name="feedback_custom_subtitle_keyword_ctd">$ctd$ : Tämänhetkinen lämpötila (°)\n</string>
+    <string name="feedback_custom_subtitle_keyword_at">$at$ : Näenäinen lämpötila (℃/℉)\n</string>
+    <string name="feedback_custom_subtitle_keyword_atd">$atd$ : Näennäinen lämpötila (°)\n</string>
+    <string name="feedback_custom_subtitle_keyword_cpb">$cpb$ : Tämänhetkinen sateen todennäköisyys (%)\n</string>
+    <string name="feedback_custom_subtitle_keyword_cp">$cp$ : Tämänhetkinen sademäärä (mm/L/m²)\n</string>
+    <string name="feedback_custom_subtitle_keyword_cwd">$cwd$ : Tämänhetkinen tuuli\n</string>
+    <string name="feedback_custom_subtitle_keyword_cuv">$cuv$ : Tämänhetkinen UV\n</string>
+    <string name="feedback_custom_subtitle_keyword_ch">$ch$ : Tämänhetkinen ilmankosteus\n</string>
+    <string name="feedback_custom_subtitle_keyword_cps">$cps$ : Tämänhetkinen ilmanpaine\n</string>
+    <string name="feedback_custom_subtitle_keyword_cv">$cv$ : Tämänhetkinen näkyvyys\n</string>
+    <string name="feedback_custom_subtitle_keyword_cdp">$cdp$ : Tämänhetkinen kastepiste\n</string>
+    <string name="feedback_custom_subtitle_keyword_al">$al$ : Hälytykset\n</string>
+    <string name="feedback_custom_subtitle_keyword_als">$als$ : Hälytykset (Lyhyt)\n</string>
     <string name="feedback_custom_subtitle_keyword_l">$l$ : Sijainti\n</string>
     <string name="feedback_custom_subtitle_keyword_lat">$lat$ : Leveysaste\n</string>
     <string name="feedback_custom_subtitle_keyword_lon">$lon$ : Pituusaste\n</string>
-    <string name="feedback_custom_subtitle_keyword_ut">$ut$ : P盲ivitysaika\n</string>
-    <string name="feedback_custom_subtitle_keyword_d">$d$ : P盲iv盲ys/n</string>
+    <string name="feedback_custom_subtitle_keyword_ut">$ut$ : Päivitysaika\n</string>
+    <string name="feedback_custom_subtitle_keyword_d">$d$ : Päiväys/n</string>
     <string name="feedback_custom_subtitle_keyword_lc">$lc$ : Kuukalenteri\n</string>
     <string name="feedback_custom_subtitle_keyword_w">$w$ : Viikko\n</string>
     <string name="feedback_custom_subtitle_keyword_ws">$ws$ : Viikko (Lyhyt)\n</string>
-    <string name="feedback_custom_subtitle_keyword_dd">$dd$ : P盲ivitt盲inen kuvaus\n</string>
+    <string name="feedback_custom_subtitle_keyword_dd">$dd$ : Päivittäinen kuvaus\n</string>
     <string name="feedback_custom_subtitle_keyword_hd">$hd$ : Tuntikohtainen kuvaus\n</string>
     <string name="feedback_custom_subtitle_keyword_enter">$enter$ : Kirjoita\n</string>
-    <string name="feedback_custom_subtitle_keyword_xdw">$0dw$, $1dw$, 鈥? $4dw$ : \nS盲盲 t盲n盲盲n p盲iv盲ll盲, huomenna, 鈥? 4:n p盲iv盲n p盲盲st盲\n</string>
-    <string name="feedback_custom_subtitle_keyword_xnw">$0nw$, $1nw$, 鈥? $4nw$ : \nS盲盲 t盲n盲盲n y枚ll盲, huomenna, Tmw, 鈥? 4:n p盲iv盲n p盲盲st盲\n</string>
-    <string name="feedback_custom_subtitle_keyword_xdt">$0dt$, $1dt$, 鈥? $4dt$ : \nP盲iv盲l盲mp枚tila t盲n盲盲n, huomenna, 鈥? 4:n p盲iv盲n p盲盲st盲 (鈩?鈩?\n</string>
-    <string name="feedback_custom_subtitle_keyword_xnt">$0nt$, $1nt$, 鈥? $4nt$ : \nY枚l盲mp枚tila t盲n盲盲n, huomenna, 鈥? 4:n p盲iv盲n p盲盲st盲 (鈩?鈩?\n</string>
-    <string name="feedback_custom_subtitle_keyword_xdtd">$0dtd$, $1dtd$, 鈥? $4dtd$ : \nP盲iv盲l盲mp枚tila t盲n盲盲n, huomenna, 鈥? 4:n p盲iv盲n p盲盲st盲 (掳)\n</string>
-    <string name="feedback_custom_subtitle_keyword_xntd">$0ntd$, $1ntd$, 鈥? $4ntd$ : \nY枚l盲mp枚tila t盲n盲盲n, huomenna, 鈥? 4:n p盲iv盲n p盲盲st盲 (掳)\n</string>
-    <string name="feedback_custom_subtitle_keyword_xdp">$0dp$, $1dp$, 鈥? $4dp$ : \nSateen todenn盲k枚isyys t盲n盲盲n p盲iv盲ll盲, huomenna, 鈥? 4:n p盲iv盲n p盲盲st盲 (%)\n</string>
-    <string name="feedback_custom_subtitle_keyword_xnp">$0np$, $1np$, 鈥? $4np$ : \nSateen todenn盲k枚isyys t盲n盲盲n y枚ll盲, huomenna, 鈥? 4:n p盲iv盲n p盲盲st盲 (%)\n</string>
-    <string name="feedback_custom_subtitle_keyword_xdwd">$0dwd$, $1dwd$, 鈥? $4dwd$ : \nTuuli t盲n盲盲n p盲iv盲ll盲, huomenna, 鈥? 4:n p盲iv盲n p盲盲st盲\n</string>
-    <string name="feedback_custom_subtitle_keyword_xnwd">$0nwd$, $1nwd$, 鈥? $4nwd$ : \nTuuli t盲n盲盲n y枚ll盲, huomenna, 鈥? 4:n p盲iv盲n p盲盲st盲\n</string>
-    <string name="feedback_custom_subtitle_keyword_xsr">$0sr$, $1sr$, 鈥? $4sr$ : \n Aurinko nousee t盲n盲盲n, huomenna, 鈥? 4:n p盲iv盲n p盲盲st盲\n</string>
-    <string name="feedback_custom_subtitle_keyword_xss">$0ss$, $1ss$, 鈥? $4ss$ : \nAurinko laskee t盲n盲盲n, huomenna, 鈥? 4:n p盲iv盲n p盲盲st盲\n</string>
-    <string name="feedback_custom_subtitle_keyword_xmr">$0mr$, $1mr$, 鈥? $4mr$ : \nKuu nousee t盲n盲盲n, huomenna, 鈥? 4:n p盲iv盲n p盲盲st盲\n</string>
-    <string name="feedback_custom_subtitle_keyword_xms">$0ms$, $1ms$, 鈥? $4ms$ : \nKuu laskee t盲n盲盲n, huomenna, 鈥? 4:n p盲iv盲n p盲盲st盲\n</string>
-    <string name="feedback_custom_subtitle_keyword_xmp">$0mp$, $1mp$, 鈥? $4mp$ : \nKuunvaihe t盲n盲盲n, huomenna, 鈥? 4:n p盲iv盲n p盲盲st盲\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdw">$0dw$, $1dw$, …, $4dw$ : \nSää tänään päivällä, huomenna, …, 4:n päivän päästä\n</string>
+    <string name="feedback_custom_subtitle_keyword_xnw">$0nw$, $1nw$, …, $4nw$ : \nSää tänään yöllä, huomenna, Tmw, …, 4:n päivän päästä\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdt">$0dt$, $1dt$, …, $4dt$ : \nPäivälämpötila tänään, huomenna, …, 4:n päivän päästä (℃/℉)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xnt">$0nt$, $1nt$, …, $4nt$ : \nYölämpötila tänään, huomenna, …, 4:n päivän päästä (℃/℉)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdtd">$0dtd$, $1dtd$, …, $4dtd$ : \nPäivälämpötila tänään, huomenna, …, 4:n päivän päästä (°)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xntd">$0ntd$, $1ntd$, …, $4ntd$ : \nYölämpötila tänään, huomenna, …, 4:n päivän päästä (°)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdp">$0dp$, $1dp$, …, $4dp$ : \nSateen todennäköisyys tänään päivällä, huomenna, …, 4:n päivän päästä (%)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xnp">$0np$, $1np$, …, $4np$ : \nSateen todennäköisyys tänään yöllä, huomenna, …, 4:n päivän päästä (%)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdwd">$0dwd$, $1dwd$, …, $4dwd$ : \nTuuli tänään päivällä, huomenna, …, 4:n päivän päästä\n</string>
+    <string name="feedback_custom_subtitle_keyword_xnwd">$0nwd$, $1nwd$, …, $4nwd$ : \nTuuli tänään yöllä, huomenna, …, 4:n päivän päästä\n</string>
+    <string name="feedback_custom_subtitle_keyword_xsr">$0sr$, $1sr$, …, $4sr$ : \n Aurinko nousee tänään, huomenna, …, 4:n päivän päästä\n</string>
+    <string name="feedback_custom_subtitle_keyword_xss">$0ss$, $1ss$, …, $4ss$ : \nAurinko laskee tänään, huomenna, …, 4:n päivän päästä\n</string>
+    <string name="feedback_custom_subtitle_keyword_xmr">$0mr$, $1mr$, …, $4mr$ : \nKuu nousee tänään, huomenna, …, 4:n päivän päästä\n</string>
+    <string name="feedback_custom_subtitle_keyword_xms">$0ms$, $1ms$, …, $4ms$ : \nKuu laskee tänään, huomenna, …, 4:n päivän päästä\n</string>
+    <string name="feedback_custom_subtitle_keyword_xmp">$0mp$, $1mp$, …, $4mp$ : \nKuunvaihe tänään, huomenna, …, 4:n päivän päästä\n</string>
 
-    <string name="feedback_live_wallpaper_weather_kind">S盲盲</string>
+    <string name="feedback_live_wallpaper_weather_kind">Sää</string>
     <string name="feedback_live_wallpaper_day_night_type">Aika</string>
 
     <string name="feedback_click_toggle">Paina kaaviota vaihtaaksesi tietoja</string>
     <string name="feedback_no_data">EI TIETOJA</string>
 
-    <string name="feedback_collect_failed">T盲m盲 sijainti on jo olemassa</string>
-    <string name="feedback_collect_succeed">Sijainnin lis盲盲minen onnistui</string>
+    <string name="feedback_collect_failed">Tämä sijainti on jo olemassa</string>
+    <string name="feedback_collect_succeed">Sijainnin lisääminen onnistui</string>
     <string name="feedback_delete_succeed">Sijainnin poisto onnistui</string>
-    <string name="feedback_location_list_cannot_be_null">Sijaintiluettelo ei voi olla tyhj盲</string>
+    <string name="feedback_location_list_cannot_be_null">Sijaintiluettelo ei voi olla tyhjä</string>
 
-    <string name="feedback_search_location">Etsi sijainti鈥</string>
-    <string name="feedback_not_yet_location">Ei viel盲 sijaintia鈥</string>
-    <string name="feedback_search_nothing">Sijaintia ei l枚ytynyt</string>
-    <string name="feedback_initializing">Initialisoidaan鈥</string>
+    <string name="feedback_search_location">Etsi sijainti…</string>
+    <string name="feedback_not_yet_location">Ei vielä sijaintia…</string>
+    <string name="feedback_search_nothing">Sijaintia ei löytynyt</string>
+    <string name="feedback_initializing">Initialisoidaan…</string>
 
-    <string name="feedback_refresh_notification_after_back">Muutokset tulevat voimaan kun palaat aloitusn盲yt枚lle.</string>
-    <string name="feedback_refresh_notification_now">P盲ivit盲 nyt</string>
-    <string name="feedback_refresh_ui_after_refresh">Muutokset tulevat voimaan kun tiedot on p盲ivitetty</string>
-    <string name="feedback_restart">Muutoksettulevat voimaan uudelleenk盲ynnistyksen j盲lkeen</string>
-    <string name="feedback_readd_location">Lis盲盲 sijainnit uudelleen</string>
-    <string name="feedback_readd_location_after_changing_source">Lis盲盲 sijainnit uudelleen kun olet vaihtanut tietol盲hteet</string>
+    <string name="feedback_refresh_notification_after_back">Muutokset tulevat voimaan kun palaat aloitusnäytölle.</string>
+    <string name="feedback_refresh_notification_now">Päivitä nyt</string>
+    <string name="feedback_refresh_ui_after_refresh">Muutokset tulevat voimaan kun tiedot on päivitetty</string>
+    <string name="feedback_restart">Muutoksettulevat voimaan uudelleenkäynnistyksen jälkeen</string>
+    <string name="feedback_readd_location">Lisää sijainnit uudelleen</string>
+    <string name="feedback_readd_location_after_changing_source">Lisää sijainnit uudelleen kun olet vaihtanut tietolähteet</string>
 
-    <string name="feedback_running_in_background">Suoritetaan taustalla jotta saat p盲ivitykset</string>
-    <string name="feedback_updating_weather_data">P盲ivitet盲盲n s盲盲tietoja</string>
-    <string name="feedback_updated_in_background">P盲ivitetty taustalla</string>
+    <string name="feedback_running_in_background">Suoritetaan taustalla jotta saat päivitykset</string>
+    <string name="feedback_updating_weather_data">Päivitetään säätietoja</string>
+    <string name="feedback_updated_in_background">Päivitetty taustalla</string>
 
     <!-- there should be a "\" before single or double quotes. -->
     <!-- Correct : ... after turning off \'Background free\', ... After turning off \"Free background\" ... -->
     <!-- Wrong   : ... after turning off 'Background free', ... After turning off "Free background" ... -->
-    <string name="feedback_interpret_background_notification_content">Joissain laitteissa saattaa ilmet盲 ilmoitus, jota ei voi poistaa ilmoituspalkista, kun olet kytkenyt \'Background free\', pois p盲盲lt盲.</string>
-    <string name="feedback_interpret_notification_group_title">Est盲 ilmoitusryhm盲</string>
-    <string name="feedback_interpret_notification_group_content">Kun olet kytkenyt \"Free background\" pois p盲盲lt盲, ilmoituspalkkiin ilmestyy ilmoitus joka osoittaa, ett盲 taustapalvelu on k盲ynniss盲. Voit poistaa Taustatietokanavan k盲yt枚st盲 sovelluksen tietosivulla est盲盲ksesi n盲m盲 ilmoitukset.</string>
+    <string name="feedback_interpret_background_notification_content">Joissain laitteissa saattaa ilmetä ilmoitus, jota ei voi poistaa ilmoituspalkista, kun olet kytkenyt \'Background free\', pois päältä.</string>
+    <string name="feedback_interpret_notification_group_title">Estä ilmoitusryhmä</string>
+    <string name="feedback_interpret_notification_group_content">Kun olet kytkenyt \"Free background\" pois päältä, ilmoituspalkkiin ilmestyy ilmoitus joka osoittaa, että taustapalvelu on käynnissä. Voit poistaa Taustatietokanavan käytöstä sovelluksen tietosivulla estääksesi nämä ilmoitukset.</string>
 
-    <string name="feedback_ignore_battery_optimizations_title">J盲t盲 akun optimointi huomiotta</string>
-    <string name="feedback_ignore_battery_optimizations_content">Varmistaaksesi, ett盲 taustapalvelut voivat jatkaa toimintaansa, j盲t盲 GeometricWeatherin akkuoptimointi huomiotta.</string>
+    <string name="feedback_ignore_battery_optimizations_title">Jätä akun optimointi huomiotta</string>
+    <string name="feedback_ignore_battery_optimizations_content">Varmistaaksesi, että taustapalvelut voivat jatkaa toimintaansa, jätä GeometricWeatherin akkuoptimointi huomiotta.</string>
     
-    <string name="feedback_cannot_start_live_wallpaper_activity">Livetaustakuvan esikatselua ei voi k盲ynnist盲盲</string>
+    <string name="feedback_cannot_start_live_wallpaper_activity">Livetaustakuvan esikatselua ei voi käynnistää</string>
 
-    <string name="feedback_unusable_geocoder">T盲m盲 laite ei sis盲ll盲 kelvollista geokooderia. Sijainnin tarjoaja on vaihdettu Baidu Locationiksi.</string>
-    <string name="feedback_about_geocoder">Geokooderi on komponentti, joka muuntaa sijaintituloksen lat-lon-muodosta muotoon \'XX kaupunki, YY maakunta \'. Jos t盲t盲 komponenttia ei ole, voit saada s盲盲tietoja AccuWeatherin kautta vain, kun k盲yt盲t natiivia APIa sijainnin tarjoajana.</string>
+    <string name="feedback_unusable_geocoder">Tämä laite ei sisällä kelvollista geokooderia. Sijainnin tarjoaja on vaihdettu Baidu Locationiksi.</string>
+    <string name="feedback_about_geocoder">Geokooderi on komponentti, joka muuntaa sijaintituloksen lat-lon-muodosta muotoon \'XX kaupunki, YY maakunta \'. Jos tätä komponenttia ei ole, voit saada säätietoja AccuWeatherin kautta vain, kun käytät natiivia APIa sijainnin tarjoajana.</string>
 
-    <string name="feedback_today_precipitation_alert">T盲n盲盲n saattaa sataa.</string>
+    <string name="feedback_today_precipitation_alert">Tänään saattaa sataa.</string>
     <string name="feedback_short_term_precipitation_alert">Seuraavien tuntien  aikana saattaa sataa.</string>
 
     <string name="feedback_resident_location">Aseta kotikaupungiksi</string>
-    <string name="feedback_resident_location_description">GeometricWeather n盲ytt盲盲 ja piilottaa automaattisesti asuinkaupungit nykyisen sijaintisi perusteella.\nVoit esimerkiksi asettaa kotikaupunkisi asuinkaupungiksi. Voit tarkistaa kotikaupunkisi s盲盲n matkalla ollessasi. Kun p盲盲set kotiin, kotikaupunkisi s盲盲 piilotetaan ja korvataan nykyisen sijaintisi s盲盲ll盲.</string>
+    <string name="feedback_resident_location_description">GeometricWeather näyttää ja piilottaa automaattisesti asuinkaupungit nykyisen sijaintisi perusteella.\nVoit esimerkiksi asettaa kotikaupunkisi asuinkaupungiksi. Voit tarkistaa kotikaupunkisi sään matkalla ollessasi. Kun pääset kotiin, kotikaupunkisi sää piilotetaan ja korvataan nykyisen sijaintisi säällä.</string>
 
-    <string name="feedback_click_to_get_more">Klikkaa saadaksesi lis盲盲鈥</string>
+    <string name="feedback_click_to_get_more">Klikkaa saadaksesi lisää…</string>
     <string name="feedback_click_again_to_exit">Klikkaa uudelleen poistuaksesi</string>
 
     <!-- content description -->
     <string name="content_desc_back">takaisin</string>
     <string name="content_desc_check_details">Tarkista tiedot</string>
-    <string name="content_desc_weather_alert_button">$ s盲盲 h盲lytykset</string> <!-- $ = alert count. -->
+    <string name="content_desc_weather_alert_button">$ sää hälytykset</string> <!-- $ = alert count. -->
     <string name="content_des_pm25">Pienhiukkaset (PM2,5)</string>
-    <string name="content_des_pm10">Hengitett盲v盲t hiukkaset (PM10)</string>
+    <string name="content_des_pm10">Hengitettävät hiukkaset (PM10)</string>
     <string name="content_des_so2">Rikkidioksidi (S02)</string>
     <string name="content_des_no2">Typpidioksidi (NO2)</string>
     <string name="content_des_o3">Otsoni</string>
@@ -321,25 +321,25 @@
     <string name="content_des_moonrise">Kuu nousee at $</string> <!-- $ = time. -->
     <string name="content_des_moonset">Kuu laskee $</string> <!-- $ = time. -->
     <string name="content_des_no_precipitation">Ei sadetta</string>
-    <string name="content_des_minutely_precipitation">Sadetta $1 ja $2 v盲lill盲</string> <!-- $1 = start time, $2 = end time. -->
-    <string name="content_des_add_current_location">Lis盲盲 nykyinen sijainti</string>
-    <string name="content_des_drag_flag">Lajittele luettelon kohteet napauttamalla ja vet盲m盲ll盲 niit盲</string>
-    <string name="content_des_delete_flag">Poista t盲m盲 kohde</string>
-    <string name="content_des_swipe_left_to_delete">Voit poistaa t盲m盲n kohteen pyyhk盲isem盲ll盲 vasemmalle.</string>
-    <string name="content_des_swipe_right_to_delete">Voit poistaa t盲m盲n kohteen pyyhk盲isem盲ll盲 oikealle.</string>
-    <string name="content_desc_search_filter_on">N盲yt盲 vain oletuss盲盲l盲hteen sijainnit</string>
-    <string name="content_desc_search_filter_off">N盲yt盲 kaikkien s盲盲l盲hteiden sijainnit</string>
+    <string name="content_des_minutely_precipitation">Sadetta $1 ja $2 välillä</string> <!-- $1 = start time, $2 = end time. -->
+    <string name="content_des_add_current_location">Lisää nykyinen sijainti</string>
+    <string name="content_des_drag_flag">Lajittele luettelon kohteet napauttamalla ja vetämällä niitä</string>
+    <string name="content_des_delete_flag">Poista tämä kohde</string>
+    <string name="content_des_swipe_left_to_delete">Voit poistaa tämän kohteen pyyhkäisemällä vasemmalle.</string>
+    <string name="content_des_swipe_right_to_delete">Voit poistaa tämän kohteen pyyhkäisemällä oikealle.</string>
+    <string name="content_desc_search_filter_on">Näytä vain oletussäälähteen sijainnit</string>
+    <string name="content_desc_search_filter_off">Näytä kaikkien säälähteiden sijainnit</string>
     <string name="content_desc_powered_by">Powered by $</string> <!-- $ = weather source. -->
     <string name="content_desc_app_store">@string/action_appStore</string>
     <string name="content_desc_wechat_payment_code">Tukimaksun QR-koodi wechatille</string>
-    <string name="content_desc_weather_icon">S盲盲 kuvake</string>
+    <string name="content_desc_weather_icon">Sää kuvake</string>
     <string name="content_desc_weather_icon_light">Vaalea kuvake</string>
     <string name="content_desc_weather_icon_grey">Harmaa kuvake</string>
     <string name="content_desc_weather_icon_dark">Tumma kuvake</string>
-    <string name="content_desc_filter_weather_sources">Suodata s盲盲l盲hteet</string>
+    <string name="content_desc_filter_weather_sources">Suodata säälähteet</string>
 
     <!-- action -->
-    <string name="action_alert">H盲lytys</string>
+    <string name="action_alert">Hälytys</string>
     <string name="action_manage">Hallitse</string>
     <string name="action_search">Etsi</string>
     <string name="action_settings">Asetukset</string>
@@ -348,101 +348,101 @@
     <string name="action_appStore">App Store</string>
 
     <!-- widget -->
-    <string name="widget_day">P盲ivitt盲inen</string>
+    <string name="widget_day">Päivittäinen</string>
     <string name="widget_week">Viikottainen</string>
-    <string name="widget_day_week">P盲ivitt盲inen + viikottainen</string>
-    <string name="widget_clock_day_horizontal">Kello + p盲ivitt盲inen (Vaakasuora tyyli)</string>
-    <string name="widget_clock_day_details">Kello + p盲ivitt盲inen (Tiedot)</string>
-    <string name="widget_clock_day_vertical">Kello + p盲ivitt盲inen (Pystysuora tyyli)</string>
-    <string name="widget_clock_day_week">Kello + p盲ivitt盲inen + viikottainen</string>
+    <string name="widget_day_week">Päivittäinen + viikottainen</string>
+    <string name="widget_clock_day_horizontal">Kello + päivittäinen (Vaakasuora tyyli)</string>
+    <string name="widget_clock_day_details">Kello + päivittäinen (Tiedot)</string>
+    <string name="widget_clock_day_vertical">Kello + päivittäinen (Pystysuora tyyli)</string>
+    <string name="widget_clock_day_week">Kello + päivittäinen + viikottainen</string>
     <string name="widget_text">Teksti</string>
-    <string name="widget_trend_daily">P盲ivitt盲inen trendi</string>
+    <string name="widget_trend_daily">Päivittäinen trendi</string>
     <string name="widget_trend_hourly">Tuntikohtainen trendi</string>
     <string name="widget_multi_city">Monen kaupungin</string>
     <string name="wait_refresh">odotetaan</string>
-    <string name="ellipsis">鈥</string>
+    <string name="ellipsis">…</string>
 
     <!-- settings -->
     <string name="settings_category_basic">Yleiset</string>
     <string name="settings_title_background_free">Background Free</string>
-    <string name="settings_summary_background_free_on">K盲yt枚ss盲\nJos widgetit ja ilmoitukset eiv盲t p盲ivity automaattisesti, ota t盲m盲 vaihtoehto pois k盲yt枚st盲.</string>
-    <string name="settings_summary_background_free_off">Ei k盲yt枚ss盲\nJos et halua mink盲盲n palvelun jatkavan ty枚skentely盲 taustalla, ota t盲m盲 vaihtoehto k盲ytt枚枚n.</string>
+    <string name="settings_summary_background_free_on">Käytössä\nJos widgetit ja ilmoitukset eivät päivity automaattisesti, ota tämä vaihtoehto pois käytöstä.</string>
+    <string name="settings_summary_background_free_off">Ei käytössä\nJos et halua minkään palvelun jatkavan työskentelyä taustalla, ota tämä vaihtoehto käyttöön.</string>
     <string name="settings_title_live_wallpaper">Live taustakuva</string>
-    <string name="settings_summary_live_wallpaper">Aseta Material-tyylin Live taustakuvaanimaatio kotin盲yt枚n taustakuvaksi</string>
+    <string name="settings_summary_live_wallpaper">Aseta Material-tyylin Live taustakuvaanimaatio kotinäytön taustakuvaksi</string>
     <string name="settings_title_service_provider">Palveluntarjoaja</string> 
-    <string name="settings_summary_service_provider">Valitse s盲盲tietojen ja paikkatietojen palveluntarjoaja</string>
-    <string name="settings_title_service_provider_advanced">Palveluntarjoajan lis盲asetukset</string>
+    <string name="settings_summary_service_provider">Valitse säätietojen ja paikkatietojen palveluntarjoaja</string>
+    <string name="settings_title_service_provider_advanced">Palveluntarjoajan lisäasetukset</string>
     <string name="settings_summary_service_provider_advanced">Noudata varovaisuutta</string>
-    <string name="settings_title_weather_source">S盲盲l盲hde</string>
+    <string name="settings_title_weather_source">Säälähde</string>
     <string name="settings_title_location_service">Sijaintipalvelu</string>
     <string name="settings_title_dark_mode">Tumma tila</string>
-    <string name="settings_title_ui_style">K盲ytt枚liittym盲n tyyli</string>
+    <string name="settings_title_ui_style">Käyttöliittymän tyyli</string>
     <string name="settings_title_icon_provider">Kuvakepaketti</string>
     <string name="settings_title_appearance">Ulkoasu</string>
-    <string name="settings_summary_appearance">K盲ytt枚liittym盲n tyyli, korttien j盲rjestys, kieli鈥</string>
-    <string name="settings_title_card_display">N盲ytett盲v盲t kortit</string>
-    <string name="settings_title_daily_trend_display">N盲yt盲 p盲ivitt盲inen trendi</string>
-    <string name="settings_title_trend_horizontal_line_switch">Vaakaviivat trendiss盲</string>
-    <string name="settings_title_exchange_day_night_temp_switch">Vaihda p盲iv盲 y枚 l盲mp枚tila</string>
-    <string name="settings_title_card_order">Korttien j盲rjestys</string>
+    <string name="settings_summary_appearance">Käyttöliittymän tyyli, korttien järjestys, kieli…</string>
+    <string name="settings_title_card_display">Näytettävät kortit</string>
+    <string name="settings_title_daily_trend_display">Näytä päivittäinen trendi</string>
+    <string name="settings_title_trend_horizontal_line_switch">Vaakaviivat trendissä</string>
+    <string name="settings_title_exchange_day_night_temp_switch">Vaihda päivä yö lämpötila</string>
+    <string name="settings_title_card_order">Korttien järjestys</string>
     <string name="settings_title_gravity_sensor_switch">Painovoima-anturi</string>
     <string name="settings_title_list_animation_switch">Luetteloanimaatio</string>
     <string name="settings_title_item_animation_switch">Kohteen animaatio</string>
     <string name="settings_language">Kieli</string>
-    <string name="settings_title_unit">Yksik枚t</string>
-    <string name="settings_summary_unit">Aseta s盲盲tietojen yksik枚t</string>
-    <string name="settings_title_temperature_unit">L盲mp枚tilan yksikk枚</string>
-    <string name="settings_title_distance_unit">Et盲isyyden yksikk枚</string>
-    <string name="settings_title_precipitation_unit">Sadem盲盲r盲n yksikk枚</string>
-    <string name="settings_title_pressure_unit">Ilmanpaineen yksikk枚</string>
-    <string name="settings_title_speed_unit">Nopeuden yksikk枚</string>
-    <string name="settings_title_refresh_rate">Automaattinen p盲ivitysv盲li</string>
-    <string name="settings_title_alert_notification_switch">L盲het盲 h盲lytysilmoitukset</string>
-    <string name="settings_title_precipitation_notification_switch">L盲het盲 sade-ennusteet</string>
-    <string name="settings_title_permanent_service">Pysyv盲 palvelu</string>
+    <string name="settings_title_unit">Yksiköt</string>
+    <string name="settings_summary_unit">Aseta säätietojen yksiköt</string>
+    <string name="settings_title_temperature_unit">Lämpötilan yksikkö</string>
+    <string name="settings_title_distance_unit">Etäisyyden yksikkö</string>
+    <string name="settings_title_precipitation_unit">Sademäärän yksikkö</string>
+    <string name="settings_title_pressure_unit">Ilmanpaineen yksikkö</string>
+    <string name="settings_title_speed_unit">Nopeuden yksikkö</string>
+    <string name="settings_title_refresh_rate">Automaattinen päivitysväli</string>
+    <string name="settings_title_alert_notification_switch">Lähetä hälytysilmoitukset</string>
+    <string name="settings_title_precipitation_notification_switch">Lähetä sade-ennusteet</string>
+    <string name="settings_title_permanent_service">Pysyvä palvelu</string>
     <string name="settings_category_forecast">Ennuste</string>
-    <string name="settings_title_forecast_today">T盲m盲n p盲iv盲n ennuste</string>
-    <string name="settings_title_forecast_today_time">T盲m盲n p盲iv盲n ennusteen aika</string>
+    <string name="settings_title_forecast_today">Tämän päivän ennuste</string>
+    <string name="settings_title_forecast_today_time">Tämän päivän ennusteen aika</string>
     <string name="settings_title_forecast_tomorrow">Huomisen ennuste</string>
     <string name="settings_title_forecast_tomorrow_time">Huomisen ennusteen aika</string>
     <string name="settings_category_widget">Widget</string>
     <string name="settings_title_week_icon_mode">Viikoittaiset kuvakkeet</string>
     <string name="settings_title_minimal_icon">Minimalistiset kuvakkeet</string>
-    <string name="settings_title_click_widget_to_refresh">P盲ivit盲 widget napsautettaessa</string>
+    <string name="settings_title_click_widget_to_refresh">Päivitä widget napsautettaessa</string>
     <string name="settings_title_widget_config">Widgetin asetukset</string>
     <string name="settings_category_notification">Ilmoitukset</string>
-    <string name="settings_title_notification">L盲het盲 Ilmoituksia</string>
+    <string name="settings_title_notification">Lähetä Ilmoituksia</string>
     <string name="settings_title_notification_style">Ilmoitusten tyyli</string>
-    <string name="settings_title_notification_temp_icon">L盲mp枚tila tilarivin kuvakkeena</string>
-    <string name="settings_title_notification_color">Ilmoitusten v盲ri</string>
-    <string name="settings_title_notification_custom_color">Mukautettu ilmoitusv盲ri</string>
-    <string name="settings_title_notification_text_color">Tekstin v盲ri</string>
-    <string name="settings_title_notification_background">Taustan v盲ri</string>
-    <string name="settings_notification_background_off">Seuraa j盲rjestelm盲盲</string>
+    <string name="settings_title_notification_temp_icon">Lämpötila tilarivin kuvakkeena</string>
+    <string name="settings_title_notification_color">Ilmoitusten väri</string>
+    <string name="settings_title_notification_custom_color">Mukautettu ilmoitusväri</string>
+    <string name="settings_title_notification_text_color">Tekstin väri</string>
+    <string name="settings_title_notification_background">Taustan väri</string>
+    <string name="settings_notification_background_off">Seuraa järjestelmää</string>
     <string name="settings_title_notification_can_be_cleared">Voidaan poistaa</string>
-    <string name="settings_notification_can_be_cleared_on">Voidaan poistaa vet盲m盲ll盲</string>
+    <string name="settings_notification_can_be_cleared_on">Voidaan poistaa vetämällä</string>
     <string name="settings_notification_can_be_cleared_off">Ei voida poistaa</string>
-    <string name="settings_title_notification_hide_icon">Piilota ilmoituskuvake tilarivist盲</string>
+    <string name="settings_title_notification_hide_icon">Piilota ilmoituskuvake tilarivistä</string>
     <string name="settings_notification_hide_icon_on">Piiota</string>
-    <string name="settings_notification_hide_icon_off">N盲yt盲</string>
-    <string name="settings_title_notification_hide_in_lockScreen">Piilota lukitusn盲yt枚st盲</string>
-    <string name="settings_notification_hide_in_lockScreen_on">Piilota (t盲ytyy avata j盲rjestelm盲asetuksissa)</string>
-    <string name="settings_notification_hide_in_lockScreen_off">N盲yt盲</string>
+    <string name="settings_notification_hide_icon_off">Näytä</string>
+    <string name="settings_title_notification_hide_in_lockScreen">Piilota lukitusnäytöstä</string>
+    <string name="settings_notification_hide_in_lockScreen_on">Piilota (täytyy avata järjestelmäasetuksissa)</string>
+    <string name="settings_notification_hide_in_lockScreen_off">Näytä</string>
     <string name="settings_title_notification_hide_big_view">Laajennettu tyyli</string>
     <string name="settings_notification_hide_big_view_on">Piilota</string>
-    <string name="settings_notification_hide_big_view_off">N盲yt盲</string>
+    <string name="settings_notification_hide_big_view_off">Näytä</string>
     <string name="settings_provider_default_value">Oletus (ei muutoksia)</string>
     <string name="settings_provider_accu_weather">AccuWeather</string>
     <string name="settings_provider_accu_weather_key">AccuWeather weather avain</string>
     <string name="settings_provider_accu_current_key">AccuWeather current avain</string>
-    <string name="settings_provider_accu_aqi_key">AccuWeather AQI avain</string>
+    <string name="settings_provider_accu_aqi_key">AccuWeather AQI avain</string>
+    <string name="settings_provider_owm">OpenWeather</string>
+    <string name="settings_provider_owm_key">OpenWeather avain</string>
     <string name="settings_provider_baidu_ip_location">Baidu IP sijainti</string>
     <string name="settings_provider_baidu_ip_location_ak">Baidu IP sijainti AK</string>
-    <string name="settings_provider_mf">M茅t茅o France</string>
-    <string name="settings_provider_mf_wsft_key">M茅t茅o France WSFT avain</string>
+    <string name="settings_provider_mf">Météo France</string>
+    <string name="settings_provider_mf_wsft_key">Météo France WSFT avain</string>
     <string name="settings_provider_iqa_air_parif_key">Air Parif avain</string>
     <string name="settings_provider_iqa_atmo_aura_key">ATMO AURA avain</string>
 
 </resources>
-
-

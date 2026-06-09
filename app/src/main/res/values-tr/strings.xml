@@ -1,39 +1,39 @@
-﻿<resources xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- app. -->
     <string name="app_name">Hava Durumu</string>
     <string name="geometric_weather">Geometrik Hava Durumu</string>
 
     <!-- keyword. -->
-    <string name="current_location">Bulundu臒unuz konumu</string>
-    <string name="default_location">varsay谋lan konum</string>
-    <string name="live">R眉zgar</string>
-    <string name="today">Bug眉n</string>
-    <string name="refresh_at">Son g眉ncelleme</string>
-    <string name="precipitation">Ya臒谋艧 ihtimali</string>
-    <string name="maxi_temp">G眉nd眉z</string>
+    <string name="current_location">Bulunduğunuz konumu</string>
+    <string name="default_location">varsayılan konum</string>
+    <string name="live">Rüzgar</string>
+    <string name="today">Bugün</string>
+    <string name="refresh_at">Son güncelleme</string>
+    <string name="precipitation">Yağış ihtimali</string>
+    <string name="maxi_temp">Gündüz</string>
     <string name="mini_temp">Gece</string>
     <string name="time">Zaman</string>
-    <string name="day">T眉m g眉n</string>
+    <string name="day">Tüm gün</string>
     <string name="night">Gece</string>
-    <string name="wind">R眉zgar</string>
-    <string name="sensible_temp">Hissedilen s谋cakl谋k</string>
+    <string name="wind">Rüzgar</string>
+    <string name="sensible_temp">Hissedilen sıcaklık</string>
     <string name="humidity">Nem</string>
     <string name="uv_index">UV indeksi</string>
     <string name="forecast">Tahmin</string>
     <string name="briefings">Durum</string>
-    <string name="daytime">G眉nd眉z</string>
+    <string name="daytime">Gündüz</string>
     <string name="nighttime">Gece</string>
-    <string name="publish_at">Yay谋n</string>
+    <string name="publish_at">Yayın</string>
     <string name="feels_like">Hissedilen</string>
     <string name="follow_system">Sistem Dili</string>
 
     <string name="of_clock">:00</string>
-    <string name="yesterday">D眉n</string>
-    <string name="tomorrow">Yar谋n</string>
+    <string name="yesterday">Dün</string>
+    <string name="tomorrow">Yarın</string>
     <string name="week">Hafta</string>
     <string name="week_1">PZT</string>
     <string name="week_2">SAL</string>
-    <string name="week_3">脟R艦</string>
+    <string name="week_3">ÇRŞ</string>
     <string name="week_4">PER</string>
     <string name="week_5">CUM</string>
     <string name="week_6">CMT</string>
@@ -46,110 +46,110 @@
     <string name="wind_4">Orta dereceli esinti</string>
     <string name="wind_5">Taze esinti</string>
     <string name="wind_6">Kuvvetli esinti</string>
-    <string name="wind_7">Yak谋n esinti</string>
-    <string name="wind_8">R眉zgar</string>
-    <string name="wind_9">Kuvvetli r眉zgar</string>
-    <string name="wind_10">F谋rt谋na</string>
-    <string name="wind_11">艦iddetli F谋rt谋na</string>
-    <string name="wind_12">Kas谋rga/Tayfun</string>
+    <string name="wind_7">Yakın esinti</string>
+    <string name="wind_8">Rüzgar</string>
+    <string name="wind_9">Kuvvetli rüzgar</string>
+    <string name="wind_10">Fırtına</string>
+    <string name="wind_11">Şiddetli Fırtına</string>
+    <string name="wind_12">Kasırga/Tayfun</string>
 
     <string name="aqi_1">Taze hava</string>
     <string name="aqi_2">Temiz hava</string>
     <string name="aqi_3">Az kirli</string>
     <string name="aqi_4">Orta kirli</string>
-    <string name="aqi_5">脟ok kirli</string>
+    <string name="aqi_5">Çok kirli</string>
     <string name="aqi_6">Tehlikeli</string>
 
-    <string name="daily_overview">g眉nl眉k</string>
+    <string name="daily_overview">günlük</string>
     <string name="hourly_overview">saatlik</string>
     <string name="air_quality">hava kalitesi</string>
     <string name="life_details">Detaylar</string>
-    <string name="sunrise_sunset">G眉ne艧 &amp; ay</string>
+    <string name="sunrise_sunset">Güneş &amp; ay</string>
 
-    <string name="next">SONRAK陌</string>
-    <string name="done">B陌TT陌</string>
-    <string name="cancel" tools:ignore="ButtonCase">陌PTAL</string>
-    <string name="on">A脟</string>
+    <string name="next">SONRAKİ</string>
+    <string name="done">BİTTİ</string>
+    <string name="cancel" tools:ignore="ButtonCase">İPTAL</string>
+    <string name="on">AÇ</string>
     <string name="off">KAPAT</string>
 
     <string name="about_app">HAKKINDA</string>
-    <string name="introduce">Giri艧</string>
+    <string name="introduce">Giriş</string>
     <string name="email">E-posta</string>
     <string name="gitHub">GitHub</string>
-    <string name="thanks">T艦K</string>
-    <string name="translator">脟evirmenler</string>
+    <string name="thanks">TŞK</string>
+    <string name="translator">Çevirmenler</string>
 
     <!-- feedback. -->
-    <string name="feedback_request_permission">陌zinler</string>
+    <string name="feedback_request_permission">İzinler</string>
     <string name="feedback_request_location">Konum</string>
-    <string name="feedback_request_location_permission_success">Konum izin iste臒i ba艧ar谋l谋.</string>
-    <string name="feedback_request_location_permission_failed">Konum izin iste臒i ba艧ar谋s谋z.</string>
+    <string name="feedback_request_location_permission_success">Konum izin isteği başarılı.</string>
+    <string name="feedback_request_location_permission_failed">Konum izin isteği başarısız.</string>
 
-    <string name="feedback_location_failed">Konum ba艧ar谋s谋z.</string>
-    <string name="feedback_get_weather_failed">Hava Durumu iste臒i ba艧ar谋s谋z.</string>
+    <string name="feedback_location_failed">Konum başarısız.</string>
+    <string name="feedback_get_weather_failed">Hava Durumu isteği başarısız.</string>
 
-    <string name="feedback_view_style">G枚r眉nt眉leme 艧ekli.</string>
-    <string name="feedback_show_widget_card">Kart g枚r眉n眉m眉.</string>
-    <string name="feedback_black_text">Koyu yaz谋.</string>
+    <string name="feedback_view_style">Görüntüleme şekli.</string>
+    <string name="feedback_show_widget_card">Kart görünümü.</string>
+    <string name="feedback_black_text">Koyu yazı.</string>
 
-    <string name="feedback_click_toggle">Verileri de臒i艧tirmek i莽in grafi臒i t谋klay谋n.</string>
-    <string name="feedback_no_data">VER陌 YOK</string>
+    <string name="feedback_click_toggle">Verileri değiştirmek için grafiği tıklayın.</string>
+    <string name="feedback_no_data">VERİ YOK</string>
 
     <string name="feedback_collect_failed">Bu konum mevcut.</string>
-    <string name="feedback_collect_succeed">Konum ekleme ba艧ar谋l谋.</string>
-    <string name="feedback_delete_succeed">Konum kald谋rma ba艧ar谋l谋.</string>
-    <string name="feedback_location_list_cannot_be_null">Konum listesi bo艧 olamaz.</string>
+    <string name="feedback_collect_succeed">Konum ekleme başarılı.</string>
+    <string name="feedback_delete_succeed">Konum kaldırma başarılı.</string>
+    <string name="feedback_location_list_cannot_be_null">Konum listesi boş olamaz.</string>
 
-    <string name="feedback_search_location">Konum ara鈥</string>
-    <string name="feedback_not_yet_location">Hen眉z konum yok鈥</string>
-    <string name="feedback_search_nothing">Hi莽bir 艧ey aranmad谋鈥</string>
-    <string name="feedback_initializing">Ba艧lat谋l谋yor鈥</string>
+    <string name="feedback_search_location">Konum ara…</string>
+    <string name="feedback_not_yet_location">Henüz konum yok…</string>
+    <string name="feedback_search_nothing">Hiçbir şey aranmadı…</string>
+    <string name="feedback_initializing">Başlatılıyor…</string>
 
-    <string name="feedback_refresh_notification_after_back">Ana sayfaya geri d枚nd眉臒眉n眉zde etkili olacak.</string>
-    <string name="feedback_refresh_notification_now">艦imdi g眉ncelle.</string>
-    <string name="feedback_refresh_ui_after_refresh">Veri g眉ncellendi臒inde etkili olacak.</string>
-    <string name="feedback_restart">Yeniden ba艧lat谋nca etkili olacak.</string>
+    <string name="feedback_refresh_notification_after_back">Ana sayfaya geri döndüğünüzde etkili olacak.</string>
+    <string name="feedback_refresh_notification_now">Şimdi güncelle.</string>
+    <string name="feedback_refresh_ui_after_refresh">Veri güncellendiğinde etkili olacak.</string>
+    <string name="feedback_restart">Yeniden başlatınca etkili olacak.</string>
 
     <!-- action -->
-    <string name="action_alert">Uyar谋</string>
-    <string name="action_manage">Y枚net</string>
+    <string name="action_alert">Uyarı</string>
+    <string name="action_manage">Yönet</string>
     <string name="action_search">Ara</string>
     <string name="action_settings">Ayarlar</string>
-    <string name="action_about">Hakk谋nda</string>
+    <string name="action_about">Hakkında</string>
 
     <!-- widget -->
-    <string name="widget_day">G眉nl眉k</string>
-    <string name="widget_week">Haftal谋k</string>
-    <string name="widget_day_week">G眉nl眉k + Haftal谋k</string>
-    <string name="widget_clock_day_horizontal">Saat + G眉nl眉k (Yatay g枚r眉n眉m)</string>
-    <string name="widget_clock_day_vertical">Saat + G眉nl眉k (Dikey g枚r眉n眉m)</string>
-    <string name="widget_clock_day_week">Saat + G眉nl眉k + Haftal谋k</string>
+    <string name="widget_day">Günlük</string>
+    <string name="widget_week">Haftalık</string>
+    <string name="widget_day_week">Günlük + Haftalık</string>
+    <string name="widget_clock_day_horizontal">Saat + Günlük (Yatay görünüm)</string>
+    <string name="widget_clock_day_vertical">Saat + Günlük (Dikey görünüm)</string>
+    <string name="widget_clock_day_week">Saat + Günlük + Haftalık</string>
     <string name="wait_refresh">bekliyor</string>
-    <string name="ellipsis">鈥</string>
+    <string name="ellipsis">…</string>
 
     <!-- settings -->
     <string name="settings_category_basic">Temel</string>
     <string name="settings_language">Dil.</string>
-    <string name="settings_title_permanent_service">kal谋c谋 servis.</string>
+    <string name="settings_title_permanent_service">kalıcı servis.</string>
     <string name="settings_category_forecast">Tahmin</string>
-    <string name="settings_title_forecast_today">Bug眉n i莽in tahmin.</string>
-    <string name="settings_title_forecast_today_time">Bug眉n i莽in tahmin zaman谋.</string>
-    <string name="settings_title_forecast_tomorrow">Yar谋n i莽in tahmin.</string>
-    <string name="settings_title_forecast_tomorrow_time">Yar谋n i莽in tahmin zaman谋.</string>
+    <string name="settings_title_forecast_today">Bugün için tahmin.</string>
+    <string name="settings_title_forecast_today_time">Bugün için tahmin zamanı.</string>
+    <string name="settings_title_forecast_tomorrow">Yarın için tahmin.</string>
+    <string name="settings_title_forecast_tomorrow_time">Yarın için tahmin zamanı.</string>
     <string name="settings_category_widget">Widget</string>
-    <string name="settings_category_notification">Uyar谋</string>
-    <string name="settings_title_notification">Uyar谋 g枚nder.</string>
-    <string name="settings_title_notification_text_color">Yaz谋 rengi.</string>
+    <string name="settings_category_notification">Uyarı</string>
+    <string name="settings_title_notification">Uyarı gönder.</string>
+    <string name="settings_title_notification_text_color">Yazı rengi.</string>
     <string name="settings_title_notification_background">Arkaplan rengi.</string>
-    <string name="settings_notification_background_off">Sistem varsay谋lan谋.</string>
-    <string name="settings_title_notification_can_be_cleared">Kald谋r谋labilir.</string>
-    <string name="settings_notification_can_be_cleared_on">Kald谋r谋labilir.</string>
-    <string name="settings_notification_can_be_cleared_off">Kald谋r谋lamaz.</string>
-    <string name="settings_title_notification_hide_icon">Uyar谋 ikonunu gizle.</string>
+    <string name="settings_notification_background_off">Sistem varsayılanı.</string>
+    <string name="settings_title_notification_can_be_cleared">Kaldırılabilir.</string>
+    <string name="settings_notification_can_be_cleared_on">Kaldırılabilir.</string>
+    <string name="settings_notification_can_be_cleared_off">Kaldırılamaz.</string>
+    <string name="settings_title_notification_hide_icon">Uyarı ikonunu gizle.</string>
     <string name="settings_notification_hide_icon_on">Gizle.</string>
-    <string name="settings_notification_hide_icon_off">G枚ster.</string>
-    <string name="settings_title_notification_hide_in_lockScreen">Kilit ekran谋nda gizle.</string>
-    <string name="settings_notification_hide_in_lockScreen_on">Gizle (Sistem ayarlar谋nda a莽man谋z gerekir).</string>
-    <string name="settings_notification_hide_in_lockScreen_off">G枚ster.</string>
+    <string name="settings_notification_hide_icon_off">Göster.</string>
+    <string name="settings_title_notification_hide_in_lockScreen">Kilit ekranında gizle.</string>
+    <string name="settings_notification_hide_in_lockScreen_on">Gizle (Sistem ayarlarında açmanız gerekir).</string>
+    <string name="settings_notification_hide_in_lockScreen_off">Göster.</string>
 
 </resources>

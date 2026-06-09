@@ -14,6 +14,8 @@ import wangdaye.com.geometricweather.weather.apis.AtmoAuraIqaApi;
 import wangdaye.com.geometricweather.weather.apis.CaiYunApi;
 import wangdaye.com.geometricweather.weather.apis.MfWeatherApi;
 import wangdaye.com.geometricweather.weather.apis.OpenMeteoApi;
+import wangdaye.com.geometricweather.weather.apis.OwmApi;
+
 import wangdaye.com.geometricweather.weather.apis.WeatherApiApi;
 
 @InstallIn(SingletonComponent.class)
@@ -31,6 +33,19 @@ public class ApiModule {
                 .addCallAdapterFactory(callAdapterFactory)
                 .build()
                 .create((AccuWeatherApi.class));
+    }
+
+    @Provides
+    public OwmApi provideOpenWeatherMapApi(OkHttpClient client,
+                                           GsonConverterFactory converterFactory,
+                                           RxJava2CallAdapterFactory callAdapterFactory) {
+        return new Retrofit.Builder()
+                .baseUrl(BuildConfig.OWM_BASE_URL)
+                .client(client)
+                .addConverterFactory(converterFactory)
+                .addCallAdapterFactory(callAdapterFactory)
+                .build()
+                .create((OwmApi.class));
     }
 
     @Provides

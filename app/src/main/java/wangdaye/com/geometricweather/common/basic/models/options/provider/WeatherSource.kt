@@ -13,6 +13,7 @@ enum class WeatherSource(
 ): VoiceEnum {
 
     ACCU("accu", -0x10a7dd, "accuweather.com"),
+    OWM("owm", -0x1491b5, "openweathermap.org"),
     MF("mf", -0xffa76e, "meteofrance.com"),
     CAIYUN("caiyun", -0xa14472, "caiyunapp.com"),
     OPEN_METEO("open_meteo", -0x7a3a1a, "open-meteo.com"),
@@ -24,6 +25,9 @@ enum class WeatherSource(
         fun getInstance(
             value: String
         ): WeatherSource {
+            if (value.lowercase().contains("owm")) {
+                return OWM
+            }
             if (value.lowercase().contains("mf")) {
                 return MF
             }

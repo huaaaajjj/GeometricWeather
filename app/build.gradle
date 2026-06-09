@@ -13,6 +13,7 @@ def decodeBase64(String encoded) {
 
 // Embedded API keys (base64 encoded to avoid secret scanning)
 def EMBEDDED_ACCU_KEY = decodeBase64("enBrYV8wYTM0YTEzMTY2OWM0NDBhODc0YTYzY2E1M2Q5Yjk1Yl81ZTdkYjUzMg==")
+def EMBEDDED_OWM_KEY = decodeBase64("NmI5NDNlMjJhN2Q0YTM4ODg4ZjY3MzI1YzFlNzQxOWU=")
 def EMBEDDED_CAIYUN_KEY = decodeBase64("VEFraGpmOGQxbmxTbHNwTg==")
 def EMBEDDED_WEATHERAPI_KEY = decodeBase64("ZjlhOTJmYjQ4NzI3NDg3NmEwYjgyMzA1MjYwOTA2")
 
@@ -73,7 +74,8 @@ android {
         it.buildConfigField "String", "ACCU_WEATHER_KEY", localProperties.getProperty("ACCU_WEATHER_KEY", "\"$EMBEDDED_ACCU_KEY\"")
         it.buildConfigField "String", "ACCU_CURRENT_KEY", localProperties.getProperty("ACCU_CURRENT_KEY", "\"$EMBEDDED_ACCU_KEY\"")
         it.buildConfigField "String", "ACCU_AQI_KEY", localProperties.getProperty("ACCU_AQI_KEY", "\"$EMBEDDED_ACCU_KEY\"")
-        it.buildConfigField "String", "ACCU_WEATHER_BASE_URL", localProperties.getProperty("ACCU_WEATHER_BASE_URL", ACCU_WEATHER_BASE_URL)
+        it.buildConfigField "String", "OWM_KEY", localProperties.getProperty("OWM_KEY", "\"$EMBEDDED_OWM_KEY\"")
+        it.buildConfigField "String", "OWM_BASE_URL", localProperties.getProperty("OWM_BASE_URL", OWM_BASE_URL)
         it.buildConfigField "String", "BAIDU_IP_LOCATION_BASE_URL", localProperties.getProperty("BAIDU_IP_LOCATION_BASE_URL", BAIDU_IP_LOCATION_BASE_URL)
         it.buildConfigField "String", "BAIDU_IP_LOCATION_AK", localProperties.getProperty("BAIDU_IP_LOCATION_AK", BAIDU_IP_LOCATION_AK)
         it.buildConfigField "String", "MF_WSFT_KEY", localProperties.getProperty("MF_WSFT_KEY", MF_WSFT_KEY)

@@ -7,15 +7,16 @@
     <!-- Chinese source. -->
     <string-array name="weather_sources">
         <item>caiyunapp.com (Exclusiv pentru China)</item>
-        <item>accuweather.com</item>
-        <item>M茅t茅o France</item>
+        <item>accuweather.com</item>
+        <item>OpenWeather</item>
+        <item>Météo France</item>
     </string-array>
 
     <!-- Location service. -->
     <string-array name="location_services">
-        <item>Loca葲ie Baidu</item>
-        <item>Loca葲ie Baidu IP (Exclusiv pentru China)</item>
-        <item>Loca葲ie AMap</item>
+        <item>Locație Baidu</item>
+        <item>Locație Baidu IP (Exclusiv pentru China)</item>
+        <item>Locație AMap</item>
         <item>API Nativ</item>
     </string-array>
 
@@ -23,7 +24,7 @@
     <string-array name="dark_modes">
         <item>Automat</item>
         <item>La fel ca tema sistemului</item>
-        <item>脦ntunecat</item>
+        <item>Întunecat</item>
         <item>Luminos</item>
     </string-array>
 
@@ -36,7 +37,7 @@
     <!-- automatic refresh rate. -->
     <string-array name="automatic_refresh_rates">
         <item> 30 minute</item>
-        <item>1 or膬</item>
+        <item>1 oră</item>
         <item>1.5 ore</item>
         <item>2 ore</item>
         <item>2.5 ore</item>
@@ -59,14 +60,14 @@
     <!-- notification style. -->
     <string-array name="notification_styles">
         <item>sistem</item>
-        <item>Ora葯e</item>
+        <item>Orașe</item>
         <item>@string/daily_overview</item><!-- do not translate. -->
         <item>@string/hourly_overview</item><!-- do not translate. -->
     </string-array>
 
     <!-- notification text color. -->
     <string-array name="notification_text_colors">
-        <item>脦nchis la culoare</item>
+        <item>Închis la culoare</item>
         <item>Gri</item>
         <item>Deschis la culoare</item>
     </string-array>
@@ -82,7 +83,7 @@
         <item>Vertical</item>
         <item>Oreo</item>
         <item>Oreo (Google sans)</item>
-        <item>Temperatur膬</item>
+        <item>Temperatură</item>
     </string-array>
 
     <!-- week widget style. -->
@@ -93,10 +94,10 @@
 
     <!-- Widget subtitle data. -->
     <string-array name="subtitle_data">
-        <item>Or膬 actualizare</item>
-        <item>Calitatea aerului (Invalid 卯n unele zone.)</item>
-        <item>V芒nt</item>
-        <item>Temp. resim葲it膬</item>
+        <item>Oră actualizare</item>
+        <item>Calitatea aerului (Invalid în unele zone.)</item>
+        <item>Vânt</item>
+        <item>Temp. resimțită</item>
         <item>Calendar Lunar</item>
         <item>Personalizat</item>
     </string-array>
@@ -114,13 +115,13 @@
         <item>Nici unul</item>
         <item>Mod zi - noapte</item>
         <item>Luminos</item>
-        <item>脦ntunecat</item>
+        <item>Întunecat</item>
     </string-array>
 
     <!-- widget clock font. -->
     <string-array name="widget_text_colors">
         <item>Deschis la culoare</item>
-        <item>脦nchis la culoare</item>
+        <item>Închis la culoare</item>
         <item>Automat</item>
     </string-array>
 
@@ -128,17 +129,17 @@
     <string-array name="live_wallpaper_weather_kinds">
         <item>Automat</item>
         <item>Senin</item>
-        <item>Par葲ial noros</item>
+        <item>Parțial noros</item>
         <item>Noros</item>
         <item>Ploaie</item>
         <item>Ninsoare</item>
-        <item>Lapovi葲膬</item>
-        <item>Grindin膬</item>
-        <item>Cea葲膬</item>
-        <item>Vizibilitate redus膬</item>
-        <item>Tr膬snet</item>
-        <item>Furtun膬</item>
-        <item>V芒nt</item>
+        <item>Lapoviță</item>
+        <item>Grindină</item>
+        <item>Ceață</item>
+        <item>Vizibilitate redusă</item>
+        <item>Trăsnet</item>
+        <item>Furtună</item>
+        <item>Vânt</item>
     </string-array>
 
     <!-- live wallpaper weather kind. -->
@@ -162,23 +163,23 @@
         <item>mm</item>
         <item>cm</item>
         <item>inch</item>
-        <item>L/m虏</item>
+        <item>L/m²</item>
     </string-array>
 
     <!-- temperature unit. -->
     <string-array name="temperature_units">
-        <item>鈩</item>
-        <item>鈩</item>
+        <item>℃</item>
+        <item>℉</item>
         <item>K</item>
     </string-array>
     <string-array name="temperature_units_short">
-        <item>掳</item>
-        <item>掳</item>
+        <item>°</item>
+        <item>°</item>
         <item>K</item>
     </string-array>
     <string-array name="temperature_units_long">
-        <item>掳C</item>
-        <item>掳F</item>
+        <item>°C</item>
+        <item>°F</item>
         <item>K</item>
     </string-array>
 
@@ -199,17 +200,17 @@
         <item>atm</item>
         <item>mmHg</item>
         <item>inHg</item>
-        <item>kgf/cm虏</item>
+        <item>kgf/cm²</item>
     </string-array>
 
     <!-- air quality unit. -->
     <string-array name="air_quality_units">
-        <item>渭g/m鲁</item>
+        <item>μg/m³</item>
     </string-array>
 
     <!-- air quality co unit. -->
     <string-array name="air_quality_co_units">
-        <item>mg/m鲁</item>
+        <item>mg/m³</item>
     </string-array>
 
     <!-- duration unit. -->
@@ -219,9 +220,7 @@
 
     <!-- pollen unit. -->
     <string-array name="pollen_units">
-        <item>/m鲁</item>
+        <item>/m³</item>
     </string-array>
 
 </resources>
-
-

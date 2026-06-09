@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <resources>
 
     <!-- Chinese source. -->
     <string-array name="weather_sources">
         <item>caiyunapp.com (Только для Китая)</item>
-        <item>accuweather.com</item>
+        <item>accuweather.com</item>
+        <item>OpenWeather</item>
         <item>Météo France</item>
     </string-array>
 
@@ -190,4 +191,3 @@
     </string-array>
 
 </resources>
-

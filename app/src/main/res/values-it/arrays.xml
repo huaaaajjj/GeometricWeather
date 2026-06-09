@@ -63,7 +63,7 @@
     <!-- Widget subtitle data. -->
     <string-array name="subtitle_data">
         <item>Ultimo aggiornamento</item>
-        <item>Qualit脿 aria</item>
+        <item>Qualità aria</item>
         <item>Vento</item>
         <item>Temperatura percepita</item>
         <item>Calendario Lunare</item>

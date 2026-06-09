@@ -6,8 +6,9 @@
     <!-- Weather sources -->
     <string-array name="weather_sources">
         <item>caiyunapp.com (Chine uniquement)</item>
-        <item>AccuWeather</item>
-        <item>M茅t茅o France</item>
+        <item>AccuWeather</item>
+        <item>OpenWeather</item>
+        <item>Météo France</item>
     </string-array>
 
     <!-- Location service. -->
@@ -21,7 +22,7 @@
     <!-- Dark mode. -->
     <string-array name="dark_modes">
         <item>Automatique</item>
-        <item>Pr茅f茅rence syst猫me</item>
+        <item>Préférence système</item>
         <item>Toujours clair</item>
         <item>Toujours sombre</item>
     </string-array>
@@ -73,7 +74,7 @@
     <!-- widget style. -->
     <string-array name="widget_styles">
         <item>Rectangle</item>
-        <item>Sym茅trie</item>
+        <item>Symétrie</item>
         <item>Carreau</item>
         <item>Mini</item>
         <item>Nano</item>
@@ -81,7 +82,7 @@
         <item>Vertical</item>
         <item>Oreo</item>
         <item>Oreo (Google sans)</item>
-        <item>Temp茅rature</item>
+        <item>Température</item>
     </string-array>
 
     <!-- week widget style. -->
@@ -97,7 +98,7 @@
         <item>Vent</item>
         <item>Temp. ressentie</item>
         <item>Calendrier lunaire</item>
-        <item>Personnalis茅</item>
+        <item>Personnalisé</item>
     </string-array>
 
     <!-- widget card style. -->
@@ -118,13 +119,13 @@
     <!-- live wallpaper weather kind. -->
     <string-array name="live_wallpaper_weather_kinds">
         <item>Automatique</item>
-        <item>D茅gag茅</item>
+        <item>Dégagé</item>
         <item>Partiellement couvert</item>
         <item>Nuageux</item>
         <item>Pluie</item>
         <item>Neige</item>
         <item>Neige fondue</item>
-        <item>Gr锚le</item>
+        <item>Grêle</item>
         <item>Brouillard</item>
         <item>Brume</item>
         <item>Tonnerre</item>
@@ -139,4 +140,3 @@
         <item>Toujours de nuit</item>
     </string-array>
 </resources>
-

@@ -2,50 +2,50 @@
     tools:ignore="MissingTranslation">
 
     <!-- app. -->
-    <string name="app_name">Po膷as铆</string>
+    <string name="app_name">Počasí</string>
     <string name="geometric_weather">Geometric Weather</string>
 
     <!-- keyword. -->
-    <string name="current_location">Sou膷asn谩 lokace</string>
-    <string name="resident_location">Bydli拧t臎</string>
-    <string name="default_location">v媒choz铆 lokace</string>
-    <string name="live">沤iv臎</string>
+    <string name="current_location">Současná lokace</string>
+    <string name="resident_location">Bydliště</string>
+    <string name="default_location">výchozí lokace</string>
+    <string name="live">Živě</string>
     <string name="today">Dnes</string>
-    <string name="refresh_at">Aktualizov谩no</string>
-    <string name="local_time">M铆stn铆 膷as</string>
-    <string name="precipitation">Sr谩啪ky</string>
-    <string name="precipitation_probability">Pravd臎podobnost sr谩啪ek</string>
-    <string name="precipitation_duration">Trv谩n铆 sr谩啪ek</string>
+    <string name="refresh_at">Aktualizováno</string>
+    <string name="local_time">Místní čas</string>
+    <string name="precipitation">Srážky</string>
+    <string name="precipitation_probability">Pravděpodobnost srážek</string>
+    <string name="precipitation_duration">Trvání srážek</string>
     <string name="maxi_temp">den</string>
     <string name="mini_temp">noc</string>
-    <string name="time">膷as</string>
+    <string name="time">čas</string>
     <string name="day">den</string>
     <string name="night">noc</string>
     <string name="temperature">Teplota</string>
-    <string name="wind">V铆tr</string>
-    <string name="wind_direction">Sm臎r v臎tru</string>
-    <string name="wind_speed">Rychlost v臎tru</string>
-    <string name="wind_level">S铆la v臎tru</string>
-    <string name="sensible_temp">Znateln谩 teplota</string>
+    <string name="wind">Vítr</string>
+    <string name="wind_direction">Směr větru</string>
+    <string name="wind_speed">Rychlost větru</string>
+    <string name="wind_level">Síla větru</string>
+    <string name="sensible_temp">Znatelná teplota</string>
     <string name="humidity">Vlhkost</string>
-    <string name="uv_index">Index UV z谩艡en铆</string>
+    <string name="uv_index">Index UV záření</string>
     <string name="hours_of_sun">Hodiny slunce</string>
-    <string name="forecast">P艡edpov臎膹</string>
+    <string name="forecast">Předpověď</string>
     <string name="briefings">Instrukce</string>
     <string name="daytime">Den</string>
     <string name="nighttime">Noc</string>
     <string name="publish_at">Publikovat</string>
-    <string name="feels_like">Pocitov谩 teplota</string>
-    <string name="follow_system">Podle syst茅mu</string>
-    <string name="background_information">Informace na pozad铆</string>
-    <string name="pressure">Atmosf茅rick媒 tlak</string>
+    <string name="feels_like">Pocitová teplota</string>
+    <string name="follow_system">Podle systému</string>
+    <string name="background_information">Informace na pozadí</string>
+    <string name="pressure">Atmosférický tlak</string>
     <string name="visibility">Viditelnost</string>
-    <string name="dew_point">Rosn媒 bod</string>
-    <string name="cloud_cover">Obla膷nost</string>
-    <string name="ceiling">V媒拧ka mrak暖</string>
-    <string name="get_more">Z铆skat dal拧铆</string>
-    <string name="get_more_store">Z铆skat dal拧铆 z obchodu s aplikacemi</string>
-    <string name="get_more_github">Z铆skat dal拧铆 z GitHubu</string>
+    <string name="dew_point">Rosný bod</string>
+    <string name="cloud_cover">Oblačnost</string>
+    <string name="ceiling">Výška mraků</string>
+    <string name="get_more">Získat další</string>
+    <string name="get_more_store">Získat další z obchodu s aplikacemi</string>
+    <string name="get_more_github">Získat další z GitHubu</string>
     <string name="refresh">Obnovit</string>
     <string name="restart">Restartovat</string>
     <string name="edit">Upravit</string>
@@ -53,97 +53,97 @@
     <!-- The following set of strings should be as short as possible. -->
     <string name="of_clock">:00</string>
     <string name="yesterday">rok/den</string>
-    <string name="tomorrow">z铆tra</string>
-    <string name="week">t媒den</string>
+    <string name="tomorrow">zítra</string>
+    <string name="week">týden</string>
     <string name="week_1">Po</string>
-    <string name="week_2">脷t</string>
+    <string name="week_2">Út</string>
     <string name="week_3">St</string>
-    <string name="week_4">膶t</string>
-    <string name="week_5">P谩</string>
+    <string name="week_4">Čt</string>
+    <string name="week_5">Pá</string>
     <string name="week_6">So</string>
     <string name="week_7">Ne</string>
 
-    <string name="real_feel_temperature">Pocitov谩 teplota</string>
-    <string name="real_feel_shade_temperature">Pocitov谩 teplota ve st铆nu</string>
-    <string name="apparent_temperature">Zd谩nliv谩 teplota</string>
-    <string name="wind_chill_temperature">Ochlazen铆 v臎trem</string>
-    <string name="wet_bulb_temperature">Ochlazen铆 vlhkost铆</string>
-    <string name="degree_day_temperature">Stupe艌 vyt谩p臎n铆</string>
+    <string name="real_feel_temperature">Pocitová teplota</string>
+    <string name="real_feel_shade_temperature">Pocitová teplota ve stínu</string>
+    <string name="apparent_temperature">Zdánlivá teplota</string>
+    <string name="wind_chill_temperature">Ochlazení větrem</string>
+    <string name="wet_bulb_temperature">Ochlazení vlhkostí</string>
+    <string name="degree_day_temperature">Stupeň vytápění</string>
 
-    <string name="total">Celkov臎</string>
-    <string name="thunderstorm">Bou艡ka</string>
-    <string name="rain">D茅拧钮</string>
-    <string name="snow">Sn铆h</string>
+    <string name="total">Celkově</string>
+    <string name="thunderstorm">Bouřka</string>
+    <string name="rain">Déšť</string>
+    <string name="snow">Sníh</string>
     <string name="ice">Led</string>
 
-    <string name="wind_0">Bezv臎t艡铆</string>
-    <string name="wind_1">V谩nek</string>
-    <string name="wind_2">V臎t艡铆k</string>
-    <string name="wind_3">Slab媒 v铆tr</string>
-    <string name="wind_4">M铆rn媒 v铆tr</string>
-    <string name="wind_5">膶erstv媒 v铆tr</string>
-    <string name="wind_6">Siln媒 v铆tr</string>
-    <string name="wind_7">Prudk媒 v铆tr</string>
-    <string name="wind_8">Bou艡liv媒 v铆tr</string>
-    <string name="wind_9">Vich艡ice</string>
-    <string name="wind_10">Siln谩 vich艡ice</string>
-    <string name="wind_11">Mohutn谩 vich艡ice</string>
-    <string name="wind_12">Ork谩n</string>
+    <string name="wind_0">Bezvětří</string>
+    <string name="wind_1">Vánek</string>
+    <string name="wind_2">Větřík</string>
+    <string name="wind_3">Slabý vítr</string>
+    <string name="wind_4">Mírný vítr</string>
+    <string name="wind_5">Čerstvý vítr</string>
+    <string name="wind_6">Silný vítr</string>
+    <string name="wind_7">Prudký vítr</string>
+    <string name="wind_8">Bouřlivý vítr</string>
+    <string name="wind_9">Vichřice</string>
+    <string name="wind_10">Silná vichřice</string>
+    <string name="wind_11">Mohutná vichřice</string>
+    <string name="wind_12">Orkán</string>
 
-    <string name="precipitation_light">Mrholen铆</string>
-    <string name="precipitation_middle">D茅拧钮</string>
-    <string name="precipitation_heavy">Siln媒 d茅拧钮</string>
-    <string name="precipitation_rainstorm">Bou艡ka</string>
+    <string name="precipitation_light">Mrholení</string>
+    <string name="precipitation_middle">Déšť</string>
+    <string name="precipitation_heavy">Silný déšť</string>
+    <string name="precipitation_rainstorm">Bouřka</string>
 
-    <string name="aqi_1">Velmi 膷ist媒</string>
-    <string name="aqi_2">P艡ev谩啪n臎 膷ist媒</string>
-    <string name="aqi_3">Jemn臎 zne膷i拧t臎n媒</string>
-    <string name="aqi_4">St艡edn臎 zne膷i拧t臎n媒</string>
-    <string name="aqi_5">Velmi zne膷i拧t臎n媒</string>
-    <string name="aqi_6">V谩啪n臎 zne膷i拧t臎n媒</string>
+    <string name="aqi_1">Velmi čistý</string>
+    <string name="aqi_2">Převážně čistý</string>
+    <string name="aqi_3">Jemně znečištěný</string>
+    <string name="aqi_4">Středně znečištěný</string>
+    <string name="aqi_5">Velmi znečištěný</string>
+    <string name="aqi_6">Vážně znečištěný</string>
 
-    <string name="phase_new">Nov媒 m臎s铆c</string>
-    <string name="phase_waxing_crescent">Dorustaj铆c铆 膷tvrtina</string>
-    <string name="phase_first">Dor暖staj铆c铆 polovina</string>
-    <string name="phase_waxing_gibbous">Dor暖staj铆c铆 t艡i 膷tvrtiny</string>
-    <string name="phase_full">脷pln臎k</string>
-    <string name="phase_waning_gibbous">Ub媒vaj铆c铆 t艡i 膷tvrtiny</string>
-    <string name="phase_third">Ub媒vaj铆c铆 polovina</string>
-    <string name="phase_waning_crescent">Ub媒vaj铆c铆 膷tvrtina</string>
+    <string name="phase_new">Nový měsíc</string>
+    <string name="phase_waxing_crescent">Dorustající čtvrtina</string>
+    <string name="phase_first">Dorůstající polovina</string>
+    <string name="phase_waxing_gibbous">Dorůstající tři čtvrtiny</string>
+    <string name="phase_full">Úplněk</string>
+    <string name="phase_waning_gibbous">Ubývající tři čtvrtiny</string>
+    <string name="phase_third">Ubývající polovina</string>
+    <string name="phase_waning_crescent">Ubývající čtvrtina</string>
 
-    <string name="grass">Tr谩va</string>
-    <string name="mold">Pl铆s艌e</string>
-    <string name="ragweed">Ambr贸zie</string>
+    <string name="grass">Tráva</string>
+    <string name="mold">Plísňe</string>
+    <string name="ragweed">Ambrózie</string>
     <string name="tree">Pyl</string>
 
-    <string name="daily_overview">Denn铆 p艡edpov臎膹</string>
-    <string name="hourly_overview">Hodinov谩 p艡edpov臎膹</string>
-    <string name="minutely_overview">Minutov谩 p艡edpov臎膹</string>
-    <string name="precipitation_overview">P艡edpov臎膹 sr谩啪ek</string>
+    <string name="daily_overview">Denní předpověď</string>
+    <string name="hourly_overview">Hodinová předpověď</string>
+    <string name="minutely_overview">Minutová předpověď</string>
+    <string name="precipitation_overview">Předpověď srážek</string>
     <string name="air_quality">Kvalita vzduchu</string>
     <string name="allergen">Alergeny</string>
     <string name="life_details">Podrobnosti</string>
-    <string name="sunrise_sunset">Slunce a m臎s铆c</string>
+    <string name="sunrise_sunset">Slunce a měsíc</string>
 
-    <string name="next">DAL艩脥</string>
+    <string name="next">DALŠÍ</string>
     <string name="done">HOTOVO</string>
-    <string name="cancel" tools:ignore="ButtonCase">ZRU艩IT</string>
+    <string name="cancel" tools:ignore="ButtonCase">ZRUŠIT</string>
     <string name="on">Povoleno</string>
-    <string name="off">Zak谩z谩no</string>
+    <string name="off">Zakázáno</string>
     <string name="go_to_set">NASTAVIT</string>
-    <string name="help">N脕POV臍DA</string>
-    <string name="learn_more">ZJISTIT V脥CE</string>
+    <string name="help">NÁPOVĚDA</string>
+    <string name="learn_more">ZJISTIT VÍCE</string>
 
     <string name="filter_weather_sources">Filtr</string>
 
     <string name="about_app">O aplikaci</string>
-    <string name="introduce">p艡edstaven铆</string>
+    <string name="introduce">představení</string>
     <string name="email">E-mail</string>
-    <string name="donate">P艡isp臎n铆</string>
+    <string name="donate">Přispění</string>
     <string name="gitHub">GitHub</string>
-    <string name="contributor">P艡isp臎vatel茅</string>
-    <string name="translator">P艡ekladatel茅</string>
-    <string name="thanks">Pod臎kov谩n铆</string>
+    <string name="contributor">Přispěvatelé</string>
+    <string name="translator">Překladatelé</string>
+    <string name="thanks">Poděkování</string>
 
     <string name="alipay">Alipay</string>
     <string name="wechat">Wechat</string>
@@ -156,7 +156,7 @@
     <string name="date_format_long">d. MMM</string>
     <string name="date_format_widget_short">EEE d MMM</string>
     <string name="date_format_widget_long">EEEE d MMM</string>
-    <string name="date_format_widget_oreo_style">EEEE d MMM鈹</string>
+    <string name="date_format_widget_oreo_style">EEEE d MMM│</string>
 
     <!-- Do not translate the following set of strings. -->
     <string name="tag_temperature">@string/temperature</string>
@@ -181,270 +181,272 @@
     <string name="about_circular_progress_view">Material style circular progress bar for Android.</string>
 
     <!-- feedback. -->
-    <string name="feedback_request_permission">Opr谩vn臎n铆</string>
+    <string name="feedback_request_permission">Oprávnění</string>
     <string name="feedback_request_location">Poloha</string>
-    <string name="feedback_request_location_in_background">Zji拧钮ov谩n铆 polohy na pozad铆</string>
-    <string name="feedback_request_location_permission_success">Pokus o z铆sk谩n铆 povolen铆 k poloze usp臎l</string>
-    <string name="feedback_request_location_permission_failed">Pokus o z铆sk谩n铆 povolen铆 k poloze selhal</string>
+    <string name="feedback_request_location_in_background">Zjišťování polohy na pozadí</string>
+    <string name="feedback_request_location_permission_success">Pokus o získání povolení k poloze uspěl</string>
+    <string name="feedback_request_location_permission_failed">Pokus o získání povolení k poloze selhal</string>
 
-    <string name="feedback_location_permissions_title">P艡铆stup k informac铆m o poloze</string>
-    <string name="feedback_location_permissions_statement">Aplikace Geometric Weather pot艡ebuje sb铆rat na pop艡ed铆 nebo v pozad铆 informace o va拧铆 poloze, aby mohla poskytnout 煤daje o po膷as铆 ve va拧铆 sou膷asn茅 lokaci. Z tohoto d暖vodu za啪谩d谩me o n臎jak谩 opr谩vn臎n铆. Informace o va拧铆 poloze budou pou啪ity pouze k z铆sk谩n铆 煤daj暖 o po膷as铆 ve va拧铆 sou膷asn茅 lokaci. Pokud nechcete, abychom sb铆rali informace o poloze, m暖啪ete tyto 啪谩dosti zam铆tnout a ru膷n臎 nastavit va拧铆 polohu na str谩nce nastaven铆.</string>
-    <string name="feedback_background_location_title">P艡铆stup k poloze na pozad铆</string>
-    <string name="feedback_background_location_summary">Abychom umo啪nili aplikaci p艡铆stup k informaci o poloze na pozad铆 a mohli d铆ky tomu zji拧钮ovat zm臎ny v poloze a poskytovat v谩m aktu谩ln铆 煤daje o po膷as铆, je pot艡eba abyste nastavili p艡铆stup k poloze na \"Povolit v啪dy\".</string>
+    <string name="feedback_location_permissions_title">Přístup k informacím o poloze</string>
+    <string name="feedback_location_permissions_statement">Aplikace Geometric Weather potřebuje sbírat na popředí nebo v pozadí informace o vaší poloze, aby mohla poskytnout údaje o počasí ve vaší současné lokaci. Z tohoto důvodu zažádáme o nějaká oprávnění. Informace o vaší poloze budou použity pouze k získání údajů o počasí ve vaší současné lokaci. Pokud nechcete, abychom sbírali informace o poloze, můžete tyto žádosti zamítnout a ručně nastavit vaší polohu na stránce nastavení.</string>
+    <string name="feedback_background_location_title">Přístup k poloze na pozadí</string>
+    <string name="feedback_background_location_summary">Abychom umožnili aplikaci přístup k informaci o poloze na pozadí a mohli díky tomu zjišťovat změny v poloze a poskytovat vám aktuální údaje o počasí, je potřeba abyste nastavili přístup k poloze na \"Povolit vždy\".</string>
 
     <string name="feedback_location_failed">Poloha selhala</string>
-    <string name="feedback_get_weather_failed">Pokus o z铆sk谩n铆 煤daj暖 o po膷as铆 selhal</string>
-    <string name="feedback_location_help_title">Ukazuje aplikace nespr谩vnou polohu?</string>
-    <string name="feedback_check_location_permission">Zkontrolujte opr谩vn臎n铆 polohy</string>
-    <string name="feedback_enable_location_information">Povolte p艡铆stup k informac铆m o poloze</string>
+    <string name="feedback_get_weather_failed">Pokus o získání údajů o počasí selhal</string>
+    <string name="feedback_location_help_title">Ukazuje aplikace nesprávnou polohu?</string>
+    <string name="feedback_check_location_permission">Zkontrolujte oprávnění polohy</string>
+    <string name="feedback_enable_location_information">Povolte přístup k informacím o poloze</string>
     <string name="feedback_select_location_provider">Vyberte poskytovatele polohy</string>
-    <string name="feedback_add_location_manually">Ru膷n臎 p艡idat polohu a odstranit \'$\'</string>
+    <string name="feedback_add_location_manually">Ručně přidat polohu a odstranit \'$\'</string>
     <string name="feedback_view_style">Zobrazit styl</string>
-    <string name="feedback_show_widget_card">Barva pozad铆</string>
-    <string name="feedback_show_widget_card_alpha">Pr暖hlednost</string>
-    <string name="feedback_hide_subtitle">Skr媒t popis</string>
+    <string name="feedback_show_widget_card">Barva pozadí</string>
+    <string name="feedback_show_widget_card_alpha">Průhlednost</string>
+    <string name="feedback_hide_subtitle">Skrýt popis</string>
     <string name="feedback_subtitle_data">Data popisu</string>
-    <string name="feedback_black_text">Barva p铆sma</string>
-    <string name="feedback_text_size">Velikost p铆sma</string>
-    <string name="feedback_clock_font">P铆smo hodin</string>
-    <string name="feedback_hide_lunar">Skr媒t lun谩rn铆 kalend谩艡</string>
+    <string name="feedback_black_text">Barva písma</string>
+    <string name="feedback_text_size">Velikost písma</string>
+    <string name="feedback_clock_font">Písmo hodin</string>
+    <string name="feedback_hide_lunar">Skrýt lunární kalendář</string>
     <string name="feedback_align_end">Zarovnat konec</string>
-    <string name="feedback_colorful">Barevn媒 widget podle po膷as铆</string>
-    <string name="feedback_custom_subtitle_explanation">M暖啪ete zadat cokoli, ale d谩vejte pozor na d茅lku textu. Pokud chcete citovat data o po膷as铆, pou啪ijte znak $ pro odkazov谩n铆 na odpov铆daj铆c铆 kl铆膷ov茅 slovo.\n\nNap艡铆klad \"current weather = $cw$\" bude zobrazeno jako \"current weather = Clear Day\".</string>
+    <string name="feedback_colorful">Barevný widget podle počasí</string>
+    <string name="feedback_custom_subtitle_explanation">Můžete zadat cokoli, ale dávejte pozor na délku textu. Pokud chcete citovat data o počasí, použijte znak $ pro odkazování na odpovídající klíčové slovo.\n\nNapříklad \"current weather = $cw$\" bude zobrazeno jako \"current weather = Clear Day\".</string>
     <!-- keep those content with the format "$xxx$". -->
     <!-- keep "\n" -->
-    <string name="feedback_custom_subtitle_keyword_cw">$cw$ : Sou膷asn茅 po膷as铆\n</string>
-    <string name="feedback_custom_subtitle_keyword_ct">$ct$ : Sou膷asn谩 teplota (鈩?鈩?\n</string>
-    <string name="feedback_custom_subtitle_keyword_ctd">$ctd$ : Sou膷asn谩 teplota (掳)\n</string>
-    <string name="feedback_custom_subtitle_keyword_at">$at$ : Zd谩nliv谩 teplota (鈩?鈩?\n</string>
-    <string name="feedback_custom_subtitle_keyword_atd">$atd$ : Zd谩nliv谩 teplota (掳)\n</string>
-    <string name="feedback_custom_subtitle_keyword_cpb">$cpb$ : Sou膷asn谩 pravd臎podobnost sr谩啪ek (%)\n</string>
-    <string name="feedback_custom_subtitle_keyword_cp">$cp$ : Sou膷asn谩 pravd臎podobnost (mm/L/m虏)\n</string>
-    <string name="feedback_custom_subtitle_keyword_cwd">$cwd$ : Sou膷asn谩 v铆tr\n</string>
-    <string name="feedback_custom_subtitle_keyword_cuv">$cuv$ : Sou膷asn茅 UV\n</string>
-    <string name="feedback_custom_subtitle_keyword_ch">$ch$ : Sou膷asn谩 vlhkost\n</string>
-    <string name="feedback_custom_subtitle_keyword_cps">$cps$ : Sou膷asn媒 tlak\n</string>
-    <string name="feedback_custom_subtitle_keyword_cv">$cv$ : Sou膷asn谩 viditelnost\n</string>
-    <string name="feedback_custom_subtitle_keyword_cdp">$cdp$ : Sou膷asn媒 rosn媒 bod\n</string>
-    <string name="feedback_custom_subtitle_keyword_al">$al$ : Upozorn臎n铆\n</string>
-    <string name="feedback_custom_subtitle_keyword_als">$als$ : Upozorn臎n铆 (kr谩tk谩)\n</string>
+    <string name="feedback_custom_subtitle_keyword_cw">$cw$ : Současné počasí\n</string>
+    <string name="feedback_custom_subtitle_keyword_ct">$ct$ : Současná teplota (℃/℉)\n</string>
+    <string name="feedback_custom_subtitle_keyword_ctd">$ctd$ : Současná teplota (°)\n</string>
+    <string name="feedback_custom_subtitle_keyword_at">$at$ : Zdánlivá teplota (℃/℉)\n</string>
+    <string name="feedback_custom_subtitle_keyword_atd">$atd$ : Zdánlivá teplota (°)\n</string>
+    <string name="feedback_custom_subtitle_keyword_cpb">$cpb$ : Současná pravděpodobnost srážek (%)\n</string>
+    <string name="feedback_custom_subtitle_keyword_cp">$cp$ : Současná pravděpodobnost (mm/L/m²)\n</string>
+    <string name="feedback_custom_subtitle_keyword_cwd">$cwd$ : Současná vítr\n</string>
+    <string name="feedback_custom_subtitle_keyword_cuv">$cuv$ : Současné UV\n</string>
+    <string name="feedback_custom_subtitle_keyword_ch">$ch$ : Současná vlhkost\n</string>
+    <string name="feedback_custom_subtitle_keyword_cps">$cps$ : Současný tlak\n</string>
+    <string name="feedback_custom_subtitle_keyword_cv">$cv$ : Současná viditelnost\n</string>
+    <string name="feedback_custom_subtitle_keyword_cdp">$cdp$ : Současný rosný bod\n</string>
+    <string name="feedback_custom_subtitle_keyword_al">$al$ : Upozornění\n</string>
+    <string name="feedback_custom_subtitle_keyword_als">$als$ : Upozornění (krátká)\n</string>
     <string name="feedback_custom_subtitle_keyword_l">$l$ : Poloha\n</string>
-    <string name="feedback_custom_subtitle_keyword_lat">$lat$ : Zem臎pisn谩 拧铆艡ka\n</string>
-    <string name="feedback_custom_subtitle_keyword_lon">$lon$ : Zem臎pisn谩 d茅lka\n</string>
-    <string name="feedback_custom_subtitle_keyword_ut">$ut$ : 膶as aktualizace\n</string>
+    <string name="feedback_custom_subtitle_keyword_lat">$lat$ : Zeměpisná šířka\n</string>
+    <string name="feedback_custom_subtitle_keyword_lon">$lon$ : Zeměpisná délka\n</string>
+    <string name="feedback_custom_subtitle_keyword_ut">$ut$ : Čas aktualizace\n</string>
     <string name="feedback_custom_subtitle_keyword_d">$d$ : Datum\n</string>
-    <string name="feedback_custom_subtitle_keyword_lc">$lc$ : Lun谩艡n铆 kalend谩艡\n</string>
-    <string name="feedback_custom_subtitle_keyword_w">$w$ : T媒den\n</string>
-    <string name="feedback_custom_subtitle_keyword_ws">$ws$ : T媒den (kr谩tk媒)\n</string>
-    <string name="feedback_custom_subtitle_keyword_dd">$dd$ : Denn铆 popis\n</string>
-    <string name="feedback_custom_subtitle_keyword_hd">$hd$ : Hodinov媒 popis\n</string>
+    <string name="feedback_custom_subtitle_keyword_lc">$lc$ : Lunářní kalendář\n</string>
+    <string name="feedback_custom_subtitle_keyword_w">$w$ : Týden\n</string>
+    <string name="feedback_custom_subtitle_keyword_ws">$ws$ : Týden (krátký)\n</string>
+    <string name="feedback_custom_subtitle_keyword_dd">$dd$ : Denní popis\n</string>
+    <string name="feedback_custom_subtitle_keyword_hd">$hd$ : Hodinový popis\n</string>
     <string name="feedback_custom_subtitle_keyword_enter">$enter$ : Enter\n</string>
-    <string name="feedback_custom_subtitle_keyword_xdw">$0dw$, $1dw$, 鈥? $4dw$ : \nDne拧n铆 denn铆 po膷as铆, z铆tra, 鈥? o 4 dny pozd臎ji\n</string>
-    <string name="feedback_custom_subtitle_keyword_xnw">$0nw$, $1nw$, 鈥? $4nw$ : \nDne拧n铆 no膷n铆 po膷as铆, z铆tra, 鈥? o 4 dny pozd臎ji\n</string>
-    <string name="feedback_custom_subtitle_keyword_xdt">$0dt$, $1dt$, 鈥? $4dt$ : \nDne拧n铆 denn铆 teplota, z铆tra, 鈥? o 4 dny pozd臎ji (鈩?鈩?\n</string>
-    <string name="feedback_custom_subtitle_keyword_xnt">$0nt$, $1nt$, 鈥? $4nt$ : \nDne拧n铆 no膷n铆 teplota, z铆tra, 鈥? o 4 dny pozd臎ji (鈩?鈩?\n</string>
-    <string name="feedback_custom_subtitle_keyword_xdtd">$0dtd$, $1dtd$, 鈥? $4dtd$ : \nDne拧n铆 denn铆 teplota, z铆tra, 鈥? o 4 dny pozd臎ji (掳)\n</string>
-    <string name="feedback_custom_subtitle_keyword_xntd">$0ntd$, $1ntd$, 鈥? $4ntd$ : \nDne拧n铆 no膷n铆 teplota, z铆tra, 鈥? o 4 dny pozd臎ji (掳)\n</string>
-    <string name="feedback_custom_subtitle_keyword_xdp">$0dp$, $1dp$, 鈥? $4dp$ : \nDne拧n铆 denn铆 sr谩啪ky, z铆tra, 鈥? o 4 dny pozd臎ji (%)\n</string>
-    <string name="feedback_custom_subtitle_keyword_xnp">$0np$, $1np$, 鈥? $4np$ : \nDne拧n铆 no膷n铆 sr谩啪ky, z铆tra, 鈥? o 4 dny pozd臎ji (%)\n</string>
-    <string name="feedback_custom_subtitle_keyword_xdwd">$0dwd$, $1dwd$, 鈥? $4dwd$ : \nDne拧n铆 denn铆 v铆tr, z铆tra, 鈥? o 4 dny pozd臎ji\n</string>
-    <string name="feedback_custom_subtitle_keyword_xnwd">$0nwd$, $1nwd$, 鈥? $4nwd$ : \nDne拧n铆 no膷n铆 v铆tr, z铆tra, 鈥? o 4 dny pozd臎ji\n</string>
-    <string name="feedback_custom_subtitle_keyword_xsr">$0sr$, $1sr$, 鈥? $4sr$ : \nDne拧n铆 v媒chod slunce, z铆tra, 鈥? o 4 dny pozd臎ji\n</string>
-    <string name="feedback_custom_subtitle_keyword_xss">$0ss$, $1ss$, 鈥? $4ss$ : \nDne拧n铆 z谩pad slunce, z铆tra, 鈥? o 4 dny pozd臎ji\n</string>
-    <string name="feedback_custom_subtitle_keyword_xmr">$0mr$, $1mr$, 鈥? $4mr$ : \nDne拧n铆 v媒chod m臎s铆ce, z铆tra, 鈥? o 4 dny pozd臎ji\n</string>
-    <string name="feedback_custom_subtitle_keyword_xms">$0ms$, $1ms$, 鈥? $4ms$ : \nDne拧n铆 z谩pad m臎s铆ce, z铆tra, 鈥? o 4 dny pozd臎ji\n</string>
-    <string name="feedback_custom_subtitle_keyword_xmp">$0mp$, $1mp$, 鈥? $4mp$ : \nDne拧n铆 f谩ze m臎s铆ce, z铆tra, 鈥? o 4 dny pozd臎ji\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdw">$0dw$, $1dw$, …, $4dw$ : \nDnešní denní počasí, zítra, …, o 4 dny později\n</string>
+    <string name="feedback_custom_subtitle_keyword_xnw">$0nw$, $1nw$, …, $4nw$ : \nDnešní noční počasí, zítra, …, o 4 dny později\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdt">$0dt$, $1dt$, …, $4dt$ : \nDnešní denní teplota, zítra, …, o 4 dny později (℃/℉)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xnt">$0nt$, $1nt$, …, $4nt$ : \nDnešní noční teplota, zítra, …, o 4 dny později (℃/℉)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdtd">$0dtd$, $1dtd$, …, $4dtd$ : \nDnešní denní teplota, zítra, …, o 4 dny později (°)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xntd">$0ntd$, $1ntd$, …, $4ntd$ : \nDnešní noční teplota, zítra, …, o 4 dny později (°)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdp">$0dp$, $1dp$, …, $4dp$ : \nDnešní denní srážky, zítra, …, o 4 dny později (%)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xnp">$0np$, $1np$, …, $4np$ : \nDnešní noční srážky, zítra, …, o 4 dny později (%)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdwd">$0dwd$, $1dwd$, …, $4dwd$ : \nDnešní denní vítr, zítra, …, o 4 dny později\n</string>
+    <string name="feedback_custom_subtitle_keyword_xnwd">$0nwd$, $1nwd$, …, $4nwd$ : \nDnešní noční vítr, zítra, …, o 4 dny později\n</string>
+    <string name="feedback_custom_subtitle_keyword_xsr">$0sr$, $1sr$, …, $4sr$ : \nDnešní východ slunce, zítra, …, o 4 dny později\n</string>
+    <string name="feedback_custom_subtitle_keyword_xss">$0ss$, $1ss$, …, $4ss$ : \nDnešní západ slunce, zítra, …, o 4 dny později\n</string>
+    <string name="feedback_custom_subtitle_keyword_xmr">$0mr$, $1mr$, …, $4mr$ : \nDnešní východ měsíce, zítra, …, o 4 dny později\n</string>
+    <string name="feedback_custom_subtitle_keyword_xms">$0ms$, $1ms$, …, $4ms$ : \nDnešní západ měsíce, zítra, …, o 4 dny později\n</string>
+    <string name="feedback_custom_subtitle_keyword_xmp">$0mp$, $1mp$, …, $4mp$ : \nDnešní fáze měsíce, zítra, …, o 4 dny později\n</string>
 
-    <string name="feedback_live_wallpaper_weather_kind">Po膷as铆</string>
-    <string name="feedback_live_wallpaper_day_night_type">膶as</string>
+    <string name="feedback_live_wallpaper_weather_kind">Počasí</string>
+    <string name="feedback_live_wallpaper_day_night_type">Čas</string>
 
-    <string name="feedback_click_toggle">扭ukn臎te na graf pro p艡epnut铆 dat</string>
-    <string name="feedback_no_data">沤脕DN脕 DATA</string>
+    <string name="feedback_click_toggle">Ťukněte na graf pro přepnutí dat</string>
+    <string name="feedback_no_data">ŽÁDNÁ DATA</string>
 
-    <string name="feedback_collect_failed">Tato poloha ji啪 existuje</string>
-    <string name="feedback_collect_succeed">Poloha 煤sp臎拧n臎 p艡id谩na</string>
-    <string name="feedback_delete_succeed">Poloha 煤sp臎拧n臎 odstran臎na</string>
-    <string name="feedback_location_list_cannot_be_null">Seznam poloh nem暖啪e b媒t pr谩zdn媒</string>
+    <string name="feedback_collect_failed">Tato poloha již existuje</string>
+    <string name="feedback_collect_succeed">Poloha úspěšně přidána</string>
+    <string name="feedback_delete_succeed">Poloha úspěšně odstraněna</string>
+    <string name="feedback_location_list_cannot_be_null">Seznam poloh nemůže být prázdný</string>
 
-    <string name="feedback_search_location">Vyhledat polohu鈥</string>
-    <string name="feedback_not_yet_location">Zat铆m 啪谩dn谩 poloha鈥</string>
-    <string name="feedback_search_nothing">Nenalezeny 啪谩dn茅 polohy</string>
-    <string name="feedback_initializing">Na膷铆t谩n铆鈥</string>
+    <string name="feedback_search_location">Vyhledat polohu…</string>
+    <string name="feedback_not_yet_location">Zatím žádná poloha…</string>
+    <string name="feedback_search_nothing">Nenalezeny žádné polohy</string>
+    <string name="feedback_initializing">Načítání…</string>
 
-    <string name="feedback_refresh_notification_after_back">Zm臎ny se projev铆 pot茅, co se vr谩t铆te na domovskou obrazovku</string>
-    <string name="feedback_refresh_notification_now">Obnovit nyn铆</string>
-    <string name="feedback_refresh_ui_after_refresh">Zm臎ny se projev铆 po obnoven铆 dat</string>
-    <string name="feedback_restart">Zm臎ny se projev铆 po restartu</string>
-    <string name="feedback_readd_location">Znovu pros铆m p艡idejte polohy</string>
-    <string name="feedback_readd_location_after_changing_source">Po zm臎n臎 zdroje dat pros铆m znovu p艡idejte polohy</string>
+    <string name="feedback_refresh_notification_after_back">Změny se projeví poté, co se vrátíte na domovskou obrazovku</string>
+    <string name="feedback_refresh_notification_now">Obnovit nyní</string>
+    <string name="feedback_refresh_ui_after_refresh">Změny se projeví po obnovení dat</string>
+    <string name="feedback_restart">Změny se projeví po restartu</string>
+    <string name="feedback_readd_location">Znovu prosím přidejte polohy</string>
+    <string name="feedback_readd_location_after_changing_source">Po změně zdroje dat prosím znovu přidejte polohy</string>
 
-    <string name="feedback_running_in_background">Aplikace b臎啪铆 na pozad铆 pro zaji拧t臎n铆 aktualizace 煤daj暖</string>
-    <string name="feedback_updating_weather_data">Aktualizace 煤daj暖 o po膷as铆</string>
-    <string name="feedback_updated_in_background">Aktualizov谩no na pozad铆</string>
+    <string name="feedback_running_in_background">Aplikace běží na pozadí pro zajištění aktualizace údajů</string>
+    <string name="feedback_updating_weather_data">Aktualizace údajů o počasí</string>
+    <string name="feedback_updated_in_background">Aktualizováno na pozadí</string>
 
     <!-- there should be a "\" before single or double quotes. -->
     <!-- Correct : ... after turning off \'Background free\', ... After turning off \"Free background\" ... -->
     <!-- Wrong   : ... after turning off 'Background free', ... After turning off "Free background" ... -->
-    <string name="feedback_interpret_background_notification_content">Na n臎kter媒ch za艡铆zen铆ch se po vypnut铆 funkce \'Neb臎啪et na pozad铆\' se m暖啪e objevit ozn谩men铆, kter茅 nem暖啪e b媒t vymaz谩no.</string>
-    <string name="feedback_interpret_notification_group_title">Blokovat skupinu ozn谩men铆</string>
-    <string name="feedback_interpret_notification_group_content">Po vypnut铆 funkce \"Neb臎啪et na pozad铆\" se zobraz铆 ozn谩men铆 zna膷铆c铆, 啪e slu啪ba na pozad铆 je aktivn铆. Ozn谩men铆 lze vypnout na informa膷n铆 str谩nce aplikace.</string>
+    <string name="feedback_interpret_background_notification_content">Na některých zařízeních se po vypnutí funkce \'Neběžet na pozadí\' se může objevit oznámení, které nemůže být vymazáno.</string>
+    <string name="feedback_interpret_notification_group_title">Blokovat skupinu oznámení</string>
+    <string name="feedback_interpret_notification_group_content">Po vypnutí funkce \"Neběžet na pozadí\" se zobrazí oznámení značící, že služba na pozadí je aktivní. Oznámení lze vypnout na informační stránce aplikace.</string>
 
     <string name="feedback_ignore_battery_optimizations_title">Ignorovat optimalizace baterie</string>
-    <string name="feedback_ignore_battery_optimizations_content">Pro uji拧t臎n铆, 啪e mohou slu啪by na pozad铆 pokra膷ovat v pr谩ci, je pot艡eba zapnout ignorov谩n铆 optimalizac铆 baterie pro GeometricWeather.</string>
+    <string name="feedback_ignore_battery_optimizations_content">Pro ujištění, že mohou služby na pozadí pokračovat v práci, je potřeba zapnout ignorování optimalizací baterie pro GeometricWeather.</string>
 
-    <string name="feedback_cannot_start_live_wallpaper_activity">Nepoda艡ilo se spustit n谩hled 啪iv茅ho pozad铆</string>
+    <string name="feedback_cannot_start_live_wallpaper_activity">Nepodařilo se spustit náhled živého pozadí</string>
 
-    <string name="feedback_unusable_geocoder">Va拧e za艡铆zen铆 neobsahuje platn媒 geokod茅r. Zprost艡edkovatel polohy byl zm臎n臎n na Baidu Location..</string>
-    <string name="feedback_about_geocoder">Geokod茅r je komponenta, kter谩 p艡ev谩d铆 v媒sledek polohy z form谩tu lat-lon na form谩t \'XX m臎sto, YY provincie \'. Pokud tato komponenta nen铆 k dispozici, m暖啪ete p艡i pou啪it铆 nativn铆ho rozhran铆 API jako poskytovatele polohy z铆skat 煤daje o po膷as铆 pouze prost艡ednictv铆m slu啪by AccuWeather.</string>
+    <string name="feedback_unusable_geocoder">Vaše zařízení neobsahuje platný geokodér. Zprostředkovatel polohy byl změněn na Baidu Location..</string>
+    <string name="feedback_about_geocoder">Geokodér je komponenta, která převádí výsledek polohy z formátu lat-lon na formát \'XX město, YY provincie \'. Pokud tato komponenta není k dispozici, můžete při použití nativního rozhraní API jako poskytovatele polohy získat údaje o počasí pouze prostřednictvím služby AccuWeather.</string>
 
-    <string name="feedback_today_precipitation_alert">Dnes m暖啪e pr拧et.</string>
-    <string name="feedback_short_term_precipitation_alert">V n谩sleduj铆c铆ch hodin谩ch mohou p艡ij铆t sr谩啪ky.</string>
+    <string name="feedback_today_precipitation_alert">Dnes může pršet.</string>
+    <string name="feedback_short_term_precipitation_alert">V následujících hodinách mohou přijít srážky.</string>
 
-    <string name="feedback_resident_location">Nastavit jako bydli拧t臎</string>
-    <string name="feedback_resident_location_description">GeometricWeather automaticky zobraz铆 a skryje bydli拧t臎 podle va拧铆 sou膷asn茅 lokace.\nJako bydli拧t臎 m暖啪ete nap艡铆klad nastavit va拧e domovsk茅 m臎sto. P艡i cestov谩n铆 se m暖啪ete pot茅 pod铆vat na po膷as铆 ve va拧em domovsk茅m m臎st臎. Kdy啪 se vr谩t铆te dom暖, po膷as铆 ve va拧em domovsk茅m m臎st臎 bude skryto a nahrazeno po膷as铆m ve va拧铆 sou膷asn茅 lokaci.</string>
+    <string name="feedback_resident_location">Nastavit jako bydliště</string>
+    <string name="feedback_resident_location_description">GeometricWeather automaticky zobrazí a skryje bydliště podle vaší současné lokace.\nJako bydliště můžete například nastavit vaše domovské město. Při cestování se můžete poté podívat na počasí ve vašem domovském městě. Když se vrátíte domů, počasí ve vašem domovském městě bude skryto a nahrazeno počasím ve vaší současné lokaci.</string>
 
-    <string name="feedback_click_to_get_more">Klepn臎te pro v铆ce informac铆鈥</string>
-    <string name="feedback_click_again_to_exit">Klepn臎te znovu pro opu拧t臎n铆</string>
+    <string name="feedback_click_to_get_more">Klepněte pro více informací…</string>
+    <string name="feedback_click_again_to_exit">Klepněte znovu pro opuštění</string>
 
     <!-- content description -->
-    <string name="content_desc_back">Zp臎t</string>
+    <string name="content_desc_back">Zpět</string>
     <string name="content_desc_check_details">Zkontrolovat podrobnosti</string>
-    <string name="content_desc_weather_alert_button">$ varov谩n铆 o po膷as铆</string> <!-- $ = alert count. -->
-    <string name="content_des_pm25">PM dv臎 cel茅 p臎t</string>
+    <string name="content_desc_weather_alert_button">$ varování o počasí</string> <!-- $ = alert count. -->
+    <string name="content_des_pm25">PM dvě celé pět</string>
     <string name="content_des_pm10">PM deset</string>
-    <string name="content_des_so2">Oxid si艡i膷it媒</string>
-    <string name="content_des_no2">Oxid dusi膷it媒</string>
-    <string name="content_des_o3">Oz贸n</string>
-    <string name="content_des_co">Oxid uhelnat媒</string>
-    <string name="content_des_m3">Oxid uhelnat媒</string>
-    <string name="content_des_sunrise">V媒chod slunce v $</string> <!-- $ = time. -->
-    <string name="content_des_sunset">Z谩pad slunce v $</string> <!-- $ = time. -->
-    <string name="content_des_moonrise">V媒chod m臎s铆ce v $</string> <!-- $ = time. -->
-    <string name="content_des_moonset">Z谩pad m臎s铆ce v $</string> <!-- $ = time. -->
-    <string name="content_des_no_precipitation">沤谩dn茅 sr谩啪ky</string>
-    <string name="content_des_minutely_precipitation">Sr谩啪ky mezi $1 a $2</string> <!-- $1 = start time, $2 = end time. -->
-    <string name="content_des_add_current_location">P艡idat sou膷asnou polohu</string>
-    <string name="content_des_drag_flag">Klepn臎te pro ta啪en铆 polo啪kami v seznamu pro se艡azen铆</string>
-    <string name="content_des_delete_flag">Odstranit tuto polo啪ku</string>
-    <string name="content_des_swipe_left_to_delete">Pro odstran臎n铆 t茅to polo啪ky p艡eje膹te prstem doleva</string>
-    <string name="content_des_swipe_right_to_delete">Pro odstran臎n铆 t茅to polo啪ky p艡eje膹te prstem doprava</string>
-    <string name="content_desc_search_filter_on">Zobrazit pouze lokace z v媒choz铆ho zdroje po膷as铆</string>
-    <string name="content_desc_search_filter_off">Zobrazit lokace ze v拧ech zdroj暖 po膷as铆</string>
-    <string name="content_desc_powered_by">Pou啪铆v谩 $</string> <!-- $ = weather source. -->
+    <string name="content_des_so2">Oxid siřičitý</string>
+    <string name="content_des_no2">Oxid dusičitý</string>
+    <string name="content_des_o3">Ozón</string>
+    <string name="content_des_co">Oxid uhelnatý</string>
+    <string name="content_des_m3">Oxid uhelnatý</string>
+    <string name="content_des_sunrise">Východ slunce v $</string> <!-- $ = time. -->
+    <string name="content_des_sunset">Západ slunce v $</string> <!-- $ = time. -->
+    <string name="content_des_moonrise">Východ měsíce v $</string> <!-- $ = time. -->
+    <string name="content_des_moonset">Západ měsíce v $</string> <!-- $ = time. -->
+    <string name="content_des_no_precipitation">Žádné srážky</string>
+    <string name="content_des_minutely_precipitation">Srážky mezi $1 a $2</string> <!-- $1 = start time, $2 = end time. -->
+    <string name="content_des_add_current_location">Přidat současnou polohu</string>
+    <string name="content_des_drag_flag">Klepněte pro tažení položkami v seznamu pro seřazení</string>
+    <string name="content_des_delete_flag">Odstranit tuto položku</string>
+    <string name="content_des_swipe_left_to_delete">Pro odstranění této položky přejeďte prstem doleva</string>
+    <string name="content_des_swipe_right_to_delete">Pro odstranění této položky přejeďte prstem doprava</string>
+    <string name="content_desc_search_filter_on">Zobrazit pouze lokace z výchozího zdroje počasí</string>
+    <string name="content_desc_search_filter_off">Zobrazit lokace ze všech zdrojů počasí</string>
+    <string name="content_desc_powered_by">Používá $</string> <!-- $ = weather source. -->
     <string name="content_desc_app_store">@string/action_appStore</string>
-    <string name="content_desc_wechat_payment_code">Platebn铆 QR k贸d WeChat</string>
-    <string name="content_desc_weather_icon">Ikona po膷as铆</string>
-    <string name="content_desc_weather_icon_light">Sv臎tl谩 ikona</string>
-    <string name="content_desc_weather_icon_grey">艩ed谩 ikona</string>
-    <string name="content_desc_weather_icon_dark">Tmav谩 ikona</string>
-    <string name="content_desc_filter_weather_sources">Filtrovat zdroje po膷as铆</string>
+    <string name="content_desc_wechat_payment_code">Platební QR kód WeChat</string>
+    <string name="content_desc_weather_icon">Ikona počasí</string>
+    <string name="content_desc_weather_icon_light">Světlá ikona</string>
+    <string name="content_desc_weather_icon_grey">Šedá ikona</string>
+    <string name="content_desc_weather_icon_dark">Tmavá ikona</string>
+    <string name="content_desc_filter_weather_sources">Filtrovat zdroje počasí</string>
 
     <!-- action -->
-    <string name="action_alert">Upozorn臎n铆</string>
+    <string name="action_alert">Upozornění</string>
     <string name="action_manage">Spravovat</string>
     <string name="action_search">Hledat</string>
-    <string name="action_settings">Nastaven铆</string>
-    <string name="action_preview">N谩hled</string>
+    <string name="action_settings">Nastavení</string>
+    <string name="action_preview">Náhled</string>
     <string name="action_about">O aplikaci</string>
     <string name="action_appStore">Obchod</string>
 
     <!-- widget -->
-    <string name="widget_day">Denn铆</string>
-    <string name="widget_week">T媒denn铆</string>
-    <string name="widget_day_week">Denn铆 + t媒denn铆</string>
-    <string name="widget_clock_day_horizontal">Hodiny + denn铆 (horizont谩ln铆)</string>
-    <string name="widget_clock_day_details">Hodiny + denn铆 (podrobnosti)</string>
-    <string name="widget_clock_day_vertical">Hodiny + denn铆 (vertik谩ln铆)</string>
-    <string name="widget_clock_day_week">Hodiny + denn铆 + t媒denn铆</string>
+    <string name="widget_day">Denní</string>
+    <string name="widget_week">Týdenní</string>
+    <string name="widget_day_week">Denní + týdenní</string>
+    <string name="widget_clock_day_horizontal">Hodiny + denní (horizontální)</string>
+    <string name="widget_clock_day_details">Hodiny + denní (podrobnosti)</string>
+    <string name="widget_clock_day_vertical">Hodiny + denní (vertikální)</string>
+    <string name="widget_clock_day_week">Hodiny + denní + týdenní</string>
     <string name="widget_text">Text</string>
-    <string name="widget_trend_daily">Denn铆 graf</string>
-    <string name="widget_trend_hourly">Hodinov媒 graf</string>
-    <string name="widget_multi_city">V铆ce m臎st</string>
-    <string name="widget_material_you_forecast">Material You - p艡edpov臎膹</string>
-    <string name="wait_refresh">膷ek谩m</string>
-    <string name="ellipsis">鈥</string>
+    <string name="widget_trend_daily">Denní graf</string>
+    <string name="widget_trend_hourly">Hodinový graf</string>
+    <string name="widget_multi_city">Více měst</string>
+    <string name="widget_material_you_forecast">Material You - předpověď</string>
+    <string name="wait_refresh">čekám</string>
+    <string name="ellipsis">…</string>
 
     <!-- settings -->
-    <string name="settings_category_basic">Z谩kladn铆</string>
-    <string name="settings_title_background_free">Neb臎啪et na pozad铆</string>
-    <string name="settings_summary_background_free_on">Povoleno\nPokud se widgety a ozn谩men铆 automaticky neaktualizuj铆, vypn臎te pros铆m tuto mo啪nost.</string>
-    <string name="settings_summary_background_free_off">Zak谩z谩no\nPokud nechcete, aby 啪谩dn茅 slu啪by pracovaly na pozad铆, zapn臎te tuto mo啪nost.</string>
-    <string name="settings_title_live_wallpaper">沤iv茅 pozad铆</string>
-    <string name="settings_summary_live_wallpaper">Nastavit Material Design animaci po膷as铆 jako 啪iv茅 pozad铆</string>
-    <string name="settings_title_service_provider">Poskytovatel slu啪eb</string>
-    <string name="settings_summary_service_provider">Vyberte poskytovatele 煤daj暖 o po膷as铆 a poloze</string>
-    <string name="settings_title_service_provider_advanced">Pokro膷il谩 nastaven铆 poskytovatele slu啪eb</string>
-    <string name="settings_summary_service_provider_advanced">Postupujte opatrn臎</string>
-    <string name="settings_title_weather_source">Zdroj po膷as铆</string>
-    <string name="settings_title_location_service">Slu啪ba lokace</string>
-    <string name="settings_title_dark_mode">Tmav媒 re啪im</string>
-    <string name="settings_title_ui_style">Styl rozhran铆</string>
-    <string name="settings_title_icon_provider">Bal铆膷ek ikon</string>
+    <string name="settings_category_basic">Základní</string>
+    <string name="settings_title_background_free">Neběžet na pozadí</string>
+    <string name="settings_summary_background_free_on">Povoleno\nPokud se widgety a oznámení automaticky neaktualizují, vypněte prosím tuto možnost.</string>
+    <string name="settings_summary_background_free_off">Zakázáno\nPokud nechcete, aby žádné služby pracovaly na pozadí, zapněte tuto možnost.</string>
+    <string name="settings_title_live_wallpaper">Živé pozadí</string>
+    <string name="settings_summary_live_wallpaper">Nastavit Material Design animaci počasí jako živé pozadí</string>
+    <string name="settings_title_service_provider">Poskytovatel služeb</string>
+    <string name="settings_summary_service_provider">Vyberte poskytovatele údajů o počasí a poloze</string>
+    <string name="settings_title_service_provider_advanced">Pokročilá nastavení poskytovatele služeb</string>
+    <string name="settings_summary_service_provider_advanced">Postupujte opatrně</string>
+    <string name="settings_title_weather_source">Zdroj počasí</string>
+    <string name="settings_title_location_service">Služba lokace</string>
+    <string name="settings_title_dark_mode">Tmavý režim</string>
+    <string name="settings_title_ui_style">Styl rozhraní</string>
+    <string name="settings_title_icon_provider">Balíček ikon</string>
     <string name="settings_title_appearance">Vzhled</string>
-    <string name="settings_summary_appearance">Styl rozhran铆, po艡ad铆 karet, jazyk鈥</string>
-    <string name="settings_title_card_display">Zobrazen茅 karty</string>
-    <string name="settings_title_daily_trend_display">Zobrazit denn铆 graf</string>
-    <string name="settings_title_hourly_trend_display">Zobrazit hodinov媒 graf</string>
-    <string name="settings_title_trend_horizontal_line_switch">Horizont谩ln铆 linky v grafu</string>
-    <string name="settings_title_exchange_day_night_temp_switch">Prohodit denn铆 a no膷n铆 teplotu</string>
-    <string name="settings_title_card_order">Po艡ad铆 karet</string>
-    <string name="settings_title_gravity_sensor_switch">Gravita膷n铆 senzor</string>
+    <string name="settings_summary_appearance">Styl rozhraní, pořadí karet, jazyk…</string>
+    <string name="settings_title_card_display">Zobrazené karty</string>
+    <string name="settings_title_daily_trend_display">Zobrazit denní graf</string>
+    <string name="settings_title_hourly_trend_display">Zobrazit hodinový graf</string>
+    <string name="settings_title_trend_horizontal_line_switch">Horizontální linky v grafu</string>
+    <string name="settings_title_exchange_day_night_temp_switch">Prohodit denní a noční teplotu</string>
+    <string name="settings_title_card_order">Pořadí karet</string>
+    <string name="settings_title_gravity_sensor_switch">Gravitační senzor</string>
     <string name="settings_title_list_animation_switch">Animace seznamu</string>
-    <string name="settings_title_item_animation_switch">Animace polo啪ek</string>
+    <string name="settings_title_item_animation_switch">Animace položek</string>
     <string name="settings_language">Jazyk</string>
     <string name="settings_title_unit">Jednotky</string>
-    <string name="settings_summary_unit">Nastavit jednotky 煤daj暖 o po膷as铆</string>
+    <string name="settings_summary_unit">Nastavit jednotky údajů o počasí</string>
     <string name="settings_title_temperature_unit">Jednotka teploty</string>
-    <string name="settings_title_distance_unit">Jednotka vzd谩lenosti</string>
-    <string name="settings_title_precipitation_unit">Jednotka sr谩啪ek</string>
+    <string name="settings_title_distance_unit">Jednotka vzdálenosti</string>
+    <string name="settings_title_precipitation_unit">Jednotka srážek</string>
     <string name="settings_title_pressure_unit">Jednotka tlaku</string>
     <string name="settings_title_speed_unit">Jednotka rychlosti</string>
-    <string name="settings_title_refresh_rate">Automatick茅 obnoven铆</string>
-    <string name="settings_title_alert_notification_switch">Poslat upozorn臎n铆</string>
-    <string name="settings_title_precipitation_notification_switch">Poslat p艡edpov臎膹 sr谩啪ek</string>
-    <string name="settings_title_permanent_service">St谩l谩 slu啪ba</string>
-    <string name="settings_category_forecast">P艡epov臎膹</string>
-    <string name="settings_title_forecast_today">P艡edpov臎膹 na dne拧ek</string>
-    <string name="settings_title_forecast_today_time">膶as p艡edpov臎di na dne拧ek</string>
-    <string name="settings_title_forecast_tomorrow">P艡edpov臎膹 na z铆t艡ek</string>
-    <string name="settings_title_forecast_tomorrow_time">膶as p艡edpov臎di na z铆t艡ek</string>
+    <string name="settings_title_refresh_rate">Automatické obnovení</string>
+    <string name="settings_title_alert_notification_switch">Poslat upozornění</string>
+    <string name="settings_title_precipitation_notification_switch">Poslat předpověď srážek</string>
+    <string name="settings_title_permanent_service">Stálá služba</string>
+    <string name="settings_category_forecast">Přepověď</string>
+    <string name="settings_title_forecast_today">Předpověď na dnešek</string>
+    <string name="settings_title_forecast_today_time">Čas předpovědi na dnešek</string>
+    <string name="settings_title_forecast_tomorrow">Předpověď na zítřek</string>
+    <string name="settings_title_forecast_tomorrow_time">Čas předpovědi na zítřek</string>
     <string name="settings_category_widget">Widget</string>
-    <string name="settings_title_week_icon_mode">Re啪im t媒denn铆ch ikon</string>
-    <string name="settings_title_minimal_icon">Minimalistick茅 ikony</string>
-    <string name="settings_title_click_widget_to_refresh">Obnovit widget p艡i klepnut铆</string>
-    <string name="settings_title_widget_config">Nastaven铆 widgetu</string>
-    <string name="settings_category_notification">Ozn谩men铆</string>
-    <string name="settings_title_notification">Poslat ozn谩men铆</string>
-    <string name="settings_title_notification_style">Styl ozn谩men铆</string>
-    <string name="settings_title_notification_temp_icon">Teplota jako ikona v li拧t臎</string>
-    <string name="settings_title_notification_color">Barva ozn谩men铆</string>
-    <string name="settings_title_notification_custom_color">Vlastn铆 barva ozn谩men铆</string>
+    <string name="settings_title_week_icon_mode">Režim týdenních ikon</string>
+    <string name="settings_title_minimal_icon">Minimalistické ikony</string>
+    <string name="settings_title_click_widget_to_refresh">Obnovit widget při klepnutí</string>
+    <string name="settings_title_widget_config">Nastavení widgetu</string>
+    <string name="settings_category_notification">Oznámení</string>
+    <string name="settings_title_notification">Poslat oznámení</string>
+    <string name="settings_title_notification_style">Styl oznámení</string>
+    <string name="settings_title_notification_temp_icon">Teplota jako ikona v liště</string>
+    <string name="settings_title_notification_color">Barva oznámení</string>
+    <string name="settings_title_notification_custom_color">Vlastní barva oznámení</string>
     <string name="settings_title_notification_text_color">Barva textu</string>
-    <string name="settings_title_notification_background">Barva pozad铆</string>
-    <string name="settings_notification_background_off">Podle syst茅mu</string>
+    <string name="settings_title_notification_background">Barva pozadí</string>
+    <string name="settings_notification_background_off">Podle systému</string>
     <string name="settings_title_notification_can_be_cleared">Lze vymazat</string>
-    <string name="settings_notification_can_be_cleared_on">Lze vymazat t谩hnut铆m</string>
+    <string name="settings_notification_can_be_cleared_on">Lze vymazat táhnutím</string>
     <string name="settings_notification_can_be_cleared_off">Nelze vymazat</string>
-    <string name="settings_title_notification_hide_icon">Skr媒t ikonu ozn谩men铆</string>
-    <string name="settings_notification_hide_icon_on">Skr媒t</string>
+    <string name="settings_title_notification_hide_icon">Skrýt ikonu oznámení</string>
+    <string name="settings_notification_hide_icon_on">Skrýt</string>
     <string name="settings_notification_hide_icon_off">Zobrazit</string>
-    <string name="settings_title_notification_hide_in_lockScreen">Skr媒t v zamykac铆 obrazovce</string>
-    <string name="settings_notification_hide_in_lockScreen_on">Skr媒t (je pot艡eba otev艡铆t syst茅mov谩 nastaven铆)</string>
+    <string name="settings_title_notification_hide_in_lockScreen">Skrýt v zamykací obrazovce</string>
+    <string name="settings_notification_hide_in_lockScreen_on">Skrýt (je potřeba otevřít systémová nastavení)</string>
     <string name="settings_notification_hide_in_lockScreen_off">Zobrazit</string>
-    <string name="settings_title_notification_hide_big_view">Roz拧铆艡en媒 styl</string>
-    <string name="settings_notification_hide_big_view_on">Skr媒t</string>
+    <string name="settings_title_notification_hide_big_view">Rozšířený styl</string>
+    <string name="settings_notification_hide_big_view_on">Skrýt</string>
     <string name="settings_notification_hide_big_view_off">Zobrazit</string>
-    <string name="settings_provider_default_value">V媒choz铆 (nezm臎n臎n茅)</string>
+    <string name="settings_provider_default_value">Výchozí (nezměněné)</string>
     <string name="settings_provider_accu_weather">AccuWeather</string>
-    <string name="settings_provider_accu_weather_key">Kl铆膷 po膷as铆 AccuWeather</string>
-    <string name="settings_provider_accu_current_key">Kl铆膷 teploty AccuWeather</string>
-    <string name="settings_provider_accu_aqi_key">Kl铆膷 AccuWeather AQI</string>
+    <string name="settings_provider_accu_weather_key">Klíč počasí AccuWeather</string>
+    <string name="settings_provider_accu_current_key">Klíč teploty AccuWeather</string>
+    <string name="settings_provider_accu_aqi_key">Klíč AccuWeather AQI</string>
+    <string name="settings_provider_owm">OpenWeather</string>
+    <string name="settings_provider_owm_key">Klíč OpenWeather</string>
     <string name="settings_provider_baidu_ip_location">Poloha Baidu IP</string>
     <string name="settings_provider_baidu_ip_location_ak">Poloha AK Baidu IP</string>
-    <string name="settings_provider_mf">M茅t茅o France</string>
-    <string name="settings_provider_mf_wsft_key">Kl铆膷 WSFT M茅t茅o France</string>
-    <string name="settings_provider_iqa_air_parif_key">Kl铆膷 Air Parif</string>
-    <string name="settings_provider_iqa_atmo_aura_key">Kl铆膷 ATMO AURA</string>
+    <string name="settings_provider_mf">Météo France</string>
+    <string name="settings_provider_mf_wsft_key">Klíč WSFT Météo France</string>
+    <string name="settings_provider_iqa_air_parif_key">Klíč Air Parif</string>
+    <string name="settings_provider_iqa_atmo_aura_key">Klíč ATMO AURA</string>
 
     <!--share preference-->
     <!-- Do not translate the following set of strings. -->
@@ -476,4 +478,3 @@
     <string name="key_colorful">colorful</string>
 
 </resources>
-

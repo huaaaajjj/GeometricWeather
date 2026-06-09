@@ -19,19 +19,19 @@
 
     <!-- notification text color. -->
     <string-array name="notification_text_colors">
-        <item>孝邪屑薪邪</item>
-        <item>小懈胁邪</item>
-        <item>小胁械褌谢邪</item>
+        <item>Тамна</item>
+        <item>Сива</item>
+        <item>Светла</item>
     </string-array>
 
     <!-- widget style. -->
     <string-array name="widget_styles">
-        <item>袩褉邪胁芯褍谐邪芯薪懈泻</item>
-        <item>小懈屑械褌褉懈褔邪薪</item>
-        <item>袩谢芯褔邪</item>
-        <item>M邪谢懈</item>
-        <item>袧a薪o</item>
-        <item>袩懈泻褋械谢</item>
+        <item>Правоугаоник</item>
+        <item>Симетричан</item>
+        <item>Плоча</item>
+        <item>Mали</item>
+        <item>Нaнo</item>
+        <item>Пиксел</item>
         <item>Vertical</item>
         <item>Oreo</item>
         <item>Oreo (Google sans)</item>

@@ -379,6 +379,13 @@ class SettingsManager private constructor(context: Context) {
         }
         get() = config.getString("provider_accu_aqi_key", "") ?: ""
 
+    var customOwmKey: String
+        set(value) {
+            config.edit().putString("provider_owm_key", value).apply()
+            notifySettingsChanged()
+        }
+        get() = config.getString("provider_owm_key", "") ?: ""
+
     var customBaiduIpLocationAk: String
         set(value) {
             config.edit().putString("provider_baidu_ip_location_ak", value).apply()
@@ -430,6 +437,12 @@ class SettingsManager private constructor(context: Context) {
         get() = getProviderSettingValue(
             customValue = customAccuAqiKey,
             defaultValue = BuildConfig.ACCU_AQI_KEY,
+        )
+
+    val providerOwmKey: String
+        get() = getProviderSettingValue(
+            customValue = customOwmKey,
+            defaultValue = BuildConfig.OWM_KEY,
         )
 
     val providerBaiduIpLocationAk: String

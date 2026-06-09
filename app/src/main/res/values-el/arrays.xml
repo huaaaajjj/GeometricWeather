@@ -3,31 +3,32 @@
 
     <!-- Chinese source. -->
     <string-array name="weather_sources">
-        <item>caiyunapp.com (螠蠈谓慰 纬喂伪 螝委谓伪)</item>
-        <item>accuweather.com</item>
-        <item>M茅t茅o France</item>
+        <item>caiyunapp.com (Μόνο για Κίνα)</item>
+        <item>accuweather.com</item>
+        <item>OpenWeather</item>
+        <item>Météo France</item>
     </string-array>
 
     <!-- Location service. -->
     <string-array name="location_services">
-        <item>韦慰蟺慰胃蔚蟽委伪 Baidu</item>
-        <item>韦慰蟺慰胃蔚蟽委伪 Baidu (螠蠈谓慰 纬喂伪 螝委谓伪)</item>
-        <item>韦慰蟺慰胃蔚蟽委伪 AMap</item>
+        <item>Τοποθεσία Baidu</item>
+        <item>Τοποθεσία Baidu (Μόνο για Κίνα)</item>
+        <item>Τοποθεσία AMap</item>
         <item>Native API</item>
     </string-array>
 
     <!-- Dark mode. -->
     <string-array name="dark_modes">
-        <item>螒蠀蟿蠈渭伪蟿慰</item>
-        <item>螔维蟽畏 蟽蠀蟽蟿萎渭伪蟿慰蟼</item>
-        <item>螤维谓蟿伪 蠁蠅蟿蔚喂谓蠈</item>
-        <item>螤维谓蟿伪 蟽魏慰蟿蔚喂谓蠈</item>
+        <item>Αυτόματο</item>
+        <item>Βάση συστήματος</item>
+        <item>Πάντα φωτεινό</item>
+        <item>Πάντα σκοτεινό</item>
     </string-array>
 
     <!-- UI style. -->
     <string-array name="ui_styles">
-        <item>螝蠀魏位喂魏蠈</item>
-        <item>螝委谓畏蟽畏</item>
+        <item>Κυκλικό</item>
+        <item>Κίνηση</item>
     </string-array>
 
     <!-- automatic refresh rate. -->
@@ -48,35 +49,35 @@
 
     <!-- widget week icon mode. -->
     <string-array name="week_icon_modes">
-        <item>螒蠀蟿蠈渭伪蟿伪</item>
+        <item>Αυτόματα</item>
         <item>@string/daytime</item>
         <item>@string/nighttime</item>
     </string-array>
 
     <!-- notification style. -->
     <string-array name="notification_styles">
-        <item>危蠉蟽蟿畏渭伪</item>
-        <item>螤蠈位蔚喂蟼</item>
+        <item>Σύστημα</item>
+        <item>Πόλεις</item>
         <item>@string/daily_overview</item><!-- do not translate. -->
         <item>@string/hourly_overview</item><!-- do not translate. -->
     </string-array>
 
     <!-- notification text color. -->
     <string-array name="notification_text_colors">
-        <item>螠伪蠉蟻慰</item>
-        <item>螕魏蟻委</item>
-        <item>螞蔚蠀魏蠈</item>
+        <item>Μαύρο</item>
+        <item>Γκρί</item>
+        <item>Λευκό</item>
     </string-array>
 
     <!-- widget style. -->
     <string-array name="widget_styles">
-        <item>螣蟻胃慰纬蠋谓喂慰</item>
-        <item>危蠀渭渭蔚蟿蟻喂魏蠈</item>
-        <item>螤位伪魏维魏喂</item>
-        <item>螠委谓喂</item>
-        <item>螡维谓慰</item>
+        <item>Ορθογώνιο</item>
+        <item>Συμμετρικό</item>
+        <item>Πλακάκι</item>
+        <item>Μίνι</item>
+        <item>Νάνο</item>
         <item>Pixel</item>
-        <item>螝伪蟿伪魏蠈蟻蠀蠁慰</item>
+        <item>Κατακόρυφο</item>
         <item>Oreo</item>
         <item>Oreo (Google sans)</item>
         <item>Temperature</item>
@@ -84,12 +85,12 @@
 
     <!-- Widget subtitle data. -->
     <string-array name="subtitle_data">
-        <item>围蟻蠈谓慰蟼 蔚谓畏渭苇蟻蠅蟽畏蟼</item>
-        <item>AQI (螖蔚谓 位蔚喂蟿慰蠀蟻纬蔚委 蟺伪谓蟿慰蠉.)</item>
-        <item>螁谓蔚渭慰蟼</item>
-        <item>螒喂蟽胃畏蟿萎 胃蔚蟻渭慰魏蟻伪蟽委伪</item>
-        <item>危蔚位畏谓喂伪魏蠈 畏渭蔚蟻慰位蠈纬喂慰</item>
-        <item>螤蟻慰蟽伪蟻渭慰纬萎</item>
+        <item>Χρόνος ενημέρωσης</item>
+        <item>AQI (Δεν λειτουργεί παντού.)</item>
+        <item>Άνεμος</item>
+        <item>Αισθητή θερμοκρασία</item>
+        <item>Σεληνιακό ημερολόγιο</item>
+        <item>Προσαρμογή</item>
     </string-array>
 
     <!-- widget clock font. -->
@@ -102,67 +103,67 @@
 
     <!-- widget card style. -->
     <string-array name="widget_card_styles">
-        <item>围蠅蟻委蟼</item>
-        <item>螒蠀蟿蠈渭伪蟿慰</item>
-        <item>桅蠅蟿蔚喂谓蠈</item>
-        <item>危魏慰蟿蔚喂谓蠈</item>
+        <item>Χωρίς</item>
+        <item>Αυτόματο</item>
+        <item>Φωτεινό</item>
+        <item>Σκοτεινό</item>
     </string-array>
 
     <!-- widget clock font. -->
     <string-array name="widget_text_colors">
-        <item>螞蔚蠀魏蠈</item>
-        <item>螠伪蠉蟻慰</item>
-        <item>螒蠀蟿蠈渭伪蟿慰</item>
+        <item>Λευκό</item>
+        <item>Μαύρο</item>
+        <item>Αυτόματο</item>
     </string-array>
 
     <!-- live wallpaper weather kind. -->
     <string-array name="live_wallpaper_weather_kinds">
-        <item>螒蠀蟿蠈渭伪蟿伪</item>
-        <item>螝伪胃伪蟻蠈蟼</item>
-        <item>螠蔚蟻喂魏蠋蟼 谓蔚蠁蔚位蠋未畏蟼</item>
-        <item>危蠀谓谓蔚蠁喂伪蟽渭苇谓慰蟼</item>
-        <item>螔蟻慰蠂萎</item>
-        <item>围喂蠈谓喂</item>
-        <item>围喂慰谓蠈谓蔚蟻慰</item>
-        <item>围伪位维味喂</item>
-        <item>螣渭委蠂位畏</item>
-        <item>螝伪蟿伪蠂谓喂维</item>
-        <item>螝伪蟿伪喂纬委未伪</item>
-        <item>韦蠀蠁蠋谓伪蟼</item>
-        <item>螁谓蔚渭慰蟼</item>
+        <item>Αυτόματα</item>
+        <item>Καθαρός</item>
+        <item>Μερικώς νεφελώδης</item>
+        <item>Συννεφιασμένος</item>
+        <item>Βροχή</item>
+        <item>Χιόνι</item>
+        <item>Χιονόνερο</item>
+        <item>Χαλάζι</item>
+        <item>Ομίχλη</item>
+        <item>Καταχνιά</item>
+        <item>Καταιγίδα</item>
+        <item>Τυφώνας</item>
+        <item>Άνεμος</item>
     </string-array>
 
     <!-- live wallpaper weather kind. -->
     <string-array name="live_wallpaper_day_night_types">
-        <item>螒蠀蟿蠈渭伪蟿慰</item>
-        <item>螤维谓蟿伪 渭苇蟻伪</item>
-        <item>螤维谓蟿伪 谓蠉蠂蟿伪</item>
+        <item>Αυτόματο</item>
+        <item>Πάντα μέρα</item>
+        <item>Πάντα νύχτα</item>
     </string-array>
 
     <!-- speed unit. -->
     <string-array name="speed_units">
-        <item>围位渭/螐</item>
-        <item>螠/螖</item>
-        <item>螝蠈</item>
-        <item>螠/螐</item>
-        <item>螤/螖</item>
+        <item>Χλμ/Ώ</item>
+        <item>Μ/Δ</item>
+        <item>Κό</item>
+        <item>Μ/Ώ</item>
+        <item>Π/Δ</item>
     </string-array>
 
     <!-- precipitation unit. -->
     <string-array name="precipitation_units">
-        <item>围喂位喂慰蟽蟿维</item>
+        <item>Χιλιοστά</item>
         <item>cm</item>
-        <item>螉谓蟿蟽蔚蟼</item>
-        <item>螞/螠虏</item>
+        <item>Ίντσες</item>
+        <item>Λ/Μ²</item>
     </string-array>
 
     <!-- distance unit. -->
     <string-array name="distance_units">
-        <item>围位渭</item>
-        <item>螠苇蟿</item>
-        <item>螠委位</item>
-        <item>螡螠委位</item>
-        <item>螤蠈未</item>
+        <item>Χλμ</item>
+        <item>Μέτ</item>
+        <item>Μίλ</item>
+        <item>ΝΜίλ</item>
+        <item>Πόδ</item>
     </string-array>
 
     <!-- pressure unit. -->
@@ -173,29 +174,27 @@
         <item>atm</item>
         <item>mmHg</item>
         <item>inHg</item>
-        <item>kgf/cm虏</item>
+        <item>kgf/cm²</item>
     </string-array>
 
     <!-- air quality unit. -->
     <string-array name="air_quality_units">
-        <item>渭g/m鲁</item>
+        <item>μg/m³</item>
     </string-array>
 
     <!-- air quality co unit. -->
     <string-array name="air_quality_co_units">
-        <item>mg/m鲁</item>
+        <item>mg/m³</item>
     </string-array>
 
     <!-- duration unit. -->
     <string-array name="duration_units">
-        <item>蠋</item> <!-- hour -->
+        <item>ώ</item> <!-- hour -->
     </string-array>
 
     <!-- pollen unit. -->
     <string-array name="pollen_units">
-        <item>/m鲁</item>
+        <item>/m³</item>
     </string-array>
 
 </resources>
-
-
