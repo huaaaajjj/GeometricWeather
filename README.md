@@ -1,45 +1,52 @@
-# Huajiii Weather
+# GeometricWeather
 
-基于 [GeometricWeather](https://github.com/WangDaYeeeeee/GeometricWeather) 修改维护的天气应用。
+![Geometric Weather](/work/preview-header-android.png?raw=true)
 
-## 简介
+**这是一个勉强能用的修改版本。** 基于上游仓库 [WangDaYeeeeee/GeometricWeather](https://github.com/WangDaYeeeeee/GeometricWeather) 修改。
 
-这是 **第一个勉强能用的正式版** (v3.2.0)。在原版基础上做了大量修复和优化，使应用能在现代 Android 设备上正常运行。
+## 版本号说明
 
-### 来源
+- **3.2.x** — 小更新（Bug 修复、小功能调整）
+- **3.x** — 大更新（架构变更、大功能新增）
 
-- **上游仓库**: [WangDaYeeeeee/GeometricWeather](https://github.com/WangDaYeeeeee/GeometricWeather)
-- **本仓库**: [huaaaajjj/GeometricWeather](https://github.com/huaaaajjj/GeometricWeather)
+## 与原版的区别
 
-## 功能
+- 修复 Gradle/AGP/Kotlin 版本兼容性，可在 Android 14+ 上编译运行
+- 移除失效的天气提供商（QWeather、Visual Crossing），新增可用的提供商
+- 修复 AccuWeather、OpenWeather、彩云天气等 API 兼容性
+- 设置界面性能优化及 UI 调整
+- 修复 MIUI 系统兼容性问题
+- 所有 Release 默认以 Prerelease 发布（除非特别说明）
 
-- 多个天气提供商: AccuWeather、OpenWeather、Open-Meteo、QWeather、WeatherAPI、彩云天气
-- 内置 API Keys，开箱即用
-- 现代化 Android 技术栈: Kotlin + Compose + MVVM
-- 支持 Android 5.0+ (API 21)
-- Material Design 3 风格
+## 可用天气提供商
+
+| 提供商 | 是否需要 API Key | 状态 |
+|--------|-----------------|------|
+| Open-Meteo | 免费，无需 Key | ✅ 正常 |
+| AccuWeather | 内置 Key | ✅ 正常 |
+| OpenWeather | 内置 Key | ✅ 正常 |
+| WeatherAPI | 内置 Key | ✅ 正常 |
+| CaiYun (彩云天气) | 内置 Key | ✅ 正常 |
+| Meteo France | 内置 Key | ⚠️ 仅限法国地区 |
 
 ## 下载
 
-前往 [Releases](https://github.com/huaaaajjj/GeometricWeather/releases) 页面下载最新 APK。
+- [GitHub Releases](https://github.com/huaaaajjj/GeometricWeather/releases)
 
-## 版本说明
-
-- **v3.2.x**: 小更新和 bug 修复
-- **v3.x**: 大版本更新
-
-## 构建
+## 构建方法
 
 ```bash
-git clone https://github.com/huaaaajjj/GeometricWeather.git
-cd GeometricWeather
+# 调试版
 ./gradlew assemblePubDebug
+
+# 发布版
+./gradlew assemblePubRelease
 ```
 
-## 协议
+## 许可证
 
 - [LICENSE](/LICENSE)
 
 ## 致谢
 
-感谢 [WangDaYeeeeee](https://github.com/WangDaYeeeeee/GeometricWeather) 的原始项目。
+- 原项目作者 [WangDaYeeeeee](https://github.com/WangDaYeeeeee/GeometricWeather)
