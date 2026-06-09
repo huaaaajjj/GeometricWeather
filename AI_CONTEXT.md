@@ -26,6 +26,7 @@
 - 发布 v3.102-modernize Release
 - 修复 API keys 读取问题 (local.properties 优先)
 - 修复坐标系转换 (GCJ-02 → WGS-84)
+- 发布 v3.103 Release (3个APK)
 
 ## 禁止
 
