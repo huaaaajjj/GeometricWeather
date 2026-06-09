@@ -1,16 +1,16 @@
-// Load local.properties first, fall back to gradle.properties
-def localProperties = new Properties()
-def localPropertiesFile = rootProject.file("local.properties")
-if (localPropertiesFile.exists()) {
-    localProperties.load(localPropertiesFile.newDataInputStream())
-}
-
 plugins {
     id "com.android.application"
     id "org.greenrobot.greendao"
     id "kotlin-android"
     id "kotlin-kapt"
     id "dagger.hilt.android.plugin"
+}
+
+// Load local.properties first, fall back to gradle.properties
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.newDataInputStream())
 }
 
 android {
