@@ -27,6 +27,10 @@
 - 修复 API keys 读取问题 (local.properties 优先)
 - 修复坐标系转换 (GCJ-02 → WGS-84)
 - 发布 v3.103 Release (3个APK)
+- 添加 Open-Meteo 天气提供商 (免费，无需API Key)
+- 添加 QWeather (和风天气) 提供商
+- 添加 WeatherAPI 提供商
+- 添加 Visual Crossing 提供商
 
 ## 禁止
 
