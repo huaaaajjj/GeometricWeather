@@ -1,172 +1,173 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+﻿<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- app. -->
-    <string name="app_name">Време</string>
-    <string name="geometric_weather">Геометријско време</string>
+    <string name="app_name">袙褉械屑械</string>
+    <string name="geometric_weather">袚械芯屑械褌褉懈褬褋泻芯 胁褉械屑械</string>
 
     <!-- keyword. -->
-    <string name="current_location">Тренутну локацију</string>
-    <string name="default_location">подразумевана локација</string>
-    <string name="live">Уживо</string>
-    <string name="today">Данас</string>
-    <string name="refresh_at">Oсвежи за</string>
-    <string name="precipitation">Падавине</string>
-    <string name="maxi_temp">дневно</string>
-    <string name="mini_temp">ноћу</string>
-    <string name="time">време</string>
-    <string name="day">дневно</string>
-    <string name="night">ноћу</string>
-    <string name="wind">Ветар</string>
-    <string name="sensible_temp">Осетна температура</string>
-    <string name="humidity">Влажност</string>
-    <string name="uv_index">Uv индекс</string>
-    <string name="forecast">Прогноза</string>
-    <string name="briefings">Информације</string>
-    <string name="daytime">Дневно</string>
-    <string name="nighttime">Ноћу</string>
-    <string name="publish_at">Објави у</string>
-    <string name="feels_like">Као</string>
-    <string name="follow_system">Подразумевани</string>
+    <string name="current_location">孝褉械薪褍褌薪褍 谢芯泻邪褑懈褬褍</string>
+    <string name="default_location">锌芯写褉邪蟹褍屑械胁邪薪邪 谢芯泻邪褑懈褬邪</string>
+    <string name="live">校卸懈胁芯</string>
+    <string name="today">袛邪薪邪褋</string>
+    <string name="refresh_at">O褋胁械卸懈 蟹邪</string>
+    <string name="precipitation">袩邪写邪胁懈薪械</string>
+    <string name="maxi_temp">写薪械胁薪芯</string>
+    <string name="mini_temp">薪芯褯褍</string>
+    <string name="time">胁褉械屑械</string>
+    <string name="day">写薪械胁薪芯</string>
+    <string name="night">薪芯褯褍</string>
+    <string name="wind">袙械褌邪褉</string>
+    <string name="sensible_temp">袨褋械褌薪邪 褌械屑锌械褉邪褌褍褉邪</string>
+    <string name="humidity">袙谢邪卸薪芯褋褌</string>
+    <string name="uv_index">Uv 懈薪写械泻褋</string>
+    <string name="forecast">袩褉芯谐薪芯蟹邪</string>
+    <string name="briefings">袠薪褎芯褉屑邪褑懈褬械</string>
+    <string name="daytime">袛薪械胁薪芯</string>
+    <string name="nighttime">袧芯褯褍</string>
+    <string name="publish_at">袨斜褬邪胁懈 褍</string>
+    <string name="feels_like">袣邪芯</string>
+    <string name="follow_system">袩芯写褉邪蟹褍屑械胁邪薪懈</string>
 
     <string name="of_clock">:00</string>
-    <string name="yesterday">јуче</string>
-    <string name="tomorrow">сутра</string>
-    <string name="week">недеља</string>
-    <string name="week_1">ПОН</string>
-    <string name="week_2">УТО</string>
-    <string name="week_3">СРЕ</string>
-    <string name="week_4">ЧЕТ</string>
-    <string name="week_5">ПЕТ</string>
-    <string name="week_6">СУБ</string>
-    <string name="week_7">НЕД</string>
+    <string name="yesterday">褬褍褔械</string>
+    <string name="tomorrow">褋褍褌褉邪</string>
+    <string name="week">薪械写械褭邪</string>
+    <string name="week_1">袩袨袧</string>
+    <string name="week_2">校孝袨</string>
+    <string name="week_3">小袪袝</string>
+    <string name="week_4">效袝孝</string>
+    <string name="week_5">袩袝孝</string>
+    <string name="week_6">小校袘</string>
+    <string name="week_7">袧袝袛</string>
 
-    <string name="wind_0">Мирно</string>
-    <string name="wind_1">Слаб ветар</string>
-    <string name="wind_2">Поветарац</string>
-    <string name="wind_3">Благ ветар</string>
-    <string name="wind_4">Умерен ветар</string>
-    <string name="wind_5">Јачи ветар</string>
-    <string name="wind_6">Јак ветар</string>
-    <string name="wind_7">Баш јак ветар</string>
-    <string name="wind_8">Олуја</string>
-    <string name="wind_9">Јака олуја</string>
-    <string name="wind_10">Невреме</string>
-    <string name="wind_11">Опасно невреме</string>
-    <string name="wind_12">Ураган/Тајфун</string>
+    <string name="wind_0">袦懈褉薪芯</string>
+    <string name="wind_1">小谢邪斜 胁械褌邪褉</string>
+    <string name="wind_2">袩芯胁械褌邪褉邪褑</string>
+    <string name="wind_3">袘谢邪谐 胁械褌邪褉</string>
+    <string name="wind_4">校屑械褉械薪 胁械褌邪褉</string>
+    <string name="wind_5">袌邪褔懈 胁械褌邪褉</string>
+    <string name="wind_6">袌邪泻 胁械褌邪褉</string>
+    <string name="wind_7">袘邪褕 褬邪泻 胁械褌邪褉</string>
+    <string name="wind_8">袨谢褍褬邪</string>
+    <string name="wind_9">袌邪泻邪 芯谢褍褬邪</string>
+    <string name="wind_10">袧械胁褉械屑械</string>
+    <string name="wind_11">袨锌邪褋薪芯 薪械胁褉械屑械</string>
+    <string name="wind_12">校褉邪谐邪薪/孝邪褬褎褍薪</string>
 
-    <string name="aqi_1">Свеж ваздух</string>
-    <string name="aqi_2">Чист ваздух</string>
-    <string name="aqi_3">S-загађен</string>
-    <string name="aqi_4">M-загађен</string>
-    <string name="aqi_5">H-загађен</string>
-    <string name="aqi_6">Опасан</string>
+    <string name="aqi_1">小胁械卸 胁邪蟹写褍褏</string>
+    <string name="aqi_2">效懈褋褌 胁邪蟹写褍褏</string>
+    <string name="aqi_3">S-蟹邪谐邪褣械薪</string>
+    <string name="aqi_4">M-蟹邪谐邪褣械薪</string>
+    <string name="aqi_5">H-蟹邪谐邪褣械薪</string>
+    <string name="aqi_6">袨锌邪褋邪薪</string>
 
-    <string name="daily_overview">дневни</string>
-    <string name="hourly_overview">часовни</string>
-    <string name="air_quality">Квалитет ваздуха</string>
-    <string name="life_details">детаљни</string>
-    <string name="sunrise_sunset">Сунце &amp; месец</string>
+    <string name="daily_overview">写薪械胁薪懈</string>
+    <string name="hourly_overview">褔邪褋芯胁薪懈</string>
+    <string name="air_quality">袣胁邪谢懈褌械褌 胁邪蟹写褍褏邪</string>
+    <string name="life_details">写械褌邪褭薪懈</string>
+    <string name="sunrise_sunset">小褍薪褑械 &amp; 屑械褋械褑</string>
 
-    <string name="next">СЛЕДЕЋЕ</string>
-    <string name="done">ГОТОВО</string>
-    <string name="cancel" tools:ignore="ButtonCase">ОДУСТАНИ</string>
-    <string name="on">УПАЉЕНО</string>
-    <string name="off">УГАШЕНО</string>
+    <string name="next">小袥袝袛袝袐袝</string>
+    <string name="done">袚袨孝袨袙袨</string>
+    <string name="cancel" tools:ignore="ButtonCase">袨袛校小孝袗袧袠</string>
+    <string name="on">校袩袗袎袝袧袨</string>
+    <string name="off">校袚袗楔袝袧袨</string>
 
-    <string name="about_app">О AПЛИКАЦИЈИ</string>
-    <string name="introduce">представљање</string>
+    <string name="about_app">袨 A袩袥袠袣袗笑袠袌袠</string>
+    <string name="introduce">锌褉械写褋褌邪胁褭邪褮械</string>
     <string name="email">E-mail</string>
     <string name="gitHub">GitHub</string>
-    <string name="translator">Преводиоци</string>
-    <string name="thanks">Хвала</string>
+    <string name="translator">袩褉械胁芯写懈芯褑懈</string>
+    <string name="thanks">啸胁邪谢邪</string>
 
     <!-- about. -->
     <string name="retrofit">Retrofit 2.0</string>
-    <string name="about_retrofit">HTTP клијент који ради на типу за Андроид и Jaву by Square, Inc.</string>
+    <string name="about_retrofit">HTTP 泻谢懈褬械薪褌 泻芯褬懈 褉邪写懈 薪邪 褌懈锌褍 蟹邪 袗薪写褉芯懈写 懈 Ja胁褍 by Square, Inc.</string>
     <string name="glide">Glide</string>
-    <string name="about_glide">Библиотека за учитавање слика и кеширање за Андроид, фокусира се на глатко померање.</string>
+    <string name="about_glide">袘懈斜谢懈芯褌械泻邪 蟹邪 褍褔懈褌邪胁邪褮械 褋谢懈泻邪 懈 泻械褕懈褉邪褮械 蟹邪 袗薪写褉芯懈写, 褎芯泻褍褋懈褉邪 褋械 薪邪 谐谢邪褌泻芯 锌芯屑械褉邪褮械.</string>
     <string name="gson">Gson</string>
-    <string name="about_gson">Јава серијализација/десеријализација библиотеке која може претворити Јава објекте у JSON и назад.</string>
+    <string name="about_gson">袌邪胁邪 褋械褉懈褬邪谢懈蟹邪褑懈褬邪/写械褋械褉懈褬邪谢懈蟹邪褑懈褬邪 斜懈斜谢懈芯褌械泻械 泻芯褬邪 屑芯卸械 锌褉械褌胁芯褉懈褌懈 袌邪胁邪 芯斜褬械泻褌械 褍 JSON 懈 薪邪蟹邪写.</string>
     <string name="greenDAO">GreenDAO</string>
-    <string name="about_greenDAO">greenDAO је лака и брза ORM солуција за Aндроид која мапира објекте у SQLite датабазе.</string>
+    <string name="about_greenDAO">greenDAO 褬械 谢邪泻邪 懈 斜褉蟹邪 ORM 褋芯谢褍褑懈褬邪 蟹邪 A薪写褉芯懈写 泻芯褬邪 屑邪锌懈褉邪 芯斜褬械泻褌械 褍 SQLite 写邪褌邪斜邪蟹械.</string>
 
     <!-- feedback. -->
-    <string name="feedback_request_permission">Дозволе</string>
-    <string name="feedback_request_location">локацију</string>
-    <string name="feedback_request_location_permission_success">Захтевај дозволу за локацију.</string>
-    <string name="feedback_request_location_permission_failed">Захтев за одобрење локације није успео.</string>
+    <string name="feedback_request_permission">袛芯蟹胁芯谢械</string>
+    <string name="feedback_request_location">谢芯泻邪褑懈褬褍</string>
+    <string name="feedback_request_location_permission_success">袟邪褏褌械胁邪褬 写芯蟹胁芯谢褍 蟹邪 谢芯泻邪褑懈褬褍.</string>
+    <string name="feedback_request_location_permission_failed">袟邪褏褌械胁 蟹邪 芯写芯斜褉械褮械 谢芯泻邪褑懈褬械 薪懈褬械 褍褋锌械芯.</string>
 
-    <string name="feedback_location_failed">Локација неуспешна.</string>
-    <string name="feedback_get_weather_failed">Подаци о временским условима неуспешни.</string>
+    <string name="feedback_location_failed">袥芯泻邪褑懈褬邪 薪械褍褋锌械褕薪邪.</string>
+    <string name="feedback_get_weather_failed">袩芯写邪褑懈 芯 胁褉械屑械薪褋泻懈屑 褍褋谢芯胁懈屑邪 薪械褍褋锌械褕薪懈.</string>
 
-    <string name="feedback_view_style">Стил изгледа.</string>
-    <string name="feedback_show_widget_card">Позадина картице.</string>
-    <string name="feedback_black_text">Тамни текст.</string>
+    <string name="feedback_view_style">小褌懈谢 懈蟹谐谢械写邪.</string>
+    <string name="feedback_show_widget_card">袩芯蟹邪写懈薪邪 泻邪褉褌懈褑械.</string>
+    <string name="feedback_black_text">孝邪屑薪懈 褌械泻褋褌.</string>
 
-    <string name="feedback_click_toggle">Кликни на карту за добијање података.</string>
-    <string name="feedback_no_data">НЕМА ПОДАТАКА</string>
+    <string name="feedback_click_toggle">袣谢懈泻薪懈 薪邪 泻邪褉褌褍 蟹邪 写芯斜懈褬邪褮械 锌芯写邪褌邪泻邪.</string>
+    <string name="feedback_no_data">袧袝袦袗 袩袨袛袗孝袗袣袗</string>
 
-    <string name="feedback_collect_failed">Ова локација већ постоји.</string>
-    <string name="feedback_collect_succeed">Успешно додата локација.</string>
-    <string name="feedback_delete_succeed">Успешно обрисана локација.</string>
-    <string name="feedback_location_list_cannot_be_null">Листа локација не може бити празна.</string>
+    <string name="feedback_collect_failed">袨胁邪 谢芯泻邪褑懈褬邪 胁械褯 锌芯褋褌芯褬懈.</string>
+    <string name="feedback_collect_succeed">校褋锌械褕薪芯 写芯写邪褌邪 谢芯泻邪褑懈褬邪.</string>
+    <string name="feedback_delete_succeed">校褋锌械褕薪芯 芯斜褉懈褋邪薪邪 谢芯泻邪褑懈褬邪.</string>
+    <string name="feedback_location_list_cannot_be_null">袥懈褋褌邪 谢芯泻邪褑懈褬邪 薪械 屑芯卸械 斜懈褌懈 锌褉邪蟹薪邪.</string>
 
-    <string name="feedback_search_location">Потражите локацију…</string>
-    <string name="feedback_not_yet_location">Још увек није успела локација…</string>
-    <string name="feedback_search_nothing">Ништа није пронађено…</string>
-    <string name="feedback_initializing">Иницијализација…</string>
+    <string name="feedback_search_location">袩芯褌褉邪卸懈褌械 谢芯泻邪褑懈褬褍鈥</string>
+    <string name="feedback_not_yet_location">袌芯褕 褍胁械泻 薪懈褬械 褍褋锌械谢邪 谢芯泻邪褑懈褬邪鈥</string>
+    <string name="feedback_search_nothing">袧懈褕褌邪 薪懈褬械 锌褉芯薪邪褣械薪芯鈥</string>
+    <string name="feedback_initializing">袠薪懈褑懈褬邪谢懈蟹邪褑懈褬邪鈥</string>
 
-    <string name="feedback_refresh_notification_after_back">Промена ће бити након повратка на почетну страну.</string>
-    <string name="feedback_refresh_notification_now">Освежи сада.</string>
-    <string name="feedback_refresh_ui_after_refresh">Промена ће бити након освежавања података.</string>
-    <string name="feedback_restart">Промена ће бити након рестарта.</string>
+    <string name="feedback_refresh_notification_after_back">袩褉芯屑械薪邪 褯械 斜懈褌懈 薪邪泻芯薪 锌芯胁褉邪褌泻邪 薪邪 锌芯褔械褌薪褍 褋褌褉邪薪褍.</string>
+    <string name="feedback_refresh_notification_now">袨褋胁械卸懈 褋邪写邪.</string>
+    <string name="feedback_refresh_ui_after_refresh">袩褉芯屑械薪邪 褯械 斜懈褌懈 薪邪泻芯薪 芯褋胁械卸邪胁邪褮邪 锌芯写邪褌邪泻邪.</string>
+    <string name="feedback_restart">袩褉芯屑械薪邪 褯械 斜懈褌懈 薪邪泻芯薪 褉械褋褌邪褉褌邪.</string>
 
     <!-- action -->
-    <string name="action_alert">Упозорење</string>
-    <string name="action_manage">Управљати</string>
-    <string name="action_search">Претрага</string>
-    <string name="action_settings">Подешавања</string>
-    <string name="action_about">О нама</string>
+    <string name="action_alert">校锌芯蟹芯褉械褮械</string>
+    <string name="action_manage">校锌褉邪胁褭邪褌懈</string>
+    <string name="action_search">袩褉械褌褉邪谐邪</string>
+    <string name="action_settings">袩芯写械褕邪胁邪褮邪</string>
+    <string name="action_about">袨 薪邪屑邪</string>
 
     <!-- widget -->
-    <string name="widget_day">Дневно</string>
-    <string name="widget_week">Недељно</string>
-    <string name="widget_day_week">Дневно + Недељно</string>
-    <string name="widget_clock_day_horizontal">Сат + Дневно (Хоризонтални стил)</string>
-    <string name="widget_clock_day_vertical">Сат + Дневно (Вертикални стил)</string>
-    <string name="widget_clock_day_week">Време + Дневно + Недељно</string>
-    <string name="wait_refresh">чекање</string>
-    <string name="ellipsis">…</string>
+    <string name="widget_day">袛薪械胁薪芯</string>
+    <string name="widget_week">袧械写械褭薪芯</string>
+    <string name="widget_day_week">袛薪械胁薪芯 + 袧械写械褭薪芯</string>
+    <string name="widget_clock_day_horizontal">小邪褌 + 袛薪械胁薪芯 (啸芯褉懈蟹芯薪褌邪谢薪懈 褋褌懈谢)</string>
+    <string name="widget_clock_day_vertical">小邪褌 + 袛薪械胁薪芯 (袙械褉褌懈泻邪谢薪懈 褋褌懈谢)</string>
+    <string name="widget_clock_day_week">袙褉械屑械 + 袛薪械胁薪芯 + 袧械写械褭薪芯</string>
+    <string name="wait_refresh">褔械泻邪褮械</string>
+    <string name="ellipsis">鈥</string>
 
     <!-- settings -->
-    <string name="settings_category_basic">Основно</string>
-    <string name="settings_title_background_free">Без позадине.</string>
-    <string name="settings_language">Језик.</string>
-    <string name="settings_title_refresh_rate">Аутоматско освежавање</string>
-    <string name="settings_title_permanent_service">Стална служба.</string>
-    <string name="settings_category_forecast">Прогноза</string>
-    <string name="settings_title_forecast_today">Прогноза за данас.</string>
-    <string name="settings_title_forecast_today_time">Прогноза времена за данас.</string>
-    <string name="settings_title_forecast_tomorrow">Прогноза времена за сутра.</string>
-    <string name="settings_title_forecast_tomorrow_time">Прогноза времена за сутра време.</string>
-    <string name="settings_category_widget">Виџет</string>
-    <string name="settings_title_icon_provider">Стил икона.</string>
-    <string name="settings_category_notification">Обавештење</string>
-    <string name="settings_title_notification">Пошаљи обавештење.</string>
-    <string name="settings_title_notification_temp_icon">Покажи температуру као мини икону.</string>
-    <string name="settings_title_notification_text_color">Боја текста.</string>
-    <string name="settings_title_notification_background">Боја позадине.</string>
-    <string name="settings_notification_background_off">Прати систем.</string>
-    <string name="settings_title_notification_can_be_cleared">Може да се очисти.</string>
-    <string name="settings_notification_can_be_cleared_on">Може да се очисти.</string>
-    <string name="settings_notification_can_be_cleared_off">Не може да се очисти.</string>
-    <string name="settings_title_notification_hide_icon">Сакриј икону обавештења.</string>
-    <string name="settings_notification_hide_icon_on">Сакриј.</string>
-    <string name="settings_notification_hide_icon_off">Прикажи.</string>
-    <string name="settings_title_notification_hide_in_lockScreen">Сакриј у закључаном екрану.</string>
-    <string name="settings_notification_hide_in_lockScreen_on">Сакриј (треба да се отвори у системским подешавањима).</string>
-    <string name="settings_notification_hide_in_lockScreen_off">Прикажи.</string>
-    <string name="settings_title_notification_hide_big_view">Сакриј велики приказ.</string>
-    <string name="settings_notification_hide_big_view_on">Сакриј.</string>
-    <string name="settings_notification_hide_big_view_off">Прикажи.</string>
+    <string name="settings_category_basic">袨褋薪芯胁薪芯</string>
+    <string name="settings_title_background_free">袘械蟹 锌芯蟹邪写懈薪械.</string>
+    <string name="settings_language">袌械蟹懈泻.</string>
+    <string name="settings_title_refresh_rate">袗褍褌芯屑邪褌褋泻芯 芯褋胁械卸邪胁邪褮械</string>
+    <string name="settings_title_permanent_service">小褌邪谢薪邪 褋谢褍卸斜邪.</string>
+    <string name="settings_category_forecast">袩褉芯谐薪芯蟹邪</string>
+    <string name="settings_title_forecast_today">袩褉芯谐薪芯蟹邪 蟹邪 写邪薪邪褋.</string>
+    <string name="settings_title_forecast_today_time">袩褉芯谐薪芯蟹邪 胁褉械屑械薪邪 蟹邪 写邪薪邪褋.</string>
+    <string name="settings_title_forecast_tomorrow">袩褉芯谐薪芯蟹邪 胁褉械屑械薪邪 蟹邪 褋褍褌褉邪.</string>
+    <string name="settings_title_forecast_tomorrow_time">袩褉芯谐薪芯蟹邪 胁褉械屑械薪邪 蟹邪 褋褍褌褉邪 胁褉械屑械.</string>
+    <string name="settings_category_widget">袙懈褵械褌</string>
+    <string name="settings_title_icon_provider">小褌懈谢 懈泻芯薪邪.</string>
+    <string name="settings_category_notification">袨斜邪胁械褕褌械褮械</string>
+    <string name="settings_title_notification">袩芯褕邪褭懈 芯斜邪胁械褕褌械褮械.</string>
+    <string name="settings_title_notification_temp_icon">袩芯泻邪卸懈 褌械屑锌械褉邪褌褍褉褍 泻邪芯 屑懈薪懈 懈泻芯薪褍.</string>
+    <string name="settings_title_notification_text_color">袘芯褬邪 褌械泻褋褌邪.</string>
+    <string name="settings_title_notification_background">袘芯褬邪 锌芯蟹邪写懈薪械.</string>
+    <string name="settings_notification_background_off">袩褉邪褌懈 褋懈褋褌械屑.</string>
+    <string name="settings_title_notification_can_be_cleared">袦芯卸械 写邪 褋械 芯褔懈褋褌懈.</string>
+    <string name="settings_notification_can_be_cleared_on">袦芯卸械 写邪 褋械 芯褔懈褋褌懈.</string>
+    <string name="settings_notification_can_be_cleared_off">袧械 屑芯卸械 写邪 褋械 芯褔懈褋褌懈.</string>
+    <string name="settings_title_notification_hide_icon">小邪泻褉懈褬 懈泻芯薪褍 芯斜邪胁械褕褌械褮邪.</string>
+    <string name="settings_notification_hide_icon_on">小邪泻褉懈褬.</string>
+    <string name="settings_notification_hide_icon_off">袩褉懈泻邪卸懈.</string>
+    <string name="settings_title_notification_hide_in_lockScreen">小邪泻褉懈褬 褍 蟹邪泻褭褍褔邪薪芯屑 械泻褉邪薪褍.</string>
+    <string name="settings_notification_hide_in_lockScreen_on">小邪泻褉懈褬 (褌褉械斜邪 写邪 褋械 芯褌胁芯褉懈 褍 褋懈褋褌械屑褋泻懈屑 锌芯写械褕邪胁邪褮懈屑邪).</string>
+    <string name="settings_notification_hide_in_lockScreen_off">袩褉懈泻邪卸懈.</string>
+    <string name="settings_title_notification_hide_big_view">小邪泻褉懈褬 胁械谢懈泻懈 锌褉懈泻邪蟹.</string>
+    <string name="settings_notification_hide_big_view_on">小邪泻褉懈褬.</string>
+    <string name="settings_notification_hide_big_view_off">袩褉懈泻邪卸懈.</string>
 
 </resources>
+

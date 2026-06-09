@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <!-- Do not translate those arrays which named "xxx_values". -->
@@ -7,16 +7,15 @@
     <!-- Chinese source. -->
     <string-array name="weather_sources">
         <item>caiyunapp.com (Exclusiv pentru China)</item>
-        <item>accuweather.com</item>
-        <item>OpenWeather</item>
-        <item>Météo France</item>
+        <item>accuweather.com</item>
+        <item>M茅t茅o France</item>
     </string-array>
 
     <!-- Location service. -->
     <string-array name="location_services">
-        <item>Locație Baidu</item>
-        <item>Locație Baidu IP (Exclusiv pentru China)</item>
-        <item>Locație AMap</item>
+        <item>Loca葲ie Baidu</item>
+        <item>Loca葲ie Baidu IP (Exclusiv pentru China)</item>
+        <item>Loca葲ie AMap</item>
         <item>API Nativ</item>
     </string-array>
 
@@ -24,7 +23,7 @@
     <string-array name="dark_modes">
         <item>Automat</item>
         <item>La fel ca tema sistemului</item>
-        <item>Întunecat</item>
+        <item>脦ntunecat</item>
         <item>Luminos</item>
     </string-array>
 
@@ -37,7 +36,7 @@
     <!-- automatic refresh rate. -->
     <string-array name="automatic_refresh_rates">
         <item> 30 minute</item>
-        <item>1 oră</item>
+        <item>1 or膬</item>
         <item>1.5 ore</item>
         <item>2 ore</item>
         <item>2.5 ore</item>
@@ -60,14 +59,14 @@
     <!-- notification style. -->
     <string-array name="notification_styles">
         <item>sistem</item>
-        <item>Orașe</item>
+        <item>Ora葯e</item>
         <item>@string/daily_overview</item><!-- do not translate. -->
         <item>@string/hourly_overview</item><!-- do not translate. -->
     </string-array>
 
     <!-- notification text color. -->
     <string-array name="notification_text_colors">
-        <item>Închis la culoare</item>
+        <item>脦nchis la culoare</item>
         <item>Gri</item>
         <item>Deschis la culoare</item>
     </string-array>
@@ -83,7 +82,7 @@
         <item>Vertical</item>
         <item>Oreo</item>
         <item>Oreo (Google sans)</item>
-        <item>Temperatură</item>
+        <item>Temperatur膬</item>
     </string-array>
 
     <!-- week widget style. -->
@@ -94,10 +93,10 @@
 
     <!-- Widget subtitle data. -->
     <string-array name="subtitle_data">
-        <item>Oră actualizare</item>
-        <item>Calitatea aerului (Invalid în unele zone.)</item>
-        <item>Vânt</item>
-        <item>Temp. resimțită</item>
+        <item>Or膬 actualizare</item>
+        <item>Calitatea aerului (Invalid 卯n unele zone.)</item>
+        <item>V芒nt</item>
+        <item>Temp. resim葲it膬</item>
         <item>Calendar Lunar</item>
         <item>Personalizat</item>
     </string-array>
@@ -115,13 +114,13 @@
         <item>Nici unul</item>
         <item>Mod zi - noapte</item>
         <item>Luminos</item>
-        <item>Întunecat</item>
+        <item>脦ntunecat</item>
     </string-array>
 
     <!-- widget clock font. -->
     <string-array name="widget_text_colors">
         <item>Deschis la culoare</item>
-        <item>Închis la culoare</item>
+        <item>脦nchis la culoare</item>
         <item>Automat</item>
     </string-array>
 
@@ -129,17 +128,17 @@
     <string-array name="live_wallpaper_weather_kinds">
         <item>Automat</item>
         <item>Senin</item>
-        <item>Parțial noros</item>
+        <item>Par葲ial noros</item>
         <item>Noros</item>
         <item>Ploaie</item>
         <item>Ninsoare</item>
-        <item>Lapoviță</item>
-        <item>Grindină</item>
-        <item>Ceață</item>
-        <item>Vizibilitate redusă</item>
-        <item>Trăsnet</item>
-        <item>Furtună</item>
-        <item>Vânt</item>
+        <item>Lapovi葲膬</item>
+        <item>Grindin膬</item>
+        <item>Cea葲膬</item>
+        <item>Vizibilitate redus膬</item>
+        <item>Tr膬snet</item>
+        <item>Furtun膬</item>
+        <item>V芒nt</item>
     </string-array>
 
     <!-- live wallpaper weather kind. -->
@@ -163,23 +162,23 @@
         <item>mm</item>
         <item>cm</item>
         <item>inch</item>
-        <item>L/m²</item>
+        <item>L/m虏</item>
     </string-array>
 
     <!-- temperature unit. -->
     <string-array name="temperature_units">
-        <item>℃</item>
-        <item>℉</item>
+        <item>鈩</item>
+        <item>鈩</item>
         <item>K</item>
     </string-array>
     <string-array name="temperature_units_short">
-        <item>°</item>
-        <item>°</item>
+        <item>掳</item>
+        <item>掳</item>
         <item>K</item>
     </string-array>
     <string-array name="temperature_units_long">
-        <item>°C</item>
-        <item>°F</item>
+        <item>掳C</item>
+        <item>掳F</item>
         <item>K</item>
     </string-array>
 
@@ -200,17 +199,17 @@
         <item>atm</item>
         <item>mmHg</item>
         <item>inHg</item>
-        <item>kgf/cm²</item>
+        <item>kgf/cm虏</item>
     </string-array>
 
     <!-- air quality unit. -->
     <string-array name="air_quality_units">
-        <item>μg/m³</item>
+        <item>渭g/m鲁</item>
     </string-array>
 
     <!-- air quality co unit. -->
     <string-array name="air_quality_co_units">
-        <item>mg/m³</item>
+        <item>mg/m鲁</item>
     </string-array>
 
     <!-- duration unit. -->
@@ -220,7 +219,9 @@
 
     <!-- pollen unit. -->
     <string-array name="pollen_units">
-        <item>/m³</item>
+        <item>/m鲁</item>
     </string-array>
 
 </resources>
+
+

@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <!-- Chinese source. -->
     <string-array name="weather_sources">
         <item>caiyunapp.com (Tylko dla Chin)</item>
-        <item>Accuweather.com</item>
-        <item>OpenWeather</item>
-        <item>Météo France</item>
+        <item>Accuweather.com</item>
+        <item>M茅t茅o France</item>
     </string-array>
 
     <!-- Location service. -->
@@ -27,7 +26,7 @@
 
     <!-- UI style. -->
     <string-array name="ui_styles">
-        <item>Okrągłe niebo</item>
+        <item>Okr膮g艂e niebo</item>
         <item>Animacja w stylu Material</item>
     </string-array>
 
@@ -71,7 +70,7 @@
 
     <!-- widget style. -->
     <string-array name="widget_styles">
-        <item>Prostokątny</item>
+        <item>Prostok膮tny</item>
         <item>Symetryczny</item>
         <item>Kafelek</item>
         <item>Mini</item>
@@ -85,11 +84,11 @@
 
     <!-- Widget subtitle data. -->
     <string-array name="subtitle_data">
-        <item>Czas odświeżenia</item>
-        <item>AQI (Niedziała w niektórych rejonach)</item>
+        <item>Czas od艣wie偶enia</item>
+        <item>AQI (Niedzia艂a w niekt贸rych rejonach)</item>
         <item>Wiatr</item>
         <item>Temperatura odczuwalna</item>
-        <item>Kalendarz księżycowy</item>
+        <item>Kalendarz ksi臋偶ycowy</item>
         <item>Inny</item>
     </string-array>
 
@@ -104,7 +103,7 @@
     <!-- widget card style. -->
     <string-array name="widget_card_styles">
         <item>Brak</item>
-        <item>Tryb Dzień/Noc</item>
+        <item>Tryb Dzie艅/Noc</item>
         <item>Jasny</item>
         <item>Ciemny</item>
     </string-array>
@@ -120,14 +119,14 @@
     <string-array name="live_wallpaper_weather_kinds">
         <item>Automatyczny</item>
         <item>Bezchmurnie</item>
-        <item>Częściowe zachmurzonie</item>
+        <item>Cz臋艣ciowe zachmurzonie</item>
         <item>Zachmurzenie</item>
         <item>Deszcz</item>
-        <item>Śnieg</item>
-        <item>Śnieg z deszczem</item>
+        <item>艢nieg</item>
+        <item>艢nieg z deszczem</item>
         <item>Grad</item>
-        <item>Mgła</item>
-        <item>Mgiełka</item>
+        <item>Mg艂a</item>
+        <item>Mgie艂ka</item>
         <item>Burza</item>
         <item>Burza z piorunami</item>
         <item>Wiatr</item>
@@ -154,7 +153,7 @@
         <item>mm</item>
         <item>cm</item>
         <item>inch</item>
-        <item>L/m²</item>
+        <item>L/m虏</item>
     </string-array>
 
     <!-- distance unit. -->
@@ -174,17 +173,17 @@
         <item>atm</item>
         <item>mmHg</item>
         <item>inHg</item>
-        <item>kgf/cm²</item>
+        <item>kgf/cm虏</item>
     </string-array>
 
     <!-- air quality unit. -->
     <string-array name="air_quality_units">
-        <item>μg/m³</item>
+        <item>渭g/m鲁</item>
     </string-array>
 
     <!-- air quality co unit. -->
     <string-array name="air_quality_co_units">
-        <item>mg/m³</item>
+        <item>mg/m鲁</item>
     </string-array>
 
     <!-- duration unit. -->
@@ -194,7 +193,8 @@
 
     <!-- pollen unit. -->
     <string-array name="pollen_units">
-        <item>/m³</item>
+        <item>/m鲁</item>
     </string-array>
 
 </resources>
+

@@ -1,51 +1,51 @@
-<resources>
+﻿<resources>
 
     <!-- app -->
-    <string name="app_name">Météo</string>
+    <string name="app_name">M茅t茅o</string>
 
-    <!-- mots-clés -->
+    <!-- mots-cl茅s -->
     <string name="current_location">Ma position</string>
     <string name="resident_location">Mon domicile</string>
-    <string name="default_location">Emplacement par défaut</string>
+    <string name="default_location">Emplacement par d茅faut</string>
     <string name="live">Maintenant</string>
     <string name="today">Auj.</string>
-    <string name="refresh_at">Consulté à</string>
+    <string name="refresh_at">Consult茅 脿</string>
     <string name="local_time">Heure locale</string>
-    <string name="precipitation">Précipitation</string>
-    <string name="precipitation_probability">Probabilité de précipitation</string>
-    <string name="precipitation_duration">Durée des précipitations</string>
+    <string name="precipitation">Pr茅cipitation</string>
+    <string name="precipitation_probability">Probabilit茅 de pr茅cipitation</string>
+    <string name="precipitation_duration">Dur茅e des pr茅cipitations</string>
     <string name="maxi_temp">temp. max</string>
     <string name="mini_temp">temp. min</string>
     <string name="time">heure</string>
-    <string name="day">journée</string>
+    <string name="day">journ茅e</string>
     <string name="night">nuit</string>
-    <string name="temperature">Température</string>
+    <string name="temperature">Temp茅rature</string>
     <string name="wind">Vent</string>
     <string name="wind_direction">Direction du vent</string>
     <string name="wind_speed">Vitesse du vent</string>
-    <string name="wind_level">Force du vent</string><!-- Selon l’échelle de Beaufort -->
+    <string name="wind_level">Force du vent</string><!-- Selon l鈥櫭ヽhelle de Beaufort -->
     <string name="sensible_temp">Temp. ressentie</string>
-    <string name="humidity">Humidité</string>
+    <string name="humidity">Humidit茅</string>
     <string name="uv_index">Indice UV</string>
-    <string name="hours_of_sun">Heures d’ensoleillement</string>
-    <string name="forecast">Prévisions</string>
+    <string name="hours_of_sun">Heures d鈥檈nsoleillement</string>
+    <string name="forecast">Pr茅visions</string>
     <string name="briefings">Bulletin</string>
-    <string name="daytime">Journée</string>
+    <string name="daytime">Journ茅e</string>
     <string name="nighttime">Nuit</string>
-    <string name="publish_at">Publié à</string>
+    <string name="publish_at">Publi茅 脿</string>
     <string name="feels_like">Ressenti</string>
-    <string name="follow_system">Par défaut</string><!-- Littéralement "suivre les préférences système" -->
-    <string name="background_information">Informations d’arrière-plan</string>
-    <string name="pressure">Pression atmosphérique</string>
-    <string name="visibility">Visibilité</string>
-    <string name="dew_point">Point de rosée</string>
+    <string name="follow_system">Par d茅faut</string><!-- Litt茅ralement "suivre les pr茅f茅rences syst猫me" -->
+    <string name="background_information">Informations d鈥檃rri猫re-plan</string>
+    <string name="pressure">Pression atmosph茅rique</string>
+    <string name="visibility">Visibilit茅</string>
+    <string name="dew_point">Point de ros茅e</string>
     <string name="cloud_cover">Couverture nuageuse</string>
     <string name="ceiling">Plafond nuageux</string>
     <string name="get_more">Voir plus</string>
-    <string name="get_more_store">Voir plus dans le magasin d’applications</string>
+    <string name="get_more_store">Voir plus dans le magasin d鈥檃pplications</string>
     <string name="get_more_github">Voir plus sur GitHub</string>
     <string name="refresh">Actualiser</string>
-    <string name="restart">Redémarrer</string>
+    <string name="restart">Red茅marrer</string>
     <string name="edit">Modifier</string>
 
     <!-- The following set of strings should be as short as possible. -->
@@ -61,12 +61,12 @@
     <string name="week_6">Sam.</string>
     <string name="week_7">Dim.</string>
 
-    <string name="real_feel_temperature">RealFeel®</string>
-    <string name="real_feel_shade_temperature">RealFeel Shade™</string>
+    <string name="real_feel_temperature">RealFeel庐</string>
+    <string name="real_feel_shade_temperature">RealFeel Shade鈩</string>
     <string name="apparent_temperature">Ressentie</string>
-    <string name="wind_chill_temperature">Refroidissement éolien</string>
-    <string name="wet_bulb_temperature">Thermomètre-globe mouillé</string>
-    <string name="degree_day_temperature">Degré jour unifié</string>
+    <string name="wind_chill_temperature">Refroidissement 茅olien</string>
+    <string name="wet_bulb_temperature">Thermom猫tre-globe mouill茅</string>
+    <string name="degree_day_temperature">Degr茅 jour unifi茅</string>
 
     <string name="total">Total</string>
     <string name="thunderstorm">Orage</string>
@@ -75,8 +75,8 @@
     <string name="ice">Verglas</string>
 
     <string name="wind_0">Calme</string>
-    <string name="wind_1">Très légère brise</string>
-    <string name="wind_2">Légère brise</string>
+    <string name="wind_1">Tr猫s l茅g猫re brise</string>
+    <string name="wind_2">L茅g猫re brise</string>
     <string name="wind_3">Petite brise</string>
     <string name="wind_4">Jolie brise</string>
     <string name="wind_5">Bonne brise</string>
@@ -84,20 +84,20 @@
     <string name="wind_7">Grand frais</string>
     <string name="wind_8">Coup de vent</string>
     <string name="wind_9">Fort coup de vent</string>
-    <string name="wind_10">Tempête</string>
-    <string name="wind_11">Violente tempête</string>
+    <string name="wind_10">Temp锚te</string>
+    <string name="wind_11">Violente temp锚te</string>
     <string name="wind_12">Ouragan</string>
 
     <string name="precipitation_light">Faible</string>
-    <string name="precipitation_middle">Modérée</string>
+    <string name="precipitation_middle">Mod茅r茅e</string>
     <string name="precipitation_heavy">Forte</string>
     <string name="precipitation_rainstorm">Torentielle</string>
 
     <string name="aqi_1">Bon</string>
-    <string name="aqi_2">Modéré</string>
+    <string name="aqi_2">Mod茅r茅</string>
     <string name="aqi_3">Mauvais pour sensibles</string>
     <string name="aqi_4">Mauvais</string>
-    <string name="aqi_5">Très mauvais</string>
+    <string name="aqi_5">Tr猫s mauvais</string>
     <string name="aqi_6">Dangereux</string>
 
     <string name="phase_new">Nouvelle lune</string>
@@ -105,22 +105,22 @@
     <string name="phase_first">Premier quartier</string>
     <string name="phase_waxing_gibbous">Lune gibbeuse croissante</string>
     <string name="phase_full">Pleine lune</string>
-    <string name="phase_waning_gibbous">Lune gibbeuse décroissante</string>
+    <string name="phase_waning_gibbous">Lune gibbeuse d茅croissante</string>
     <string name="phase_third">Dernier quartier</string>
     <string name="phase_waning_crescent">Dernier croissant</string>
 
-    <string name="grass">Graminées</string>
+    <string name="grass">Gramin茅es</string>
     <string name="mold">Moisissure</string>
     <string name="ragweed">Ambroisie</string>
     <string name="tree">Arbres</string>
 
-    <string name="daily_overview">Prévisions quotidiennes</string>
-    <string name="hourly_overview">Prévisions heure par heure</string>
-    <string name="minutely_overview">Prévisions minute par minute</string>
-    <string name="precipitation_overview">Prévisions de précipitations</string>
-    <string name="air_quality">"Qualité de l’air"</string>
-    <string name="allergen">Allergènes</string>
-    <string name="life_details">Détails</string>
+    <string name="daily_overview">Pr茅visions quotidiennes</string>
+    <string name="hourly_overview">Pr茅visions heure par heure</string>
+    <string name="minutely_overview">Pr茅visions minute par minute</string>
+    <string name="precipitation_overview">Pr茅visions de pr茅cipitations</string>
+    <string name="air_quality">"Qualit茅 de l鈥檃ir"</string>
+    <string name="allergen">Allerg猫nes</string>
+    <string name="life_details">D茅tails</string>
     <string name="sunrise_sunset">Soleil &amp; lune</string>
 
     <string name="next">SUIVANT</string>
@@ -128,12 +128,12 @@
     <string name="cancel">ANNULER</string>
     <string name="on">Actif</string>
     <string name="off">Inactif</string>
-    <string name="go_to_set">DÉFINIR</string>
+    <string name="go_to_set">D脡FINIR</string>
     <string name="help">AIDE</string>
     <string name="learn_more">EN SAVOIR PLUS</string>
 
-    <string name="about_app">À propos</string>
-    <string name="introduce">présentation</string>
+    <string name="about_app">脌 propos</string>
+    <string name="introduce">pr茅sentation</string>
     <string name="email">Courriel</string>
     <string name="donate">Don</string>
     <string name="gitHub">GitHub</string>
@@ -151,257 +151,257 @@
     <string name="date_format_long">d MMM</string>
     <string name="date_format_widget_short">EEEE d MMM</string>
     <string name="date_format_widget_long">EEEE d MMM</string>
-    <string name="date_format_widget_oreo_style">EEEE d MMM│</string>
+    <string name="date_format_widget_oreo_style">EEEE d MMM鈹</string>
 
     <!-- feedback. -->
     <string name="feedback_request_permission">Permissions</string>
     <string name="feedback_request_location">Localisation</string>
-    <string name="feedback_request_location_in_background">Localisation en arrière-plan</string>
-    <string name="feedback_request_location_permission_success">Permission de localisation accordée</string>
-    <string name="feedback_request_location_permission_failed">Permission de localisation échouée</string>
+    <string name="feedback_request_location_in_background">Localisation en arri猫re-plan</string>
+    <string name="feedback_request_location_permission_success">Permission de localisation accord茅e</string>
+    <string name="feedback_request_location_permission_failed">Permission de localisation 茅chou茅e</string>
 
-    <string name="feedback_location_permissions_title">Accéder aux informations de localisation</string>
-    <string name="feedback_location_permissions_statement">Geometric Weather a besoin de récupérer vos informations de localisation quand l’application est utilisée ou en arrière-plan pour fournir les données météo de votre position actuelle. Pour cela, nous avons besoin de certaines permissions. Ces informations ne seront utilisées que pour obtenir les données météo de votre position actuelle. Si vous ne souhaitez pas partager vos informations de localisation, vous pouvez toujours refuser et définir manuellement un emplacement depuis la recherche.</string>
-    <string name="feedback_background_location_title">Accéder à la localisation en arrière-plan</string>
-    <string name="feedback_background_location_summary">Afin d’autoriser l’application à accéder à la localisation en arrière-plan, veuillez définir la permission de localisation à « Toujours autoriser ».</string>
+    <string name="feedback_location_permissions_title">Acc茅der aux informations de localisation</string>
+    <string name="feedback_location_permissions_statement">Geometric Weather a besoin de r茅cup茅rer vos informations de localisation quand l鈥檃pplication est utilis茅e ou en arri猫re-plan pour fournir les donn茅es m茅t茅o de votre position actuelle. Pour cela, nous avons besoin de certaines permissions. Ces informations ne seront utilis茅es que pour obtenir les donn茅es m茅t茅o de votre position actuelle. Si vous ne souhaitez pas partager vos informations de localisation, vous pouvez toujours refuser et d茅finir manuellement un emplacement depuis la recherche.</string>
+    <string name="feedback_background_location_title">Acc茅der 脿 la localisation en arri猫re-plan</string>
+    <string name="feedback_background_location_summary">Afin d鈥檃utoriser l鈥檃pplication 脿 acc茅der 脿 la localisation en arri猫re-plan, veuillez d茅finir la permission de localisation 脿 芦 Toujours autoriser 禄.</string>
 
-    <string name="feedback_location_failed">Échec de localisation</string>
-    <string name="feedback_get_weather_failed">Échec de récupération des données météo</string>
-    <string name="feedback_location_help_title">Vous ne parvenez pas à être localisé ?</string>
-    <string name="feedback_check_location_permission">Vérifiez les permissions de localisation</string>
+    <string name="feedback_location_failed">脡chec de localisation</string>
+    <string name="feedback_get_weather_failed">脡chec de r茅cup茅ration des donn茅es m茅t茅o</string>
+    <string name="feedback_location_help_title">Vous ne parvenez pas 脿 锚tre localis茅 ?</string>
+    <string name="feedback_check_location_permission">V茅rifiez les permissions de localisation</string>
     <string name="feedback_enable_location_information">Activez les informations de localisation</string>
-    <string name="feedback_select_location_provider">Sélectionnez un fournisseur de localisation</string>
+    <string name="feedback_select_location_provider">S茅lectionnez un fournisseur de localisation</string>
     <string name="feedback_add_location_manually">Ajoutez manuellement la localisation et supprimez \'$\'</string>
     <string name="feedback_view_style">Apparence</string>
-    <string name="feedback_show_widget_card">Couleur d’arrière-plan</string>
+    <string name="feedback_show_widget_card">Couleur d鈥檃rri猫re-plan</string>
     <string name="feedback_show_widget_card_alpha">Transparence</string>
     <string name="feedback_hide_subtitle">Masquer le sous-titre</string>
     <string name="feedback_subtitle_data">Sous-titre</string>
     <string name="feedback_black_text">Couleur du texte</string><!-- Texte sombre -->
     <string name="feedback_text_size">Taille du texte</string>
-    <string name="feedback_clock_font">Police de l’horloge</string>
+    <string name="feedback_clock_font">Police de l鈥檋orloge</string>
     <string name="feedback_hide_lunar">Masquer le calendrier lunaire</string>
-    <string name="feedback_align_end">Aligner à la fin</string>
-    <string name="feedback_custom_subtitle_explanation">Vous pouvez saisir n’importe quoi, mais faites attention à la longueur du texte. Si vous voulez citer des données météo, veuillez utiliser $ pour référencer le mot-clé correspond.\n\nPar example, \"current weather = $cw$\" sera affiché \"current weather = Ensoleillé\".</string>
+    <string name="feedback_align_end">Aligner 脿 la fin</string>
+    <string name="feedback_custom_subtitle_explanation">Vous pouvez saisir n鈥檌mporte quoi, mais faites attention 脿 la longueur du texte. Si vous voulez citer des donn茅es m茅t茅o, veuillez utiliser $ pour r茅f茅rencer le mot-cl茅 correspond.\n\nPar example, \"current weather = $cw$\" sera affich茅 \"current weather = Ensoleill茅\".</string>
     <!-- keep those content with the format "$xxx$". -->
     <!-- keep "\n" -->
-    <string name="feedback_custom_subtitle_keyword_cw">$cw$ : Météo actuelle\n</string>
-    <string name="feedback_custom_subtitle_keyword_ct">$ct$ : Température actuelle (℃/℉)\n</string>
-    <string name="feedback_custom_subtitle_keyword_ctd">$ctd$ : Température actuelle (°)\n</string>
-    <string name="feedback_custom_subtitle_keyword_at">$at$ : Température ressentie (℃/℉)\n</string>
-    <string name="feedback_custom_subtitle_keyword_atd">$atd$ : Température ressentie (°)\n</string>
-    <string name="feedback_custom_subtitle_keyword_cpb">$cpb$ : Probabilité de précipitation actuelle (%)\n</string>
-    <string name="feedback_custom_subtitle_keyword_cp">$cp$ : Précipitations actuelles (mm/L/m²)\n</string>
+    <string name="feedback_custom_subtitle_keyword_cw">$cw$ : M茅t茅o actuelle\n</string>
+    <string name="feedback_custom_subtitle_keyword_ct">$ct$ : Temp茅rature actuelle (鈩?鈩?\n</string>
+    <string name="feedback_custom_subtitle_keyword_ctd">$ctd$ : Temp茅rature actuelle (掳)\n</string>
+    <string name="feedback_custom_subtitle_keyword_at">$at$ : Temp茅rature ressentie (鈩?鈩?\n</string>
+    <string name="feedback_custom_subtitle_keyword_atd">$atd$ : Temp茅rature ressentie (掳)\n</string>
+    <string name="feedback_custom_subtitle_keyword_cpb">$cpb$ : Probabilit茅 de pr茅cipitation actuelle (%)\n</string>
+    <string name="feedback_custom_subtitle_keyword_cp">$cp$ : Pr茅cipitations actuelles (mm/L/m虏)\n</string>
     <string name="feedback_custom_subtitle_keyword_cwd">$cwd$ : Vent actuel\n</string>
     <string name="feedback_custom_subtitle_keyword_cuv">$cuv$ : UV actuel\n</string>
-    <string name="feedback_custom_subtitle_keyword_ch">$ch$ : Humidité actuelle\n</string>
+    <string name="feedback_custom_subtitle_keyword_ch">$ch$ : Humidit茅 actuelle\n</string>
     <string name="feedback_custom_subtitle_keyword_cps">$cps$ : Pression actuelle\n</string>
-    <string name="feedback_custom_subtitle_keyword_cv">$cv$ : Visibilité actuelle\n</string>
-    <string name="feedback_custom_subtitle_keyword_cdp">$cdp$ : Point de rosée actuel\n</string>
+    <string name="feedback_custom_subtitle_keyword_cv">$cv$ : Visibilit茅 actuelle\n</string>
+    <string name="feedback_custom_subtitle_keyword_cdp">$cdp$ : Point de ros茅e actuel\n</string>
     <string name="feedback_custom_subtitle_keyword_al">$al$ : Vigilances\n</string>
     <string name="feedback_custom_subtitle_keyword_als">$als$ : Vigilances (court)\n</string>
     <string name="feedback_custom_subtitle_keyword_l">$l$ : Localisation\n</string>
     <string name="feedback_custom_subtitle_keyword_lat">$lat$ : Latitude\n</string>
     <string name="feedback_custom_subtitle_keyword_lon">$lon$ : Longitude\n</string>
-    <string name="feedback_custom_subtitle_keyword_ut">$ut$ : Heure d’actualisation\n</string>
+    <string name="feedback_custom_subtitle_keyword_ut">$ut$ : Heure d鈥檃ctualisation\n</string>
     <string name="feedback_custom_subtitle_keyword_d">$d$ : Date\n</string>
     <string name="feedback_custom_subtitle_keyword_lc">$lc$ : Calendrier lunaire\n</string>
     <string name="feedback_custom_subtitle_keyword_w">$w$ : Semaine\n</string>
     <string name="feedback_custom_subtitle_keyword_ws">$ws$ : Semaine (court)\n</string>
     <string name="feedback_custom_subtitle_keyword_dd">$dd$ : Description du jour\n</string>
-    <string name="feedback_custom_subtitle_keyword_hd">$hd$ : Description de l’heure\n</string>
-    <string name="feedback_custom_subtitle_keyword_enter">$enter$ : Retour à la ligne\n</string>
-    <string name="feedback_custom_subtitle_keyword_xdw">$0dw$, $1dw$, …, $4dw$ : \nMétéo de jour d’Aujourd’hui, Demain, …, 4 jours plus tard\n</string>
-    <string name="feedback_custom_subtitle_keyword_xnw">$0nw$, $1nw$, …, $4nw$ : \nMétéo de nuit d’Aujourd’hui, Demain, …, 4 jours plus tard\n</string>
-    <string name="feedback_custom_subtitle_keyword_xdt">$0dt$, $1dt$, …, $4dt$ : \nTempérature de jour d’Aujourd’hui, Demain, …, 4 jours plus tard (℃/℉)\n</string>
-    <string name="feedback_custom_subtitle_keyword_xnt">$0nt$, $1nt$, …, $4nt$ : \nTempérature de nuit d’Aujourd’hui, Demain, …, 4 jours plus tard (℃/℉)\n</string>
-    <string name="feedback_custom_subtitle_keyword_xdtd">$0dtd$, $1dtd$, …, $4dtd$ : \nTempérature de jour d’Aujourd’hui, Demain, …, 4 jours plus tard (°)\n</string>
-    <string name="feedback_custom_subtitle_keyword_xntd">$0ntd$, $1ntd$, …, $4ntd$ : \nTempérature de nuit d’Aujourd’hui, Demain, …, 4 jours plus tard (°)\n</string>
-    <string name="feedback_custom_subtitle_keyword_xdp">$0dp$, $1dp$, …, $4dp$ : \nPrécipitations de jour d’Aujourd’hui, Demain, …, 4 jours plus tard (%)\n</string>
-    <string name="feedback_custom_subtitle_keyword_xnp">$0np$, $1np$, …, $4np$ : \nPrécipitations de nuit d’Aujourd’hui, Demain, …, 4 jours plus tard (%)\n</string>
-    <string name="feedback_custom_subtitle_keyword_xdwd">$0dwd$, $1dwd$, …, $4dwd$ : \nVent de jour d’Aujourd’hui, Demain, …, 4 jours plus tard\n</string>
-    <string name="feedback_custom_subtitle_keyword_xnwd">$0nwd$, $1nwd$, …, $4nwd$ : \nVent de nuit d’Aujourd’hui, Demain, …, 4 jours plus tard\n</string>
-    <string name="feedback_custom_subtitle_keyword_xsr">$0sr$, $1sr$, …, $4sr$ : \nLever du soleil d’Aujourd’hui, Demain, …, 4 jours plus tard\n</string>
-    <string name="feedback_custom_subtitle_keyword_xss">$0ss$, $1ss$, …, $4ss$ : \nCoucher du soleil d’Aujourd’hui, Demain, …, 4 jours plus tard\n</string>
-    <string name="feedback_custom_subtitle_keyword_xmr">$0mr$, $1mr$, …, $4mr$ : \nLever de lune d’Aujourd’hui, Demain, …, 4 jours plus tard\n</string>
-    <string name="feedback_custom_subtitle_keyword_xms">$0ms$, $1ms$, …, $4ms$ : \nCoucher de lune d’Aujourd’hui, Demain, …, 4 jours plus tard\n</string>
-    <string name="feedback_custom_subtitle_keyword_xmp">$0mp$, $1mp$, …, $4mp$ : \nPhase lunaire d’Aujourd’hui, Demain, …, 4 jours plus tard\n</string>
+    <string name="feedback_custom_subtitle_keyword_hd">$hd$ : Description de l鈥檋eure\n</string>
+    <string name="feedback_custom_subtitle_keyword_enter">$enter$ : Retour 脿 la ligne\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdw">$0dw$, $1dw$, 鈥? $4dw$ : \nM茅t茅o de jour d鈥橝ujourd鈥檋ui, Demain, 鈥? 4 jours plus tard\n</string>
+    <string name="feedback_custom_subtitle_keyword_xnw">$0nw$, $1nw$, 鈥? $4nw$ : \nM茅t茅o de nuit d鈥橝ujourd鈥檋ui, Demain, 鈥? 4 jours plus tard\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdt">$0dt$, $1dt$, 鈥? $4dt$ : \nTemp茅rature de jour d鈥橝ujourd鈥檋ui, Demain, 鈥? 4 jours plus tard (鈩?鈩?\n</string>
+    <string name="feedback_custom_subtitle_keyword_xnt">$0nt$, $1nt$, 鈥? $4nt$ : \nTemp茅rature de nuit d鈥橝ujourd鈥檋ui, Demain, 鈥? 4 jours plus tard (鈩?鈩?\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdtd">$0dtd$, $1dtd$, 鈥? $4dtd$ : \nTemp茅rature de jour d鈥橝ujourd鈥檋ui, Demain, 鈥? 4 jours plus tard (掳)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xntd">$0ntd$, $1ntd$, 鈥? $4ntd$ : \nTemp茅rature de nuit d鈥橝ujourd鈥檋ui, Demain, 鈥? 4 jours plus tard (掳)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdp">$0dp$, $1dp$, 鈥? $4dp$ : \nPr茅cipitations de jour d鈥橝ujourd鈥檋ui, Demain, 鈥? 4 jours plus tard (%)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xnp">$0np$, $1np$, 鈥? $4np$ : \nPr茅cipitations de nuit d鈥橝ujourd鈥檋ui, Demain, 鈥? 4 jours plus tard (%)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdwd">$0dwd$, $1dwd$, 鈥? $4dwd$ : \nVent de jour d鈥橝ujourd鈥檋ui, Demain, 鈥? 4 jours plus tard\n</string>
+    <string name="feedback_custom_subtitle_keyword_xnwd">$0nwd$, $1nwd$, 鈥? $4nwd$ : \nVent de nuit d鈥橝ujourd鈥檋ui, Demain, 鈥? 4 jours plus tard\n</string>
+    <string name="feedback_custom_subtitle_keyword_xsr">$0sr$, $1sr$, 鈥? $4sr$ : \nLever du soleil d鈥橝ujourd鈥檋ui, Demain, 鈥? 4 jours plus tard\n</string>
+    <string name="feedback_custom_subtitle_keyword_xss">$0ss$, $1ss$, 鈥? $4ss$ : \nCoucher du soleil d鈥橝ujourd鈥檋ui, Demain, 鈥? 4 jours plus tard\n</string>
+    <string name="feedback_custom_subtitle_keyword_xmr">$0mr$, $1mr$, 鈥? $4mr$ : \nLever de lune d鈥橝ujourd鈥檋ui, Demain, 鈥? 4 jours plus tard\n</string>
+    <string name="feedback_custom_subtitle_keyword_xms">$0ms$, $1ms$, 鈥? $4ms$ : \nCoucher de lune d鈥橝ujourd鈥檋ui, Demain, 鈥? 4 jours plus tard\n</string>
+    <string name="feedback_custom_subtitle_keyword_xmp">$0mp$, $1mp$, 鈥? $4mp$ : \nPhase lunaire d鈥橝ujourd鈥檋ui, Demain, 鈥? 4 jours plus tard\n</string>
 
-    <string name="feedback_live_wallpaper_weather_kind">Météo</string>
+    <string name="feedback_live_wallpaper_weather_kind">M茅t茅o</string>
     <string name="feedback_live_wallpaper_day_night_type">Heure</string>
 
-    <string name="feedback_click_toggle">Appuyer sur le graphique pour basculer les données</string>
-    <string name="feedback_no_data">AUCUNE DONNÉE</string>
+    <string name="feedback_click_toggle">Appuyer sur le graphique pour basculer les donn茅es</string>
+    <string name="feedback_no_data">AUCUNE DONN脡E</string>
 
-    <string name="feedback_collect_failed">Cette localisation existe déjà</string>
-    <string name="feedback_collect_succeed">Localisation ajoutée avec succès</string>
-    <string name="feedback_delete_succeed">Localisation supprimée avec succès</string>
-    <string name="feedback_location_list_cannot_be_null">La liste de localisation ne peut être vide</string>
+    <string name="feedback_collect_failed">Cette localisation existe d茅j脿</string>
+    <string name="feedback_collect_succeed">Localisation ajout茅e avec succ猫s</string>
+    <string name="feedback_delete_succeed">Localisation supprim茅e avec succ猫s</string>
+    <string name="feedback_location_list_cannot_be_null">La liste de localisation ne peut 锚tre vide</string>
 
-    <string name="feedback_search_location">Rechercher une localisation…</string>
-    <string name="feedback_not_yet_location">Pas encore localisé…</string>
-    <string name="feedback_search_nothing">Aucune localisation trouvée</string>
-    <string name="feedback_initializing">Initialisation…</string>
+    <string name="feedback_search_location">Rechercher une localisation鈥</string>
+    <string name="feedback_not_yet_location">Pas encore localis茅鈥</string>
+    <string name="feedback_search_nothing">Aucune localisation trouv茅e</string>
+    <string name="feedback_initializing">Initialisation鈥</string>
 
-    <string name="feedback_refresh_notification_after_back">Les modifications s’appliqueront après retour à l’écran d’accueil</string>
-    <string name="feedback_refresh_notification_now">Actualisé à l’instant</string>
-    <string name="feedback_refresh_ui_after_refresh">Les modifications seront appliquées à la prochaine actualisation des données</string>
-    <string name="feedback_restart">Les modifications seront appliquées après un redémarrage</string>
-    <string name="feedback_readd_location">Merci d’ajouter à nouveau les localisations</string>
-    <string name="feedback_readd_location_after_changing_source">Merci d’ajouter à nouveau les localisations après avoir modifié la source de données</string>
+    <string name="feedback_refresh_notification_after_back">Les modifications s鈥檃ppliqueront apr猫s retour 脿 l鈥櫭ヽran d鈥檃ccueil</string>
+    <string name="feedback_refresh_notification_now">Actualis茅 脿 l鈥檌nstant</string>
+    <string name="feedback_refresh_ui_after_refresh">Les modifications seront appliqu茅es 脿 la prochaine actualisation des donn茅es</string>
+    <string name="feedback_restart">Les modifications seront appliqu茅es apr猫s un red茅marrage</string>
+    <string name="feedback_readd_location">Merci d鈥檃jouter 脿 nouveau les localisations</string>
+    <string name="feedback_readd_location_after_changing_source">Merci d鈥檃jouter 脿 nouveau les localisations apr猫s avoir modifi茅 la source de donn茅es</string>
 
-    <string name="feedback_running_in_background">Fonctionnement en arrière-plan pour permettre l’actualisation</string>
-    <string name="feedback_updating_weather_data">Actualisation des données météo</string>
-    <string name="feedback_updated_in_background">Actualisé en arrière-plan</string>
+    <string name="feedback_running_in_background">Fonctionnement en arri猫re-plan pour permettre l鈥檃ctualisation</string>
+    <string name="feedback_updating_weather_data">Actualisation des donn茅es m茅t茅o</string>
+    <string name="feedback_updated_in_background">Actualis茅 en arri猫re-plan</string>
 
     <!-- there should be a "\" before single or double quotes. -->
     <!-- Correct : ... after turning off \'Background free\', ... After turning off \"Free background\" ... -->
     <!-- Wrong   : ... after turning off 'Background free', ... After turning off "Free background" ... -->
-    <string name="feedback_interpret_background_notification_content">Sur certains appareils, après avoir désactivé « Pas de service en arrière-plan », il peut subsister une notification persistante dans la barre de notifications.</string>
+    <string name="feedback_interpret_background_notification_content">Sur certains appareils, apr猫s avoir d茅sactiv茅 芦 Pas de service en arri猫re-plan 禄, il peut subsister une notification persistante dans la barre de notifications.</string>
     <string name="feedback_interpret_notification_group_title">Bloquer un groupe de notification</string>
-    <string name="feedback_interpret_notification_group_content">Après avoir désactivé « Pas de service en arrière-plan », une notification indiquant qu’un service fonctionne en arrière-plan apparaîtra dans la barre de notifications. Vous pouvez désactiver le canal Informations d’arrière-plan dans la page d’informations de l’application pour bloquer cette notification.</string>
+    <string name="feedback_interpret_notification_group_content">Apr猫s avoir d茅sactiv茅 芦 Pas de service en arri猫re-plan 禄, une notification indiquant qu鈥檜n service fonctionne en arri猫re-plan appara卯tra dans la barre de notifications. Vous pouvez d茅sactiver le canal Informations d鈥檃rri猫re-plan dans la page d鈥檌nformations de l鈥檃pplication pour bloquer cette notification.</string>
 
-    <string name="feedback_ignore_battery_optimizations_title">Ignorer l’optimisation de batterie</string>
-    <string name="feedback_ignore_battery_optimizations_content">Afin de s’assurer que les services en arrière-plan continuent de fonctionner, merci d’ignorer l’optimisation de batterie pour GeometricWeather.</string>
+    <string name="feedback_ignore_battery_optimizations_title">Ignorer l鈥檕ptimisation de batterie</string>
+    <string name="feedback_ignore_battery_optimizations_content">Afin de s鈥檃ssurer que les services en arri猫re-plan continuent de fonctionner, merci d鈥檌gnorer l鈥檕ptimisation de batterie pour GeometricWeather.</string>
 
-    <string name="feedback_cannot_start_live_wallpaper_activity">Impossible de démarrer la prévisualisation du fond d’écran animé</string>
+    <string name="feedback_cannot_start_live_wallpaper_activity">Impossible de d茅marrer la pr茅visualisation du fond d鈥櫭ヽran anim茅</string>
 
-    <string name="feedback_unusable_geocoder">Cet appareil ne contient pas un géocodeur valide. Le fournisseur de localisation a été modifié pour Baidu.</string>
-    <string name="feedback_about_geocoder">Un géocodeur est un composant qui convertit un résultat de localisation du format lat-lon à un format du style \'ville XXy, province YY \'. En l’absence du composant, vous ne pouvez avoir des données météo que via AccuWeather lorsque l’API native est utilisée comme fournisseur de localisation.</string>
+    <string name="feedback_unusable_geocoder">Cet appareil ne contient pas un g茅ocodeur valide. Le fournisseur de localisation a 茅t茅 modifi茅 pour Baidu.</string>
+    <string name="feedback_about_geocoder">Un g茅ocodeur est un composant qui convertit un r茅sultat de localisation du format lat-lon 脿 un format du style \'ville XXy, province YY \'. En l鈥檃bsence du composant, vous ne pouvez avoir des donn茅es m茅t茅o que via AccuWeather lorsque l鈥橝PI native est utilis茅e comme fournisseur de localisation.</string>
 
-    <string name="feedback_today_precipitation_alert">Des précipitations peuvent avoir lieu aujourd’hui.</string>
-    <string name="feedback_short_term_precipitation_alert">Précipitations possibles dans les heures à venir.</string>
+    <string name="feedback_today_precipitation_alert">Des pr茅cipitations peuvent avoir lieu aujourd鈥檋ui.</string>
+    <string name="feedback_short_term_precipitation_alert">Pr茅cipitations possibles dans les heures 脿 venir.</string>
 
-    <string name="feedback_resident_location">Définir en tant que ville de résidence</string>
-    <string name="feedback_resident_location_description">GeometricWeather affichera ou masquera automatiquement votre ville de résidence selon votre position.\nPar exemple, vous pouvez définir votre domicile comme ville de résidence. En déplacement, vous pourrez vérifier la météo pour ce lieu. De retour chez vous, la météo « ville de résidence » sera masquée et remplacée par celle de votre position.</string>
+    <string name="feedback_resident_location">D茅finir en tant que ville de r茅sidence</string>
+    <string name="feedback_resident_location_description">GeometricWeather affichera ou masquera automatiquement votre ville de r茅sidence selon votre position.\nPar exemple, vous pouvez d茅finir votre domicile comme ville de r茅sidence. En d茅placement, vous pourrez v茅rifier la m茅t茅o pour ce lieu. De retour chez vous, la m茅t茅o 芦 ville de r茅sidence 禄 sera masqu茅e et remplac茅e par celle de votre position.</string>
 
-    <string name="feedback_click_to_get_more">Appuyez pour en voir plus…</string>
-    <string name="feedback_click_again_to_exit">Appuyez à nouveau pour quitter</string>
+    <string name="feedback_click_to_get_more">Appuyez pour en voir plus鈥</string>
+    <string name="feedback_click_again_to_exit">Appuyez 脿 nouveau pour quitter</string>
 
     <!-- content description -->
     <string name="content_desc_back">Retour</string>
-    <string name="content_desc_check_details">Plus de détails</string>
-    <string name="content_desc_weather_alert_button">$ vigilances météo</string> <!-- $ = alert count. -->
+    <string name="content_desc_check_details">Plus de d茅tails</string>
+    <string name="content_desc_weather_alert_button">$ vigilances m茅t茅o</string> <!-- $ = alert count. -->
     <string name="content_des_pm25">PM deux point cinq</string>
     <string name="content_des_pm10">PM dix</string>
     <string name="content_des_so2">Dioxyde de soufre</string>
-    <string name="content_des_no2">Dioxyde d’azote</string>
+    <string name="content_des_no2">Dioxyde d鈥檃zote</string>
     <string name="content_des_o3">Ozone</string>
     <string name="content_des_co">Monoxyde de carbone</string>
     <string name="content_des_m3">Monoxyde de carbone</string>
-    <string name="content_des_sunrise">Lever de soleil à $</string> <!-- $ = time. -->
-    <string name="content_des_sunset">Coucher de soleil à $</string> <!-- $ = time. -->
-    <string name="content_des_moonrise">Lever de lune à $</string> <!-- $ = time. -->
-    <string name="content_des_moonset">Coucher de lune à $</string> <!-- $ = time. -->
-    <string name="content_des_no_precipitation">Pas de précipitations</string>
-    <string name="content_des_minutely_precipitation">Précipitations entre $1 et $2</string> <!-- $1 = start time, $2 = end time. -->
+    <string name="content_des_sunrise">Lever de soleil 脿 $</string> <!-- $ = time. -->
+    <string name="content_des_sunset">Coucher de soleil 脿 $</string> <!-- $ = time. -->
+    <string name="content_des_moonrise">Lever de lune 脿 $</string> <!-- $ = time. -->
+    <string name="content_des_moonset">Coucher de lune 脿 $</string> <!-- $ = time. -->
+    <string name="content_des_no_precipitation">Pas de pr茅cipitations</string>
+    <string name="content_des_minutely_precipitation">Pr茅cipitations entre $1 et $2</string> <!-- $1 = start time, $2 = end time. -->
     <string name="content_des_add_current_location">Ajouter ma position</string>
-    <string name="content_des_drag_flag">Maintenez puis déplacez les éléments de la liste pour les ordonner</string>
-    <string name="content_des_delete_flag">Supprimer cet élément</string>
-    <string name="content_des_swipe_left_to_delete">Vous pouvez glisser vers la gauche pour supprimer cet élément</string>
-    <string name="content_des_swipe_right_to_delete">Vous pouvez glisser vers la droite pour supprimer cet élément</string>
-    <string name="content_desc_search_filter_on">N’afficher que les emplacements de la source météo par défaut</string>
-    <string name="content_desc_search_filter_off">Afficher les emplacements de toutes les sources météo</string>
+    <string name="content_des_drag_flag">Maintenez puis d茅placez les 茅l茅ments de la liste pour les ordonner</string>
+    <string name="content_des_delete_flag">Supprimer cet 茅l茅ment</string>
+    <string name="content_des_swipe_left_to_delete">Vous pouvez glisser vers la gauche pour supprimer cet 茅l茅ment</string>
+    <string name="content_des_swipe_right_to_delete">Vous pouvez glisser vers la droite pour supprimer cet 茅l茅ment</string>
+    <string name="content_desc_search_filter_on">N鈥檃fficher que les emplacements de la source m茅t茅o par d茅faut</string>
+    <string name="content_desc_search_filter_off">Afficher les emplacements de toutes les sources m茅t茅o</string>
     <string name="content_desc_powered_by">Fourni par $</string> <!-- $ = weather source. -->
     <string name="content_desc_wechat_payment_code">QR code de paiement par WeChat</string>
-    <string name="content_desc_weather_icon">Icône météo</string>
-    <string name="content_desc_weather_icon_light">Icône claire</string>
-    <string name="content_desc_weather_icon_grey">Icône grise</string>
-    <string name="content_desc_weather_icon_dark">Icône sombre</string>
+    <string name="content_desc_weather_icon">Ic么ne m茅t茅o</string>
+    <string name="content_desc_weather_icon_light">Ic么ne claire</string>
+    <string name="content_desc_weather_icon_grey">Ic么ne grise</string>
+    <string name="content_desc_weather_icon_dark">Ic么ne sombre</string>
 
     <!-- action -->
     <string name="action_alert">Vigilance</string>
-    <string name="action_manage">Gérer</string>
+    <string name="action_manage">G茅rer</string>
     <string name="action_search">Recherche</string>
-    <string name="action_settings">Paramètres</string>
-    <string name="action_preview">Aperçu</string>
-    <string name="action_about">À propos</string>
-    <string name="action_appStore">Magasin d’applications</string>
+    <string name="action_settings">Param猫tres</string>
+    <string name="action_preview">Aper莽u</string>
+    <string name="action_about">脌 propos</string>
+    <string name="action_appStore">Magasin d鈥檃pplications</string>
 
     <!-- widget -->
     <string name="widget_day">Jour</string>
     <string name="widget_week">Semaine</string>
     <string name="widget_day_week">Jours + Semaine</string>
-    <string name="widget_clock_day_horizontal">Horloge + Jours (à l’horizontale)</string>
-    <string name="widget_clock_day_details">Horloge + Jours (détaillé)</string>
-    <string name="widget_clock_day_vertical">Horloge + Jours (à la verticale)</string>
+    <string name="widget_clock_day_horizontal">Horloge + Jours (脿 l鈥檋orizontale)</string>
+    <string name="widget_clock_day_details">Horloge + Jours (d茅taill茅)</string>
+    <string name="widget_clock_day_vertical">Horloge + Jours (脿 la verticale)</string>
     <string name="widget_clock_day_week">Horloge + Jours + Semaine</string>
     <string name="widget_text">Textuel</string>
     <string name="widget_trend_daily">Tendances quotidiennes</string>
     <string name="widget_trend_hourly">Tendances heure par heure</string>
     <string name="widget_multi_city">Plusieurs villes</string>
     <string name="wait_refresh">Veuillez patienter</string>
-    <string name="ellipsis">…</string>
+    <string name="ellipsis">鈥</string>
 
-    <!-- paramètres -->
-    <string name="settings_category_basic">Général</string>
-    <string name="settings_title_background_free">Interdire l’exécution en arrière-plan</string><!-- La double négation est tordue, il faudrait revoir le code -->
-    <string name="settings_summary_background_free_on">Oui\nSi les widgets et notifications ne s’actualisent pas automatiquement, merci de basculer cette option à « Non ».</string>
-    <string name="settings_summary_background_free_off">Non\nSi vous ne souhaitez pas que des services continuent à s’exécuter en arrière-plan, merci de basculer cette option à « Oui ».</string>
-    <string name="settings_title_live_wallpaper">Fond d’écran animé</string>
-    <string name="settings_summary_live_wallpaper">Définir une animation météo Material en tant que fond d’écran animé</string>
+    <!-- param猫tres -->
+    <string name="settings_category_basic">G茅n茅ral</string>
+    <string name="settings_title_background_free">Interdire l鈥檈x茅cution en arri猫re-plan</string><!-- La double n茅gation est tordue, il faudrait revoir le code -->
+    <string name="settings_summary_background_free_on">Oui\nSi les widgets et notifications ne s鈥檃ctualisent pas automatiquement, merci de basculer cette option 脿 芦 Non 禄.</string>
+    <string name="settings_summary_background_free_off">Non\nSi vous ne souhaitez pas que des services continuent 脿 s鈥檈x茅cuter en arri猫re-plan, merci de basculer cette option 脿 芦 Oui 禄.</string>
+    <string name="settings_title_live_wallpaper">Fond d鈥櫭ヽran anim茅</string>
+    <string name="settings_summary_live_wallpaper">D茅finir une animation m茅t茅o Material en tant que fond d鈥櫭ヽran anim茅</string>
     <string name="settings_title_service_provider">Fournisseur de service</string>
-    <string name="settings_summary_service_provider">Sélectionnez un fournisseur de service de données météo et de localisation</string>
-    <string name="settings_title_service_provider_advanced">Options avancées des fournisseurs de service</string>
-    <string name="settings_summary_service_provider_advanced">À modifier avec prudence</string>
-    <string name="settings_title_weather_source">Source des données météo</string>
+    <string name="settings_summary_service_provider">S茅lectionnez un fournisseur de service de donn茅es m茅t茅o et de localisation</string>
+    <string name="settings_title_service_provider_advanced">Options avanc茅es des fournisseurs de service</string>
+    <string name="settings_summary_service_provider_advanced">脌 modifier avec prudence</string>
+    <string name="settings_title_weather_source">Source des donn茅es m茅t茅o</string>
     <string name="settings_title_location_service">Service de localisation</string>
     <string name="settings_title_dark_mode">Mode sombre</string>
-    <string name="settings_title_ui_style">Apparence de l’interface</string>
-    <string name="settings_title_icon_provider">Pack d’icônes</string>
+    <string name="settings_title_ui_style">Apparence de l鈥檌nterface</string>
+    <string name="settings_title_icon_provider">Pack d鈥檌c么nes</string>
     <string name="settings_title_appearance">Apparence</string>
-    <string name="settings_summary_appearance">Thème de l’interface, ordre des cartes, langue…</string>
-    <string name="settings_title_card_display">Cartes affichées</string>
-    <string name="settings_title_daily_trend_display">Tendances journalières affichées</string>
-    <string name="settings_title_hourly_trend_display">Tendances par heure affichées</string>
+    <string name="settings_summary_appearance">Th猫me de l鈥檌nterface, ordre des cartes, langue鈥</string>
+    <string name="settings_title_card_display">Cartes affich茅es</string>
+    <string name="settings_title_daily_trend_display">Tendances journali猫res affich茅es</string>
+    <string name="settings_title_hourly_trend_display">Tendances par heure affich茅es</string>
     <string name="settings_title_trend_horizontal_line_switch">Lignes horizontales dans les tendances</string>
-    <string name="settings_title_exchange_day_night_temp_switch">Inverser les températures jour et nuit</string>
+    <string name="settings_title_exchange_day_night_temp_switch">Inverser les temp茅ratures jour et nuit</string>
     <string name="settings_title_card_order">Ordre des cartes</string>
-    <string name="settings_title_gravity_sensor_switch">Accéléromètre</string>
+    <string name="settings_title_gravity_sensor_switch">Acc茅l茅rom猫tre</string>
     <string name="settings_title_list_animation_switch">Animation de liste</string>
-    <string name="settings_title_item_animation_switch">Animation d’élément</string>
+    <string name="settings_title_item_animation_switch">Animation d鈥櫭﹍茅ment</string>
     <string name="settings_language">Langue</string>
-    <string name="settings_title_unit">Unités</string>
-    <string name="settings_summary_unit">Définir les unités de mesure</string>
-    <string name="settings_title_temperature_unit">Unité de température</string>
-    <string name="settings_title_distance_unit">Unité de distance</string>
-    <string name="settings_title_precipitation_unit">Unité des précipitations</string>
-    <string name="settings_title_pressure_unit">Unité de pression</string>
-    <string name="settings_title_speed_unit">Unité de vitesse</string>
-    <string name="settings_title_refresh_rate">Intervalle de mise à jour</string>
+    <string name="settings_title_unit">Unit茅s</string>
+    <string name="settings_summary_unit">D茅finir les unit茅s de mesure</string>
+    <string name="settings_title_temperature_unit">Unit茅 de temp茅rature</string>
+    <string name="settings_title_distance_unit">Unit茅 de distance</string>
+    <string name="settings_title_precipitation_unit">Unit茅 des pr茅cipitations</string>
+    <string name="settings_title_pressure_unit">Unit茅 de pression</string>
+    <string name="settings_title_speed_unit">Unit茅 de vitesse</string>
+    <string name="settings_title_refresh_rate">Intervalle de mise 脿 jour</string>
     <string name="settings_title_alert_notification_switch">Notifier des vigilances</string>
-    <string name="settings_title_precipitation_notification_switch">Notifier des précipitations</string>
-    <string name="settings_title_permanent_service">Maintenir activé</string>
-    <string name="settings_category_forecast">Prévisions</string>
-    <string name="settings_title_forecast_today">Prévisions du jour</string>
+    <string name="settings_title_precipitation_notification_switch">Notifier des pr茅cipitations</string>
+    <string name="settings_title_permanent_service">Maintenir activ茅</string>
+    <string name="settings_category_forecast">Pr茅visions</string>
+    <string name="settings_title_forecast_today">Pr茅visions du jour</string>
     <string name="settings_title_forecast_today_time">Heure de notification</string>
-    <string name="settings_title_forecast_tomorrow">Prévisions pour demain</string>
+    <string name="settings_title_forecast_tomorrow">Pr茅visions pour demain</string>
     <string name="settings_title_forecast_tomorrow_time">Heure de notification</string>
     <string name="settings_category_widget">Widget</string>
-    <string name="settings_title_week_icon_mode">Mode des icônes hebdomadaires</string>
-    <string name="settings_title_minimal_icon">Icônes minimales</string>
+    <string name="settings_title_week_icon_mode">Mode des ic么nes hebdomadaires</string>
+    <string name="settings_title_minimal_icon">Ic么nes minimales</string>
     <string name="settings_title_click_widget_to_refresh">Appuyer pour actualiser</string>
     <string name="settings_title_widget_config">Configuration du widget</string>
     <string name="settings_category_notification">Notifications</string>
     <string name="settings_title_notification">Activer les notifications</string>
     <string name="settings_title_notification_style">Style des notifications</string>
-    <string name="settings_title_notification_temp_icon">Température dans la barre de statut</string>
+    <string name="settings_title_notification_temp_icon">Temp茅rature dans la barre de statut</string>
     <string name="settings_title_notification_color">Couleur de la notification</string>
-    <string name="settings_title_notification_custom_color">Couleur de notification personnalisée</string>
+    <string name="settings_title_notification_custom_color">Couleur de notification personnalis茅e</string>
     <string name="settings_title_notification_text_color">Couleur du texte</string>
-    <string name="settings_title_notification_background">Couleur d’arrière-plan</string>
-    <string name="settings_notification_background_off">Par défaut</string><!-- Littéralement "suivre les préférences système" -->
+    <string name="settings_title_notification_background">Couleur d鈥檃rri猫re-plan</string>
+    <string name="settings_notification_background_off">Par d茅faut</string><!-- Litt茅ralement "suivre les pr茅f茅rences syst猫me" -->
     <string name="settings_title_notification_can_be_cleared">Notification persistante</string>
     <string name="settings_notification_can_be_cleared_on">Non</string>
     <string name="settings_notification_can_be_cleared_off">Oui</string>
-    <string name="settings_title_notification_hide_icon">Masquer l’icône de notification</string>
+    <string name="settings_title_notification_hide_icon">Masquer l鈥檌c么ne de notification</string>
     <string name="settings_notification_hide_icon_on">Masquer</string>
     <string name="settings_notification_hide_icon_off">Afficher</string>
-    <string name="settings_title_notification_hide_in_lockScreen">Masquer sur l’écran de verrouillage</string>
-    <string name="settings_notification_hide_in_lockScreen_on">Masquer (à ouvrir depuis les paramètres)</string>
+    <string name="settings_title_notification_hide_in_lockScreen">Masquer sur l鈥櫭ヽran de verrouillage</string>
+    <string name="settings_notification_hide_in_lockScreen_on">Masquer (脿 ouvrir depuis les param猫tres)</string>
     <string name="settings_notification_hide_in_lockScreen_off">Afficher</string>
     <string name="settings_title_notification_hide_big_view">Vue large</string>
     <string name="settings_notification_hide_big_view_on">Masquer</string>
     <string name="settings_notification_hide_big_view_off">Afficher</string>
-    <string name="settings_provider_default_value">Par défaut (inchangé)</string>
+    <string name="settings_provider_default_value">Par d茅faut (inchang茅)</string>
 </resources>

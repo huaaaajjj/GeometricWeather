@@ -1,18 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <!-- notification text color. -->
     <string-array name="notification_text_colors">
         <item>Koyu</item>
         <item>Gri</item>
-        <item>Açık</item>
+        <item>A莽谋k</item>
     </string-array>
 
     <!-- widget style. -->
     <string-array name="widget_styles">
-        <item>Dikdörtgen</item>
+        <item>Dikd枚rtgen</item>
         <item>Simetri</item>
-        <item>Döşeme</item>
+        <item>D枚艧eme</item>
         <item>Mini</item>
         <item>Nano</item>
         <item>Pixel</item>

@@ -4,8 +4,7 @@
     <!-- Chinese source. -->
     <string-array name="weather_sources">
         <item>caiyunapp.com (Только для Китая)</item>
-        <item>accuweather.com</item>
-        <item>OpenWeather</item>
+        <item>accuweather.com</item>
         <item>Météo France</item>
     </string-array>
 
@@ -191,3 +190,4 @@
     </string-array>
 
 </resources>
+

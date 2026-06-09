@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools"
+﻿<resources xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingTranslation">
 
     <!-- app. -->
@@ -156,7 +156,7 @@
     <string name="date_format_long">MMM d</string>
     <string name="date_format_widget_short">EEE, MMM d</string>
     <string name="date_format_widget_long">EEEE, MMM d</string>
-    <string name="date_format_widget_oreo_style">EEEE, MMM d│</string>
+    <string name="date_format_widget_oreo_style">EEEE, MMM d鈹</string>
 
     <!-- Do not translate the following set of strings. -->
     <string name="tag_temperature">@string/temperature</string>
@@ -214,12 +214,12 @@
     <!-- keep those content with the format "$xxx$". -->
     <!-- keep "\n" -->
     <string name="feedback_custom_subtitle_keyword_cw">$cw$ : Current Weather\n</string>
-    <string name="feedback_custom_subtitle_keyword_ct">$ct$ : Current Temperature (℃/℉)\n</string>
-    <string name="feedback_custom_subtitle_keyword_ctd">$ctd$ : Current Temperature (°)\n</string>
-    <string name="feedback_custom_subtitle_keyword_at">$at$ : Apparent Temperature (℃/℉)\n</string>
-    <string name="feedback_custom_subtitle_keyword_atd">$atd$ : Apparent Temperature (°)\n</string>
+    <string name="feedback_custom_subtitle_keyword_ct">$ct$ : Current Temperature (鈩?鈩?\n</string>
+    <string name="feedback_custom_subtitle_keyword_ctd">$ctd$ : Current Temperature (掳)\n</string>
+    <string name="feedback_custom_subtitle_keyword_at">$at$ : Apparent Temperature (鈩?鈩?\n</string>
+    <string name="feedback_custom_subtitle_keyword_atd">$atd$ : Apparent Temperature (掳)\n</string>
     <string name="feedback_custom_subtitle_keyword_cpb">$cpb$ : Current Precipitation Probability (%)\n</string>
-    <string name="feedback_custom_subtitle_keyword_cp">$cp$ : Current Precipitation (mm/L/m²)\n</string>
+    <string name="feedback_custom_subtitle_keyword_cp">$cp$ : Current Precipitation (mm/L/m虏)\n</string>
     <string name="feedback_custom_subtitle_keyword_cwd">$cwd$ : Current Wind\n</string>
     <string name="feedback_custom_subtitle_keyword_cuv">$cuv$ : Current UV\n</string>
     <string name="feedback_custom_subtitle_keyword_ch">$ch$ : Current Humidity\n</string>
@@ -239,21 +239,21 @@
     <string name="feedback_custom_subtitle_keyword_dd">$dd$ : Daily Description\n</string>
     <string name="feedback_custom_subtitle_keyword_hd">$hd$ : Hourly Description\n</string>
     <string name="feedback_custom_subtitle_keyword_enter">$enter$ : Enter\n</string>
-    <string name="feedback_custom_subtitle_keyword_xdw">$0dw$, $1dw$, …, $4dw$ : \nDaytime Weather of Today, Tmw, …, 4 days later\n</string>
-    <string name="feedback_custom_subtitle_keyword_xnw">$0nw$, $1nw$, …, $4nw$ : \nNighttime Weather of Today, Tmw, …, 4 days later\n</string>
-    <string name="feedback_custom_subtitle_keyword_xdt">$0dt$, $1dt$, …, $4dt$ : \nDaytime Temperature of Today, Tmw, …, 4 days later (℃/℉)\n</string>
-    <string name="feedback_custom_subtitle_keyword_xnt">$0nt$, $1nt$, …, $4nt$ : \nNighttime Temperature of Today, Tmw, …, 4 days later (℃/℉)\n</string>
-    <string name="feedback_custom_subtitle_keyword_xdtd">$0dtd$, $1dtd$, …, $4dtd$ : \nDaytime Temperature of Today, Tmw, …, 4 days later (°)\n</string>
-    <string name="feedback_custom_subtitle_keyword_xntd">$0ntd$, $1ntd$, …, $4ntd$ : \nNighttime Temperature of Today, Tmw, …, 4 days later (°)\n</string>
-    <string name="feedback_custom_subtitle_keyword_xdp">$0dp$, $1dp$, …, $4dp$ : \nDaytime Precipitation of Today, Tmw, …, 4 days later (%)\n</string>
-    <string name="feedback_custom_subtitle_keyword_xnp">$0np$, $1np$, …, $4np$ : \nNighttime Precipitation of Today, Tmw, …, 4 days later (%)\n</string>
-    <string name="feedback_custom_subtitle_keyword_xdwd">$0dwd$, $1dwd$, …, $4dwd$ : \nDaytime Wind of Today, Tmw, …, 4 days later\n</string>
-    <string name="feedback_custom_subtitle_keyword_xnwd">$0nwd$, $1nwd$, …, $4nwd$ : \nNighttime Wind of Today, Tmw, …, 4 days later\n</string>
-    <string name="feedback_custom_subtitle_keyword_xsr">$0sr$, $1sr$, …, $4sr$ : \nSunrise of Today, Tmw, …, 4 days later\n</string>
-    <string name="feedback_custom_subtitle_keyword_xss">$0ss$, $1ss$, …, $4ss$ : \nSunset of Today, Tmw, …, 4 days later\n</string>
-    <string name="feedback_custom_subtitle_keyword_xmr">$0mr$, $1mr$, …, $4mr$ : \nMoonrise of Today, Tmw, …, 4 days later\n</string>
-    <string name="feedback_custom_subtitle_keyword_xms">$0ms$, $1ms$, …, $4ms$ : \nMoonset of Today, Tmw, …, 4 days later\n</string>
-    <string name="feedback_custom_subtitle_keyword_xmp">$0mp$, $1mp$, …, $4mp$ : \nMoon Phase of Today, Tmw, …, 4 days later\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdw">$0dw$, $1dw$, 鈥? $4dw$ : \nDaytime Weather of Today, Tmw, 鈥? 4 days later\n</string>
+    <string name="feedback_custom_subtitle_keyword_xnw">$0nw$, $1nw$, 鈥? $4nw$ : \nNighttime Weather of Today, Tmw, 鈥? 4 days later\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdt">$0dt$, $1dt$, 鈥? $4dt$ : \nDaytime Temperature of Today, Tmw, 鈥? 4 days later (鈩?鈩?\n</string>
+    <string name="feedback_custom_subtitle_keyword_xnt">$0nt$, $1nt$, 鈥? $4nt$ : \nNighttime Temperature of Today, Tmw, 鈥? 4 days later (鈩?鈩?\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdtd">$0dtd$, $1dtd$, 鈥? $4dtd$ : \nDaytime Temperature of Today, Tmw, 鈥? 4 days later (掳)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xntd">$0ntd$, $1ntd$, 鈥? $4ntd$ : \nNighttime Temperature of Today, Tmw, 鈥? 4 days later (掳)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdp">$0dp$, $1dp$, 鈥? $4dp$ : \nDaytime Precipitation of Today, Tmw, 鈥? 4 days later (%)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xnp">$0np$, $1np$, 鈥? $4np$ : \nNighttime Precipitation of Today, Tmw, 鈥? 4 days later (%)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdwd">$0dwd$, $1dwd$, 鈥? $4dwd$ : \nDaytime Wind of Today, Tmw, 鈥? 4 days later\n</string>
+    <string name="feedback_custom_subtitle_keyword_xnwd">$0nwd$, $1nwd$, 鈥? $4nwd$ : \nNighttime Wind of Today, Tmw, 鈥? 4 days later\n</string>
+    <string name="feedback_custom_subtitle_keyword_xsr">$0sr$, $1sr$, 鈥? $4sr$ : \nSunrise of Today, Tmw, 鈥? 4 days later\n</string>
+    <string name="feedback_custom_subtitle_keyword_xss">$0ss$, $1ss$, 鈥? $4ss$ : \nSunset of Today, Tmw, 鈥? 4 days later\n</string>
+    <string name="feedback_custom_subtitle_keyword_xmr">$0mr$, $1mr$, 鈥? $4mr$ : \nMoonrise of Today, Tmw, 鈥? 4 days later\n</string>
+    <string name="feedback_custom_subtitle_keyword_xms">$0ms$, $1ms$, 鈥? $4ms$ : \nMoonset of Today, Tmw, 鈥? 4 days later\n</string>
+    <string name="feedback_custom_subtitle_keyword_xmp">$0mp$, $1mp$, 鈥? $4mp$ : \nMoon Phase of Today, Tmw, 鈥? 4 days later\n</string>
 
     <string name="feedback_live_wallpaper_weather_kind">Weather</string>
     <string name="feedback_live_wallpaper_day_night_type">Time</string>
@@ -266,10 +266,10 @@
     <string name="feedback_delete_succeed">Delete location success</string>
     <string name="feedback_location_list_cannot_be_null">Location list cannot be empty</string>
 
-    <string name="feedback_search_location">Search a location…</string>
-    <string name="feedback_not_yet_location">No location yet…</string>
+    <string name="feedback_search_location">Search a location鈥</string>
+    <string name="feedback_not_yet_location">No location yet鈥</string>
     <string name="feedback_search_nothing">No locations found</string>
-    <string name="feedback_initializing">Initializing…</string>
+    <string name="feedback_initializing">Initializing鈥</string>
 
     <string name="feedback_refresh_notification_after_back">Changes will take effect when you return to the home page</string>
     <string name="feedback_refresh_notification_now">Refresh now</string>
@@ -303,7 +303,7 @@
     <string name="feedback_resident_location">Set as a resident city</string>
     <string name="feedback_resident_location_description">GeometricWeather will automatically show and hide resident cities based on your current location.\nFor example, you can set your hometown as a resident city. You can check the weather in your hometown while you are traveling. When you get home, the weather in your hometown will be hidden and replaced by the weather for your current location.</string>
 
-    <string name="feedback_click_to_get_more">Click to get more…</string>
+    <string name="feedback_click_to_get_more">Click to get more鈥</string>
     <string name="feedback_click_again_to_exit">Click again to exit</string>
 
     <!-- content description -->
@@ -363,7 +363,7 @@
     <string name="widget_material_you_forecast">Material You - Forecast</string>
     <string name="widget_material_you_current">Material You - Current</string>
     <string name="wait_refresh">waiting</string>
-    <string name="ellipsis">…</string>
+    <string name="ellipsis">鈥</string>
 
     <!-- settings -->
     <string name="settings_category_basic">Basic</string>
@@ -385,7 +385,7 @@
     <string name="settings_title_ui_style">Interface style</string>
     <string name="settings_title_icon_provider">Icon pack</string>
     <string name="settings_title_appearance">Appearance</string>
-    <string name="settings_summary_appearance">Interface style, card order, language…</string>
+    <string name="settings_summary_appearance">Interface style, card order, language鈥</string>
     <string name="settings_title_card_display">Displayed cards</string>
     <string name="settings_title_daily_trend_display">Display daily trend</string>
     <string name="settings_title_hourly_trend_display">Display hourly trend</string>
@@ -448,8 +448,8 @@
     <string name="settings_provider_owm_key">OpenWeather key</string>
     <string name="settings_provider_baidu_ip_location">Baidu IP location</string>
     <string name="settings_provider_baidu_ip_location_ak">Baidu IP location AK</string>
-    <string name="settings_provider_mf">Météo France</string>
-    <string name="settings_provider_mf_wsft_key">Météo France WSFT key</string>
+    <string name="settings_provider_mf">M茅t茅o France</string>
+    <string name="settings_provider_mf_wsft_key">M茅t茅o France WSFT key</string>
     <string name="settings_provider_iqa_air_parif_key">Air Parif key</string>
     <string name="settings_provider_iqa_atmo_aura_key">ATMO AURA key</string>
 
@@ -512,3 +512,4 @@
     <string name="transition_activity_search_txt">activity_search_txt</string>
 
 </resources>
+

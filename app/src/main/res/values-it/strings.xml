@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+﻿<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- app. -->
     <string name="app_name">Meteo</string>
     <string name="geometric_weather">Geometrical Weather</string>
@@ -17,7 +17,7 @@
     <string name="night">Notte</string>
     <string name="wind">Vento</string>
     <string name="sensible_temp">Si percepiscono</string>
-    <string name="humidity">Umidità</string>
+    <string name="humidity">Umidit脿</string>
     <string name="uv_index">Indice UV</string>
     <string name="forecast">Previsioni</string>
     <string name="briefings">Briefing</string>
@@ -28,9 +28,9 @@
     <string name="follow_system">Come il telefono</string>
     <string name="background_information">Servizio Background</string>
     <string name="pressure">Pressione atmosferica</string>
-    <string name="visibility">Visibilità</string>
+    <string name="visibility">Visibilit脿</string>
     <string name="dew_point">Punto di rugiada</string>
-    <string name="get_more">Altro…</string>
+    <string name="get_more">Altro鈥</string>
     <string name="get_more_store">Prova altre app dallo Store</string>
     <string name="get_more_github">Visita GitHub</string>
     <string name="refresh">Ricarica</string>
@@ -79,14 +79,14 @@
 
     <string name="daily_overview">Meteo Giornaliero</string>
     <string name="hourly_overview">Previsioni ad ore</string>
-    <string name="air_quality">Qualità dell\'aria</string>
+    <string name="air_quality">Qualit脿 dell\'aria</string>
     <string name="life_details">Dettagli</string>
     <string name="sunrise_sunset">Sole e Luna</string>
 
     <string name="next">AVANTI</string>
     <string name="done">FINE</string>
     <string name="cancel" tools:ignore="ButtonCase">ANNULLA</string>
-    <string name="on">SÌ</string>
+    <string name="on">S脤</string>
     <string name="off">NO</string>
     <string name="go_to_set">IMPOSTA</string>
     <string name="help">AIUTO</string>
@@ -104,7 +104,7 @@
     <string name="date_format_long">d MMM</string>
     <string name="date_format_widget_short">EEEE, d MMM</string>
     <string name="date_format_widget_long">EEEE, d MMM</string>
-    <string name="date_format_widget_oreo_style">EEEE, d MMM │ </string>
+    <string name="date_format_widget_oreo_style">EEEE, d MMM 鈹?</string>
 
     <!-- about. -->
     <string name="retrofit">Retrofit 2.0</string>
@@ -112,9 +112,9 @@
     <string name="glide">Glide</string>
     <string name="about_glide">Una libreria di caricamento e caching immagini per Android per lo scorrimento fluido</string>
     <string name="gson">Gson</string>
-    <string name="about_gson">Una libreria Java di serializzazione/deserializzazione che può convertire file Objects di Java in JSON e viceversa</string>
+    <string name="about_gson">Una libreria Java di serializzazione/deserializzazione che pu貌 convertire file Objects di Java in JSON e viceversa</string>
     <string name="greenDAO">GreenDAO</string>
-    <string name="about_greenDAO">greenDAO è una libreria ORM leggera per Android per mappare oggetti nei database SQLite</string>
+    <string name="about_greenDAO">greenDAO 猫 una libreria ORM leggera per Android per mappare oggetti nei database SQLite</string>
     <string name="page_indicator">InkPageIndicator</string>
     <string name="about_page_indicator">InkPageIndicator creato da @nickbutcher per Plaid https://github.com/nickbutcher/plaid e risviluppato per Android 4.0 e successive da David Pacioianu.</string>
     <string name="circular_progress_view">CircularProgressView</string>
@@ -123,7 +123,7 @@
     <!-- feedback. -->
     <string name="feedback_request_permission">Permessi</string>
     <string name="feedback_request_location">localizzazione</string>
-    <string name="feedback_request_location_in_background">Localizzazione in corso… </string>
+    <string name="feedback_request_location_in_background">Localizzazione in corso鈥?</string>
     <string name="feedback_request_location_permission_success">Localizzazione completata.</string>
     <string name="feedback_request_location_permission_failed">Localizzazione fallita.</string>
 
@@ -136,7 +136,7 @@
 
     <string name="feedback_view_style">Stile widget</string>
     <string name="feedback_show_widget_card">Sfondo</string>
-    <string name="feedback_show_widget_card_alpha">Opacità sfondo</string>
+    <string name="feedback_show_widget_card_alpha">Opacit脿 sfondo</string>
     <string name="feedback_hide_subtitle">Nascondi sottotitolo</string>
     <string name="feedback_subtitle_data">Sottotitolo</string>
     <string name="feedback_black_text">Colore testo</string>
@@ -145,15 +145,15 @@
     <string name="feedback_click_toggle">Tocca il grafico per mostrare/nascondere i dati.</string>
     <string name="feedback_no_data">NESSUN DATO</string>
 
-    <string name="feedback_collect_failed">Questa località è stata già registrata. </string>
-    <string name="feedback_collect_succeed">Località registrata con successo.</string>
-    <string name="feedback_delete_succeed">Località rimossa con successo.</string>
-    <string name="feedback_location_list_cannot_be_null">La lista di località non può essere vuota.</string>
+    <string name="feedback_collect_failed">Questa localit脿 猫 stata gi脿 registrata. </string>
+    <string name="feedback_collect_succeed">Localit脿 registrata con successo.</string>
+    <string name="feedback_delete_succeed">Localit脿 rimossa con successo.</string>
+    <string name="feedback_location_list_cannot_be_null">La lista di localit脿 non pu貌 essere vuota.</string>
 
-    <string name="feedback_search_location">Cerca una località…</string>
-    <string name="feedback_not_yet_location">Nessuna località…</string>
-    <string name="feedback_search_nothing">Non ho trovato niente…</string>
-    <string name="feedback_initializing">Inizializzazione…</string>
+    <string name="feedback_search_location">Cerca una localit脿鈥</string>
+    <string name="feedback_not_yet_location">Nessuna localit脿鈥</string>
+    <string name="feedback_search_nothing">Non ho trovato niente鈥</string>
+    <string name="feedback_initializing">Inizializzazione鈥</string>
 
     <string name="feedback_refresh_notification_after_back">Le impostazioni avranno effetto tornando alla Home.</string>
     <string name="feedback_refresh_notification_now">Ricarica</string>
@@ -162,17 +162,17 @@
     <string name="feedback_readd_location">Ri-aggiungi le tue zone preferite.</string>
     <string name="feedback_readd_location_after_changing_source">Ri-aggiungi le tue zone preferite dopo aver cambiato la fonte.</string>
 
-    <string name="feedback_running_in_background">Esecuzione in background degli aggiornamenti…</string>
-    <string name="feedback_updating_weather_data">Aggiornamento dati meteo…</string>
+    <string name="feedback_running_in_background">Esecuzione in background degli aggiornamenti鈥</string>
+    <string name="feedback_updating_weather_data">Aggiornamento dati meteo鈥</string>
 
     <string name="feedback_interpret_background_notification_content">In alcuni dispositivi, abilitando l\'app in background, ci potrebbe essere una notifica impossibile da nascondere.</string>
     <string name="feedback_interpret_notification_group_title">Blocca notifiche</string>
-    <string name="feedback_interpret_notification_group_content">Abilitando l\'app in background, una notifica apparirà indicando che l\'app è in esecuzione in background. Puoi nascondere questa notifica nella pagina d\'informazioni dell\'app, disabilitando il canale del Servizio Background.</string>
+    <string name="feedback_interpret_notification_group_content">Abilitando l\'app in background, una notifica apparir脿 indicando che l\'app 猫 in esecuzione in background. Puoi nascondere questa notifica nella pagina d\'informazioni dell\'app, disabilitando il canale del Servizio Background.</string>
 
     <string name="feedback_cannot_start_live_wallpaper_activity">Impossibile creare un\'anteprima per lo sfondo animato.</string>
 
-    <string name="feedback_unusable_geocoder">Questo dispositivo non ha un geocoder valido, il servizio di localizzazione è stato impostato su Baidu .</string>
-    <string name="feedback_about_geocoder">Il Geocoder è un componente che converte latitudine-longitudine al formato \'XX città, XX provincia \'. In assenza di questo componente, puoi ottenere i dati meteo attraverso AccuWeather usando l\' API Nativa come servizio di localizzazione.</string>
+    <string name="feedback_unusable_geocoder">Questo dispositivo non ha un geocoder valido, il servizio di localizzazione 猫 stato impostato su Baidu .</string>
+    <string name="feedback_about_geocoder">Il Geocoder 猫 un componente che converte latitudine-longitudine al formato \'XX citt脿, XX provincia \'. In assenza di questo componente, puoi ottenere i dati meteo attraverso AccuWeather usando l\' API Nativa come servizio di localizzazione.</string>
 
     <!-- action -->
     <string name="action_alert">Allerte</string>
@@ -195,7 +195,7 @@
     <string name="widget_trend_daily">Trend giornaliero</string>
     <string name="widget_trend_hourly">Trent orario</string>
     <string name="wait_refresh">in attesa</string>
-    <string name="ellipsis">…</string>
+    <string name="ellipsis">鈥</string>
 
     <!-- settings -->
     <string name="settings_category_basic">Base</string>
@@ -212,13 +212,13 @@
     <string name="settings_title_ui_style">Stile interfaccia</string>
     <string name="settings_title_icon_provider">Stile icone</string>
     <string name="settings_title_appearance">Aspetto</string>
-    <string name="settings_summary_appearance">Stile interfaccia, schede, lingua…</string>
+    <string name="settings_summary_appearance">Stile interfaccia, schede, lingua鈥</string>
     <string name="settings_title_card_display">Schede meteo</string>
     <string name="settings_title_card_order">Ordine schede</string>
-    <string name="settings_title_gravity_sensor_switch">Apri sensore gravità</string>
+    <string name="settings_title_gravity_sensor_switch">Apri sensore gravit脿</string>
     <string name="settings_language">Lingua</string>
-    <string name="settings_title_unit">Unità di misura</string>
-    <string name="settings_summary_unit">Imposta unità di misura meteo.</string>
+    <string name="settings_title_unit">Unit脿 di misura</string>
+    <string name="settings_summary_unit">Imposta unit脿 di misura meteo.</string>
     <string name="settings_title_refresh_rate">Frequenza aggiornamento</string>
     <string name="settings_title_alert_notification_switch">Invia notifiche</string>
     <string name="settings_title_permanent_service">Servizio permanente</string>
@@ -238,9 +238,9 @@
     <string name="settings_title_notification_text_color">Colore testo</string>
     <string name="settings_title_notification_background">Colore sfondo</string>
     <string name="settings_notification_background_off">Automatico</string>
-    <string name="settings_title_notification_can_be_cleared">Può essere nascosta</string>
-    <string name="settings_notification_can_be_cleared_on">Può essere nascosta.</string>
-    <string name="settings_notification_can_be_cleared_off">Non può essere nascosta.</string>
+    <string name="settings_title_notification_can_be_cleared">Pu貌 essere nascosta</string>
+    <string name="settings_notification_can_be_cleared_on">Pu貌 essere nascosta.</string>
+    <string name="settings_notification_can_be_cleared_off">Non pu貌 essere nascosta.</string>
     <string name="settings_title_notification_hide_icon">Nascondi icona di notifica</string>
     <string name="settings_notification_hide_icon_on">Nascondi</string>
     <string name="settings_notification_hide_icon_off">Mostra</string>
@@ -252,3 +252,4 @@
     <string name="settings_notification_hide_big_view_off">Mostra</string>
 
 </resources>
+

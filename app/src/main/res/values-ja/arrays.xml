@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <!-- Do not translate those arrays which named "xxx_values". -->
@@ -6,53 +6,52 @@
 
     <!-- Chinese source. -->
     <string-array name="weather_sources">
-        <item>caiyunapp.com (中国のみ)</item>
-        <item>accuweather.com</item>
-        <item>OpenWeather</item>
-        <item>Météo France</item>
+        <item>caiyunapp.com (涓浗銇伩)</item>
+        <item>accuweather.com</item>
+        <item>M茅t茅o France</item>
     </string-array>
 
     <!-- Location service. -->
     <string-array name="location_services">
         <item>Baidu Location</item>
-        <item>Baidu IP Location (中国のみ)</item>
+        <item>Baidu IP Location (涓浗銇伩)</item>
         <item>AMap Location</item>
-        <item>ネイティブAPI</item>
+        <item>銉嶃偆銉嗐偅銉朅PI</item>
     </string-array>
 
     <!-- Dark mode. -->
     <string-array name="dark_modes">
-        <item>自動</item>
+        <item>鑷嫊</item>
         <item>Follow system</item>
-        <item>ライトモード</item>
-        <item>ダークモード</item>
+        <item>銉┿偆銉堛儮銉笺儔</item>
+        <item>銉€銉笺偗銉兗銉</item>
     </string-array>
 
     <!-- UI style. -->
     <string-array name="ui_styles">
-        <item>丸い空</item>
-        <item>マテリアルアニメーション</item>
+        <item>涓搞亜绌</item>
+        <item>銉炪儐銉偄銉偄銉嬨儭銉笺偡銉с兂</item>
     </string-array>
 
     <!-- automatic refresh rate. -->
     <string-array name="automatic_refresh_rates">
-        <item>30分</item>
-        <item>1時間</item>
-        <item>1.5時間</item>
-        <item>2時間</item>
-        <item>2.5時間</item>
-        <item>3時間</item>
-        <item>3.5時間</item>
-        <item>4時間</item>
-        <item>4.5時間</item>
-        <item>5時間</item>
-        <item>5.5時間</item>
-        <item>6時間</item>
+        <item>30鍒</item>
+        <item>1鏅傞枔</item>
+        <item>1.5鏅傞枔</item>
+        <item>2鏅傞枔</item>
+        <item>2.5鏅傞枔</item>
+        <item>3鏅傞枔</item>
+        <item>3.5鏅傞枔</item>
+        <item>4鏅傞枔</item>
+        <item>4.5鏅傞枔</item>
+        <item>5鏅傞枔</item>
+        <item>5.5鏅傞枔</item>
+        <item>6鏅傞枔</item>
     </string-array>
 
     <!-- widget week icon mode. -->
     <string-array name="week_icon_modes">
-        <item>自動</item>
+        <item>鑷嫊</item>
         <item>@string/daytime</item><!-- do not translate. -->
         <item>@string/nighttime</item><!-- do not translate. -->
     </string-array>
@@ -67,20 +66,20 @@
 
     <!-- notification text color. -->
     <string-array name="notification_text_colors">
-        <item>ダーク</item>
-        <item>グレー</item>
-        <item>ライト</item>
+        <item>銉€銉笺偗</item>
+        <item>銈般儸銉</item>
+        <item>銉┿偆銉</item>
     </string-array>
 
     <!-- widget style. -->
     <string-array name="widget_styles">
-        <item>長方形</item>
-        <item>対称的</item>
-        <item>タイル</item>
-        <item>ミニ</item>
-        <item>ナノ</item>
-        <item>ピクセル</item>
-        <item>垂直</item>
+        <item>闀锋柟褰</item>
+        <item>瀵剧О鐨</item>
+        <item>銈裤偆銉</item>
+        <item>銉熴儖</item>
+        <item>銉娿儙</item>
+        <item>銉斻偗銈汇儷</item>
+        <item>鍨傜洿</item>
         <item>Oreo</item>
         <item>Oreo (Google sans)</item>
         <item>Temperature</item>
@@ -88,12 +87,12 @@
 
     <!-- Widget subtitle data. -->
     <string-array name="subtitle_data">
-        <item>更新時刻</item>
-        <item>空気質指数 (一部エリアでは無効です)</item>
-        <item>風</item>
-        <item>体感温度</item>
-        <item>旧暦</item>
-        <item>カスタム</item>
+        <item>鏇存柊鏅傚埢</item>
+        <item>绌烘皸璩寚鏁?(涓€閮ㄣ偍銉偄銇с伅鐒″姽銇с仚)</item>
+        <item>棰</item>
+        <item>浣撴劅娓╁害</item>
+        <item>鏃ф殾</item>
+        <item>銈偣銈裤儬</item>
     </string-array>
 
     <!-- widget clock font. -->
@@ -106,41 +105,42 @@
 
     <!-- widget card style. -->
     <string-array name="widget_card_styles">
-        <item>無し</item>
-        <item>自動</item>
-        <item>ライトモード</item>
-        <item>ダークモード</item>
+        <item>鐒°仐</item>
+        <item>鑷嫊</item>
+        <item>銉┿偆銉堛儮銉笺儔</item>
+        <item>銉€銉笺偗銉兗銉</item>
     </string-array>
 
     <!-- widget clock font. -->
     <string-array name="widget_text_colors">
-        <item>ライト</item>
-        <item>ダーク</item>
-        <item>自動</item>
+        <item>銉┿偆銉</item>
+        <item>銉€銉笺偗</item>
+        <item>鑷嫊</item>
     </string-array>
 
     <!-- live wallpaper weather kind. -->
     <string-array name="live_wallpaper_weather_kinds">
-        <item>自動</item>
-        <item>晴れ</item>
-        <item>一部曇り</item>
-        <item>曇り</item>
-        <item>雨</item>
-        <item>雪</item>
-        <item>みぞれ</item>
-        <item>ひょう</item>
-        <item>霧</item>
-        <item>かすみ</item>
-        <item>雷</item>
-        <item>雷雨</item>
-        <item>風</item>
+        <item>鑷嫊</item>
+        <item>鏅淬倢</item>
+        <item>涓€閮ㄦ泧銈</item>
+        <item>鏇囥倞</item>
+        <item>闆</item>
+        <item>闆</item>
+        <item>銇裤仦銈</item>
+        <item>銇层倗銇</item>
+        <item>闇</item>
+        <item>銇嬨仚銇</item>
+        <item>闆</item>
+        <item>闆烽洦</item>
+        <item>棰</item>
     </string-array>
 
     <!-- live wallpaper weather kind. -->
     <string-array name="live_wallpaper_day_night_types">
-        <item>自動</item>
-        <item>日中</item>
-        <item>夜間</item>
+        <item>鑷嫊</item>
+        <item>鏃ヤ腑</item>
+        <item>澶滈枔</item>
     </string-array>
 
 </resources>
+

@@ -1,146 +1,145 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- 날씨 제공처. -->
+    <!-- 雮犾敤 鞝滉车觳? -->
     <string-array name="weather_sources">
-        <item>caiyunapp.com (중국 내수용)</item>
-        <item>accuweather.com</item>
-        <item>OpenWeather</item>
-        <item>Météo France</item>
+        <item>caiyunapp.com (欷戧淡 雮挫垬鞖?</item>
+        <item>accuweather.com</item>
+        <item>M茅t茅o France</item>
     </string-array>
 
-    <!-- 위치 서비스. -->
+    <!-- 鞙勳箻 靹滊箘鞀? -->
     <string-array name="location_services">
-        <item>바이두 위치</item>
-        <item>바이두 IP 위치 (중국 내수용)</item>
-        <item>AMap 위치</item>
-        <item>현지 API</item>
+        <item>氚旍澊霊?鞙勳箻</item>
+        <item>氚旍澊霊?IP 鞙勳箻 (欷戧淡 雮挫垬鞖?</item>
+        <item>AMap 鞙勳箻</item>
+        <item>順勳 API</item>
     </string-array>
 
-    <!-- 어두운 모드. -->
+    <!-- 鞏措憪鞖?氇摐. -->
     <string-array name="dark_modes">
-        <item>자동</item>
+        <item>鞛愲彊</item>
         <item>Follow system</item>
-        <item>언제나 밝게</item>
-        <item>언제나 어둡게</item>
+        <item>鞏胳牅雮?氚濌矊</item>
+        <item>鞏胳牅雮?鞏措憽瓴</item>
     </string-array>
 
-    <!-- UI 스타일. -->
+    <!-- UI 鞀ろ儉鞚? -->
     <string-array name="ui_styles">
-        <item>동글동글 하늘</item>
-        <item>머티리얼 애니메이션</item>
+        <item>霃欔竴霃欔竴 頃橂姌</item>
+        <item>毹疙嫲毽柤 鞎犽媹氅旍澊靺</item>
     </string-array>
 
-    <!-- 자동 갱신 간격. -->
+    <!-- 鞛愲彊 臧膘嫚 臧勱博. -->
     <string-array name="automatic_refresh_rates">
-        <item>30분</item>
-        <item>1시간</item>
-        <item>1시간 30분</item>
-        <item>2시간</item>
-        <item>2시간 30분</item>
-        <item>3시간</item>
-        <item>3시간 30분</item>
-        <item>4시간</item>
-        <item>4시간 30분</item>
-        <item>5시간</item>
-        <item>5시간 30분</item>
-        <item>6시간</item>
+        <item>30攵</item>
+        <item>1鞁滉皠</item>
+        <item>1鞁滉皠 30攵</item>
+        <item>2鞁滉皠</item>
+        <item>2鞁滉皠 30攵</item>
+        <item>3鞁滉皠</item>
+        <item>3鞁滉皠 30攵</item>
+        <item>4鞁滉皠</item>
+        <item>4鞁滉皠 30攵</item>
+        <item>5鞁滉皠</item>
+        <item>5鞁滉皠 30攵</item>
+        <item>6鞁滉皠</item>
     </string-array>
 
-    <!-- 위젯 주간 아이콘 모드. -->
+    <!-- 鞙勳牤 欤缄皠 鞎勳澊旖?氇摐. -->
     <string-array name="week_icon_modes">
-        <item>자동</item>
+        <item>鞛愲彊</item>
         <item>@string/daytime</item>
         <item>@string/nighttime</item>
     </string-array>
 
-    <!-- 알림 스타일. -->
+    <!-- 鞎岆 鞀ろ儉鞚? -->
     <string-array name="notification_styles">
-        <item>지역</item>
+        <item>歆€鞐</item>
         <item>Cities</item>
         <item>@string/daily_overview</item><!-- do not translate. -->
         <item>@string/hourly_overview</item><!-- do not translate. -->
     </string-array>
 
-    <!-- 알림 글자 색상. -->
+    <!-- 鞎岆 旮€鞛?靸夓儊. -->
     <string-array name="notification_text_colors">
-        <item>어두움</item>
-        <item>회색</item>
-        <item>밝음</item>
+        <item>鞏措憪鞗€</item>
+        <item>須岇儔</item>
+        <item>氚濎潓</item>
     </string-array>
 
-    <!-- 위젯 스타일. -->
+    <!-- 鞙勳牤 鞀ろ儉鞚? -->
     <string-array name="widget_styles">
-        <item>직사각형</item>
-        <item>대칭</item>
-        <item>타일</item>
-        <item>미니</item>
-        <item>나노</item>
-        <item>픽셀</item>
-        <item>세로</item>
-        <item>오레오</item>
-        <item>오레오 (구글 산스)</item>
+        <item>歆侅偓臧來槙</item>
+        <item>雽€旃</item>
+        <item>韮€鞚</item>
+        <item>氙鸽媹</item>
+        <item>雮橂吀</item>
+        <item>頂届厐</item>
+        <item>靹鸽</item>
+        <item>鞓る爤鞓</item>
+        <item>鞓る爤鞓?(甑竴 靷办姢)</item>
         <item>Temperature</item>
     </string-array>
 
-    <!-- 위젯 표시 데이터. -->
+    <!-- 鞙勳牤 響滌嫓 雿办澊韯? -->
     <string-array name="subtitle_data">
-        <item>갱신 시간</item>
-        <item>AQI (일부 지역에서는 불가능합니다.)</item>
-        <item>바람</item>
-        <item>체감 온도</item>
-        <item>월력</item>
-        <item>커스텀</item>
+        <item>臧膘嫚 鞁滉皠</item>
+        <item>AQI (鞚茧秬 歆€鞐棎靹滊姅 攵堦皜電ロ暕雼堧嫟.)</item>
+        <item>氚旊瀸</item>
+        <item>觳搓皭 鞓弰</item>
+        <item>鞗旊牓</item>
+        <item>旎れ姢韰€</item>
     </string-array>
 
-    <!-- 위젯 시계 폰트. -->
+    <!-- 鞙勳牤 鞁滉硠 韽绊姼. -->
     <string-array name="clock_font">
-        <item>얇은 산 세리프</item>
-        <item>산 세리프</item>
-        <item>어두운 산 세리프</item>
-        <item>아날로그</item>
+        <item>鞏囲潃 靷?靹鸽Μ頂</item>
+        <item>靷?靹鸽Μ頂</item>
+        <item>鞏措憪鞖?靷?靹鸽Μ頂</item>
+        <item>鞎勲偁搿滉犯</item>
     </string-array>
 
-    <!-- 위젯 카드 스타일. -->
+    <!-- 鞙勳牤 旃措摐 鞀ろ儉鞚? -->
     <string-array name="widget_card_styles">
-        <item>없음</item>
-        <item>낮 밤 모드</item>
-        <item>밝음</item>
-        <item>어두움</item>
+        <item>鞐嗢潓</item>
+        <item>雮?氚?氇摐</item>
+        <item>氚濎潓</item>
+        <item>鞏措憪鞗€</item>
     </string-array>
 
-    <!-- 위젯 글씨 색상. -->
+    <!-- 鞙勳牤 旮€鞌?靸夓儊. -->
     <string-array name="widget_text_colors">
-        <item>밝음</item>
-        <item>어두움</item>
-        <item>자동</item>
+        <item>氚濎潓</item>
+        <item>鞏措憪鞗€</item>
+        <item>鞛愲彊</item>
     </string-array>
 
-    <!-- 라이브 배경화면 종류. -->
+    <!-- 霛检澊敫?氚瓣步頇旊┐ 膦呺. -->
     <string-array name="live_wallpaper_weather_kinds">
-        <item>자동</item>
-        <item>맑음</item>
-        <item>약간 흐림</item>
-        <item>흐림</item>
-        <item>비</item>
-        <item>눈</item>
-        <item>진눈깨비</item>
-        <item>우박</item>
-        <item>안개</item>
-        <item>실안개</item>
-        <item>번개</item>
-        <item>뇌우</item>
-        <item>바람</item>
+        <item>鞛愲彊</item>
+        <item>毵戩潓</item>
+        <item>鞎疥皠 頋愲</item>
+        <item>頋愲</item>
+        <item>牍</item>
+        <item>雸</item>
+        <item>歆勲垐旯箘</item>
+        <item>鞖半皶</item>
+        <item>鞎堦皽</item>
+        <item>鞁れ晥臧</item>
+        <item>氩堦皽</item>
+        <item>雵岇毎</item>
+        <item>氚旊瀸</item>
     </string-array>
 
-    <!-- 라이브 배경화면 시간 종류. -->
+    <!-- 霛检澊敫?氚瓣步頇旊┐ 鞁滉皠 膦呺. -->
     <string-array name="live_wallpaper_day_night_types">
-        <item>자동</item>
-        <item>언제나 낮</item>
-        <item>언제나 밤</item>
+        <item>鞛愲彊</item>
+        <item>鞏胳牅雮?雮</item>
+        <item>鞏胳牅雮?氚</item>
     </string-array>
 
-    <!-- 속도 단위. -->
+    <!-- 靻嶋弰 雼渼. -->
     <string-array name="speed_units">
         <item>km/h</item>
         <item>m/s</item>
@@ -149,15 +148,15 @@
         <item>ft/s</item>
     </string-array>
 
-    <!-- 강수 단위. -->
+    <!-- 臧曥垬 雼渼. -->
     <string-array name="precipitation_units">
         <item>mm</item>
         <item>cm</item>
         <item>inch</item>
-        <item>L/m²</item>
+        <item>L/m虏</item>
     </string-array>
 
-    <!-- 거리 단위. -->
+    <!-- 瓯半Μ 雼渼. -->
     <string-array name="distance_units">
         <item>km</item>
         <item>m</item>
@@ -166,7 +165,7 @@
         <item>ft</item>
     </string-array>
 
-    <!-- 기압 단위. -->
+    <!-- 旮办晻 雼渼. -->
     <string-array name="pressure_units">
         <item>mb</item>
         <item>kPa</item>
@@ -174,27 +173,28 @@
         <item>atm</item>
         <item>mmHg</item>
         <item>inHg</item>
-        <item>kgf/cm²</item>
+        <item>kgf/cm虏</item>
     </string-array>
 
-    <!-- 대기질 단위. -->
+    <!-- 雽€旮办 雼渼. -->
     <string-array name="air_quality_units">
-        <item>μg/m³</item>
+        <item>渭g/m鲁</item>
     </string-array>
 
     <!-- air quality co unit. -->
     <string-array name="air_quality_co_units">
-        <item>mg/m³</item>
+        <item>mg/m鲁</item>
     </string-array>
 
-    <!-- 시간 단위. -->
+    <!-- 鞁滉皠 雼渼. -->
     <string-array name="duration_units">
         <item>h</item> <!-- hour -->
     </string-array>
 
-    <!-- 입자 단위. -->
+    <!-- 鞛呾瀽 雼渼. -->
     <string-array name="pollen_units">
-        <item>/m³</item>
+        <item>/m鲁</item>
     </string-array>
 
 </resources>
+

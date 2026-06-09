@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingTranslation">
 
@@ -9,23 +9,20 @@
     <string-array name="weather_sources">
         <item>caiyunapp.com (Only For China)</item>
         <item>accuweather.com</item>
-        <item>OpenWeather</item>
-        <item>Météo France</item>
+        <item>M茅t茅o France</item>
         <item>Open-Meteo</item>
         <item>WeatherAPI</item>
     </string-array>
     <string-array name="weather_source_voices">
         <item>CaiYun App.com</item>
         <item>ACCU weather.com</item>
-        <item>Open Weather</item>
-        <item>Météo France</item>
+        <item>M茅t茅o France</item>
         <item>Open Meteo</item>
         <item>Weather API</item>
     </string-array>
     <string-array name="weather_source_values">
         <item>caiyun</item>
         <item>accu</item>
-        <item>owm</item>
         <item>mf</item>
         <item>open_meteo</item>
         <item>weatherapi</item>
@@ -73,30 +70,30 @@
     <!-- Do not translate this array. -->
     <string-array name="languages">
         <item>@string/follow_system</item>
-        <item>中文</item>
-        <item>繁體中文</item>
+        <item>涓枃</item>
+        <item>绻侀珨涓枃</item>
         <item>English (America)</item>
         <item>English (Britain)</item>
         <item>English (Australia)</item>
-        <item>Türkçe</item>
-        <item>Français</item>
-        <item>Pусский</item>
+        <item>T眉rk莽e</item>
+        <item>Fran莽ais</item>
+        <item>P褍褋褋泻懈泄</item>
         <item>Deutsch</item>
-        <item>Српски</item>
-        <item>Español</item>
+        <item>小褉锌褋泻懈</item>
+        <item>Espa帽ol</item>
         <item>Italiano</item>
         <item>Dutch</item>
         <item>Magyar</item>
-        <item>Português</item>
-        <item>Português (Brasil)</item>
-        <item>Slovenščina</item>
-        <item>العربية</item>
-        <item>Čeština</item>
+        <item>Portugu锚s</item>
+        <item>Portugu锚s (Brasil)</item>
+        <item>Sloven拧膷ina</item>
+        <item>丕賱毓乇亘賷丞</item>
+        <item>膶e拧tina</item>
         <item>Polski</item>
-        <item>한국어</item>
-        <item>Ελληνικά</item>
-        <item>日本語</item>
-        <item>Română</item>
+        <item>頃滉淡鞏</item>
+        <item>螘位位畏谓喂魏维</item>
+        <item>鏃ユ湰瑾</item>
+        <item>Rom芒n膬</item>
     </string-array>
     <string-array name="language_values">
         <item>follow_system</item>
@@ -371,7 +368,7 @@
         <item>mm</item>
         <item>cm</item>
         <item>inch</item>
-        <item>L/m²</item>
+        <item>L/m虏</item>
     </string-array>
     <string-array name="precipitation_unit_voices">
         <item>Millimeters</item>
@@ -388,18 +385,18 @@
 
     <!-- temperature unit. -->
     <string-array name="temperature_units">
-        <item>℃</item>
-        <item>℉</item>
+        <item>鈩</item>
+        <item>鈩</item>
         <item>K</item>
     </string-array>
     <string-array name="temperature_units_short">
-        <item>°</item>
-        <item>°</item>
+        <item>掳</item>
+        <item>掳</item>
         <item>K</item>
     </string-array>
     <string-array name="temperature_units_long">
-        <item>°C</item>
-        <item>°F</item>
+        <item>掳C</item>
+        <item>掳F</item>
         <item>K</item>
     </string-array>
     <string-array name="temperature_unit_values">
@@ -439,7 +436,7 @@
         <item>atm</item>
         <item>mmHg</item>
         <item>inHg</item>
-        <item>kgf/cm²</item>
+        <item>kgf/cm虏</item>
     </string-array>
     <string-array name="pressure_unit_voices">
         <item>Millibars</item>
@@ -462,7 +459,7 @@
 
     <!-- air quality unit. -->
     <string-array name="air_quality_units">
-        <item>μg/m³</item>
+        <item>渭g/m鲁</item>
     </string-array>
     <string-array name="air_quality_unit_voices">
         <item>Micrograms per cubic meter</item>
@@ -473,7 +470,7 @@
 
     <!-- air quality co unit. -->
     <string-array name="air_quality_co_units">
-        <item>mg/m³</item>
+        <item>mg/m鲁</item>
     </string-array>
     <string-array name="air_quality_co_unit_voices">
         <item>Milligrams per cubic meter</item>
@@ -495,7 +492,7 @@
 
     <!-- pollen unit. -->
     <string-array name="pollen_units">
-        <item>/m³</item>
+        <item>/m鲁</item>
     </string-array>
     <string-array name="pollen_unit_voices">
         <item>Per cubic meter</item>

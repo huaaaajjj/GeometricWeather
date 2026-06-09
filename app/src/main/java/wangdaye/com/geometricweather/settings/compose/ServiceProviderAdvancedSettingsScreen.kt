@@ -60,23 +60,6 @@ fun SettingsProviderAdvancedSettingsScreen(
     }
     sectionFooterItem(R.string.settings_provider_accu_weather)
 
-    sectionHeaderItem(R.string.settings_provider_owm)
-    editTextPreferenceItem(R.string.settings_provider_owm_key) { id ->
-        EditTextPreferenceView(
-            titleId = id,
-            summary = { context, content ->
-                content.ifEmpty {
-                    context.getString(R.string.settings_provider_default_value)
-                }
-            },
-            content = SettingsManager.getInstance(context).customOwmKey,
-            onValueChanged = {
-                SettingsManager.getInstance(context).customOwmKey = it
-            }
-        )
-    }
-    sectionFooterItem(R.string.settings_provider_owm)
-
     sectionHeaderItem(R.string.settings_provider_baidu_ip_location)
     editTextPreferenceItem(R.string.settings_provider_baidu_ip_location) { id ->
         EditTextPreferenceView(

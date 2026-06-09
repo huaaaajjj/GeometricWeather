@@ -46,6 +46,7 @@
 - 修复彩云天气: 小米市场API失效 → 官方 v2.6 API (api.caiyunapp.com)
 - 修复彩云天气: Wind构造器传null导致转换失败 (Hourly/Daily)
 - 修复彩云天气: Weather构造器minutely/alert传null导致@NonNull断言失败
+- 移除 OpenWeather (OWM) — One Call API 3.0 已废弃，免费 Key 无法使用
 
 ## 禁止
 

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="Nederlands">
 
     <!-- app. -->
@@ -78,7 +78,7 @@
     <string name="date_format_long">d MMM</string>
     <string name="date_format_widget_short">EEEE, d MMM</string>
     <string name="date_format_widget_long">EEEE, d MMM</string>
-    <string name="date_format_widget_oreo_style">EEEE, d MMM │ </string>
+    <string name="date_format_widget_oreo_style">EEEE, d MMM 鈹?</string>
 
     <!-- about. -->
     <string name="retrofit">Retrofit 2.0</string>
@@ -112,11 +112,11 @@
     <string name="feedback_collect_failed">Deze locatie bestaat al.</string>
     <string name="feedback_collect_succeed">Locatie toevoegen gelukt.</string>
     <string name="feedback_delete_succeed">Verwijderen locatie gelukt.</string>
-    <string name="feedback_location_list_cannot_be_null">Er moet één locatie in de lijst staan.</string>
-    <string name="feedback_search_location">Zoek een locatie…</string>
-    <string name="feedback_not_yet_location">Nog geen locatie…</string>
-    <string name="feedback_search_nothing">Zoek niets…</string>
-    <string name="feedback_initializing">Initialiseren…</string>
+    <string name="feedback_location_list_cannot_be_null">Er moet 茅茅n locatie in de lijst staan.</string>
+    <string name="feedback_search_location">Zoek een locatie鈥</string>
+    <string name="feedback_not_yet_location">Nog geen locatie鈥</string>
+    <string name="feedback_search_nothing">Zoek niets鈥</string>
+    <string name="feedback_initializing">Initialiseren鈥</string>
     <string name="feedback_refresh_notification_after_back">Wordt van kracht als je terug bent op de startpagina.</string>
     <string name="feedback_refresh_notification_now">Vernieuw nu.</string>
     <string name="feedback_refresh_ui_after_refresh">Wordt van kracht na het vernieuwen van de data.</string>
@@ -141,7 +141,7 @@
     <string name="widget_clock_day_week">Klok + Dagelijks + Wekelijks</string>
     <string name="widget_text">Tekst</string>
     <string name="wait_refresh">Wachten</string>
-    <string name="ellipsis">…</string>
+    <string name="ellipsis">鈥</string>
 
     <!-- settings -->
     <string name="settings_category_basic">Standaard</string>
@@ -181,3 +181,4 @@
     <string name="settings_notification_hide_big_view_off">Zichtbaar.</string>
 
 </resources>
+
