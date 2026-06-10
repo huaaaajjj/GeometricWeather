@@ -8,7 +8,9 @@ import android.os.Looper
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import wangdaye.com.geometricweather.common.basic.GeoViewModel
 import wangdaye.com.geometricweather.common.basic.livedata.BusLiveData
 import wangdaye.com.geometricweather.common.basic.livedata.EqualtableLiveData
@@ -89,13 +91,18 @@ class MainActivityViewModel @Inject constructor(
         mainMessage.setValue(null)
 
         // read weather caches.
-        repository.getWeatherCacheForLocations(
-            context = application,
-            oldList = totalList,
-            ignoredFormattedId = id,
-        ) { newList, _ ->
-            initCompleted = true
-            newList?.let { updateInnerData(it) }
+        viewModelScope.launch {
+            try {
+                val result = repository.getWeatherCacheForLocations(
+                    context = application,
+                    oldList = totalList,
+                    ignoredFormattedId = id
+                )
+                initCompleted = true
+                result?.let { updateInnerData(it) }
+            } catch (e: Exception) {
+                // Handle exception if needed
+            }
         }
     }
 
