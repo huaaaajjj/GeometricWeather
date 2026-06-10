@@ -314,8 +314,8 @@ class HomeFragment : MainModuleFragment() {
 
     private fun updatePreviewSubviews() {
         val location = viewModel.getValidLocation(
-            previewOffset.value!!
-        )
+            previewOffset.value ?: 0
+        ) ?: return
         val daylight = location.isDaylight
 
         binding.toolbar.title = location.getCityName(requireContext())

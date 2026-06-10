@@ -72,6 +72,15 @@
   - MainActivity: getParcelableExtra → 带 Class 参数版本 (API 33+)
   - Location: readSerializable → 带 Class 参数版本 (API 33+)
   - FitSystemBarComposeWrappers: SmallTopAppBar → TopAppBar, ArrowBack → AutoMirrored
+- RxJava → Coroutines 完全迁移 (28个文件，-256行代码)
+  - AsyncHelper.java → AsyncHelper.kt (Kotlin Coroutines: Job, Dispatchers, delay)
+  - 8个 Retrofit API 接口: Observable<T> → Call<T>
+  - 6个 Weather Service: 迁移到 AsyncHelper + Call.execute()
+    - 简单服务: OpenMeteo, WeatherApi, CaiYun, BaiduIP
+    - 复杂并行服务: AccuWeather(6路), OWM(3路), MF(6路) — CountDownLatch + AtomicReference
+  - WeatherHelper.requestLocation(): Observable.zip → CountDownLatch
+  - 删除: SchedulerTransformer, BaseObserver, ObserverContainer
+  - 移除依赖: rxjava, rxandroid, adapter-rxjava2, room-rxjava2
 
 ## 禁止
 
@@ -119,5 +128,5 @@
 - [x] 升级 Gradle 8.x (需先完成 GreenDAO → Room)
 - [x] 升级 AGP 8.x
 - [x] 升级 Kotlin 1.9+
-- [ ] RxJava → Coroutines
+- [x] RxJava → Coroutines
 - [ ] Java → Kotlin 逐步迁移

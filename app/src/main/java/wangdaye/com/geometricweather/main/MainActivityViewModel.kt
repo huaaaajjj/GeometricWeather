@@ -360,10 +360,11 @@ class MainActivityViewModel @Inject constructor(
         )
 
         // update location.
-        setCurrentLocation(validLocationList.value!!.locationList[index])
+        val list = validLocationList.value?.locationList ?: return false
+        setCurrentLocation(list[index])
 
         indicator.setValue(
-            Indicator(total = validLocationList.value!!.locationList.size, index = index)
+            Indicator(total = list.size, index = index)
         )
 
         totalLocationList.value = SelectableLocationList(
@@ -386,7 +387,7 @@ class MainActivityViewModel @Inject constructor(
         index: Int? = null,
     ): Boolean {
         // do not add an existed location.
-        if (totalLocationList.value!!.locationList.firstOrNull {
+        if (totalLocationList.value?.locationList?.firstOrNull {
                 it.formattedId == location.formattedId
         } != null) {
             return false
@@ -437,26 +438,22 @@ class MainActivityViewModel @Inject constructor(
 
     // MARK: - getter.
 
-    fun getValidLocation(offset: Int): Location {
+    fun getValidLocation(offset: Int): Location? {
+        val list = validLocationList.value?.locationList ?: return null
+
         // ensure current index.
         var index = 0
-        validLocationList.value?.locationList?.let {
-            for (i in it.indices) {
-                if (it[i].formattedId == currentLocation.value?.location?.formattedId) {
-                    index = i
-                    break
-                }
+        for (i in list.indices) {
+            if (list[i].formattedId == currentLocation.value?.location?.formattedId) {
+                index = i
+                break
             }
         }
 
         // update index.
-        index = (
-                index + offset + (validLocationList.value?.locationList?.size ?: 0)
-        ) % (
-                validLocationList.value?.locationList?.size ?: 1
-        )
+        index = (index + offset + list.size) % list.size
 
-        return validLocationList.value!!.locationList[index]
+        return list[index]
     }
 
     // impl.
