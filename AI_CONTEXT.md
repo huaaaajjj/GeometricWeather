@@ -46,6 +46,13 @@
 - 修复彩云天气: 小米市场API失效 → 官方 v2.6 API (api.caiyunapp.com)
 - 修复彩云天气: Wind构造器传null导致转换失败 (Hourly/Daily)
 - 修复彩云天气: Weather构造器minutely/alert传null导致@NonNull断言失败
+- 修复 Room 主线程数据库访问崩溃 (20处，10个文件)
+  - MainActivityViewModel.init() → AsyncHelper.runOnIO 回调
+  - WeatherHelper/LocationHelper 回调中 DB 写入 → IO 线程
+  - SearchActivity/WidgetConfigActivity onCreate → 异步加载
+  - AllergenActivity Compose → LaunchedEffect + Dispatchers.IO
+  - ServiceProviderSettingsScreen → AsyncHelper.runOnIO
+  - TileService.refreshTile() → IO 线程
 
 ## 禁止
 
