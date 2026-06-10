@@ -17,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import io.reactivex.disposables.Disposable;
 import wangdaye.com.geometricweather.R;
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.options.unit.TemperatureUnit;
@@ -37,7 +36,6 @@ public class HeaderViewHolder extends AbstractMainViewHolder {
     private int mTemperatureCFrom;
     private int mTemperatureCTo;
     private TemperatureUnit mTemperatureUnit;
-    private @Nullable Disposable mDisposable;
 
     public HeaderViewHolder(ViewGroup parent, WeatherView weatherView) {
         super(
@@ -54,7 +52,6 @@ public class HeaderViewHolder extends AbstractMainViewHolder {
         mTemperatureCFrom = 0;
         mTemperatureCTo = 0;
         mTemperatureUnit = null;
-        mDisposable = null;
 
         mContainer.setOnClickListener(v -> weatherView.onClick());
     }
@@ -146,10 +143,6 @@ public class HeaderViewHolder extends AbstractMainViewHolder {
 
     @Override
     public void onRecycleView() {
-        if (mDisposable != null) {
-            mDisposable.dispose();
-            mDisposable = null;
-        }
     }
 
     public int getCurrentTemperatureHeight() {

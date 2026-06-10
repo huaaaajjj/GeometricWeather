@@ -44,8 +44,8 @@ android {
         applicationId "wangdaye.com.geometricweather"
         minSdk 21
         targetSdk 35
-        versionCode 30302
-        versionName "3.3.2"
+        versionCode 30303
+        versionName "3.3.3"
         multiDexEnabled true
         ndk {
             abiFilters "x86", "armeabi-v7a", "x86_64", "arm64-v8a"
@@ -251,7 +251,6 @@ dependencies {
     // retrofit.
     implementation "com.squareup.retrofit2:retrofit:2.11.0"
     implementation "com.squareup.retrofit2:converter-gson:2.11.0"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:2.11.0"
     implementation "com.squareup.okhttp3:okhttp:4.12.0"
     implementation "com.squareup.okhttp3:logging-interceptor:4.12.0"
 
@@ -259,7 +258,6 @@ dependencies {
     implementation "androidx.room:room-runtime:2.6.1"
     implementation "androidx.room:room-ktx:2.6.1"
     kapt "androidx.room:room-compiler:2.6.1"
-    implementation "androidx.room:room-rxjava2:2.6.1"
 
     // gson.
     implementation "com.google.code.gson:gson:2.11.0"
@@ -267,10 +265,6 @@ dependencies {
     // bugly.
     pubImplementation "com.tencent.bugly:crashreport:2.8.6.0"
     pubImplementation "com.tencent.bugly:nativecrashreport:3.6.0.1"
-
-    // rx java.
-    implementation "io.reactivex.rxjava2:rxjava:2.2.21"
-    implementation "io.reactivex.rxjava2:rxandroid:2.1.1"
 
     // ui.
     implementation "com.github.rahatarmanahmed:circularprogressview:2.5.0"

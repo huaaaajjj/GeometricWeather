@@ -7,15 +7,15 @@ import androidx.annotation.NonNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
-import io.reactivex.disposables.CompositeDisposable;
 import wangdaye.com.geometricweather.common.basic.models.Location;
-import wangdaye.com.geometricweather.common.rxjava.BaseObserver;
-import wangdaye.com.geometricweather.common.rxjava.ObserverContainer;
-import wangdaye.com.geometricweather.common.rxjava.SchedulerTransformer;
+import wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper;
 import wangdaye.com.geometricweather.settings.SettingsManager;
 import wangdaye.com.geometricweather.weather.apis.AccuWeatherApi;
 import wangdaye.com.geometricweather.weather.converters.AccuResultConverter;
@@ -27,91 +27,139 @@ import wangdaye.com.geometricweather.weather.json.accu.AccuHourlyResult;
 import wangdaye.com.geometricweather.weather.json.accu.AccuLocationResult;
 import wangdaye.com.geometricweather.weather.json.accu.AccuMinuteResult;
 
-/**
- * Accu weather service.
- * */
-
 public class AccuWeatherService extends WeatherService {
 
     private final AccuWeatherApi mApi;
-    private final CompositeDisposable mCompositeDisposable;
-
-    private static class EmptyMinuteResult extends AccuMinuteResult {
-    }
-
-    private static class EmptyAqiResult extends AccuAqiResult {
-    }
+    private final List<AsyncHelper.Controller> mControllers = new ArrayList<>();
 
     @Inject
-    public AccuWeatherService(AccuWeatherApi api, CompositeDisposable disposable) {
+    public AccuWeatherService(AccuWeatherApi api) {
         mApi = api;
-        mCompositeDisposable = disposable;
     }
 
     @Override
     public void requestWeather(Context context, Location location, @NonNull RequestWeatherCallback callback) {
         String languageCode = SettingsManager.getInstance(context).getLanguage().getCode();
 
-        Observable<List<AccuCurrentResult>> realtime = mApi.getCurrent(
-                location.getCityId(), SettingsManager.getInstance(context).getProviderAccuCurrentKey(), languageCode, true);
+        CountDownLatch latch = new CountDownLatch(6);
+        AtomicBoolean anyRequiredFailed = new AtomicBoolean(false);
 
-        Observable<AccuDailyResult> daily = mApi.getDaily(
-                location.getCityId(), SettingsManager.getInstance(context).getProviderAccuWeatherKey(), languageCode, true, true);
+        AtomicReference<List<AccuCurrentResult>> currentResult = new AtomicReference<>(null);
+        AtomicReference<AccuDailyResult> dailyResult = new AtomicReference<>(null);
+        AtomicReference<List<AccuHourlyResult>> hourlyResult = new AtomicReference<>(null);
+        AtomicReference<AccuMinuteResult> minuteResult = new AtomicReference<>(null);
+        AtomicReference<List<AccuAlertResult>> alertResult = new AtomicReference<>(null);
+        AtomicReference<AccuAqiResult> aqiResult = new AtomicReference<>(null);
 
-        Observable<List<AccuHourlyResult>> hourly = mApi.getHourly(
-                location.getCityId(), SettingsManager.getInstance(context).getProviderAccuWeatherKey(), languageCode, true, true);
+        mControllers.add(AsyncHelper.runOnIO(() -> {
+            try {
+                currentResult.set(mApi.getCurrent(
+                        location.getCityId(),
+                        SettingsManager.getInstance(context).getProviderAccuCurrentKey(),
+                        languageCode, true
+                ).execute().body());
+                if (currentResult.get() == null) {
+                    anyRequiredFailed.set(true);
+                }
+            } catch (Exception e) {
+                anyRequiredFailed.set(true);
+            }
+            latch.countDown();
+        }));
 
-        Observable<AccuMinuteResult> minute = mApi.getMinutely(
-                SettingsManager.getInstance(context).getProviderAccuWeatherKey(),
-                languageCode,
-                true,
-                location.getLatitude() + "," + location.getLongitude()
-        ).onExceptionResumeNext(
-                Observable.create(emitter -> emitter.onNext(new EmptyMinuteResult()))
-        );
+        mControllers.add(AsyncHelper.runOnIO(() -> {
+            try {
+                dailyResult.set(mApi.getDaily(
+                        location.getCityId(),
+                        SettingsManager.getInstance(context).getProviderAccuWeatherKey(),
+                        languageCode, true, true
+                ).execute().body());
+                if (dailyResult.get() == null) {
+                    anyRequiredFailed.set(true);
+                }
+            } catch (Exception e) {
+                anyRequiredFailed.set(true);
+            }
+            latch.countDown();
+        }));
 
-        Observable<List<AccuAlertResult>> alert = mApi.getAlert(
-                location.getCityId(), SettingsManager.getInstance(context).getProviderAccuWeatherKey(), languageCode, true);
+        mControllers.add(AsyncHelper.runOnIO(() -> {
+            try {
+                hourlyResult.set(mApi.getHourly(
+                        location.getCityId(),
+                        SettingsManager.getInstance(context).getProviderAccuWeatherKey(),
+                        languageCode, true, true
+                ).execute().body());
+                if (hourlyResult.get() == null) {
+                    anyRequiredFailed.set(true);
+                }
+            } catch (Exception e) {
+                anyRequiredFailed.set(true);
+            }
+            latch.countDown();
+        }));
 
-        Observable<AccuAqiResult> aqi = mApi.getAirQuality(
-                location.getCityId(),
-                SettingsManager.getInstance(context).getProviderAccuAqiKey()
-        ).onExceptionResumeNext(
-                Observable.create(emitter -> emitter.onNext(new EmptyAqiResult()))
-        );
+        mControllers.add(AsyncHelper.runOnIO(() -> {
+            try {
+                minuteResult.set(mApi.getMinutely(
+                        SettingsManager.getInstance(context).getProviderAccuWeatherKey(),
+                        languageCode,
+                        true,
+                        location.getLatitude() + "," + location.getLongitude()
+                ).execute().body());
+            } catch (Exception ignored) {
+            }
+            latch.countDown();
+        }));
 
-        Observable.zip(realtime, daily, hourly, minute, alert, aqi,
-                (accuRealtimeResults,
-                 accuDailyResult, accuHourlyResults, accuMinuteResult,
-                 accuAlertResults,
-                 accuAqiResult) -> AccuResultConverter.convert(
-                         context,
-                         location,
-                         accuRealtimeResults.get(0),
-                         accuDailyResult,
-                         accuHourlyResults,
-                         accuMinuteResult instanceof EmptyMinuteResult ? null : accuMinuteResult,
-                         accuAqiResult instanceof EmptyAqiResult ? null : accuAqiResult,
-                         accuAlertResults
-                 )
-        ).compose(SchedulerTransformer.create())
-                .subscribe(new ObserverContainer<>(mCompositeDisposable, new BaseObserver<WeatherResultWrapper>() {
-                    @Override
-                    public void onSucceed(WeatherResultWrapper wrapper) {
-                        if (wrapper.result != null) {
-                            callback.requestWeatherSuccess(
-                                    Location.copy(location, wrapper.result)
-                            );
-                        } else {
-                            onFailed();
-                        }
-                    }
+        mControllers.add(AsyncHelper.runOnIO(() -> {
+            try {
+                alertResult.set(mApi.getAlert(
+                        location.getCityId(),
+                        SettingsManager.getInstance(context).getProviderAccuWeatherKey(),
+                        languageCode, true
+                ).execute().body());
+            } catch (Exception ignored) {
+            }
+            latch.countDown();
+        }));
 
-                    @Override
-                    public void onFailed() {
-                        callback.requestWeatherFailed(location);
-                    }
-                }));
+        mControllers.add(AsyncHelper.runOnIO(() -> {
+            try {
+                aqiResult.set(mApi.getAirQuality(
+                        location.getCityId(),
+                        SettingsManager.getInstance(context).getProviderAccuAqiKey()
+                ).execute().body());
+            } catch (Exception ignored) {
+            }
+            latch.countDown();
+        }));
+
+        mControllers.add(AsyncHelper.runOnIO(() -> {
+            try {
+                latch.await(30, TimeUnit.SECONDS);
+            } catch (InterruptedException ignored) {
+            }
+            if (anyRequiredFailed.get()) {
+                callback.requestWeatherFailed(location);
+            } else {
+                WeatherResultWrapper wrapper = AccuResultConverter.convert(
+                        context,
+                        location,
+                        currentResult.get().get(0),
+                        dailyResult.get(),
+                        hourlyResult.get(),
+                        minuteResult.get(),
+                        aqiResult.get(),
+                        alertResult.get()
+                );
+                if (wrapper != null && wrapper.result != null) {
+                    callback.requestWeatherSuccess(Location.copy(location, wrapper.result));
+                } else {
+                    callback.requestWeatherFailed(location);
+                }
+            }
+        }));
     }
 
     @Override
@@ -145,38 +193,35 @@ public class AccuWeatherService extends WeatherService {
     @Override
     public void requestLocation(Context context, Location location,
                                 @NonNull RequestLocationCallback callback) {
-
         String languageCode = SettingsManager.getInstance(context).getLanguage().getCode();
 
-        mApi.getWeatherLocationByGeoPosition(
-                "Always",
-                SettingsManager.getInstance(context).getProviderAccuWeatherKey(),
-                location.getLatitude() + "," + location.getLongitude(),
-                languageCode
-        ).compose(SchedulerTransformer.create())
-                .subscribe(new ObserverContainer<>(mCompositeDisposable, new BaseObserver<AccuLocationResult>() {
-                    @Override
-                    public void onSucceed(AccuLocationResult accuLocationResult) {
-                        if (accuLocationResult != null) {
-                            List<Location> locationList = new ArrayList<>();
-                            Location loc = AccuResultConverter.convert(location, accuLocationResult, null);
-                            if (loc != null) locationList.add(loc);
-                            callback.requestLocationSuccess(
-                                    location.getLatitude() + "," + location.getLongitude(),
-                                    locationList
-                            );
-                        } else {
-                            onFailed();
-                        }
-                    }
-
-                    @Override
-                    public void onFailed() {
-                        callback.requestLocationFailed(
-                                location.getLatitude() + "," + location.getLongitude()
-                        );
-                    }
-                }));
+        mControllers.add(AsyncHelper.runOnIO(() -> {
+            try {
+                AccuLocationResult result = mApi.getWeatherLocationByGeoPosition(
+                        "Always",
+                        SettingsManager.getInstance(context).getProviderAccuWeatherKey(),
+                        location.getLatitude() + "," + location.getLongitude(),
+                        languageCode
+                ).execute().body();
+                if (result != null) {
+                    List<Location> locationList = new ArrayList<>();
+                    Location loc = AccuResultConverter.convert(location, result, null);
+                    if (loc != null) locationList.add(loc);
+                    callback.requestLocationSuccess(
+                            location.getLatitude() + "," + location.getLongitude(),
+                            locationList
+                    );
+                } else {
+                    callback.requestLocationFailed(
+                            location.getLatitude() + "," + location.getLongitude()
+                    );
+                }
+            } catch (Exception e) {
+                callback.requestLocationFailed(
+                        location.getLatitude() + "," + location.getLongitude()
+                );
+            }
+        }));
     }
 
     public void requestLocation(Context context, String query,
@@ -184,31 +229,33 @@ public class AccuWeatherService extends WeatherService {
         String languageCode = SettingsManager.getInstance(context).getLanguage().getCode();
         String zipCode = query.matches("[a-zA-Z0-9]") ? query : null;
 
-        mApi.getWeatherLocation("Always", SettingsManager.getInstance(context).getProviderAccuWeatherKey(), query, languageCode)
-                .compose(SchedulerTransformer.create())
-                .subscribe(new ObserverContainer<>(mCompositeDisposable, new BaseObserver<List<AccuLocationResult>>() {
-                    @Override
-                    public void onSucceed(List<AccuLocationResult> accuLocationResults) {
-                        if (accuLocationResults != null && accuLocationResults.size() != 0) {
-                            List<Location> locationList = new ArrayList<>();
-                            for (AccuLocationResult r : accuLocationResults) {
-                                locationList.add(AccuResultConverter.convert(null, r, zipCode));
-                            }
-                            callback.requestLocationSuccess(query, locationList);
-                        } else {
-                            callback.requestLocationFailed(query);
-                        }
+        mControllers.add(AsyncHelper.runOnIO(() -> {
+            try {
+                List<AccuLocationResult> results = mApi.getWeatherLocation(
+                        "Always",
+                        SettingsManager.getInstance(context).getProviderAccuWeatherKey(),
+                        query, languageCode
+                ).execute().body();
+                if (results != null && results.size() != 0) {
+                    List<Location> locationList = new ArrayList<>();
+                    for (AccuLocationResult r : results) {
+                        locationList.add(AccuResultConverter.convert(null, r, zipCode));
                     }
-
-                    @Override
-                    public void onFailed() {
-                        callback.requestLocationFailed(query);
-                    }
-                }));
+                    callback.requestLocationSuccess(query, locationList);
+                } else {
+                    callback.requestLocationFailed(query);
+                }
+            } catch (Exception e) {
+                callback.requestLocationFailed(query);
+            }
+        }));
     }
 
     @Override
     public void cancel() {
-        mCompositeDisposable.clear();
+        for (AsyncHelper.Controller c : mControllers) {
+            c.cancel();
+        }
+        mControllers.clear();
     }
 }

@@ -64,6 +64,14 @@
   - 添加 buildConfig true (AGP 8.x 默认关闭)
   - lintOptions → lint
   - 合并 kapt 块，移除废弃的 kotlin-stdlib-jdk7/jdk8 force
+- 修复 compileSdk 35 deprecation 警告 (22处，9个文件)
+  - DisplayUtils: SYSTEM_UI_FLAG → WindowInsetsControllerCompat
+  - PackageManager int-flag → ApplicationInfoFlags/ResolveInfoFlags (API 33+)
+  - TimeObserverService: registerReceiver 添加 RECEIVER_NOT_EXPORTED (API 33+)
+  - MaterialLiveWallpaperService: getDefaultDisplay().getRefreshRate() → getDisplay().getRefreshRate() (API 30+)
+  - MainActivity: getParcelableExtra → 带 Class 参数版本 (API 33+)
+  - Location: readSerializable → 带 Class 参数版本 (API 33+)
+  - FitSystemBarComposeWrappers: SmallTopAppBar → TopAppBar, ArrowBack → AutoMirrored
 
 ## 禁止
 
