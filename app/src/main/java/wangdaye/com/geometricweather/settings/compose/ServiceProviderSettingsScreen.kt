@@ -45,23 +45,36 @@ fun ServiceProviderSettingsScreen(
             selectedKey = SettingsManager.getInstance(context).weatherSource.id,
             onValueChanged = { sourceId ->
                 android.util.Log.d("ServiceProvider", "Weather source changed to: $sourceId")
-                SettingsManager
-                    .getInstance(context)
-                    .weatherSource = WeatherSource.getInstance(sourceId)
+                val newSource = WeatherSource.getInstance(sourceId)
+                SettingsManager.getInstance(context).weatherSource = newSource
+                android.util.Log.d("ServiceProvider", "SettingsManager updated, newSource.id=${newSource.id}")
 
                 wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.runOnIO {
                     val locationList = DatabaseHelper.getInstance(context).readLocationList()
-                    android.util.Log.d("ServiceProvider", "Read ${locationList.size} locations")
+                    android.util.Log.d("ServiceProvider", "Read ${locationList.size} locations from database")
+                    
+                    locationList.forEachIndexed { index, location ->
+                        android.util.Log.d("ServiceProvider", "Location[$index]: ${location.city}, isCurrentPosition=${location.isCurrentPosition}, weatherSource=${location.weatherSource.id}")
+                    }
+                    
                     val index = locationList.indexOfFirst { it.isCurrentPosition }
                     android.util.Log.d("ServiceProvider", "Current position index: $index")
+                    
                     if (index >= 0) {
-                        locationList[index] = locationList[index].copy(
+                        val oldLocation = locationList[index]
+                        locationList[index] = oldLocation.copy(
                             weather = null,
-                            weatherSource = SettingsManager.getInstance(context).weatherSource
+                            weatherSource = newSource
                         ).copy()
+                        
+                        android.util.Log.d("ServiceProvider", "Updated location: ${locationList[index].city}, new weatherSource=${locationList[index].weatherSource.id}")
+                        
                         DatabaseHelper.getInstance(context).deleteWeather(locationList[index])
                         DatabaseHelper.getInstance(context).writeLocationList(locationList)
-                        android.util.Log.d("ServiceProvider", "Updated location weatherSource to: ${locationList[index].weatherSource.id}")
+                        
+                        android.util.Log.d("ServiceProvider", "Database updated successfully")
+                    } else {
+                        android.util.Log.w("ServiceProvider", "No location with isCurrentPosition=true found!")
                     }
                 }
             }
