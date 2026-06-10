@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -49,12 +49,12 @@ fun FitStatusBarTopAppBar(
             .windowInsetsTopHeight(WindowInsets.statusBars)
             .fillMaxWidth(),
     )
-    SmallTopAppBar(
+    TopAppBar(
         title = title,
         modifier = modifier,
         navigationIcon = navigationIcon,
         actions = actions,
-        colors = TopAppBarDefaults.smallTopAppBarColors(
+        colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.surface,
             scrolledContainerColor = MaterialTheme.colorScheme.applyTonalElevation(
                 backgroundColor = MaterialTheme.colorScheme.surface,
@@ -80,7 +80,7 @@ fun FitStatusBarTopAppBar(
     navigationIcon = {
         IconButton(onClick = onBackPressed) {
             Icon(
-                imageVector = Icons.Filled.ArrowBack,
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(R.string.content_desc_back),
                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
             )

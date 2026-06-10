@@ -8,6 +8,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Process;
@@ -365,11 +366,14 @@ public class MaterialLiveWallpaperService extends WallpaperService {
                             SettingsManager.getInstance(getApplicationContext()).isGravitySensorEnabled());
 
                     float screenRefreshRate;
-                    WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-                    if (windowManager != null) {
-                        screenRefreshRate = windowManager.getDefaultDisplay().getRefreshRate();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        android.view.Display display = getDisplay();
+                        screenRefreshRate = display != null ? display.getRefreshRate() : 60;
                     } else {
-                        screenRefreshRate = 60;
+                        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+                        screenRefreshRate = windowManager != null
+                                ? windowManager.getDefaultDisplay().getRefreshRate()
+                                : 60;
                     }
                     if (screenRefreshRate < 60) {
                         screenRefreshRate = 60;

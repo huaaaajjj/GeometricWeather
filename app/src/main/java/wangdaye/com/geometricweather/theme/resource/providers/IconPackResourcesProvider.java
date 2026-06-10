@@ -55,7 +55,12 @@ public class IconPackResourcesProvider extends ResourceProvider {
                     pkgName, Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
 
             PackageManager manager = mContext.getPackageManager();
-            ApplicationInfo info = manager.getApplicationInfo(pkgName, PackageManager.GET_META_DATA);
+            ApplicationInfo info;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                info = manager.getApplicationInfo(pkgName, PackageManager.ApplicationInfoFlags.of(PackageManager.GET_META_DATA));
+            } else {
+                info = manager.getApplicationInfo(pkgName, PackageManager.GET_META_DATA);
+            }
             mProviderName = manager.getApplicationLabel(info).toString();
 
             mIconDrawable = mContext.getApplicationInfo().loadIcon(mContext.getPackageManager());
@@ -127,10 +132,18 @@ public class IconPackResourcesProvider extends ResourceProvider {
                                                                   @NonNull ResourceProvider defaultProvider) {
         List<IconPackResourcesProvider> providerList = new ArrayList<>();
 
-        List<ResolveInfo> infoList = context.getPackageManager().queryIntentActivities(
-                new Intent(Constants.ACTION_ICON_PROVIDER),
-                PackageManager.GET_RESOLVED_FILTER
-        );
+        List<ResolveInfo> infoList;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            infoList = context.getPackageManager().queryIntentActivities(
+                    new Intent(Constants.ACTION_ICON_PROVIDER),
+                    PackageManager.ResolveInfoFlags.of(PackageManager.GET_RESOLVED_FILTER)
+            );
+        } else {
+            infoList = context.getPackageManager().queryIntentActivities(
+                    new Intent(Constants.ACTION_ICON_PROVIDER),
+                    PackageManager.GET_RESOLVED_FILTER
+            );
+        }
         for (ResolveInfo info : infoList) {
             providerList.add(
                     new IconPackResourcesProvider(
@@ -145,10 +158,18 @@ public class IconPackResourcesProvider extends ResourceProvider {
     }
 
     public static boolean isIconPackIconProvider(@NonNull Context context, @NonNull String packageName) {
-        List<ResolveInfo> infoList = context.getPackageManager().queryIntentActivities(
-                new Intent(Constants.ACTION_ICON_PROVIDER),
-                PackageManager.GET_RESOLVED_FILTER
-        );
+        List<ResolveInfo> infoList;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            infoList = context.getPackageManager().queryIntentActivities(
+                    new Intent(Constants.ACTION_ICON_PROVIDER),
+                    PackageManager.ResolveInfoFlags.of(PackageManager.GET_RESOLVED_FILTER)
+            );
+        } else {
+            infoList = context.getPackageManager().queryIntentActivities(
+                    new Intent(Constants.ACTION_ICON_PROVIDER),
+                    PackageManager.GET_RESOLVED_FILTER
+            );
+        }
         for (ResolveInfo info : infoList) {
             if (packageName.equals(info.activityInfo.applicationInfo.packageName)) {
                 return true;
@@ -169,10 +190,19 @@ public class IconPackResourcesProvider extends ResourceProvider {
 
     private int getMetaDataResource(String key) {
         try {
-            return mContext.getPackageManager().getApplicationInfo(
-                    mContext.getPackageName(),
-                    PackageManager.GET_META_DATA
-            ).metaData.getInt(key);
+            ApplicationInfo info;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                info = mContext.getPackageManager().getApplicationInfo(
+                        mContext.getPackageName(),
+                        PackageManager.ApplicationInfoFlags.of(PackageManager.GET_META_DATA)
+                );
+            } else {
+                info = mContext.getPackageManager().getApplicationInfo(
+                        mContext.getPackageName(),
+                        PackageManager.GET_META_DATA
+                );
+            }
+            return info.metaData.getInt(key);
         } catch (Exception e) {
             return 0;
         }

@@ -262,10 +262,15 @@ public class IntentHelper {
         return new Intent(context, AwakeForegroundUpdateService.class);
     }
 
-    @SuppressLint("WrongConstant")
     private static boolean isIntentAvailable(Context context, Intent intent) {
-        return context.getPackageManager()
-                .queryIntentActivities(intent, PackageManager.GET_ACTIVITIES)
-                .size() > 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return context.getPackageManager()
+                    .queryIntentActivities(intent, PackageManager.ResolveInfoFlags.of(PackageManager.GET_ACTIVITIES))
+                    .size() > 0;
+        } else {
+            return context.getPackageManager()
+                    .queryIntentActivities(intent, PackageManager.GET_ACTIVITIES)
+                    .size() > 0;
+        }
     }
 }

@@ -78,33 +78,25 @@ public class DisplayUtils {
             boolean navigationShader,
             boolean lightNavigation
     ) {
-        int visibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false);
+
+        androidx.core.view.WindowInsetsControllerCompat controller =
+                new androidx.core.view.WindowInsetsControllerCompat(window, window.getDecorView());
 
         // status bar.
         if (lightStatus) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                visibility |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-            } else {
-                lightStatus = false;
-                statusShader = true;
-            }
+            controller.setAppearanceLightStatusBars(true);
+        } else {
+            controller.setAppearanceLightStatusBars(false);
         }
 
         // navigation bar.
         if (lightNavigation) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                visibility |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-            } else {
-                lightNavigation = false;
-                navigationShader = true;
-            }
+            controller.setAppearanceLightNavigationBars(true);
+        } else {
+            controller.setAppearanceLightNavigationBars(false);
         }
         navigationShader &= Build.VERSION.SDK_INT < Build.VERSION_CODES.Q;
-
-        // flags.
-        window.getDecorView().setSystemUiVisibility(visibility);
 
         // colors.
         if (!statusShader) {

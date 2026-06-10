@@ -41,7 +41,12 @@ public class ChronusResourceProvider extends ResourceProvider {
                     pkgName, Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
 
             PackageManager manager = mContext.getPackageManager();
-            ApplicationInfo info = manager.getApplicationInfo(pkgName, PackageManager.GET_META_DATA);
+            ApplicationInfo info;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                info = manager.getApplicationInfo(pkgName, PackageManager.ApplicationInfoFlags.of(PackageManager.GET_META_DATA));
+            } else {
+                info = manager.getApplicationInfo(pkgName, PackageManager.GET_META_DATA);
+            }
             mProviderName = manager.getApplicationLabel(info).toString();
 
             mIconDrawable = mContext.getApplicationInfo().loadIcon(mContext.getPackageManager());
@@ -61,10 +66,18 @@ public class ChronusResourceProvider extends ResourceProvider {
                                                                 @NonNull ResourceProvider defaultProvider) {
         List<ChronusResourceProvider> providerList = new ArrayList<>();
 
-        List<ResolveInfo> infoList = context.getPackageManager().queryIntentActivities(
-                new Intent(Intent.ACTION_MAIN).addCategory(Constants.CATEGORY_CHRONUS_ICON_PACK),
-                PackageManager.GET_RESOLVED_FILTER
-        );
+        List<ResolveInfo> infoList;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            infoList = context.getPackageManager().queryIntentActivities(
+                    new Intent(Intent.ACTION_MAIN).addCategory(Constants.CATEGORY_CHRONUS_ICON_PACK),
+                    PackageManager.ResolveInfoFlags.of(PackageManager.GET_RESOLVED_FILTER)
+            );
+        } else {
+            infoList = context.getPackageManager().queryIntentActivities(
+                    new Intent(Intent.ACTION_MAIN).addCategory(Constants.CATEGORY_CHRONUS_ICON_PACK),
+                    PackageManager.GET_RESOLVED_FILTER
+            );
+        }
         for (ResolveInfo info : infoList) {
             providerList.add(
                     new ChronusResourceProvider(
@@ -79,10 +92,18 @@ public class ChronusResourceProvider extends ResourceProvider {
     }
 
     public static boolean isChronusIconProvider(@NonNull Context context, @NonNull String packageName) {
-        List<ResolveInfo> infoList = context.getPackageManager().queryIntentActivities(
-                new Intent(Intent.ACTION_MAIN).addCategory(Constants.CATEGORY_CHRONUS_ICON_PACK),
-                PackageManager.GET_RESOLVED_FILTER
-        );
+        List<ResolveInfo> infoList;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            infoList = context.getPackageManager().queryIntentActivities(
+                    new Intent(Intent.ACTION_MAIN).addCategory(Constants.CATEGORY_CHRONUS_ICON_PACK),
+                    PackageManager.ResolveInfoFlags.of(PackageManager.GET_RESOLVED_FILTER)
+            );
+        } else {
+            infoList = context.getPackageManager().queryIntentActivities(
+                    new Intent(Intent.ACTION_MAIN).addCategory(Constants.CATEGORY_CHRONUS_ICON_PACK),
+                    PackageManager.GET_RESOLVED_FILTER
+            );
+        }
         for (ResolveInfo info : infoList) {
             if (packageName.equals(info.activityInfo.applicationInfo.packageName)) {
                 return true;

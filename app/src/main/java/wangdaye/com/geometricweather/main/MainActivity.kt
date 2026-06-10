@@ -152,7 +152,12 @@ class MainActivity : GeoActivity(),
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             SEARCH_ACTIVITY -> if (resultCode == RESULT_OK && data != null) {
-                val location: Location? = data.getParcelableExtra(SearchActivity.KEY_LOCATION)
+                val location: Location? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    data.getParcelableExtra(SearchActivity.KEY_LOCATION, Location::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    data.getParcelableExtra(SearchActivity.KEY_LOCATION)
+                }
                 if (location != null) {
                     viewModel.addLocation(location, null)
                     SnackbarHelper.showSnackbar(getString(R.string.feedback_collect_succeed))

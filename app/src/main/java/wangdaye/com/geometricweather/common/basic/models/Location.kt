@@ -1,6 +1,7 @@
 package wangdaye.com.geometricweather.common.basic.models
 
 import android.content.Context
+import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
 import android.text.TextUtils
@@ -192,7 +193,12 @@ class Location(
         cityId = parcel.readString()!!,
         latitude = parcel.readFloat(),
         longitude = parcel.readFloat(),
-        timeZone = parcel.readSerializable()!! as TimeZone,
+        timeZone = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            parcel.readSerializable(null, TimeZone::class.java)!!
+        } else {
+            @Suppress("DEPRECATION")
+            parcel.readSerializable()!! as TimeZone
+        },
         country = parcel.readString()!!,
         province = parcel.readString()!!,
         city = parcel.readString()!!,
