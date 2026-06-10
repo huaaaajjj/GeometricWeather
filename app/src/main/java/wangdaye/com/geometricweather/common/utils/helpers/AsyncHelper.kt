@@ -1,5 +1,7 @@
 package wangdaye.com.geometricweather.common.utils.helpers
 
+import android.os.Handler
+import android.os.Looper
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,6 +15,8 @@ import java.util.concurrent.Executor
 
 object AsyncHelper {
 
+    private val sMainHandler = Handler(Looper.getMainLooper())
+
     class Controller internal constructor(
         private val job: Job
     ) {
@@ -25,7 +29,11 @@ object AsyncHelper {
         private val callback: Callback<T>
     ) {
         fun send(t: T?, done: Boolean) {
-            callback.call(t, done)
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+                callback.call(t, done)
+            } else {
+                sMainHandler.post { callback.call(t, done) }
+            }
         }
     }
 
@@ -39,10 +47,8 @@ object AsyncHelper {
 
     @JvmStatic
     fun <T> runOnIO(task: Task<T>, callback: Callback<T>): Controller {
-        val job = CoroutineScope(Dispatchers.Main).launch {
-            withContext(Dispatchers.IO) {
-                task.execute(Emitter(callback))
-            }
+        val job = CoroutineScope(Dispatchers.IO).launch {
+            task.execute(Emitter(callback))
         }
         return Controller(job)
     }
@@ -58,10 +64,8 @@ object AsyncHelper {
     @JvmStatic
     fun <T> runOnExecutor(task: Task<T>, callback: Callback<T>, executor: Executor): Controller {
         val dispatcher: CoroutineDispatcher = executor.asCoroutineDispatcher()
-        val job = CoroutineScope(Dispatchers.Main).launch {
-            withContext(dispatcher) {
-                task.execute(Emitter(callback))
-            }
+        val job = CoroutineScope(dispatcher).launch {
+            task.execute(Emitter(callback))
         }
         return Controller(job)
     }
