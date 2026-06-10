@@ -34,26 +34,36 @@ public class CaiYunWeatherService extends WeatherService {
                                Location location, @NonNull RequestWeatherCallback callback) {
         mController = AsyncHelper.runOnIO(() -> {
             try {
-                CaiYunWeatherResult result = mApi.getWeather(
+                android.util.Log.d("CaiYunService", "Requesting weather for " + location.getLatitude() + "," + location.getLongitude());
+                retrofit2.Response<CaiYunWeatherResult> response = mApi.getWeather(
                         BuildConfig.CAIYUN_WEATHER_KEY,
                         String.valueOf(location.getLongitude()),
                         String.valueOf(location.getLatitude()),
                         true
-                ).execute().body();
+                ).execute();
+                
+                android.util.Log.d("CaiYunService", "Response code: " + response.code());
+                
+                CaiYunWeatherResult result = response.body();
                 if (result != null) {
+                    android.util.Log.d("CaiYunService", "Response status: " + result.status);
                     WeatherResultWrapper wrapper =
                             CaiyunResultConverter.convert(context, location, result);
                     if (wrapper.result != null) {
+                        android.util.Log.d("CaiYunService", "Weather conversion successful");
                         callback.requestWeatherSuccess(
                                 Location.copy(location, wrapper.result)
                         );
                     } else {
+                        android.util.Log.w("CaiYunService", "Weather conversion returned null");
                         callback.requestWeatherFailed(location);
                     }
                 } else {
+                    android.util.Log.w("CaiYunService", "Response body is null, error: " + response.errorBody());
                     callback.requestWeatherFailed(location);
                 }
             } catch (Exception e) {
+                android.util.Log.e("CaiYunService", "Exception requesting weather", e);
                 callback.requestWeatherFailed(location);
             }
         });

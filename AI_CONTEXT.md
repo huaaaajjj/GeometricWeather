@@ -85,6 +85,11 @@
   - Emitter.send() 在非主线程时通过 Handler post 到主线程
   - 匹配原 RxJava observeOn(mainThread()) 行为
   - 修复 "Cannot invoke setValue on a background thread" 崩溃
+- 修复彩云天气 API: 从 demo token 迁移到 App Key & Secret 签名认证
+  - 新增 CaiYunSignatureInterceptor (HMAC-SHA256 请求签名)
+  - 替换 demo token (TAkhjf8d1nlSlspN) 为注册的 AppKey (xgsrrjaqfmra3ewz)
+  - 签名算法: HMAC-SHA256(method:path:query:app_key:nonce:timestamp, app_secret)
+  - 添加 x-cy-nonce, x-cy-timestamp, x-cy-signature 请求头
 
 ## 禁止
 
