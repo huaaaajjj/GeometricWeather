@@ -13,11 +13,13 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
 import okhttp3.TlsVersion;
-import okhttp3.internal.Util;
 
 /**
  * TLS compact service.
@@ -97,7 +99,7 @@ public class TLSCompactHelper {
                 sc.init(null, null, null);
                 builder.sslSocketFactory(
                         new Tls12SocketFactory(sc.getSocketFactory()),
-                        Util.platformTrustManager());
+                        getTrustManager());
 
                 ConnectionSpec cs = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
                         .tlsVersions(TlsVersion.TLS_1_2)
@@ -118,5 +120,22 @@ public class TLSCompactHelper {
             }
         }
         return builder;
+    }
+
+    private static X509TrustManager getTrustManager() {
+        try {
+            TrustManagerFactory factory = TrustManagerFactory.getInstance(
+                    TrustManagerFactory.getDefaultAlgorithm());
+            factory.init((java.security.KeyStore) null);
+            TrustManager[] trustManagers = factory.getTrustManagers();
+            for (TrustManager tm : trustManagers) {
+                if (tm instanceof X509TrustManager) {
+                    return (X509TrustManager) tm;
+                }
+            }
+        } catch (Exception e) {
+            Log.e("OkHttpTLSCompat", "Error getting trust manager", e);
+        }
+        throw new IllegalStateException("No X509TrustManager found");
     }
 }

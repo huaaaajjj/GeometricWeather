@@ -7,6 +7,7 @@ plugins {
 
 kapt {
     useBuildCache = false
+    correctErrorTypes true
     javacOptions {
         option("-XaddExports:jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED")
         option("-XaddExports:jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED")
@@ -38,13 +39,13 @@ if (localPropertiesFile.exists()) {
 
 android {
     namespace "wangdaye.com.geometricweather"
-    compileSdk 34
+    compileSdk 35
     defaultConfig {
         applicationId "wangdaye.com.geometricweather"
         minSdk 21
-        targetSdk 34
-        versionCode 30204
-        versionName "3.2.4"
+        targetSdk 35
+        versionCode 30300
+        versionName "3.3.0"
         multiDexEnabled true
         ndk {
             abiFilters "x86", "armeabi-v7a", "x86_64", "arm64-v8a"
@@ -54,6 +55,7 @@ android {
     buildFeatures {
         viewBinding true
         compose true
+        buildConfig true
     }
     signingConfigs {
         release {
@@ -102,7 +104,7 @@ android {
         it.buildConfigField "String", "WEATHERAPI_KEY", localProperties.getProperty("WEATHERAPI_KEY", "\"$EMBEDDED_WEATHERAPI_KEY\"")
 
     }
-    lintOptions {
+    lint {
         checkReleaseBuilds false
         abortOnError false
     }
@@ -138,7 +140,7 @@ android {
         freeCompilerArgs += ["-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"]
     }
     composeOptions {
-        kotlinCompilerExtensionVersion "1.4.8"
+        kotlinCompilerExtensionVersion "1.5.14"
     }
     testOptions {
         unitTests {
@@ -163,32 +165,15 @@ android {
     }
 }
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        maven {
-            url "https://jitpack.io"
-        }
-    }
-}
-
 configurations {
     cleanedAnnotations
-    compile.exclude group: "org.jetbrains" , module:"annotations"
     all*.exclude group: 'com.android.support', module: 'support-v4'
     all*.exclude group: 'com.android.support', module: 'support-compat'
     all {
         resolutionStrategy {
             force "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-            force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-            force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
         }
     }
-}
-
-kapt {
-    correctErrorTypes true
 }
 
 dependencies {
@@ -200,63 +185,63 @@ dependencies {
 
     // test.
     testImplementation "junit:junit:4.13.2"
-    testImplementation "androidx.test:core:1.4.0"
-    testImplementation "androidx.test:runner:1.4.0"
-    testImplementation "androidx.test:rules:1.4.0"
-    testImplementation "org.mockito:mockito-core:3.3.3"
+    testImplementation "androidx.test:core:1.5.0"
+    testImplementation "androidx.test:runner:1.5.2"
+    testImplementation "androidx.test:rules:1.5.0"
+    testImplementation "org.mockito:mockito-core:5.12.0"
     testImplementation "org.powermock:powermock-api-mockito2:2.0.9"
     testImplementation "org.powermock:powermock-module-junit4:2.0.9"
     testImplementation "org.powermock:powermock-module-junit4-rule:2.0.9"
     testImplementation "org.powermock:powermock-classloading-xstream:2.0.9"
-    testImplementation "org.robolectric:robolectric:4.10.3"
+    testImplementation "org.robolectric:robolectric:4.12.2"
 
     // material design.
-    implementation "com.google.android.material:material:1.11.0"
-    implementation "androidx.appcompat:appcompat:1.6.1"
+    implementation "com.google.android.material:material:1.12.0"
+    implementation "androidx.appcompat:appcompat:1.7.0"
     implementation "androidx.cardview:cardview:1.0.0"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
     // compose.
-    implementation "androidx.activity:activity-compose:1.7.2"
-    implementation "androidx.compose.material:material:1.4.3"
-    implementation "androidx.compose.animation:animation:1.4.3"
-    implementation "androidx.compose.ui:ui-tooling:1.4.3"
-    implementation "androidx.compose.foundation:foundation:1.4.3"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1"
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.4.3"
-    implementation "androidx.compose.material3:material3:1.1.1"
-    implementation "androidx.compose.material:material-icons-extended:1.4.3"
-    implementation "androidx.navigation:navigation-compose:2.6.0"
+    implementation "androidx.activity:activity-compose:1.9.0"
+    implementation "androidx.compose.material:material:1.6.8"
+    implementation "androidx.compose.animation:animation:1.6.8"
+    implementation "androidx.compose.ui:ui-tooling:1.6.8"
+    implementation "androidx.compose.foundation:foundation:1.6.8"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2"
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.6.8"
+    implementation "androidx.compose.material3:material3:1.2.1"
+    implementation "androidx.compose.material:material-icons-extended:1.6.8"
+    implementation "androidx.navigation:navigation-compose:2.7.7"
 
     // preference.
     implementation "androidx.preference:preference-ktx:1.2.1"
 
     // work.
-    implementation "androidx.core:core-ktx:1.10.1"
-    implementation "androidx.work:work-runtime:2.8.1"
+    implementation "androidx.core:core-ktx:1.13.1"
+    implementation "androidx.work:work-runtime:2.9.0"
 
     // lifecycle.
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.1"
-    implementation "androidx.lifecycle:lifecycle-process:2.6.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.2"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.8.2"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.8.2"
+    implementation "androidx.lifecycle:lifecycle-process:2.8.2"
 
     // multi dex.
     implementation "androidx.multidex:multidex:2.0.1"
 
     // hilt.
-    implementation "com.google.dagger:hilt-android:2.48"
-    kapt "com.google.dagger:hilt-android-compiler:2.48"
+    implementation "com.google.dagger:hilt-android:2.51.1"
+    kapt "com.google.dagger:hilt-android-compiler:2.51.1"
 
-    implementation "androidx.hilt:hilt-work:1.1.0"
-    kapt "androidx.hilt:hilt-compiler:1.1.0"
+    implementation "androidx.hilt:hilt-work:1.2.0"
+    kapt "androidx.hilt:hilt-compiler:1.2.0"
 
     // a map.
     pubImplementation "com.amap.api:location:5.3.1"
 
     // gms.
-    pubImplementation "com.google.android.gms:play-services-location:19.0.1"
-    gplayImplementation "com.google.android.gms:play-services-location:19.0.1"
+    pubImplementation "com.google.android.gms:play-services-location:21.3.0"
+    gplayImplementation "com.google.android.gms:play-services-location:21.3.0"
 
     // glide.
     implementation "com.github.bumptech.glide:glide:4.16.0"
@@ -264,11 +249,11 @@ dependencies {
     implementation "com.github.bumptech.glide:okhttp3-integration:4.16.0"
 
     // retrofit.
-    implementation "com.squareup.retrofit2:retrofit:2.9.0"
-    implementation "com.squareup.retrofit2:converter-gson:2.9.0"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:2.6.2"
-    implementation "com.squareup.okhttp3:okhttp:3.12.12"
-    implementation "com.squareup.okhttp3:logging-interceptor:3.12.12"
+    implementation "com.squareup.retrofit2:retrofit:2.11.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.11.0"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:2.11.0"
+    implementation "com.squareup.okhttp3:okhttp:4.12.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.12.0"
 
     // db.
     implementation "androidx.room:room-runtime:2.6.1"
@@ -276,21 +261,15 @@ dependencies {
     kapt "androidx.room:room-compiler:2.6.1"
     implementation "androidx.room:room-rxjava2:2.6.1"
 
-    // data store
-    // implementation "androidx.datastore:datastore-preferences:1.0.0-alpha07"
-    // implementation "androidx.datastore:datastore-preferences-rxjava2:1.0.0-alpha07"
-
     // gson.
-    implementation "com.google.code.gson:gson:2.10.1"
-
-
+    implementation "com.google.code.gson:gson:2.11.0"
 
     // bugly.
     pubImplementation "com.tencent.bugly:crashreport:2.8.6.0"
     pubImplementation "com.tencent.bugly:nativecrashreport:3.6.0.1"
 
     // rx java.
-    implementation "io.reactivex.rxjava2:rxjava:2.2.9"
+    implementation "io.reactivex.rxjava2:rxjava:2.2.21"
     implementation "io.reactivex.rxjava2:rxandroid:2.1.1"
 
     // ui.

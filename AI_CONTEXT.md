@@ -53,6 +53,17 @@
   - AllergenActivity Compose → LaunchedEffect + Dispatchers.IO
   - ServiceProviderSettingsScreen → AsyncHelper.runOnIO
   - TileService.refreshTile() → IO 线程
+- 工具链升级: Gradle 7.6.4 → 8.7, AGP 7.4.2 → 8.4.0, Kotlin 1.8.22 → 1.9.24
+  - Compose Compiler 1.4.8 → 1.5.14
+  - compileSdk/targetSdk 34 → 35
+  - OkHttp 3.12.12 → 4.12.0
+  - Hilt 2.48 → 2.51.1
+  - AndroidX 全套依赖升至最新
+  - 修复 WorkManager Configuration.Provider API 变更
+  - 修复 OkHttp Util.platformTrustManager() 移除
+  - 添加 buildConfig true (AGP 8.x 默认关闭)
+  - lintOptions → lint
+  - 合并 kapt 块，移除废弃的 kotlin-stdlib-jdk7/jdk8 force
 
 ## 禁止
 
@@ -63,12 +74,12 @@
 
 | 组件 | 版本 |
 |------|------|
-| Gradle | 7.6.4 |
-| AGP | 7.4.2 |
-| Kotlin | 1.8.22 |
-| Compose Compiler | 1.4.8 |
-| compileSdk | 34 |
-| targetSdk | 34 |
+| Gradle | 8.7 |
+| AGP | 8.4.0 |
+| Kotlin | 1.9.24 |
+| Compose Compiler | 1.5.14 |
+| compileSdk | 35 |
+| targetSdk | 35 |
 | minSdk | 21 |
 
 ## 版本号策略
@@ -90,15 +101,15 @@
 
 ## 待完成
 
-- [ ] 升级 compileSdk 34 → 35
-- [ ] 升级 minSdk 21 → 24
+- [x] 升级 compileSdk 34 → 35
+- [ ] 升级 minSdk 21 → 24（暂不升级，仅在关键库必须要求时升级）
 - [x] GreenDAO → Room（已删除GreenDAO依赖、新建8个Room Entity、DAO、Database类、TypeConverter、重写DatabaseHelper、编译器通过）
   - Room 版本 2.6.1，数据库 schema 版本 63
   - 注意：子实体（DailyEntity/HourlyEntity等）weatherSource 字段仍用 String 类型，写入时通过 source.getId() 转换
   - 注意：LocationEntity 使用 WeatherSource/TimeZone 强类型（由 RoomTypeConverters 处理）
   - 本地 Microsoft JDK 17 kapt 有 InvocationTargetException 问题，添加 kapt.useWorkerApi=false 后解决
-- [ ] 升级 Gradle 8.x (需先完成 GreenDAO → Room)
-- [ ] 升级 AGP 8.x
-- [ ] 升级 Kotlin 1.9+
+- [x] 升级 Gradle 8.x (需先完成 GreenDAO → Room)
+- [x] 升级 AGP 8.x
+- [x] 升级 Kotlin 1.9+
 - [ ] RxJava → Coroutines
 - [ ] Java → Kotlin 逐步迁移
