@@ -42,7 +42,7 @@ public class GzipInterceptor extends ReportExceptionInterceptor {
 
         BufferedSource source = body.source();
         source.request(Long.MAX_VALUE); // Buffer the entire body.
-        Buffer buffer = source.buffer();
+        Buffer buffer = source.getBuffer();
 
         if ("gzip".equalsIgnoreCase(response.headers().get("Content-Encoding"))) {
             try (GzipSource gzippedResponseBody = new GzipSource(buffer.clone())) {
@@ -65,7 +65,7 @@ public class GzipInterceptor extends ReportExceptionInterceptor {
         return new Response.Builder()
                 .addHeader("Content-Type", "application/json")
                 .code(response.code())
-                .body(ResponseBody.create(body.contentType(), bodyString))
+                .body(ResponseBody.create(bodyString, body.contentType()))
                 .message(response.message())
                 .request(request)
                 .protocol(Protocol.HTTP_2)
