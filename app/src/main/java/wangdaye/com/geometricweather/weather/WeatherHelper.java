@@ -40,7 +40,9 @@ public class WeatherHelper {
     }
 
     public void requestWeather(Context c, Location location, @NonNull final OnRequestWeatherListener l) {
+        android.util.Log.d("WeatherHelper", "requestWeather called, weatherSource=" + location.getWeatherSource().getId() + " location=" + location.getCityName(c));
         final WeatherService service = mServiceSet.get(location.getWeatherSource());
+        android.util.Log.d("WeatherHelper", "Using service: " + service.getClass().getSimpleName());
         if (!NetworkUtils.isAvailable(c)) {
             l.requestWeatherFailed(location);
             return;

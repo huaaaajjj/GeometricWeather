@@ -44,13 +44,16 @@ fun ServiceProviderSettingsScreen(
             nameArrayId = R.array.weather_sources,
             selectedKey = SettingsManager.getInstance(context).weatherSource.id,
             onValueChanged = { sourceId ->
+                android.util.Log.d("ServiceProvider", "Weather source changed to: $sourceId")
                 SettingsManager
                     .getInstance(context)
                     .weatherSource = WeatherSource.getInstance(sourceId)
 
                 wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.runOnIO {
                     val locationList = DatabaseHelper.getInstance(context).readLocationList()
+                    android.util.Log.d("ServiceProvider", "Read ${locationList.size} locations")
                     val index = locationList.indexOfFirst { it.isCurrentPosition }
+                    android.util.Log.d("ServiceProvider", "Current position index: $index")
                     if (index >= 0) {
                         locationList[index] = locationList[index].copy(
                             weather = null,
@@ -58,6 +61,7 @@ fun ServiceProviderSettingsScreen(
                         ).copy()
                         DatabaseHelper.getInstance(context).deleteWeather(locationList[index])
                         DatabaseHelper.getInstance(context).writeLocationList(locationList)
+                        android.util.Log.d("ServiceProvider", "Updated location weatherSource to: ${locationList[index].weatherSource.id}")
                     }
                 }
             }
