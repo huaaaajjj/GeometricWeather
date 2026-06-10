@@ -81,6 +81,10 @@
   - WeatherHelper.requestLocation(): Observable.zip → CountDownLatch
   - 删除: SchedulerTransformer, BaseObserver, ObserverContainer
   - 移除依赖: rxjava, rxandroid, adapter-rxjava2, room-rxjava2
+- 修复 AsyncHelper Emitter 回调线程问题
+  - Emitter.send() 在非主线程时通过 Handler post 到主线程
+  - 匹配原 RxJava observeOn(mainThread()) 行为
+  - 修复 "Cannot invoke setValue on a background thread" 崩溃
 
 ## 禁止
 
