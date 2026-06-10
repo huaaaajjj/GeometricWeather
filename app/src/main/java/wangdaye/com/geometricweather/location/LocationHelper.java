@@ -92,8 +92,11 @@ public class LocationHelper {
                             true,
                             false
                     );
-                    DatabaseHelper.getInstance(context).writeLocation(finalLocation);
-                    l.requestLocationFailed(finalLocation);
+                    wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.runOnIO(() -> {
+                        DatabaseHelper.getInstance(context).writeLocation(finalLocation);
+                        wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.delayRunOnUI(
+                                () -> l.requestLocationFailed(finalLocation), 0);
+                    });
                 }
             }
         };
@@ -160,8 +163,11 @@ public class LocationHelper {
                 if (locationList.size() > 0) {
                     Location src = locationList.get(0);
                     Location result = Location.copy(src, true, src.isResidentPosition());
-                    DatabaseHelper.getInstance(context).writeLocation(result);
-                    l.requestLocationSuccess(result);
+                    wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.runOnIO(() -> {
+                        DatabaseHelper.getInstance(context).writeLocation(result);
+                        wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.delayRunOnUI(
+                                () -> l.requestLocationSuccess(result), 0);
+                    });
                 } else {
                     requestLocationFailed(query);
                 }

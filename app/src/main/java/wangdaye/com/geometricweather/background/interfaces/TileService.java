@@ -62,23 +62,28 @@ public class TileService extends android.service.quicksettings.TileService {
         if (tile == null) {
             return;
         }
-        Location location = DatabaseHelper.getInstance(context).readLocationList().get(0);
-        location = Location.copy(location, DatabaseHelper.getInstance(context).readWeather(location));
-        if (location.getWeather() != null) {
-            tile.setIcon(
-                    ResourceHelper.getMinimalIcon(
-                            ResourcesProviderFactory.getNewInstance(),
-                            location.getWeather().getCurrent().getWeatherCode(),
-                            location.isDaylight()
-                    )
-            );
-            tile.setLabel(
-                    location.getWeather().getCurrent().getTemperature().getTemperature(
-                            context,
-                            SettingsManager.getInstance(context).getTemperatureUnit())
-            );
-            tile.setState(Tile.STATE_INACTIVE);
-            tile.updateTile();
-        }
+        wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.runOnIO(() -> {
+            Location location = DatabaseHelper.getInstance(context).readLocationList().get(0);
+            location = Location.copy(location, DatabaseHelper.getInstance(context).readWeather(location));
+            if (location.getWeather() != null) {
+                Location finalLocation = location;
+                wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.delayRunOnUI(() -> {
+                    tile.setIcon(
+                            ResourceHelper.getMinimalIcon(
+                                    ResourcesProviderFactory.getNewInstance(),
+                                    finalLocation.getWeather().getCurrent().getWeatherCode(),
+                                    finalLocation.isDaylight()
+                            )
+                    );
+                    tile.setLabel(
+                            finalLocation.getWeather().getCurrent().getTemperature().getTemperature(
+                                    context,
+                                    SettingsManager.getInstance(context).getTemperatureUnit())
+                    );
+                    tile.setState(Tile.STATE_INACTIVE);
+                    tile.updateTile();
+                }, 0);
+            }
+        });
     }
 }

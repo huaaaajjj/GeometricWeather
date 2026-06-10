@@ -21,18 +21,20 @@ public class MultiCityWidgetConfigActivity extends AbstractWidgetConfigActivity 
     private List<Location> locationList;
 
     @Override
-    public void initData() {
-        super.initData();
+    protected void onInitDataComplete() {
+        super.onInitDataComplete();
 
-        locationList = DatabaseHelper.getInstance(this).readLocationList();
-        for (int i = 0; i < locationList.size(); i ++) {
-            locationList.set(
-                    i, Location.copy(
-                            locationList.get(i),
-                            DatabaseHelper.getInstance(this).readWeather(locationList.get(i))
-                    )
-            );
-        }
+        wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.runOnIO(() -> {
+            locationList = DatabaseHelper.getInstance(this).readLocationList();
+            for (int i = 0; i < locationList.size(); i ++) {
+                locationList.set(
+                        i, Location.copy(
+                                locationList.get(i),
+                                DatabaseHelper.getInstance(this).readWeather(locationList.get(i))
+                        )
+                );
+            }
+        });
     }
 
     @Override

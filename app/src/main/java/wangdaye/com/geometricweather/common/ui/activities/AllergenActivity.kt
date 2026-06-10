@@ -11,6 +11,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +36,10 @@ import wangdaye.com.geometricweather.common.ui.widgets.generateCollapsedScrollBe
 import wangdaye.com.geometricweather.common.ui.widgets.getCardListItemMarginDp
 import wangdaye.com.geometricweather.common.ui.widgets.insets.FitStatusBarTopAppBar
 import wangdaye.com.geometricweather.common.ui.widgets.insets.bottomInsetItem
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import wangdaye.com.geometricweather.common.basic.models.Location
+import wangdaye.com.geometricweather.common.basic.models.weather.Weather
 import wangdaye.com.geometricweather.db.DatabaseHelper
 import wangdaye.com.geometricweather.theme.compose.DayNightTheme
 import wangdaye.com.geometricweather.theme.compose.GeometricWeatherTheme
@@ -56,17 +65,25 @@ class AllergenActivity : GeoActivity() {
     @Composable
     private fun ContentView() {
         val formattedId = intent.getStringExtra(KEY_ALLERGEN_ACTIVITY_LOCATION_FORMATTED_ID) ?: ""
-        var location = DatabaseHelper.getInstance(this).readLocation(formattedId)
-            ?: DatabaseHelper.getInstance(this).readLocationList()[0]
+        var weather by remember { mutableStateOf<Weather?>(null) }
 
-        location = location.copy(
-            weather = DatabaseHelper.getInstance(this).readWeather(location)
-        )
-        val weather = location.weather
-        if (weather == null) {
-            finish()
-            return
+        LaunchedEffect(formattedId) {
+            val result = withContext(Dispatchers.IO) {
+                val location = DatabaseHelper.getInstance(this@AllergenActivity).readLocation(formattedId)
+                    ?: DatabaseHelper.getInstance(this@AllergenActivity).readLocationList()[0]
+                val loc = location.copy(
+                    weather = DatabaseHelper.getInstance(this@AllergenActivity).readWeather(location)
+                )
+                loc.weather
+            }
+            if (result == null) {
+                finish()
+            } else {
+                weather = result
+            }
         }
+
+        val w = weather ?: return
 
         val unit = PollenUnit.PPCM
 
@@ -83,7 +100,7 @@ class AllergenActivity : GeoActivity() {
             },
         ) {
             LazyColumn(modifier = Modifier.fillMaxHeight()) {
-                items(weather.dailyForecast) { daily ->
+                items(w.dailyForecast) { daily ->
                     val pollen = daily.pollen
 
                     Material3CardListItem {

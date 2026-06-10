@@ -48,15 +48,17 @@ fun ServiceProviderSettingsScreen(
                     .getInstance(context)
                     .weatherSource = WeatherSource.getInstance(sourceId)
 
-                val locationList = DatabaseHelper.getInstance(context).readLocationList()
-                val index = locationList.indexOfFirst { it.isCurrentPosition }
-                if (index >= 0) {
-                    locationList[index] = locationList[index].copy(
-                        weather = null,
-                        weatherSource = SettingsManager.getInstance(context).weatherSource
-                    ).copy()
-                    DatabaseHelper.getInstance(context).deleteWeather(locationList[index])
-                    DatabaseHelper.getInstance(context).writeLocationList(locationList)
+                wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.runOnIO {
+                    val locationList = DatabaseHelper.getInstance(context).readLocationList()
+                    val index = locationList.indexOfFirst { it.isCurrentPosition }
+                    if (index >= 0) {
+                        locationList[index] = locationList[index].copy(
+                            weather = null,
+                            weatherSource = SettingsManager.getInstance(context).weatherSource
+                        ).copy()
+                        DatabaseHelper.getInstance(context).deleteWeather(locationList[index])
+                        DatabaseHelper.getInstance(context).writeLocationList(locationList)
+                    }
                 }
             }
         )

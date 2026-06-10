@@ -45,6 +45,7 @@ import javax.inject.Inject;
 
 import wangdaye.com.geometricweather.R;
 import wangdaye.com.geometricweather.background.polling.PollingManager;
+import wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper;
 import wangdaye.com.geometricweather.common.basic.GeoActivity;
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.ui.widgets.insets.FitSystemBarNestedScrollView;
@@ -126,25 +127,6 @@ public abstract class AbstractWidgetConfigActivity extends GeoActivity
         setContentView(R.layout.activity_widget_config);
 
         initData();
-        readConfig();
-        initView();
-        updateHostView();
-
-        if (locationNow.isCurrentPosition()) {
-            if (locationNow.isUsable()) {
-                weatherHelper.requestWeather(this, locationNow, this);
-            } else {
-                weatherHelper.requestWeather(
-                        this,
-                        Location.buildDefaultLocation(
-                                SettingsManager.getInstance(this).getWeatherSource()
-                        ),
-                        this
-                );
-            }
-        } else {
-            weatherHelper.requestWeather(this, locationNow, this);
-        }
     }
 
     @Override
@@ -199,12 +181,17 @@ public abstract class AbstractWidgetConfigActivity extends GeoActivity
 
     @CallSuper
     public void initData() {
-        locationNow = DatabaseHelper.getInstance(this).readLocationList().get(0);
-        locationNow = Location.copy(
-                locationNow,
-                DatabaseHelper.getInstance(this).readWeather(locationNow)
-        );
+        AsyncHelper.runOnIO(() -> {
+            locationNow = DatabaseHelper.getInstance(this).readLocationList().get(0);
+            locationNow = Location.copy(
+                    locationNow,
+                    DatabaseHelper.getInstance(this).readWeather(locationNow)
+            );
+            AsyncHelper.delayRunOnUI(() -> onInitDataComplete(), 0);
+        });
+    }
 
+    protected void onInitDataComplete() {
         destroyed = false;
 
         Resources res = getResources();
@@ -253,6 +240,26 @@ public abstract class AbstractWidgetConfigActivity extends GeoActivity
         hideLunar = false;
 
         alignEnd = false;
+
+        readConfig();
+        initView();
+        updateHostView();
+
+        if (locationNow.isCurrentPosition()) {
+            if (locationNow.isUsable()) {
+                weatherHelper.requestWeather(this, locationNow, this);
+            } else {
+                weatherHelper.requestWeather(
+                        this,
+                        Location.buildDefaultLocation(
+                                SettingsManager.getInstance(this).getWeatherSource()
+                        ),
+                        this
+                );
+            }
+        } else {
+            weatherHelper.requestWeather(this, locationNow, this);
+        }
     }
 
     private void readConfig() {

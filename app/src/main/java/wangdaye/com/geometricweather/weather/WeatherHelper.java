@@ -57,13 +57,15 @@ public class WeatherHelper {
             public void requestWeatherSuccess(@NonNull Location requestLocation) {
                 Weather weather = requestLocation.getWeather();
                 if (weather != null) {
-                    DatabaseHelper.getInstance(c).writeWeather(requestLocation, weather);
-                    if (weather.getYesterday() == null) {
-                        weather.setYesterday(
-                                DatabaseHelper.getInstance(c).readHistory(requestLocation, weather)
-                        );
-                    }
-                    l.requestWeatherSuccess(requestLocation);
+                    AsyncHelper.runOnIO(() -> {
+                        DatabaseHelper.getInstance(c).writeWeather(requestLocation, weather);
+                        if (weather.getYesterday() == null) {
+                            weather.setYesterday(
+                                    DatabaseHelper.getInstance(c).readHistory(requestLocation, weather)
+                            );
+                        }
+                        AsyncHelper.delayRunOnUI(() -> l.requestWeatherSuccess(requestLocation), 0);
+                    });
                 } else {
                     requestWeatherFailed(requestLocation);
                 }
@@ -71,12 +73,13 @@ public class WeatherHelper {
 
             @Override
             public void requestWeatherFailed(@NonNull Location requestLocation) {
-                l.requestWeatherFailed(
-                        Location.copy(
-                                requestLocation,
-                                DatabaseHelper.getInstance(c).readWeather(requestLocation)
-                        )
-                );
+                AsyncHelper.runOnIO(() -> {
+                    Location result = Location.copy(
+                            requestLocation,
+                            DatabaseHelper.getInstance(c).readWeather(requestLocation)
+                    );
+                    AsyncHelper.delayRunOnUI(() -> l.requestWeatherFailed(result), 0);
+                });
             }
         });
     }

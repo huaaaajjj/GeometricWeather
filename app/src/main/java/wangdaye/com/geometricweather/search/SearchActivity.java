@@ -28,6 +28,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.gordonwong.materialsheetfab.MaterialSheetFab;
 import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener;
+
+import wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper;
 import com.turingtechnologies.materialscrollbar.CustomIndicator;
 
 import java.util.ArrayList;
@@ -133,7 +135,9 @@ public class SearchActivity extends GeoActivity
                 lightTheme
         );
 
-        mCurrentList = DatabaseHelper.getInstance(this).readLocationList();
+        AsyncHelper.runOnIO(() -> {
+            mCurrentList = DatabaseHelper.getInstance(this).readLocationList();
+        });
 
         initModel();
         initView();

@@ -7,6 +7,8 @@ import wangdaye.com.geometricweather.db.DatabaseHelper
 import wangdaye.com.geometricweather.location.LocationHelper
 import wangdaye.com.geometricweather.weather.WeatherHelper
 import wangdaye.com.geometricweather.weather.WeatherHelper.OnRequestWeatherListener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
@@ -28,22 +30,24 @@ class MainActivityRepository @Inject constructor(
         cancelWeatherRequest()
     }
 
-    fun initLocations(context: Context, formattedId: String): List<Location> {
-        val list = DatabaseHelper.getInstance(context).readLocationList()
+    fun initLocations(context: Context, formattedId: String, callback: AsyncHelper.Callback<List<Location>>) {
+        AsyncHelper.runOnIO({ emitter ->
+            val list = DatabaseHelper.getInstance(context).readLocationList()
 
-        var index = 0
-        for (i in list.indices) {
-            if (list[i].formattedId == formattedId) {
-                index = i
-                break
+            var index = 0
+            for (i in list.indices) {
+                if (list[i].formattedId == formattedId) {
+                    index = i
+                    break
+                }
             }
-        }
 
-        list[index] = Location.copy(
-            src = list[index],
-            weather = DatabaseHelper.getInstance(context).readWeather(list[index])
-        )
-        return list
+            list[index] = Location.copy(
+                src = list[index],
+                weather = DatabaseHelper.getInstance(context).readWeather(list[index])
+            )
+            emitter.send(list, true)
+        }, callback)
     }
 
     fun getWeatherCacheForLocations(
