@@ -191,12 +191,13 @@ class HomeFragment : MainModuleFragment() {
         binding.recyclerView.setOnTouchListener(indicatorStateListener)
 
         viewModel.currentLocation.observe(viewLifecycleOwner) {
-            updateViews(it.location)
+            it?.let { updateViews(it.location) }
         }
 
-        viewModel.loading.observe(viewLifecycleOwner) { setRefreshing(it) }
+        viewModel.loading.observe(viewLifecycleOwner) { setRefreshing(it ?: false) }
 
         viewModel.indicator.observe(viewLifecycleOwner) {
+            if (it == null) return@observe
             binding.switchLayout.isEnabled = it.total > 1
 
             if (binding.switchLayout.totalCount != it.total
@@ -218,9 +219,10 @@ class HomeFragment : MainModuleFragment() {
     }
 
     private fun updateDayNightColors() {
+        val loc = viewModel.currentLocation.value?.location ?: return
         binding.refreshLayout.setProgressBackgroundColorSchemeColor(
             MainThemeColorProvider.getColor(
-                location = viewModel.currentLocation.value!!.location,
+                location = loc,
                 id = R.attr.colorSurface
             )
         )
@@ -229,7 +231,8 @@ class HomeFragment : MainModuleFragment() {
     // control.
 
     @JvmOverloads
-    fun updateViews(location: Location = viewModel.currentLocation.value!!.location) {
+    fun updateViews(location: Location? = viewModel.currentLocation.value?.location) {
+        if (location == null) return
         ensureResourceProvider()
         updateContentViews(location = location)
         binding.root.post {

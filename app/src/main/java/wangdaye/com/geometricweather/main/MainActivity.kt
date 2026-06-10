@@ -113,19 +113,22 @@ class MainActivity : GeoActivity(),
 
             findHomeFragment()?.updateViews()
 
-            // update notification immediately.
-            AsyncHelper.runOnIO {
-                NotificationHelper.updateNotificationIfNecessary(
-                    this,
-                    viewModel.validLocationList.value!!.locationList
+            val locationList = viewModel.validLocationList.value?.locationList
+            if (locationList != null) {
+                // update notification immediately.
+                AsyncHelper.runOnIO {
+                    NotificationHelper.updateNotificationIfNecessary(
+                        this,
+                        locationList
+                    )
+                }
+                refreshBackgroundViews(
+                    resetBackground = true,
+                    locationList = locationList,
+                    defaultLocationChanged = true,
+                    updateRemoteViews = true
                 )
             }
-            refreshBackgroundViews(
-                resetBackground = true,
-                locationList = viewModel.validLocationList.value!!.locationList,
-                defaultLocationChanged = true,
-                updateRemoteViews = true
-            )
         }
         EventBus.instance.with(ModifyMainSystemBarMessage::class.java).observe(this) {
             updateSystemBarStyle()
@@ -219,6 +222,7 @@ class MainActivity : GeoActivity(),
         }
 
         viewModel.validLocationList.observe(this) {
+            if (it == null) return@observe
             // update notification immediately.
             AsyncHelper.runOnIO {
                 NotificationHelper.updateNotificationIfNecessary(
@@ -379,7 +383,7 @@ class MainActivity : GeoActivity(),
         ) == PackageManager.PERMISSION_GRANTED
 
     val isDaylight
-        get() = viewModel.currentLocation.value!!.daylight
+        get() = viewModel.currentLocation.value?.daylight ?: true
 
     // control.
 
