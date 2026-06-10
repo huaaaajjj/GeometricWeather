@@ -1,213 +1,371 @@
 package wangdaye.com.geometricweather.db.entities;
 
-import org.greenrobot.greendao.annotation.Convert;
-import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Id;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
 import java.util.Date;
 
-import wangdaye.com.geometricweather.common.basic.models.weather.Daily;
 import wangdaye.com.geometricweather.common.basic.models.weather.WeatherCode;
 import wangdaye.com.geometricweather.common.basic.models.weather.WindDegree;
-import wangdaye.com.geometricweather.db.converters.WeatherCodeConverter;
-import wangdaye.com.geometricweather.db.converters.WindDegreeConverter;
 
-import org.greenrobot.greendao.annotation.Generated;
-
-/**
- * Daily entity.
- *
- * {@link Daily}.
- * */
-@Entity
+@Entity(tableName = "daily")
 public class DailyEntity {
 
-    @Id public Long id;
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    public Long id;
+
+    @ColumnInfo(name = "cityId")
     public String cityId;
+
+    @ColumnInfo(name = "weatherSource")
     public String weatherSource;
 
+    @ColumnInfo(name = "date")
     public Date date;
+
+    @ColumnInfo(name = "time")
     public long time;
 
-    // daytime.
+    @ColumnInfo(name = "daytimeWeatherText")
     public String daytimeWeatherText;
+
+    @ColumnInfo(name = "daytimeWeatherPhase")
     public String daytimeWeatherPhase;
-    @Convert(converter = WeatherCodeConverter.class, columnType = String.class)
+
+    @ColumnInfo(name = "daytimeWeatherCode")
     public WeatherCode daytimeWeatherCode;
 
+    @ColumnInfo(name = "daytimeTemperature")
     public int daytimeTemperature;
+
+    @ColumnInfo(name = "daytimeRealFeelTemperature")
     public Integer daytimeRealFeelTemperature;
+
+    @ColumnInfo(name = "daytimeRealFeelShaderTemperature")
     public Integer daytimeRealFeelShaderTemperature;
+
+    @ColumnInfo(name = "daytimeApparentTemperature")
     public Integer daytimeApparentTemperature;
+
+    @ColumnInfo(name = "daytimeWindChillTemperature")
     public Integer daytimeWindChillTemperature;
+
+    @ColumnInfo(name = "daytimeWetBulbTemperature")
     public Integer daytimeWetBulbTemperature;
+
+    @ColumnInfo(name = "daytimeDegreeDayTemperature")
     public Integer daytimeDegreeDayTemperature;
 
+    @ColumnInfo(name = "daytimeTotalPrecipitation")
     public Float daytimeTotalPrecipitation;
+
+    @ColumnInfo(name = "daytimeThunderstormPrecipitation")
     public Float daytimeThunderstormPrecipitation;
+
+    @ColumnInfo(name = "daytimeRainPrecipitation")
     public Float daytimeRainPrecipitation;
+
+    @ColumnInfo(name = "daytimeSnowPrecipitation")
     public Float daytimeSnowPrecipitation;
+
+    @ColumnInfo(name = "daytimeIcePrecipitation")
     public Float daytimeIcePrecipitation;
 
+    @ColumnInfo(name = "daytimeTotalPrecipitationProbability")
     public Float daytimeTotalPrecipitationProbability;
+
+    @ColumnInfo(name = "daytimeThunderstormPrecipitationProbability")
     public Float daytimeThunderstormPrecipitationProbability;
+
+    @ColumnInfo(name = "daytimeRainPrecipitationProbability")
     public Float daytimeRainPrecipitationProbability;
+
+    @ColumnInfo(name = "daytimeSnowPrecipitationProbability")
     public Float daytimeSnowPrecipitationProbability;
+
+    @ColumnInfo(name = "daytimeIcePrecipitationProbability")
     public Float daytimeIcePrecipitationProbability;
 
+    @ColumnInfo(name = "daytimeTotalPrecipitationDuration")
     public Float daytimeTotalPrecipitationDuration;
+
+    @ColumnInfo(name = "daytimeThunderstormPrecipitationDuration")
     public Float daytimeThunderstormPrecipitationDuration;
+
+    @ColumnInfo(name = "daytimeRainPrecipitationDuration")
     public Float daytimeRainPrecipitationDuration;
+
+    @ColumnInfo(name = "daytimeSnowPrecipitationDuration")
     public Float daytimeSnowPrecipitationDuration;
+
+    @ColumnInfo(name = "daytimeIcePrecipitationDuration")
     public Float daytimeIcePrecipitationDuration;
 
+    @ColumnInfo(name = "daytimeWindDirection")
     public String daytimeWindDirection;
-    @Convert(converter = WindDegreeConverter.class, columnType = Float.class)
+
+    @ColumnInfo(name = "daytimeWindDegree")
     public WindDegree daytimeWindDegree;
+
+    @ColumnInfo(name = "daytimeWindSpeed")
     public Float daytimeWindSpeed;
+
+    @ColumnInfo(name = "daytimeWindLevel")
     public String daytimeWindLevel;
 
+    @ColumnInfo(name = "daytimeCloudCover")
     public Integer daytimeCloudCover;
 
-    // nighttime.
+    @ColumnInfo(name = "nighttimeWeatherText")
     public String nighttimeWeatherText;
+
+    @ColumnInfo(name = "nighttimeWeatherPhase")
     public String nighttimeWeatherPhase;
-    @Convert(converter = WeatherCodeConverter.class, columnType = String.class)
+
+    @ColumnInfo(name = "nighttimeWeatherCode")
     public WeatherCode nighttimeWeatherCode;
 
+    @ColumnInfo(name = "nighttimeTemperature")
     public int nighttimeTemperature;
+
+    @ColumnInfo(name = "nighttimeRealFeelTemperature")
     public Integer nighttimeRealFeelTemperature;
+
+    @ColumnInfo(name = "nighttimeRealFeelShaderTemperature")
     public Integer nighttimeRealFeelShaderTemperature;
+
+    @ColumnInfo(name = "nighttimeApparentTemperature")
     public Integer nighttimeApparentTemperature;
+
+    @ColumnInfo(name = "nighttimeWindChillTemperature")
     public Integer nighttimeWindChillTemperature;
+
+    @ColumnInfo(name = "nighttimeWetBulbTemperature")
     public Integer nighttimeWetBulbTemperature;
+
+    @ColumnInfo(name = "nighttimeDegreeDayTemperature")
     public Integer nighttimeDegreeDayTemperature;
 
+    @ColumnInfo(name = "nighttimeTotalPrecipitation")
     public Float nighttimeTotalPrecipitation;
+
+    @ColumnInfo(name = "nighttimeThunderstormPrecipitation")
     public Float nighttimeThunderstormPrecipitation;
+
+    @ColumnInfo(name = "nighttimeRainPrecipitation")
     public Float nighttimeRainPrecipitation;
+
+    @ColumnInfo(name = "nighttimeSnowPrecipitation")
     public Float nighttimeSnowPrecipitation;
+
+    @ColumnInfo(name = "nighttimeIcePrecipitation")
     public Float nighttimeIcePrecipitation;
 
+    @ColumnInfo(name = "nighttimeTotalPrecipitationProbability")
     public Float nighttimeTotalPrecipitationProbability;
+
+    @ColumnInfo(name = "nighttimeThunderstormPrecipitationProbability")
     public Float nighttimeThunderstormPrecipitationProbability;
+
+    @ColumnInfo(name = "nighttimeRainPrecipitationProbability")
     public Float nighttimeRainPrecipitationProbability;
+
+    @ColumnInfo(name = "nighttimeSnowPrecipitationProbability")
     public Float nighttimeSnowPrecipitationProbability;
+
+    @ColumnInfo(name = "nighttimeIcePrecipitationProbability")
     public Float nighttimeIcePrecipitationProbability;
 
+    @ColumnInfo(name = "nighttimeTotalPrecipitationDuration")
     public Float nighttimeTotalPrecipitationDuration;
+
+    @ColumnInfo(name = "nighttimeThunderstormPrecipitationDuration")
     public Float nighttimeThunderstormPrecipitationDuration;
+
+    @ColumnInfo(name = "nighttimeRainPrecipitationDuration")
     public Float nighttimeRainPrecipitationDuration;
+
+    @ColumnInfo(name = "nighttimeSnowPrecipitationDuration")
     public Float nighttimeSnowPrecipitationDuration;
+
+    @ColumnInfo(name = "nighttimeIcePrecipitationDuration")
     public Float nighttimeIcePrecipitationDuration;
 
+    @ColumnInfo(name = "nighttimeWindDirection")
     public String nighttimeWindDirection;
-    @Convert(converter = WindDegreeConverter.class, columnType = Float.class)
+
+    @ColumnInfo(name = "nighttimeWindDegree")
     public WindDegree nighttimeWindDegree;
+
+    @ColumnInfo(name = "nighttimeWindSpeed")
     public Float nighttimeWindSpeed;
+
+    @ColumnInfo(name = "nighttimeWindLevel")
     public String nighttimeWindLevel;
 
+    @ColumnInfo(name = "nighttimeCloudCover")
     public Integer nighttimeCloudCover;
 
-    // sun.
+    @ColumnInfo(name = "sunRiseDate")
     public Date sunRiseDate;
+
+    @ColumnInfo(name = "sunSetDate")
     public Date sunSetDate;
 
-    // moon.
+    @ColumnInfo(name = "moonRiseDate")
     public Date moonRiseDate;
+
+    @ColumnInfo(name = "moonSetDate")
     public Date moonSetDate;
 
-    // moon phase.
+    @ColumnInfo(name = "moonPhaseAngle")
     public Integer moonPhaseAngle;
+
+    @ColumnInfo(name = "moonPhaseDescription")
     public String moonPhaseDescription;
 
-    // aqi.
+    @ColumnInfo(name = "aqiText")
     public String aqiText;
+
+    @ColumnInfo(name = "aqiIndex")
     public Integer aqiIndex;
+
+    @ColumnInfo(name = "pm25")
     public Float pm25;
+
+    @ColumnInfo(name = "pm10")
     public Float pm10;
+
+    @ColumnInfo(name = "so2")
     public Float so2;
+
+    @ColumnInfo(name = "no2")
     public Float no2;
+
+    @ColumnInfo(name = "o3")
     public Float o3;
+
+    @ColumnInfo(name = "co")
     public Float co;
 
-    // pollen.
+    @ColumnInfo(name = "grassIndex")
     public Integer grassIndex;
+
+    @ColumnInfo(name = "grassLevel")
     public Integer grassLevel;
+
+    @ColumnInfo(name = "grassDescription")
     public String grassDescription;
+
+    @ColumnInfo(name = "moldIndex")
     public Integer moldIndex;
+
+    @ColumnInfo(name = "moldLevel")
     public Integer moldLevel;
+
+    @ColumnInfo(name = "moldDescription")
     public String moldDescription;
+
+    @ColumnInfo(name = "ragweedIndex")
     public Integer ragweedIndex;
+
+    @ColumnInfo(name = "ragweedLevel")
     public Integer ragweedLevel;
+
+    @ColumnInfo(name = "ragweedDescription")
     public String ragweedDescription;
+
+    @ColumnInfo(name = "treeIndex")
     public Integer treeIndex;
+
+    @ColumnInfo(name = "treeLevel")
     public Integer treeLevel;
+
+    @ColumnInfo(name = "treeDescription")
     public String treeDescription;
 
-    // uv.
+    @ColumnInfo(name = "uvIndex")
     public Integer uvIndex;
+
+    @ColumnInfo(name = "uvLevel")
     public String uvLevel;
+
+    @ColumnInfo(name = "uvDescription")
     public String uvDescription;
 
+    @ColumnInfo(name = "hoursOfSun")
     public float hoursOfSun;
 
-    @Generated(hash = 1727023126)
+    public DailyEntity() {
+    }
+
+    @Ignore
     public DailyEntity(Long id, String cityId, String weatherSource, Date date,
-            long time, String daytimeWeatherText, String daytimeWeatherPhase,
-            WeatherCode daytimeWeatherCode, int daytimeTemperature,
-            Integer daytimeRealFeelTemperature,
-            Integer daytimeRealFeelShaderTemperature,
-            Integer daytimeApparentTemperature, Integer daytimeWindChillTemperature,
-            Integer daytimeWetBulbTemperature, Integer daytimeDegreeDayTemperature,
-            Float daytimeTotalPrecipitation, Float daytimeThunderstormPrecipitation,
-            Float daytimeRainPrecipitation, Float daytimeSnowPrecipitation,
-            Float daytimeIcePrecipitation,
-            Float daytimeTotalPrecipitationProbability,
-            Float daytimeThunderstormPrecipitationProbability,
-            Float daytimeRainPrecipitationProbability,
-            Float daytimeSnowPrecipitationProbability,
-            Float daytimeIcePrecipitationProbability,
-            Float daytimeTotalPrecipitationDuration,
-            Float daytimeThunderstormPrecipitationDuration,
-            Float daytimeRainPrecipitationDuration,
-            Float daytimeSnowPrecipitationDuration,
-            Float daytimeIcePrecipitationDuration, String daytimeWindDirection,
-            WindDegree daytimeWindDegree, Float daytimeWindSpeed,
-            String daytimeWindLevel, Integer daytimeCloudCover,
-            String nighttimeWeatherText, String nighttimeWeatherPhase,
-            WeatherCode nighttimeWeatherCode, int nighttimeTemperature,
-            Integer nighttimeRealFeelTemperature,
-            Integer nighttimeRealFeelShaderTemperature,
-            Integer nighttimeApparentTemperature,
-            Integer nighttimeWindChillTemperature,
-            Integer nighttimeWetBulbTemperature,
-            Integer nighttimeDegreeDayTemperature,
-            Float nighttimeTotalPrecipitation,
-            Float nighttimeThunderstormPrecipitation,
-            Float nighttimeRainPrecipitation, Float nighttimeSnowPrecipitation,
-            Float nighttimeIcePrecipitation,
-            Float nighttimeTotalPrecipitationProbability,
-            Float nighttimeThunderstormPrecipitationProbability,
-            Float nighttimeRainPrecipitationProbability,
-            Float nighttimeSnowPrecipitationProbability,
-            Float nighttimeIcePrecipitationProbability,
-            Float nighttimeTotalPrecipitationDuration,
-            Float nighttimeThunderstormPrecipitationDuration,
-            Float nighttimeRainPrecipitationDuration,
-            Float nighttimeSnowPrecipitationDuration,
-            Float nighttimeIcePrecipitationDuration, String nighttimeWindDirection,
-            WindDegree nighttimeWindDegree, Float nighttimeWindSpeed,
-            String nighttimeWindLevel, Integer nighttimeCloudCover,
-            Date sunRiseDate, Date sunSetDate, Date moonRiseDate, Date moonSetDate,
-            Integer moonPhaseAngle, String moonPhaseDescription, String aqiText,
-            Integer aqiIndex, Float pm25, Float pm10, Float so2, Float no2,
-            Float o3, Float co, Integer grassIndex, Integer grassLevel,
-            String grassDescription, Integer moldIndex, Integer moldLevel,
-            String moldDescription, Integer ragweedIndex, Integer ragweedLevel,
-            String ragweedDescription, Integer treeIndex, Integer treeLevel,
-            String treeDescription, Integer uvIndex, String uvLevel,
-            String uvDescription, float hoursOfSun) {
+                       long time, String daytimeWeatherText, String daytimeWeatherPhase,
+                       WeatherCode daytimeWeatherCode, int daytimeTemperature,
+                       Integer daytimeRealFeelTemperature,
+                       Integer daytimeRealFeelShaderTemperature,
+                       Integer daytimeApparentTemperature,
+                       Integer daytimeWindChillTemperature,
+                       Integer daytimeWetBulbTemperature,
+                       Integer daytimeDegreeDayTemperature,
+                       Float daytimeTotalPrecipitation,
+                       Float daytimeThunderstormPrecipitation,
+                       Float daytimeRainPrecipitation, Float daytimeSnowPrecipitation,
+                       Float daytimeIcePrecipitation,
+                       Float daytimeTotalPrecipitationProbability,
+                       Float daytimeThunderstormPrecipitationProbability,
+                       Float daytimeRainPrecipitationProbability,
+                       Float daytimeSnowPrecipitationProbability,
+                       Float daytimeIcePrecipitationProbability,
+                       Float daytimeTotalPrecipitationDuration,
+                       Float daytimeThunderstormPrecipitationDuration,
+                       Float daytimeRainPrecipitationDuration,
+                       Float daytimeSnowPrecipitationDuration,
+                       Float daytimeIcePrecipitationDuration,
+                       String daytimeWindDirection, WindDegree daytimeWindDegree,
+                       Float daytimeWindSpeed, String daytimeWindLevel,
+                       Integer daytimeCloudCover,
+                       String nighttimeWeatherText, String nighttimeWeatherPhase,
+                       WeatherCode nighttimeWeatherCode, int nighttimeTemperature,
+                       Integer nighttimeRealFeelTemperature,
+                       Integer nighttimeRealFeelShaderTemperature,
+                       Integer nighttimeApparentTemperature,
+                       Integer nighttimeWindChillTemperature,
+                       Integer nighttimeWetBulbTemperature,
+                       Integer nighttimeDegreeDayTemperature,
+                       Float nighttimeTotalPrecipitation,
+                       Float nighttimeThunderstormPrecipitation,
+                       Float nighttimeRainPrecipitation,
+                       Float nighttimeSnowPrecipitation,
+                       Float nighttimeIcePrecipitation,
+                       Float nighttimeTotalPrecipitationProbability,
+                       Float nighttimeThunderstormPrecipitationProbability,
+                       Float nighttimeRainPrecipitationProbability,
+                       Float nighttimeSnowPrecipitationProbability,
+                       Float nighttimeIcePrecipitationProbability,
+                       Float nighttimeTotalPrecipitationDuration,
+                       Float nighttimeThunderstormPrecipitationDuration,
+                       Float nighttimeRainPrecipitationDuration,
+                       Float nighttimeSnowPrecipitationDuration,
+                       Float nighttimeIcePrecipitationDuration,
+                       String nighttimeWindDirection,
+                       WindDegree nighttimeWindDegree, Float nighttimeWindSpeed,
+                       String nighttimeWindLevel, Integer nighttimeCloudCover,
+                       Date sunRiseDate, Date sunSetDate,
+                       Date moonRiseDate, Date moonSetDate,
+                       Integer moonPhaseAngle, String moonPhaseDescription,
+                       String aqiText, Integer aqiIndex,
+                       Float pm25, Float pm10, Float so2, Float no2, Float o3, Float co,
+                       Integer grassIndex, Integer grassLevel, String grassDescription,
+                       Integer moldIndex, Integer moldLevel, String moldDescription,
+                       Integer ragweedIndex, Integer ragweedLevel, String ragweedDescription,
+                       Integer treeIndex, Integer treeLevel, String treeDescription,
+                       Integer uvIndex, String uvLevel, String uvDescription,
+                       float hoursOfSun) {
         this.id = id;
         this.cityId = cityId;
         this.weatherSource = weatherSource;
@@ -305,10 +463,6 @@ public class DailyEntity {
         this.hoursOfSun = hoursOfSun;
     }
 
-    @Generated(hash = 1809948821)
-    public DailyEntity() {
-    }
-
     public Long getId() {
         return this.id;
     }
@@ -393,8 +547,7 @@ public class DailyEntity {
         return this.daytimeRealFeelShaderTemperature;
     }
 
-    public void setDaytimeRealFeelShaderTemperature(
-            Integer daytimeRealFeelShaderTemperature) {
+    public void setDaytimeRealFeelShaderTemperature(Integer daytimeRealFeelShaderTemperature) {
         this.daytimeRealFeelShaderTemperature = daytimeRealFeelShaderTemperature;
     }
 
@@ -410,8 +563,7 @@ public class DailyEntity {
         return this.daytimeWindChillTemperature;
     }
 
-    public void setDaytimeWindChillTemperature(
-            Integer daytimeWindChillTemperature) {
+    public void setDaytimeWindChillTemperature(Integer daytimeWindChillTemperature) {
         this.daytimeWindChillTemperature = daytimeWindChillTemperature;
     }
 
@@ -427,8 +579,7 @@ public class DailyEntity {
         return this.daytimeDegreeDayTemperature;
     }
 
-    public void setDaytimeDegreeDayTemperature(
-            Integer daytimeDegreeDayTemperature) {
+    public void setDaytimeDegreeDayTemperature(Integer daytimeDegreeDayTemperature) {
         this.daytimeDegreeDayTemperature = daytimeDegreeDayTemperature;
     }
 
@@ -444,8 +595,7 @@ public class DailyEntity {
         return this.daytimeThunderstormPrecipitation;
     }
 
-    public void setDaytimeThunderstormPrecipitation(
-            Float daytimeThunderstormPrecipitation) {
+    public void setDaytimeThunderstormPrecipitation(Float daytimeThunderstormPrecipitation) {
         this.daytimeThunderstormPrecipitation = daytimeThunderstormPrecipitation;
     }
 
@@ -477,8 +627,7 @@ public class DailyEntity {
         return this.daytimeTotalPrecipitationProbability;
     }
 
-    public void setDaytimeTotalPrecipitationProbability(
-            Float daytimeTotalPrecipitationProbability) {
+    public void setDaytimeTotalPrecipitationProbability(Float daytimeTotalPrecipitationProbability) {
         this.daytimeTotalPrecipitationProbability = daytimeTotalPrecipitationProbability;
     }
 
@@ -486,8 +635,7 @@ public class DailyEntity {
         return this.daytimeThunderstormPrecipitationProbability;
     }
 
-    public void setDaytimeThunderstormPrecipitationProbability(
-            Float daytimeThunderstormPrecipitationProbability) {
+    public void setDaytimeThunderstormPrecipitationProbability(Float daytimeThunderstormPrecipitationProbability) {
         this.daytimeThunderstormPrecipitationProbability = daytimeThunderstormPrecipitationProbability;
     }
 
@@ -495,8 +643,7 @@ public class DailyEntity {
         return this.daytimeRainPrecipitationProbability;
     }
 
-    public void setDaytimeRainPrecipitationProbability(
-            Float daytimeRainPrecipitationProbability) {
+    public void setDaytimeRainPrecipitationProbability(Float daytimeRainPrecipitationProbability) {
         this.daytimeRainPrecipitationProbability = daytimeRainPrecipitationProbability;
     }
 
@@ -504,8 +651,7 @@ public class DailyEntity {
         return this.daytimeSnowPrecipitationProbability;
     }
 
-    public void setDaytimeSnowPrecipitationProbability(
-            Float daytimeSnowPrecipitationProbability) {
+    public void setDaytimeSnowPrecipitationProbability(Float daytimeSnowPrecipitationProbability) {
         this.daytimeSnowPrecipitationProbability = daytimeSnowPrecipitationProbability;
     }
 
@@ -513,8 +659,7 @@ public class DailyEntity {
         return this.daytimeIcePrecipitationProbability;
     }
 
-    public void setDaytimeIcePrecipitationProbability(
-            Float daytimeIcePrecipitationProbability) {
+    public void setDaytimeIcePrecipitationProbability(Float daytimeIcePrecipitationProbability) {
         this.daytimeIcePrecipitationProbability = daytimeIcePrecipitationProbability;
     }
 
@@ -522,8 +667,7 @@ public class DailyEntity {
         return this.daytimeTotalPrecipitationDuration;
     }
 
-    public void setDaytimeTotalPrecipitationDuration(
-            Float daytimeTotalPrecipitationDuration) {
+    public void setDaytimeTotalPrecipitationDuration(Float daytimeTotalPrecipitationDuration) {
         this.daytimeTotalPrecipitationDuration = daytimeTotalPrecipitationDuration;
     }
 
@@ -531,8 +675,7 @@ public class DailyEntity {
         return this.daytimeThunderstormPrecipitationDuration;
     }
 
-    public void setDaytimeThunderstormPrecipitationDuration(
-            Float daytimeThunderstormPrecipitationDuration) {
+    public void setDaytimeThunderstormPrecipitationDuration(Float daytimeThunderstormPrecipitationDuration) {
         this.daytimeThunderstormPrecipitationDuration = daytimeThunderstormPrecipitationDuration;
     }
 
@@ -540,8 +683,7 @@ public class DailyEntity {
         return this.daytimeRainPrecipitationDuration;
     }
 
-    public void setDaytimeRainPrecipitationDuration(
-            Float daytimeRainPrecipitationDuration) {
+    public void setDaytimeRainPrecipitationDuration(Float daytimeRainPrecipitationDuration) {
         this.daytimeRainPrecipitationDuration = daytimeRainPrecipitationDuration;
     }
 
@@ -549,8 +691,7 @@ public class DailyEntity {
         return this.daytimeSnowPrecipitationDuration;
     }
 
-    public void setDaytimeSnowPrecipitationDuration(
-            Float daytimeSnowPrecipitationDuration) {
+    public void setDaytimeSnowPrecipitationDuration(Float daytimeSnowPrecipitationDuration) {
         this.daytimeSnowPrecipitationDuration = daytimeSnowPrecipitationDuration;
     }
 
@@ -558,8 +699,7 @@ public class DailyEntity {
         return this.daytimeIcePrecipitationDuration;
     }
 
-    public void setDaytimeIcePrecipitationDuration(
-            Float daytimeIcePrecipitationDuration) {
+    public void setDaytimeIcePrecipitationDuration(Float daytimeIcePrecipitationDuration) {
         this.daytimeIcePrecipitationDuration = daytimeIcePrecipitationDuration;
     }
 
@@ -639,8 +779,7 @@ public class DailyEntity {
         return this.nighttimeRealFeelTemperature;
     }
 
-    public void setNighttimeRealFeelTemperature(
-            Integer nighttimeRealFeelTemperature) {
+    public void setNighttimeRealFeelTemperature(Integer nighttimeRealFeelTemperature) {
         this.nighttimeRealFeelTemperature = nighttimeRealFeelTemperature;
     }
 
@@ -648,8 +787,7 @@ public class DailyEntity {
         return this.nighttimeRealFeelShaderTemperature;
     }
 
-    public void setNighttimeRealFeelShaderTemperature(
-            Integer nighttimeRealFeelShaderTemperature) {
+    public void setNighttimeRealFeelShaderTemperature(Integer nighttimeRealFeelShaderTemperature) {
         this.nighttimeRealFeelShaderTemperature = nighttimeRealFeelShaderTemperature;
     }
 
@@ -657,8 +795,7 @@ public class DailyEntity {
         return this.nighttimeApparentTemperature;
     }
 
-    public void setNighttimeApparentTemperature(
-            Integer nighttimeApparentTemperature) {
+    public void setNighttimeApparentTemperature(Integer nighttimeApparentTemperature) {
         this.nighttimeApparentTemperature = nighttimeApparentTemperature;
     }
 
@@ -666,8 +803,7 @@ public class DailyEntity {
         return this.nighttimeWindChillTemperature;
     }
 
-    public void setNighttimeWindChillTemperature(
-            Integer nighttimeWindChillTemperature) {
+    public void setNighttimeWindChillTemperature(Integer nighttimeWindChillTemperature) {
         this.nighttimeWindChillTemperature = nighttimeWindChillTemperature;
     }
 
@@ -675,8 +811,7 @@ public class DailyEntity {
         return this.nighttimeWetBulbTemperature;
     }
 
-    public void setNighttimeWetBulbTemperature(
-            Integer nighttimeWetBulbTemperature) {
+    public void setNighttimeWetBulbTemperature(Integer nighttimeWetBulbTemperature) {
         this.nighttimeWetBulbTemperature = nighttimeWetBulbTemperature;
     }
 
@@ -684,8 +819,7 @@ public class DailyEntity {
         return this.nighttimeDegreeDayTemperature;
     }
 
-    public void setNighttimeDegreeDayTemperature(
-            Integer nighttimeDegreeDayTemperature) {
+    public void setNighttimeDegreeDayTemperature(Integer nighttimeDegreeDayTemperature) {
         this.nighttimeDegreeDayTemperature = nighttimeDegreeDayTemperature;
     }
 
@@ -701,8 +835,7 @@ public class DailyEntity {
         return this.nighttimeThunderstormPrecipitation;
     }
 
-    public void setNighttimeThunderstormPrecipitation(
-            Float nighttimeThunderstormPrecipitation) {
+    public void setNighttimeThunderstormPrecipitation(Float nighttimeThunderstormPrecipitation) {
         this.nighttimeThunderstormPrecipitation = nighttimeThunderstormPrecipitation;
     }
 
@@ -734,8 +867,7 @@ public class DailyEntity {
         return this.nighttimeTotalPrecipitationProbability;
     }
 
-    public void setNighttimeTotalPrecipitationProbability(
-            Float nighttimeTotalPrecipitationProbability) {
+    public void setNighttimeTotalPrecipitationProbability(Float nighttimeTotalPrecipitationProbability) {
         this.nighttimeTotalPrecipitationProbability = nighttimeTotalPrecipitationProbability;
     }
 
@@ -743,8 +875,7 @@ public class DailyEntity {
         return this.nighttimeThunderstormPrecipitationProbability;
     }
 
-    public void setNighttimeThunderstormPrecipitationProbability(
-            Float nighttimeThunderstormPrecipitationProbability) {
+    public void setNighttimeThunderstormPrecipitationProbability(Float nighttimeThunderstormPrecipitationProbability) {
         this.nighttimeThunderstormPrecipitationProbability = nighttimeThunderstormPrecipitationProbability;
     }
 
@@ -752,8 +883,7 @@ public class DailyEntity {
         return this.nighttimeRainPrecipitationProbability;
     }
 
-    public void setNighttimeRainPrecipitationProbability(
-            Float nighttimeRainPrecipitationProbability) {
+    public void setNighttimeRainPrecipitationProbability(Float nighttimeRainPrecipitationProbability) {
         this.nighttimeRainPrecipitationProbability = nighttimeRainPrecipitationProbability;
     }
 
@@ -761,8 +891,7 @@ public class DailyEntity {
         return this.nighttimeSnowPrecipitationProbability;
     }
 
-    public void setNighttimeSnowPrecipitationProbability(
-            Float nighttimeSnowPrecipitationProbability) {
+    public void setNighttimeSnowPrecipitationProbability(Float nighttimeSnowPrecipitationProbability) {
         this.nighttimeSnowPrecipitationProbability = nighttimeSnowPrecipitationProbability;
     }
 
@@ -770,8 +899,7 @@ public class DailyEntity {
         return this.nighttimeIcePrecipitationProbability;
     }
 
-    public void setNighttimeIcePrecipitationProbability(
-            Float nighttimeIcePrecipitationProbability) {
+    public void setNighttimeIcePrecipitationProbability(Float nighttimeIcePrecipitationProbability) {
         this.nighttimeIcePrecipitationProbability = nighttimeIcePrecipitationProbability;
     }
 
@@ -779,8 +907,7 @@ public class DailyEntity {
         return this.nighttimeTotalPrecipitationDuration;
     }
 
-    public void setNighttimeTotalPrecipitationDuration(
-            Float nighttimeTotalPrecipitationDuration) {
+    public void setNighttimeTotalPrecipitationDuration(Float nighttimeTotalPrecipitationDuration) {
         this.nighttimeTotalPrecipitationDuration = nighttimeTotalPrecipitationDuration;
     }
 
@@ -788,8 +915,7 @@ public class DailyEntity {
         return this.nighttimeThunderstormPrecipitationDuration;
     }
 
-    public void setNighttimeThunderstormPrecipitationDuration(
-            Float nighttimeThunderstormPrecipitationDuration) {
+    public void setNighttimeThunderstormPrecipitationDuration(Float nighttimeThunderstormPrecipitationDuration) {
         this.nighttimeThunderstormPrecipitationDuration = nighttimeThunderstormPrecipitationDuration;
     }
 
@@ -797,8 +923,7 @@ public class DailyEntity {
         return this.nighttimeRainPrecipitationDuration;
     }
 
-    public void setNighttimeRainPrecipitationDuration(
-            Float nighttimeRainPrecipitationDuration) {
+    public void setNighttimeRainPrecipitationDuration(Float nighttimeRainPrecipitationDuration) {
         this.nighttimeRainPrecipitationDuration = nighttimeRainPrecipitationDuration;
     }
 
@@ -806,8 +931,7 @@ public class DailyEntity {
         return this.nighttimeSnowPrecipitationDuration;
     }
 
-    public void setNighttimeSnowPrecipitationDuration(
-            Float nighttimeSnowPrecipitationDuration) {
+    public void setNighttimeSnowPrecipitationDuration(Float nighttimeSnowPrecipitationDuration) {
         this.nighttimeSnowPrecipitationDuration = nighttimeSnowPrecipitationDuration;
     }
 
@@ -815,8 +939,7 @@ public class DailyEntity {
         return this.nighttimeIcePrecipitationDuration;
     }
 
-    public void setNighttimeIcePrecipitationDuration(
-            Float nighttimeIcePrecipitationDuration) {
+    public void setNighttimeIcePrecipitationDuration(Float nighttimeIcePrecipitationDuration) {
         this.nighttimeIcePrecipitationDuration = nighttimeIcePrecipitationDuration;
     }
 
@@ -1099,5 +1222,7 @@ public class DailyEntity {
     public void setHoursOfSun(float hoursOfSun) {
         this.hoursOfSun = hoursOfSun;
     }
-
 }
+
+
+

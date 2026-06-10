@@ -11,15 +11,13 @@ import wangdaye.com.geometricweather.common.basic.models.weather.Temperature;
 import wangdaye.com.geometricweather.common.basic.models.weather.UV;
 import wangdaye.com.geometricweather.common.basic.models.weather.Wind;
 import wangdaye.com.geometricweather.db.entities.HourlyEntity;
-import wangdaye.com.geometricweather.db.converters.WeatherSourceConverter;
-
 public class HourlyEntityGenerator {
 
     public static HourlyEntity generate(String cityId, WeatherSource source, Hourly hourly) {
         HourlyEntity entity = new HourlyEntity();
 
         entity.cityId = cityId;
-        entity.weatherSource = new WeatherSourceConverter().convertToDatabaseValue(source);
+        entity.weatherSource = source.getId();
 
         entity.date = hourly.getDate();
         entity.time = hourly.getTime();

@@ -2,6 +2,9 @@ package wangdaye.com.geometricweather.db.generators;
 
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.weather.AirQuality;
 import wangdaye.com.geometricweather.common.basic.models.weather.Base;
@@ -12,10 +15,12 @@ import wangdaye.com.geometricweather.common.basic.models.weather.Temperature;
 import wangdaye.com.geometricweather.common.basic.models.weather.UV;
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
 import wangdaye.com.geometricweather.common.basic.models.weather.Wind;
+import wangdaye.com.geometricweather.db.entities.AlertEntity;
+import wangdaye.com.geometricweather.db.entities.DailyEntity;
 import wangdaye.com.geometricweather.db.entities.HistoryEntity;
+import wangdaye.com.geometricweather.db.entities.HourlyEntity;
+import wangdaye.com.geometricweather.db.entities.MinutelyEntity;
 import wangdaye.com.geometricweather.db.entities.WeatherEntity;
-import wangdaye.com.geometricweather.db.converters.WeatherSourceConverter;
-
 public class WeatherEntityGenerator {
 
     public static WeatherEntity generate(Location location, Weather weather) {
@@ -23,7 +28,7 @@ public class WeatherEntityGenerator {
 
         // base.
         entity.cityId = weather.getBase().getCityId();
-        entity.weatherSource = new WeatherSourceConverter().convertToDatabaseValue(location.getWeatherSource());
+        entity.weatherSource = location.getWeatherSource().getId();
         entity.timeStamp = weather.getBase().getTimeStamp();
         entity.publishDate = weather.getBase().getPublishDate();
         entity.publishTime = weather.getBase().getPublishTime();
@@ -86,10 +91,19 @@ public class WeatherEntityGenerator {
     }
 
     public static Weather generate(@Nullable WeatherEntity weatherEntity,
-                                   @Nullable HistoryEntity historyEntity) {
+                                   @Nullable HistoryEntity historyEntity,
+                                   @Nullable List<DailyEntity> dailyEntities,
+                                   @Nullable List<HourlyEntity> hourlyEntities,
+                                   @Nullable List<MinutelyEntity> minutelyEntities,
+                                   @Nullable List<AlertEntity> alertEntities) {
         if (weatherEntity == null) {
             return null;
         }
+
+        List<DailyEntity> dailyList = dailyEntities != null ? dailyEntities : new ArrayList<DailyEntity>();
+        List<HourlyEntity> hourlyList = hourlyEntities != null ? hourlyEntities : new ArrayList<HourlyEntity>();
+        List<MinutelyEntity> minutelyList = minutelyEntities != null ? minutelyEntities : new ArrayList<MinutelyEntity>();
+        List<AlertEntity> alertList = alertEntities != null ? alertEntities : new ArrayList<AlertEntity>();
 
         return new Weather(
                 new Base(
@@ -152,10 +166,10 @@ public class WeatherEntityGenerator {
                         weatherEntity.hourlyForecast
                 ),
                 HistoryEntityGenerator.generate(historyEntity),
-                DailyEntityGenerator.generate(weatherEntity.getDailyEntityList()),
-                HourlyEntityGenerator.generateModuleList(weatherEntity.getHourlyEntityList()),
-                MinutelyEntityGenerator.generate(weatherEntity.getMinutelyEntityList()),
-                AlertEntityGenerator.generate(weatherEntity.getAlertEntityList())
+                DailyEntityGenerator.generate(dailyList),
+                HourlyEntityGenerator.generateModuleList(hourlyList),
+                MinutelyEntityGenerator.generate(minutelyList),
+                AlertEntityGenerator.generate(alertList)
         );
     }
 }

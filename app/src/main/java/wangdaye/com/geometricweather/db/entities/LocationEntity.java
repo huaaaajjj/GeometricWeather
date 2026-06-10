@@ -1,55 +1,67 @@
 package wangdaye.com.geometricweather.db.entities;
 
-import org.greenrobot.greendao.annotation.Convert;
-import org.greenrobot.greendao.annotation.Entity;
-
-import wangdaye.com.geometricweather.common.basic.models.Location;
-import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource;
-import wangdaye.com.geometricweather.db.converters.TimeZoneConverter;
-import wangdaye.com.geometricweather.db.converters.WeatherSourceConverter;
-
-import org.greenrobot.greendao.annotation.Id;
-
-import org.greenrobot.greendao.annotation.Generated;
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
 import java.util.TimeZone;
 
-/**
- * Location entity.
- *
- * {@link Location}.
- * */
+import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource;
 
-@Entity
+@Entity(tableName = "location")
 public class LocationEntity {
 
-    @Id public String formattedId;
+    @PrimaryKey
+    @NonNull
+    @ColumnInfo(name = "formattedId")
+    public String formattedId;
 
+    @ColumnInfo(name = "cityId")
     public String cityId;
 
+    @ColumnInfo(name = "latitude")
     public float latitude;
+
+    @ColumnInfo(name = "longitude")
     public float longitude;
 
-    @Convert(converter = TimeZoneConverter.class, columnType = String.class)
+    @ColumnInfo(name = "timeZone")
     public TimeZone timeZone;
 
+    @ColumnInfo(name = "country")
     public String country;
+
+    @ColumnInfo(name = "province")
     public String province;
+
+    @ColumnInfo(name = "city")
     public String city;
+
+    @ColumnInfo(name = "district")
     public String district;
 
-    @Convert(converter = WeatherSourceConverter.class, columnType = String.class)
+    @ColumnInfo(name = "weatherSource")
     public WeatherSource weatherSource;
 
+    @ColumnInfo(name = "currentPosition")
     public boolean currentPosition;
+
+    @ColumnInfo(name = "residentPosition")
     public boolean residentPosition;
+
+    @ColumnInfo(name = "china")
     public boolean china;
 
-    @Generated(hash = 1125075138)
-    public LocationEntity(String formattedId, String cityId, float latitude,
-            float longitude, TimeZone timeZone, String country, String province,
-            String city, String district, WeatherSource weatherSource,
-            boolean currentPosition, boolean residentPosition, boolean china) {
+    public LocationEntity() {
+    }
+
+    @Ignore
+    public LocationEntity(@NonNull String formattedId, String cityId, float latitude,
+                          float longitude, TimeZone timeZone, String country, String province,
+                          String city, String district, WeatherSource weatherSource,
+                          boolean currentPosition, boolean residentPosition, boolean china) {
         this.formattedId = formattedId;
         this.cityId = cityId;
         this.latitude = latitude;
@@ -64,85 +76,112 @@ public class LocationEntity {
         this.residentPosition = residentPosition;
         this.china = china;
     }
-    @Generated(hash = 1723987110)
-    public LocationEntity() {
-    }
+
+    @NonNull
     public String getFormattedId() {
         return this.formattedId;
     }
-    public void setFormattedId(String formattedId) {
+
+    public void setFormattedId(@NonNull String formattedId) {
         this.formattedId = formattedId;
     }
+
     public String getCityId() {
         return this.cityId;
     }
+
     public void setCityId(String cityId) {
         this.cityId = cityId;
     }
+
     public float getLatitude() {
         return this.latitude;
     }
+
     public void setLatitude(float latitude) {
         this.latitude = latitude;
     }
+
     public float getLongitude() {
         return this.longitude;
     }
+
     public void setLongitude(float longitude) {
         this.longitude = longitude;
     }
+
     public TimeZone getTimeZone() {
         return this.timeZone;
     }
+
     public void setTimeZone(TimeZone timeZone) {
         this.timeZone = timeZone;
     }
+
     public String getCountry() {
         return this.country;
     }
+
     public void setCountry(String country) {
         this.country = country;
     }
+
     public String getProvince() {
         return this.province;
     }
+
     public void setProvince(String province) {
         this.province = province;
     }
+
     public String getCity() {
         return this.city;
     }
+
     public void setCity(String city) {
         this.city = city;
     }
+
     public String getDistrict() {
         return this.district;
     }
+
     public void setDistrict(String district) {
         this.district = district;
     }
+
     public WeatherSource getWeatherSource() {
         return this.weatherSource;
     }
+
     public void setWeatherSource(WeatherSource weatherSource) {
         this.weatherSource = weatherSource;
     }
+
     public boolean getCurrentPosition() {
         return this.currentPosition;
     }
+
     public void setCurrentPosition(boolean currentPosition) {
         this.currentPosition = currentPosition;
     }
+
     public boolean getResidentPosition() {
         return this.residentPosition;
     }
+
     public void setResidentPosition(boolean residentPosition) {
         this.residentPosition = residentPosition;
     }
+
     public boolean getChina() {
         return this.china;
     }
+
     public void setChina(boolean china) {
         this.china = china;
     }
 }
+
+
+

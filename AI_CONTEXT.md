@@ -85,7 +85,11 @@
 
 - [ ] 升级 compileSdk 34 → 35
 - [ ] 升级 minSdk 21 → 24
-- [ ] GreenDAO → Room
+- [x] GreenDAO → Room（已删除GreenDAO依赖、新建8个Room Entity、DAO、Database类、TypeConverter、重写DatabaseHelper、编译器通过）
+  - Room 版本 2.6.1，数据库 schema 版本 63
+  - 注意：子实体（DailyEntity/HourlyEntity等）weatherSource 字段仍用 String 类型，写入时通过 source.getId() 转换
+  - 注意：LocationEntity 使用 WeatherSource/TimeZone 强类型（由 RoomTypeConverters 处理）
+  - 本地 Microsoft JDK 17 kapt 有 InvocationTargetException 问题，添加 kapt.useWorkerApi=false 后解决
 - [ ] 升级 Gradle 8.x (需先完成 GreenDAO → Room)
 - [ ] 升级 AGP 8.x
 - [ ] 升级 Kotlin 1.9+

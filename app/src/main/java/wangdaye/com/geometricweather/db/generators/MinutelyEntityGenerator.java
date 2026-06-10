@@ -6,15 +6,13 @@ import java.util.List;
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource;
 import wangdaye.com.geometricweather.common.basic.models.weather.Minutely;
 import wangdaye.com.geometricweather.db.entities.MinutelyEntity;
-import wangdaye.com.geometricweather.db.converters.WeatherSourceConverter;
-
 public class MinutelyEntityGenerator {
 
     public static MinutelyEntity generate(String cityId, WeatherSource source, Minutely minutely) {
         MinutelyEntity entity = new MinutelyEntity();
 
         entity.cityId = cityId;
-        entity.weatherSource = new WeatherSourceConverter().convertToDatabaseValue(source);
+        entity.weatherSource = source.getId();
         
         entity.date = minutely.getDate();
         entity.time = minutely.getTime();

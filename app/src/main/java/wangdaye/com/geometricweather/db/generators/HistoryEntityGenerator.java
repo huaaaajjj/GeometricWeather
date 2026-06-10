@@ -6,14 +6,12 @@ import wangdaye.com.geometricweather.common.basic.models.options.provider.Weathe
 import wangdaye.com.geometricweather.common.basic.models.weather.History;
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
 import wangdaye.com.geometricweather.db.entities.HistoryEntity;
-import wangdaye.com.geometricweather.db.converters.WeatherSourceConverter;
-
 public class HistoryEntityGenerator {
 
     public static HistoryEntity generate(String cityId, WeatherSource source, History history) {
         HistoryEntity entity = new HistoryEntity();
         entity.cityId = cityId;
-        entity.weatherSource = new WeatherSourceConverter().convertToDatabaseValue(source);
+        entity.weatherSource = source.getId();
         entity.date = history.getDate();
         entity.time = history.getTime();
         entity.daytimeTemperature = history.getDaytimeTemperature();
@@ -24,7 +22,7 @@ public class HistoryEntityGenerator {
     public static HistoryEntity generate(String cityId, WeatherSource source, Weather weather) {
         HistoryEntity entity = new HistoryEntity();
         entity.cityId = cityId;
-        entity.weatherSource = new WeatherSourceConverter().convertToDatabaseValue(source);
+        entity.weatherSource = source.getId();
         entity.date = weather.getBase().getPublishDate();
         entity.time = weather.getBase().getPublishTime();
         entity.daytimeTemperature = weather.getDailyForecast().get(0).day().getTemperature().getTemperature();

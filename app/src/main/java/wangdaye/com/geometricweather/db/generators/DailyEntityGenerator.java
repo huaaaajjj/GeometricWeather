@@ -17,15 +17,13 @@ import wangdaye.com.geometricweather.common.basic.models.weather.Temperature;
 import wangdaye.com.geometricweather.common.basic.models.weather.UV;
 import wangdaye.com.geometricweather.common.basic.models.weather.Wind;
 import wangdaye.com.geometricweather.db.entities.DailyEntity;
-import wangdaye.com.geometricweather.db.converters.WeatherSourceConverter;
-
 public class DailyEntityGenerator {
 
     public static DailyEntity generate(String cityId, WeatherSource source, Daily daily) {
         DailyEntity entity = new DailyEntity();
 
         entity.cityId = cityId;
-        entity.weatherSource = new WeatherSourceConverter().convertToDatabaseValue(source);
+        entity.weatherSource = source.getId();
         entity.date = daily.getDate();
         entity.time = daily.getTime();
 

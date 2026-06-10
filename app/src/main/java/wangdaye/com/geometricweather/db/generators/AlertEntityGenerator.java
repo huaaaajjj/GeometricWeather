@@ -6,15 +6,13 @@ import java.util.List;
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource;
 import wangdaye.com.geometricweather.common.basic.models.weather.Alert;
 import wangdaye.com.geometricweather.db.entities.AlertEntity;
-import wangdaye.com.geometricweather.db.converters.WeatherSourceConverter;
-
 public class AlertEntityGenerator {
 
     public static AlertEntity generate(String cityId, WeatherSource source, Alert alert) {
         AlertEntity entity = new AlertEntity();
 
         entity.cityId = cityId;
-        entity.weatherSource = new WeatherSourceConverter().convertToDatabaseValue(source);
+        entity.weatherSource = source.getId();
 
         entity.alertId = alert.getAlertId();
         entity.date = alert.getDate();
