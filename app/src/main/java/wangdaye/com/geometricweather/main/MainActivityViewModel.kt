@@ -71,6 +71,12 @@ class MainActivityViewModel @Inject constructor(
 
             val validList = Location.excludeInvalidResidentLocation(application, totalList)
 
+            if (validList.isEmpty()) {
+                initCompleted = true
+                loading.setValue(false)
+                return@initLocations
+            }
+
             val finalId = formattedId ?: validList[0].formattedId
             val current = validList.first { item -> item.formattedId == finalId }
 
