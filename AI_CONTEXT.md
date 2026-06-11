@@ -103,6 +103,13 @@
 - 改变数据库结构
 - 重写 UI
 
+## Java → Kotlin 迁移策略
+
+- **新代码一律用 Kotlin 编写**
+- **修 bug 时顺便将相关 Java 文件迁移为 Kotlin**
+- 不做全量迁移，渐进式推进
+- 已迁移的关键文件: AsyncHelper.kt, MainThemeColorProvider.kt
+
 ## 当前版本
 
 | 组件 | 版本 |
