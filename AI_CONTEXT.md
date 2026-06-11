@@ -162,6 +162,7 @@
 - [x] **PollingUpdateHelper.kt:110** — Toast.makeText().show() 在 IO 线程执行，Looper 未 prepare → 崩溃
 - [x] **LocationHelper.java:178** — `requestLocationFailed` 回调在 IO 线程直接触发，级联到 UI 操作崩溃
 - [x] **SearchActivity.java:138** — `mCurrentList` IO 线程写入/主线程读取，无同步，点击过快 NPE
+- [x] **MainActivityViewModel.kt:74** — `validList[0]` 首次安装空列表崩溃，添加 empty 检查
 
 ### P1 — 天气数据静默丢失/错误
 
