@@ -7,6 +7,7 @@ import androidx.annotation.AttrRes
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import wangdaye.com.geometricweather.GeometricWeather
 import wangdaye.com.geometricweather.R
 import wangdaye.com.geometricweather.common.basic.models.Location
 import wangdaye.com.geometricweather.common.basic.models.options.DarkMode
@@ -130,35 +131,42 @@ class MainThemeColorProvider(
         @JvmStatic
         fun getContext(
             lightTheme: Boolean
-        ) = if (lightTheme) {
-            instance!!.lightContext
-        } else {
-            instance!!.darkContext
+        ): Context {
+            val inst = instance ?: return GeometricWeather.instance
+            return if (lightTheme) {
+                inst.lightContext
+            } else {
+                inst.darkContext
+            }
         }
 
         @JvmStatic
         fun getContext(
             location: Location
-        ) = getContext(
-            lightTheme = isLightTheme(instance!!.host, location)
-        )
+        ): Context {
+            val host = instance?.host ?: return GeometricWeather.instance
+            return getContext(
+                lightTheme = isLightTheme(host, location)
+            )
+        }
 
         @JvmStatic
         fun getColor(
             lightTheme: Boolean,
             @AttrRes id: Int,
         ): Int {
+            val inst = instance ?: return 0
             val cache = if (lightTheme) {
-                instance!!.lightColorCache
+                inst.lightColorCache
             } else {
-                instance!!.darkColorCache
+                inst.darkColorCache
             }
 
             cache[id]?.let {
                 return it
             }
 
-            val color = ThemeManager.getInstance(instance!!.host).getThemeColor(
+            val color = ThemeManager.getInstance(inst.host).getThemeColor(
                 context = getContext(lightTheme),
                 id = id
             )
@@ -170,10 +178,13 @@ class MainThemeColorProvider(
         fun getColor(
             location: Location,
             @AttrRes id: Int,
-        ) = getColor(
-            id = id,
-            lightTheme = isLightTheme(instance!!.host, location)
-        )
+        ): Int {
+            val host = instance?.host ?: return 0
+            return getColor(
+                id = id,
+                lightTheme = isLightTheme(host, location)
+            )
+        }
     }
 
     val lightContext = ThemeManager
