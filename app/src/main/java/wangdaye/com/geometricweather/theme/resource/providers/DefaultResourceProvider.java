@@ -93,8 +93,7 @@ public class DefaultResourceProvider extends ResourceProvider {
     @NonNull
     @Override
     public Drawable getWeatherIcon(WeatherCode code, boolean dayTime) {
-        Drawable drawable = getDrawable(getWeatherIconName(code, dayTime));
-        return drawable != null ? drawable : getFallbackDrawable();
+        return getDrawable(getWeatherIconName(code, dayTime));
     }
 
     @NonNull
@@ -115,7 +114,7 @@ public class DefaultResourceProvider extends ResourceProvider {
         };
     }
 
-    @Nullable
+    @NonNull
     private Drawable getDrawable(@NonNull String resName) {
         try {
             return ResourcesCompat.getDrawable(
@@ -124,7 +123,7 @@ public class DefaultResourceProvider extends ResourceProvider {
                     null
             );
         } catch (Exception e) {
-            return null;
+            return getFallbackDrawable();
         }
     }
 

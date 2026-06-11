@@ -67,11 +67,9 @@
     public boolean *(android.webkit.WebView, java.lang.String);
 }
 
-# Strip verbose/diagnostic log calls (keep errors for debugging)
+# Strip verbose log calls only (keep info/warn/error for debugging)
 -assumenosideeffects class android.util.Log {
     public static int v(...);
-    public static int i(...);
-    public static int w(...);
     public static int d(...);
 }
 
