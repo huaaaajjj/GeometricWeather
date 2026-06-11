@@ -4,6 +4,9 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import wangdaye.com.geometricweather.common.utils.CoordinateUtils;
@@ -14,7 +17,7 @@ import wangdaye.com.geometricweather.settings.SettingsManager;
 public class BaiduIPLocationService extends LocationService {
 
     private final BaiduIPLocationApi mApi;
-    private AsyncHelper.Controller mController;
+    private final List<AsyncHelper.Controller> mControllers = new ArrayList<>();
 
     @Inject
     public BaiduIPLocationService(BaiduIPLocationApi api) {
@@ -23,7 +26,7 @@ public class BaiduIPLocationService extends LocationService {
 
     @Override
     public void requestLocation(Context context, @NonNull LocationCallback callback) {
-        mController = AsyncHelper.runOnIO(() -> {
+        mControllers.add(AsyncHelper.runOnIO(() -> {
             try {
                 BaiduIPLocationResult result = mApi.getLocation(
                         SettingsManager.getInstance(context).getProviderBaiduIpLocationAk(),
@@ -43,14 +46,15 @@ public class BaiduIPLocationService extends LocationService {
             } catch (Exception e) {
                 callback.onCompleted(null);
             }
-        });
+        }));
     }
 
     @Override
     public void cancel() {
-        if (mController != null) {
-            mController.cancel();
+        for (AsyncHelper.Controller c : mControllers) {
+            c.cancel();
         }
+        mControllers.clear();
     }
 
     @Override

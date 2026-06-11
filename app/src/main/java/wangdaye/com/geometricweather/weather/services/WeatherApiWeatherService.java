@@ -20,7 +20,7 @@ import wangdaye.com.geometricweather.weather.json.weatherapi.WeatherApiResult;
 public class WeatherApiWeatherService extends WeatherService {
 
     private final WeatherApiApi mApi;
-    private AsyncHelper.Controller mController;
+    private final List<AsyncHelper.Controller> mControllers = new ArrayList<>();
 
     @Inject
     public WeatherApiWeatherService(WeatherApiApi api) {
@@ -32,7 +32,7 @@ public class WeatherApiWeatherService extends WeatherService {
                                @NonNull RequestWeatherCallback callback) {
         String query = location.getLatitude() + "," + location.getLongitude();
 
-        mController = AsyncHelper.runOnIO(() -> {
+        mControllers.add(AsyncHelper.runOnIO(() -> {
             try {
                 retrofit2.Response<WeatherApiResult> response = mApi.getForecast(
                         BuildConfig.WEATHERAPI_KEY,
@@ -55,7 +55,7 @@ public class WeatherApiWeatherService extends WeatherService {
             } catch (Exception e) {
                 callback.requestWeatherFailed(location);
             }
-        });
+        }));
     }
 
     @NonNull
@@ -74,8 +74,9 @@ public class WeatherApiWeatherService extends WeatherService {
 
     @Override
     public void cancel() {
-        if (mController != null) {
-            mController.cancel();
+        for (AsyncHelper.Controller c : mControllers) {
+            c.cancel();
         }
+        mControllers.clear();
     }
 }

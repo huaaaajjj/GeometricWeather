@@ -20,7 +20,7 @@ import wangdaye.com.geometricweather.weather.json.openmeteo.OpenMeteoResult;
 public class OpenMeteoWeatherService extends WeatherService {
 
     private final OpenMeteoApi mApi;
-    private AsyncHelper.Controller mController;
+    private final List<AsyncHelper.Controller> mControllers = new ArrayList<>();
 
     @Inject
     public OpenMeteoWeatherService(OpenMeteoApi api) {
@@ -32,7 +32,7 @@ public class OpenMeteoWeatherService extends WeatherService {
                                @NonNull RequestWeatherCallback callback) {
         String timezone = TimeZone.getDefault().getID();
 
-        mController = AsyncHelper.runOnIO(() -> {
+        mControllers.add(AsyncHelper.runOnIO(() -> {
             try {
                 retrofit2.Response<OpenMeteoResult> response = mApi.getForecast(
                         location.getLatitude(),
@@ -58,7 +58,7 @@ public class OpenMeteoWeatherService extends WeatherService {
             } catch (Exception e) {
                 callback.requestWeatherFailed(location);
             }
-        });
+        }));
     }
 
     @NonNull
@@ -77,8 +77,9 @@ public class OpenMeteoWeatherService extends WeatherService {
 
     @Override
     public void cancel() {
-        if (mController != null) {
-            mController.cancel();
+        for (AsyncHelper.Controller c : mControllers) {
+            c.cancel();
         }
+        mControllers.clear();
     }
 }

@@ -174,15 +174,15 @@
 
 ### P2 — 并发/资源/代码错误
 
-- [ ] **WeatherApiWeatherService/OpenMeteoWeatherService/CaiYunWeatherService/BaiduIPLocationService** — 单 Controller 被并发覆盖，旧协程泄漏
-- [ ] **CaiYunSignatureInterceptor.java:89** — 签名失败静默发送未签名请求
-- [ ] **AccuResultConverter.java:367** — `airAndPollen` 列表未 null 检查，迭代时 NPE
-- [ ] **GeometricWeather.kt:132** — BufferedReader 异常路径未 close，文件句柄泄漏
-- [ ] **MainActivity.kt:56-57** — Intent action 拼写错误：geomtricweather → geometricweather
+- [x] **WeatherApiWeatherService/OpenMeteoWeatherService/CaiYunWeatherService/BaiduIPLocationService** — 单 Controller → List\<Controller\>，防并发覆盖
+- [x] **CaiYunSignatureInterceptor.java:89** — 签名失败添加 Log.e
+- [x] **AccuResultConverter.java:367** — `airAndPollen` 列表添加 null 检查
+- [x] **GeometricWeather.kt:132** — BufferedReader 改用 kotlin bufferedReader().use{}
+- [x] **MainActivity.kt:56-57** — Intent action 拼写错误：geomtricweather → geometricweather
 
 ### P3 — 低风险/代码质量
 
-- [ ] **GeometricWeather.kt:226** — observeForever 从未 removeObserver
-- [ ] **MainThemeColorProvider.kt:66** — static 持有 Activity 引用
-- [ ] **ObjectUtils.java:13-20** — ObjectStream 未 close
-- [ ] **MfResultConverter.java:116,138** — 硬编码 Europe/Paris 时区（有 TODO 未修复）
+- [x] **ObjectUtils.java:13-20** — ObjectStream 改为 try-with-resources
+- [ ] **GeometricWeather.kt:226** — observeForever 未 removeObserver（Application 生命周期，单次调用，低风险）
+- [ ] **MainThemeColorProvider.kt:66** — static 持有 Activity（已有 @SuppressLint + Lifecycle 清理，低风险）
+- [ ] **MfResultConverter.java:116,138** — 硬编码 Europe/Paris 时区（MF 仅限法国地区，低风险）

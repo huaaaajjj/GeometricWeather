@@ -22,7 +22,7 @@ import wangdaye.com.geometricweather.weather.json.caiyun.CaiYunWeatherResult;
 public class CaiYunWeatherService extends WeatherService {
 
     private final CaiYunApi mApi;
-    private AsyncHelper.Controller mController;
+    private final List<AsyncHelper.Controller> mControllers = new ArrayList<>();
 
     @Inject
     public CaiYunWeatherService(CaiYunApi cyApi) {
@@ -32,7 +32,7 @@ public class CaiYunWeatherService extends WeatherService {
     @Override
     public void requestWeather(Context context,
                                Location location, @NonNull RequestWeatherCallback callback) {
-        mController = AsyncHelper.runOnIO(() -> {
+        mControllers.add(AsyncHelper.runOnIO(() -> {
             try {
                 android.util.Log.d("CaiYunService", "Requesting weather for " + location.getLatitude() + "," + location.getLongitude());
                 retrofit2.Response<CaiYunWeatherResult> response = mApi.getWeather(
@@ -71,7 +71,7 @@ public class CaiYunWeatherService extends WeatherService {
                 android.util.Log.e("CaiYunService", "Exception requesting weather", e);
                 callback.requestWeatherFailed(location);
             }
-        });
+        }));
     }
 
     @NonNull
@@ -97,7 +97,7 @@ public class CaiYunWeatherService extends WeatherService {
                                 @NonNull RequestLocationCallback callback) {
         final boolean hasGeocodeInformation = location.hasGeocodeInformation();
 
-        mController = AsyncHelper.runOnIO(() -> {
+        mControllers.add(AsyncHelper.runOnIO(() -> {
             DatabaseHelper.getInstance(context).ensureChineseCityList(context);
             List<Location> locationList = new ArrayList<>();
 
@@ -127,13 +127,14 @@ public class CaiYunWeatherService extends WeatherService {
             } else {
                 callback.requestLocationFailed(location.getFormattedId());
             }
-        });
+        }));
     }
 
     @Override
     public void cancel() {
-        if (mController != null) {
-            mController.cancel();
+        for (AsyncHelper.Controller c : mControllers) {
+            c.cancel();
         }
+        mControllers.clear();
     }
 }

@@ -53,10 +53,10 @@ class MainActivity : GeoActivity(),
         const val ACTION_MAIN = "com.wangdaye.geometricweather.Main"
         const val KEY_MAIN_ACTIVITY_LOCATION_FORMATTED_ID = "MAIN_ACTIVITY_LOCATION_FORMATTED_ID"
 
-        const val ACTION_MANAGEMENT = "com.wangdaye.geomtricweather.ACTION_MANAGEMENT"
-        const val ACTION_SHOW_ALERTS = "com.wangdaye.geomtricweather.ACTION_SHOW_ALERTS"
+        const val ACTION_MANAGEMENT = "com.wangdaye.geometricweather.ACTION_MANAGEMENT"
+        const val ACTION_SHOW_ALERTS = "com.wangdaye.geometricweather.ACTION_SHOW_ALERTS"
 
-        const val ACTION_SHOW_DAILY_FORECAST = "com.wangdaye.geomtricweather.ACTION_SHOW_DAILY_FORECAST"
+        const val ACTION_SHOW_DAILY_FORECAST = "com.wangdaye.geometricweather.ACTION_SHOW_DAILY_FORECAST"
         const val KEY_DAILY_INDEX = "DAILY_INDEX"
 
         private const val TAG_FRAGMENT_HOME = "fragment_main"

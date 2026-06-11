@@ -1,6 +1,7 @@
 package wangdaye.com.geometricweather.common.retrofit.interceptors;
 
 import android.util.Base64;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -20,6 +21,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class CaiYunSignatureInterceptor implements Interceptor {
+
+    private static final String TAG = "CaiYunInterceptor";
 
     private final String appKey;
     private final String appSecret;
@@ -87,6 +90,7 @@ public class CaiYunSignatureInterceptor implements Interceptor {
 
             return chain.proceed(signed);
         } catch (Exception e) {
+            Log.e(TAG, "Signature generation failed", e);
             return chain.proceed(original);
         }
     }

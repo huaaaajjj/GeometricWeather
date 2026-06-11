@@ -365,6 +365,7 @@ public class AccuResultConverter {
     @Nullable
     private static AccuDailyResult.DailyForecasts.AirAndPollen getAirAndPollen(
             List<AccuDailyResult.DailyForecasts.AirAndPollen> list, String name) {
+        if (list == null) return null;
         for (AccuDailyResult.DailyForecasts.AirAndPollen item : list) {
             if (item.Name.equals(name)) {
                 return item;

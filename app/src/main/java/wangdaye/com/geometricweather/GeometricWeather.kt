@@ -13,9 +13,7 @@ import wangdaye.com.geometricweather.common.utils.LanguageUtils
 import wangdaye.com.geometricweather.common.utils.helpers.BuglyHelper
 import wangdaye.com.geometricweather.settings.SettingsManager
 import wangdaye.com.geometricweather.theme.ThemeManager
-import java.io.BufferedReader
 import java.io.File
-import java.io.FileReader
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -131,12 +129,7 @@ class GeometricWeather : MultiDexApplication(),
 
         fun getProcessName() = try {
             val file = File("/proc/" + Process.myPid() + "/" + "cmdline")
-            val mBufferedReader = BufferedReader(FileReader(file))
-            val processName = mBufferedReader.readLine().trim {
-                it <= ' '
-            }
-            mBufferedReader.close()
-
+            val processName = file.bufferedReader().use { it.readLine().trim { ch -> ch <= ' ' } }
             processName
         } catch (e: Exception) {
             e.printStackTrace()
