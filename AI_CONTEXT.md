@@ -93,6 +93,10 @@
 - 清理 proguard-rules.pro: 移除 18 个未解析类名 (GreenDAO, RxJava internal, DataStore protobuf 等)
 - 添加缺失权限: POST_NOTIFICATIONS, FOREGROUND_SERVICE_LOCATION, SCHEDULE_EXACT_ALARM
 - 修复 JVM OOM 崩溃: gradle.properties 内存 4096M → 2048M
+- 修复 MainAdapter 和 MainThemeColorProvider 的 NPE 崩溃
+  - MainAdapter: onBindViewHolder 中添加 mLocation null 检查，getItemCount/getItemViewType 添加 mViewTypeList null 检查
+  - MainThemeColorProvider: getColor()/getContext() 方法添加 instance null 检查，返回安全默认值
+  - 防止 RecyclerView 布局时和 MainThemeColorProvider 未绑定时的 NPE 崩溃
 
 ## 禁止
 
