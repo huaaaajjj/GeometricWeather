@@ -32,21 +32,32 @@ class MainActivityRepository @Inject constructor(
 
     fun initLocations(context: Context, formattedId: String, callback: AsyncHelper.Callback<List<Location>>) {
         AsyncHelper.runOnIO({ emitter ->
-            val list = DatabaseHelper.getInstance(context).readLocationList()
+            try {
+                val list = DatabaseHelper.getInstance(context).readLocationList()
 
-            var index = 0
-            for (i in list.indices) {
-                if (list[i].formattedId == formattedId) {
-                    index = i
-                    break
+                if (list.isEmpty()) {
+                    emitter.send(list, true)
+                    return@runOnIO
                 }
-            }
 
-            list[index] = Location.copy(
-                src = list[index],
-                weather = DatabaseHelper.getInstance(context).readWeather(list[index])
-            )
-            emitter.send(list, true)
+                var index = 0
+                for (i in list.indices) {
+                    if (list[i].formattedId == formattedId) {
+                        index = i
+                        break
+                    }
+                }
+
+                val weather = DatabaseHelper.getInstance(context).readWeather(list[index])
+                list[index] = Location.copy(
+                    src = list[index],
+                    weather = weather
+                )
+                emitter.send(list, true)
+            } catch (e: Exception) {
+                android.util.Log.e("MainActivityRepo", "initLocations failed", e)
+                emitter.send(emptyList(), true)
+            }
         }, callback)
     }
 
