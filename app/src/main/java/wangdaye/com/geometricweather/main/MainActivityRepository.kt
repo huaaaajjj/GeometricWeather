@@ -36,9 +36,7 @@ class MainActivityRepository @Inject constructor(
                 val list = DatabaseHelper.getInstance(context).readLocationList()
 
                 if (list.isEmpty()) {
-                    val defaultLocation = Location.buildDefaultLocation(
-                        wangdaye.com.geometricweather.settings.SettingsManager.getInstance(context).weatherSource
-                    )
+                    val defaultLocation = Location.buildLocal()
                     DatabaseHelper.getInstance(context).writeLocation(defaultLocation)
                     emitter.send(listOf(defaultLocation), true)
                     return@runOnIO

@@ -113,21 +113,10 @@ class MainActivityViewModel @Inject constructor(
         val total = ArrayList(
             totalLocationList.value?.locationList ?: emptyList()
         )
-        var found = false
         for (i in total.indices) {
             if (total[i].formattedId == location.formattedId) {
                 total[i] = location
-                found = true
                 break
-            }
-        }
-        if (!found) {
-            for (i in total.indices) {
-                if (total[i].isCurrentPosition) {
-                    total[i] = location
-                    found = true
-                    break
-                }
             }
         }
 
