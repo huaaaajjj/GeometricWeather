@@ -35,17 +35,23 @@ public class CaiYunSignatureInterceptor implements Interceptor {
         Request original = chain.request();
         HttpUrl url = original.url();
 
-        if (!url.host().contains("caiyunapp.com")) {
+        if (url.host() == null || !url.host().contains("caiyunapp.com")) {
+            return chain.proceed(original);
+        }
+
+        if (appKey == null || appSecret == null) {
             return chain.proceed(original);
         }
 
         try {
             String path = url.encodedPath();
+            if (path == null) path = "/";
             String nonce = UUID.randomUUID().toString();
             long timestamp = System.currentTimeMillis() / 1000;
 
             TreeMap<String, String> sortedQuery = new TreeMap<>();
             for (String name : url.queryParameterNames()) {
+                if (name == null) continue;
                 String value = url.queryParameter(name);
                 if (value != null) {
                     sortedQuery.put(name, value);
@@ -55,21 +61,18 @@ public class CaiYunSignatureInterceptor implements Interceptor {
             StringBuilder queryStr = new StringBuilder();
             boolean first = true;
             for (Map.Entry<String, String> entry : sortedQuery.entrySet()) {
+                String key = entry.getKey();
+                String val = entry.getValue();
+                if (key == null || val == null) continue;
                 if (!first) queryStr.append("&");
-                queryStr.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+                queryStr.append(URLEncoder.encode(key, "UTF-8"));
                 queryStr.append("=");
-                queryStr.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+                queryStr.append(URLEncoder.encode(val, "UTF-8"));
                 first = false;
             }
 
-            String stringToSign = String.join(":",
-                    "GET",
-                    path,
-                    queryStr.toString(),
-                    appKey,
-                    nonce,
-                    String.valueOf(timestamp)
-            );
+            String stringToSign = "GET" + ":" + path + ":" + queryStr.toString()
+                    + ":" + appKey + ":" + nonce + ":" + timestamp;
 
             Mac hmac = Mac.getInstance("HmacSHA256");
             hmac.init(new SecretKeySpec(appSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
@@ -82,10 +85,8 @@ public class CaiYunSignatureInterceptor implements Interceptor {
                     .header("x-cy-signature", signature)
                     .build();
 
-            android.util.Log.d("CaiYunInterceptor", "Signing request: " + path + " query=" + queryStr);
             return chain.proceed(signed);
         } catch (Exception e) {
-            android.util.Log.e("CaiYunInterceptor", "Failed to sign request, proceeding unsigned", e);
             return chain.proceed(original);
         }
     }

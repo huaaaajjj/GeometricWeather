@@ -90,6 +90,9 @@
   - 替换 demo token (TAkhjf8d1nlSlspN) 为注册的 AppKey (xgsrrjaqfmra3ewz)
   - 签名算法: HMAC-SHA256(method:path:query:app_key:nonce:timestamp, app_secret)
   - 添加 x-cy-nonce, x-cy-timestamp, x-cy-signature 请求头
+- 清理 proguard-rules.pro: 移除 18 个未解析类名 (GreenDAO, RxJava internal, DataStore protobuf 等)
+- 添加缺失权限: POST_NOTIFICATIONS, FOREGROUND_SERVICE_LOCATION, SCHEDULE_EXACT_ALARM
+- 修复 JVM OOM 崩溃: gradle.properties 内存 4096M → 2048M
 
 ## 禁止
 
