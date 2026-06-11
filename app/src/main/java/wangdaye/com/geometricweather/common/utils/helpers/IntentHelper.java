@@ -225,20 +225,34 @@ public class IntentHelper {
     }
 
     public static void startWebViewActivity(Context context, String url) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        if (isIntentAvailable(context, intent)) {
-            context.startActivity(intent);
-        } else {
-            SnackbarHelper.showSnackbar("Unavailable internet browser.");
+        if (context == null || url == null || url.isEmpty()) {
+            return;
+        }
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            if (isIntentAvailable(context, intent)) {
+                context.startActivity(intent);
+            } else {
+                SnackbarHelper.showSnackbar("Unavailable internet browser.");
+            }
+        } catch (Exception e) {
+            android.util.Log.e("IntentHelper", "Failed to start web view", e);
         }
     }
 
     public static void startEmailActivity(Context context, String url) {
-        Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse(url));
-        if (isIntentAvailable(context, intent)) {
-            context.startActivity(intent);
-        } else {
-            SnackbarHelper.showSnackbar("Unavailable e-mail.");
+        if (context == null || url == null || url.isEmpty()) {
+            return;
+        }
+        try {
+            Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse(url));
+            if (isIntentAvailable(context, intent)) {
+                context.startActivity(intent);
+            } else {
+                SnackbarHelper.showSnackbar("Unavailable e-mail.");
+            }
+        } catch (Exception e) {
+            android.util.Log.e("IntentHelper", "Failed to start email", e);
         }
     }
 

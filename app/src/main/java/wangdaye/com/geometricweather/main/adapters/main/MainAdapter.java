@@ -130,7 +130,9 @@ public class MainAdapter extends RecyclerView.Adapter<AbstractMainViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull AbstractMainViewHolder holder, int position) {
-        assert mLocation != null;
+        if (mLocation == null) {
+            return;
+        }
         if (holder instanceof AbstractMainCardViewHolder) {
             ((AbstractMainCardViewHolder) holder).onBindView(
                     mActivity,
@@ -153,11 +155,14 @@ public class MainAdapter extends RecyclerView.Adapter<AbstractMainViewHolder> {
 
     @Override
     public int getItemCount() {
-        return mViewTypeList.size();
+        return mViewTypeList != null ? mViewTypeList.size() : 0;
     }
 
     @Override
     public int getItemViewType(int position) {
+        if (mViewTypeList == null || position < 0 || position >= mViewTypeList.size()) {
+            return ViewType.FOOTER;
+        }
         return mViewTypeList.get(position);
     }
 
