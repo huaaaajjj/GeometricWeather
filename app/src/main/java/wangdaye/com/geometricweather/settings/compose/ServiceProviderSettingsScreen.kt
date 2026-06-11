@@ -105,6 +105,7 @@ fun ServiceProviderSettingsScreen(
     }
 
     sectionFooterItem(R.string.settings_category_location)
+
     sectionHeaderItem(R.string.settings_category_advanced)
 
     clickablePreferenceItem(R.string.settings_title_service_provider_advanced) {
