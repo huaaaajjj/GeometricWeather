@@ -1,6 +1,7 @@
 package wangdaye.com.geometricweather.weather.services;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -28,6 +29,8 @@ import wangdaye.com.geometricweather.weather.json.accu.AccuLocationResult;
 import wangdaye.com.geometricweather.weather.json.accu.AccuMinuteResult;
 
 public class AccuWeatherService extends WeatherService {
+
+    private static final String TAG = "AccuWeatherService";
 
     private final AccuWeatherApi mApi;
     private final List<AsyncHelper.Controller> mControllers = new ArrayList<>();
@@ -58,7 +61,8 @@ public class AccuWeatherService extends WeatherService {
                         SettingsManager.getInstance(context).getProviderAccuCurrentKey(),
                         languageCode, true
                 ).execute().body());
-                if (currentResult.get() == null) {
+                List<AccuCurrentResult> currentList = currentResult.get();
+                if (currentList == null || currentList.isEmpty()) {
                     anyRequiredFailed.set(true);
                 }
             } catch (Exception e) {
@@ -107,7 +111,8 @@ public class AccuWeatherService extends WeatherService {
                         true,
                         location.getLatitude() + "," + location.getLongitude()
                 ).execute().body());
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to fetch minute", e);
             }
             latch.countDown();
         }));
@@ -119,7 +124,8 @@ public class AccuWeatherService extends WeatherService {
                         SettingsManager.getInstance(context).getProviderAccuWeatherKey(),
                         languageCode, true
                 ).execute().body());
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to fetch alert", e);
             }
             latch.countDown();
         }));
@@ -130,7 +136,8 @@ public class AccuWeatherService extends WeatherService {
                         location.getCityId(),
                         SettingsManager.getInstance(context).getProviderAccuAqiKey()
                 ).execute().body());
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to fetch AQI", e);
             }
             latch.countDown();
         }));
@@ -143,10 +150,15 @@ public class AccuWeatherService extends WeatherService {
             if (anyRequiredFailed.get()) {
                 callback.requestWeatherFailed(location);
             } else {
+                List<AccuCurrentResult> currentList = currentResult.get();
+                if (currentList == null || currentList.isEmpty()) {
+                    callback.requestWeatherFailed(location);
+                    return;
+                }
                 WeatherResultWrapper wrapper = AccuResultConverter.convert(
                         context,
                         location,
-                        currentResult.get().get(0),
+                        currentList.get(0),
                         dailyResult.get(),
                         hourlyResult.get(),
                         minuteResult.get(),

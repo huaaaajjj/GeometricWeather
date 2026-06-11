@@ -39,8 +39,11 @@ public class LocationEntity {
     @ColumnInfo(name = "city")
     public String city;
 
-    @ColumnInfo(name = "district")
+@ColumnInfo(name = "district")
     public String district;
+
+    @ColumnInfo(name = "street")
+    public String street;
 
     @ColumnInfo(name = "weatherSource")
     public WeatherSource weatherSource;

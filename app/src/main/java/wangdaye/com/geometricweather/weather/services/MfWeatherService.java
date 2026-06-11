@@ -1,6 +1,7 @@
 package wangdaye.com.geometricweather.weather.services;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -30,6 +31,10 @@ import wangdaye.com.geometricweather.weather.json.mf.MfRainResult;
 import wangdaye.com.geometricweather.weather.json.mf.MfWarningsResult;
 
 public class MfWeatherService extends WeatherService {
+
+    private static final String TAG = "MfWeatherService";
+    private static final double DEFAULT_LAT = 46.5;
+    private static final double DEFAULT_LON = 2.5;
 
     private final MfWeatherApi mMfApi;
     private final AtmoAuraIqaApi mAtmoAuraApi;
@@ -102,44 +107,49 @@ public class MfWeatherService extends WeatherService {
                         location.getLatitude(), location.getLongitude(),
                         languageCode, SettingsManager.getInstance(context).getProviderMfWsftKey()
                 ).execute().body());
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to fetch rain", e);
             }
             latch.countDown();
         }));
 
         mControllers.add(AsyncHelper.runOnIO(() -> {
             try {
+                String province = location.getProvince();
                 warningsResult.set(mMfApi.getWarnings(
-                        location.getProvince(), null,
+                        province != null ? province : "", null,
                         SettingsManager.getInstance(context).getProviderMfWsftKey()
                 ).execute().body());
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to fetch warnings", e);
             }
             latch.countDown();
         }));
 
         mControllers.add(AsyncHelper.runOnIO(() -> {
             try {
-                if (location.getProvince().equals("Auvergne-Rhône-Alpes")
-                        || location.getProvince().equals("01")
-                        || location.getProvince().equals("03")
-                        || location.getProvince().equals("07")
-                        || location.getProvince().equals("15")
-                        || location.getProvince().equals("26")
-                        || location.getProvince().equals("38")
-                        || location.getProvince().equals("42")
-                        || location.getProvince().equals("43")
-                        || location.getProvince().equals("63")
-                        || location.getProvince().equals("69")
-                        || location.getProvince().equals("73")
-                        || location.getProvince().equals("74")) {
+                String province = location.getProvince();
+                if (province != null && (province.equals("Auvergne-Rhône-Alpes")
+                        || province.equals("01")
+                        || province.equals("03")
+                        || province.equals("07")
+                        || province.equals("15")
+                        || province.equals("26")
+                        || province.equals("38")
+                        || province.equals("42")
+                        || province.equals("43")
+                        || province.equals("63")
+                        || province.equals("69")
+                        || province.equals("73")
+                        || province.equals("74"))) {
                     aqiResult.set(mAtmoAuraApi.getQAFull(
                             SettingsManager.getInstance(context).getProviderIqaAtmoAuraKey(),
                             location.getLatitude(),
                             location.getLongitude()
                     ).execute().body());
                 }
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to fetch AQI", e);
             }
             latch.countDown();
         }));
@@ -176,7 +186,7 @@ public class MfWeatherService extends WeatherService {
     public List<Location> requestLocation(Context context, String query) {
         List<MfLocationResult> resultList = null;
         try {
-            resultList = mMfApi.callWeatherLocation(query, 48.86d, 2.34d, SettingsManager.getInstance(context).getProviderMfWsftKey()).execute().body();
+            resultList = mMfApi.callWeatherLocation(query, DEFAULT_LAT, DEFAULT_LON, SettingsManager.getInstance(context).getProviderMfWsftKey()).execute().body();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -232,7 +242,7 @@ public class MfWeatherService extends WeatherService {
         mControllers.add(AsyncHelper.runOnIO(() -> {
             try {
                 List<MfLocationResult> results = mMfApi.getWeatherLocation(
-                        query, 48.86d, 2.34d,
+                        query, DEFAULT_LAT, DEFAULT_LON,
                         SettingsManager.getInstance(context).getProviderMfWsftKey()
                 ).execute().body();
                 if (results != null && results.size() != 0) {

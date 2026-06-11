@@ -34,7 +34,7 @@ public class OpenMeteoWeatherService extends WeatherService {
 
         mController = AsyncHelper.runOnIO(() -> {
             try {
-                OpenMeteoResult result = mApi.getForecast(
+                retrofit2.Response<OpenMeteoResult> response = mApi.getForecast(
                         location.getLatitude(),
                         location.getLongitude(),
                         "temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m",
@@ -43,8 +43,9 @@ public class OpenMeteoWeatherService extends WeatherService {
                         timezone,
                         15,
                         1
-                ).execute().body();
-                if (result != null) {
+                ).execute();
+                if (response.isSuccessful() && response.body() != null) {
+                    OpenMeteoResult result = response.body();
                     Weather weather = OpenMeteoResultConverter.convert(context, location, result);
                     if (weather != null) {
                         callback.requestWeatherSuccess(Location.copy(location, weather));

@@ -153,3 +153,36 @@
 - [x] 升级 Kotlin 1.9+
 - [x] RxJava → Coroutines
 - [ ] Java → Kotlin 逐步迁移
+
+## 已知 Bug（待修复）
+
+### P0 — 会崩溃
+
+- [x] **AccuWeatherService:149** — `currentResult.get().get(0)` 未 null/空列表检查，NPE
+- [x] **PollingUpdateHelper.kt:110** — Toast.makeText().show() 在 IO 线程执行，Looper 未 prepare → 崩溃
+- [x] **LocationHelper.java:178** — `requestLocationFailed` 回调在 IO 线程直接触发，级联到 UI 操作崩溃
+- [x] **SearchActivity.java:138** — `mCurrentList` IO 线程写入/主线程读取，无同步，点击过快 NPE
+
+### P1 — 天气数据静默丢失/错误
+
+- [x] **CaiyunResultConverter.java:83** — `r.wind` 无 null 检查，访问 `.direction`/`.speed` 被 try-catch 静默吞掉
+- [x] **MfWeatherService.java:179,235** — 硬编码 GPS 坐标 48.86d, 2.34d（巴黎），替换为 46.5/2.5（法国中心）
+- [x] **MfWeatherService.java:113,123** — `location.getProvince()` 可能 null，添加 null 检查
+- [x] **全部 7 个天气服务** — 添加 `response.isSuccessful()` 检查（CaiYun/OpenMeteo/WeatherApi）；Accu/OWM/MF 已有 body null 检查+日志
+- [x] **AccuWeatherService.java:109-135** — minute/alert/aqi 空 catch 添加 Log.e
+- [x] **OwmWeatherService.java:84-85** — air pollution 空 catch 添加 Log.e
+
+### P2 — 并发/资源/代码错误
+
+- [ ] **WeatherApiWeatherService/OpenMeteoWeatherService/CaiYunWeatherService/BaiduIPLocationService** — 单 Controller 被并发覆盖，旧协程泄漏
+- [ ] **CaiYunSignatureInterceptor.java:89** — 签名失败静默发送未签名请求
+- [ ] **AccuResultConverter.java:367** — `airAndPollen` 列表未 null 检查，迭代时 NPE
+- [ ] **GeometricWeather.kt:132** — BufferedReader 异常路径未 close，文件句柄泄漏
+- [ ] **MainActivity.kt:56-57** — Intent action 拼写错误：geomtricweather → geometricweather
+
+### P3 — 低风险/代码质量
+
+- [ ] **GeometricWeather.kt:226** — observeForever 从未 removeObserver
+- [ ] **MainThemeColorProvider.kt:66** — static 持有 Activity 引用
+- [ ] **ObjectUtils.java:13-20** — ObjectStream 未 close
+- [ ] **MfResultConverter.java:116,138** — 硬编码 Europe/Paris 时区（有 TODO 未修复）

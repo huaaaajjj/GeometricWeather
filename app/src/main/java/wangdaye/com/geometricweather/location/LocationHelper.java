@@ -169,13 +169,15 @@ public class LocationHelper {
                                 () -> l.requestLocationSuccess(result), 0);
                     });
                 } else {
-                    requestLocationFailed(query);
+                    wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.delayRunOnUI(
+                            () -> l.requestLocationFailed(location), 0);
                 }
             }
 
             @Override
             public void requestLocationFailed(String query) {
-                l.requestLocationFailed(location);
+                wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.delayRunOnUI(
+                        () -> l.requestLocationFailed(location), 0);
             }
         });
     }

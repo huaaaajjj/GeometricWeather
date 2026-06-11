@@ -79,12 +79,14 @@ public class CaiyunResultConverter {
                                     null, null, null, null
                             ),
                             new PrecipitationProbability(null, null, null, null, null),
-                            new Wind(
-                                    getWindDirection(r.wind.direction),
-                                    new WindDegree((float) r.wind.direction, false),
-                                    (float) r.wind.speed,
-                                    CommonConverter.getWindLevel(context, (float) r.wind.speed)
-                            ),
+                            r.wind != null
+                                    ? new Wind(
+                                            getWindDirection(r.wind.direction),
+                                            new WindDegree((float) r.wind.direction, false),
+                                            (float) r.wind.speed,
+                                            CommonConverter.getWindLevel(context, (float) r.wind.speed)
+                                    )
+                                    : new Wind("", new WindDegree(0, true), null, ""),
                             new UV(
                                     r.life_index != null && r.life_index.ultraviolet != null
                                             ? r.life_index.ultraviolet.index : null,

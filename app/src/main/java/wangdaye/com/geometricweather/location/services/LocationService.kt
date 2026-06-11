@@ -19,9 +19,13 @@ abstract class LocationService {
 
     // location.
 
-    data class Result(
+    data class Result @JvmOverloads constructor(
         val latitude: Float,
-        val longitude: Float
+        val longitude: Float,
+        val province: String = "",
+        val city: String = "",
+        val district: String = "",
+        val street: String = ""
     )
     interface LocationCallback {
         fun onCompleted(result: Result?)

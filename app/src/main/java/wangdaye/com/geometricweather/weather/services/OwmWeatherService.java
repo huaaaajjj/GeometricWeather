@@ -1,6 +1,7 @@
 package wangdaye.com.geometricweather.weather.services;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -25,6 +26,8 @@ import wangdaye.com.geometricweather.weather.json.owm.OwmForecastResult;
 import wangdaye.com.geometricweather.weather.json.owm.OwmLocationResult;
 
 public class OwmWeatherService extends WeatherService {
+
+    private static final String TAG = "OwmWeatherService";
 
     private final OwmApi mApi;
     private final List<AsyncHelper.Controller> mControllers = new ArrayList<>();
@@ -81,7 +84,8 @@ public class OwmWeatherService extends WeatherService {
                 airPollutionResult.set(mApi.getAirPollutionCurrent(
                         key, lat, lon
                 ).execute().body());
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to fetch air pollution", e);
             }
             latch.countDown();
         }));

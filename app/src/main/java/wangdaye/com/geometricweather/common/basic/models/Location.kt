@@ -13,7 +13,7 @@ import wangdaye.com.geometricweather.common.utils.LanguageUtils
 import java.util.*
 import kotlin.math.abs
 
-class Location(
+class Location @JvmOverloads constructor(
     val cityId: String,
 
     val latitude: Float,
@@ -24,6 +24,7 @@ class Location(
     val province: String,
     val city: String,
     val district: String,
+    val street: String = "",
 
     val weather: Weather? = null,
     val weatherSource: WeatherSource,
@@ -62,6 +63,7 @@ class Location(
                 province = "",
                 city = "",
                 district = "",
+                street = "",
                 weatherSource = WeatherSource.ACCU,
                 isCurrentPosition = true,
                 isResidentPosition = false,
@@ -80,6 +82,7 @@ class Location(
                 province = "直辖市",
                 city = "北京",
                 district = "",
+                street = "",
                 weatherSource = weatherSource,
                 isCurrentPosition = false,
                 isResidentPosition = false,

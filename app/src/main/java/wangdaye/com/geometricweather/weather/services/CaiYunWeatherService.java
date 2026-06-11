@@ -44,22 +44,27 @@ public class CaiYunWeatherService extends WeatherService {
                 
                 android.util.Log.d("CaiYunService", "Response code: " + response.code());
                 
-                CaiYunWeatherResult result = response.body();
-                if (result != null) {
-                    android.util.Log.d("CaiYunService", "Response status: " + result.status);
-                    WeatherResultWrapper wrapper =
-                            CaiyunResultConverter.convert(context, location, result);
-                    if (wrapper.result != null) {
-                        android.util.Log.d("CaiYunService", "Weather conversion successful");
-                        callback.requestWeatherSuccess(
-                                Location.copy(location, wrapper.result)
-                        );
+                if (response.isSuccessful()) {
+                    CaiYunWeatherResult result = response.body();
+                    if (result != null) {
+                        android.util.Log.d("CaiYunService", "Response status: " + result.status);
+                        WeatherResultWrapper wrapper =
+                                CaiyunResultConverter.convert(context, location, result);
+                        if (wrapper.result != null) {
+                            android.util.Log.d("CaiYunService", "Weather conversion successful");
+                            callback.requestWeatherSuccess(
+                                    Location.copy(location, wrapper.result)
+                            );
+                        } else {
+                            android.util.Log.w("CaiYunService", "Weather conversion returned null");
+                            callback.requestWeatherFailed(location);
+                        }
                     } else {
-                        android.util.Log.w("CaiYunService", "Weather conversion returned null");
+                        android.util.Log.w("CaiYunService", "Response body is null, error: " + response.errorBody());
                         callback.requestWeatherFailed(location);
                     }
                 } else {
-                    android.util.Log.w("CaiYunService", "Response body is null, error: " + response.errorBody());
+                    android.util.Log.w("CaiYunService", "HTTP error: " + response.code() + ", " + response.message());
                     callback.requestWeatherFailed(location);
                 }
             } catch (Exception e) {

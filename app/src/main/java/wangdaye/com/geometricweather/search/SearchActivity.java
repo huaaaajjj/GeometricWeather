@@ -57,7 +57,7 @@ public class SearchActivity extends GeoActivity
     private SearchActivityViewModel mViewModel;
 
     private LocationAdapter mAdapter;
-    private List<Location> mCurrentList;
+    private List<Location> mCurrentList = new ArrayList<>();
 
     private MaterialSheetFab<FabView> mMaterialSheetFab;
     private @Nullable WeatherSourceAdapter mSourceAdapter;

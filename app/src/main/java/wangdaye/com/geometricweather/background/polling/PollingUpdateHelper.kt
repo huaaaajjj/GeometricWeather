@@ -107,11 +107,13 @@ class PollingUpdateHelper(
                 requestData(index, true)
             } else {
                 requestLocationFailed(requestLocation)
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.feedback_not_yet_location),
-                    Toast.LENGTH_SHORT
-                ).show()
+                AsyncHelper.delayRunOnUI(Runnable {
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.feedback_not_yet_location),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }, 0)
             }
         }
 

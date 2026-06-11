@@ -34,14 +34,15 @@ public class WeatherApiWeatherService extends WeatherService {
 
         mController = AsyncHelper.runOnIO(() -> {
             try {
-                WeatherApiResult result = mApi.getForecast(
+                retrofit2.Response<WeatherApiResult> response = mApi.getForecast(
                         BuildConfig.WEATHERAPI_KEY,
                         query,
                         14,
                         "yes",
                         "yes"
-                ).execute().body();
-                if (result != null) {
+                ).execute();
+                if (response.isSuccessful() && response.body() != null) {
+                    WeatherApiResult result = response.body();
                     Weather weather = WeatherApiResultConverter.convert(context, location, result);
                     if (weather != null) {
                         callback.requestWeatherSuccess(Location.copy(location, weather));
