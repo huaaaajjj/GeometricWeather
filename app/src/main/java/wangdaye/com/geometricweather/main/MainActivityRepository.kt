@@ -116,37 +116,38 @@ class MainActivityRepository @Inject constructor(
         context: Context,
         location: Location,
         callback: WeatherRequestCallback,
-    ) = locationHelper.requestLocation(
-        context,
-        location,
-        false,
-        object : LocationHelper.OnRequestLocationListener {
+    ) {
+        android.util.Log.d("Repo", "ensureValidLocation: loc=${location.city} id=${location.formattedId} isCur=${location.isCurrentPosition}")
+        locationHelper.requestLocation(
+            context,
+            location,
+            false,
+            object : LocationHelper.OnRequestLocationListener {
 
-            override fun requestLocationSuccess(requestLocation: Location) {
-                if (requestLocation.formattedId != location.formattedId) {
-                    return
+                override fun requestLocationSuccess(requestLocation: Location) {
+                    android.util.Log.d("Repo", "LOC OK: origId=${location.formattedId} newId=${requestLocation.formattedId} city=${requestLocation.city}")
+                    if (requestLocation.formattedId != location.formattedId) {
+                        android.util.Log.w("Repo", "LOC SKIP: fmtId mismatch!")
+                        return
+                    }
+                    getWeatherWithValidLocationInformation(
+                        context, requestLocation, false, callback
+                    )
                 }
-                getWeatherWithValidLocationInformation(
-                    context,
-                    requestLocation,
-                    false,
-                    callback
-                )
-            }
 
-            override fun requestLocationFailed(requestLocation: Location) {
-                if (requestLocation.formattedId != location.formattedId) {
-                    return
+                override fun requestLocationFailed(requestLocation: Location) {
+                    android.util.Log.w("Repo", "LOC FAIL: origId=${location.formattedId} newId=${requestLocation.formattedId} city=${requestLocation.city} usable=${requestLocation.isUsable}")
+                    if (requestLocation.formattedId != location.formattedId) {
+                        android.util.Log.w("Repo", "LOC SKIP: fmtId mismatch!")
+                        return
+                    }
+                    getWeatherWithValidLocationInformation(
+                        context, requestLocation, true, callback
+                    )
                 }
-                getWeatherWithValidLocationInformation(
-                    context,
-                    requestLocation,
-                    true,
-                    callback
-                )
             }
-        }
-    )
+        )
+    }
 
     private fun getWeatherWithValidLocationInformation(
         context: Context,

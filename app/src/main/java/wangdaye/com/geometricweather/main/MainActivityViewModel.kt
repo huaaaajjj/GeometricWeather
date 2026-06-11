@@ -113,8 +113,10 @@ class MainActivityViewModel @Inject constructor(
         val total = ArrayList(
             totalLocationList.value?.locationList ?: emptyList()
         )
+        android.util.Log.d("VM", "updateInnerData: newId=${location.formattedId} city=${location.city} totalSize=${total.size} totalIds=${total.map { it.formattedId }}")
         for (i in total.indices) {
             if (total[i].formattedId == location.formattedId) {
+                android.util.Log.d("VM", "updateInnerData: MATCH at index $i, replacing")
                 total[i] = location
                 break
             }
@@ -174,6 +176,7 @@ class MainActivityViewModel @Inject constructor(
         locationResult: Boolean,
         weatherUpdateResult: Boolean,
     ) {
+        android.util.Log.d("VM", "onUpdateResult: city=${location.city} id=${location.formattedId} locOK=$locationResult weatherOK=${weatherUpdateResult}")
         if (!weatherUpdateResult) {
             mainMessage.setValue(MainMessage.WEATHER_REQ_FAILED)
         } else if (!locationResult) {

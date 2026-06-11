@@ -82,22 +82,7 @@ public class LocationHelper {
 
             @Override
             public void requestLocationFailed(Location requestLocation) {
-                if (requestLocation.isUsable()) {
-                    l.requestLocationFailed(requestLocation);
-                } else {
-                    Location finalLocation = Location.copy(
-                            Location.buildDefaultLocation(
-                                    SettingsManager.getInstance(context).getWeatherSource()
-                            ),
-                            true,
-                            false
-                    );
-                    wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.runOnIO(() -> {
-                        DatabaseHelper.getInstance(context).writeLocation(finalLocation);
-                        wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.delayRunOnUI(
-                                () -> l.requestLocationFailed(finalLocation), 0);
-                    });
-                }
+                l.requestLocationFailed(requestLocation);
             }
         };
 
