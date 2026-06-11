@@ -144,6 +144,7 @@
 - [x] 升级 compileSdk 34 → 35
 - [ ] 升级 minSdk 21 → 24（暂不升级，仅在关键库必须要求时升级）
 - [x] GreenDAO → Room（已删除GreenDAO依赖、新建8个Room Entity、DAO、Database类、TypeConverter、重写DatabaseHelper、编译器通过）
+- [x] 定位修复 — 还原 manifest.srcFile 路径，Baidu/AMap 服务声明不合并（与 v3.3.6 行为一致）
   - Room 版本 2.6.1，数据库 schema 版本 63
   - 注意：子实体（DailyEntity/HourlyEntity等）weatherSource 字段仍用 String 类型，写入时通过 source.getId() 转换
   - 注意：LocationEntity 使用 WeatherSource/TimeZone 强类型（由 RoomTypeConverters 处理）
