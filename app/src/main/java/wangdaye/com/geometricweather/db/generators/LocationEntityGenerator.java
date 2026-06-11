@@ -19,6 +19,7 @@ public class LocationEntityGenerator {
         entity.province = location.getProvince();
         entity.city = location.getCity();
         entity.district = location.getDistrict();
+        entity.street = location.getStreet();
         entity.weatherSource = location.getWeatherSource();
         entity.currentPosition = location.isCurrentPosition();
         entity.residentPosition = location.isResidentPosition();
@@ -44,6 +45,7 @@ public class LocationEntityGenerator {
                 GeneratorUtils.nonNull(entity.province),
                 GeneratorUtils.nonNull(entity.city),
                 GeneratorUtils.nonNull(entity.district),
+                GeneratorUtils.nonNull(entity.street),
                 null,
                 entity.weatherSource,
                 entity.currentPosition,
