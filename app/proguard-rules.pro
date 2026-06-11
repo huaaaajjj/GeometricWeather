@@ -67,13 +67,12 @@
     public boolean *(android.webkit.WebView, java.lang.String);
 }
 
-# Strip log calls
+# Strip verbose/diagnostic log calls (keep errors for debugging)
 -assumenosideeffects class android.util.Log {
     public static int v(...);
     public static int i(...);
     public static int w(...);
     public static int d(...);
-    public static int e(...);
 }
 
 # AMap
@@ -81,6 +80,15 @@
 -keep class com.amap.api.fence.** { *; }
 -keep class com.loc.** { *; }
 -keep class com.autonavi.aps.amapapi.model.** { *; }
+
+# Baidu
+-keep class com.baidu.location.** { *; }
+-keep class vi.com.gdi.bgl.android.java.** { *; }
+
+# Keep location SDK services declared in manifest
+-keep,allowshrinking class com.baidu.location.f
+-keep,allowshrinking class com.baidu.location.LLSInterface
+-keep,allowshrinking class com.amap.api.location.APSService
 
 # Glide
 -keep public class * implements com.bumptech.glide.module.GlideModule
