@@ -1,6 +1,7 @@
 package wangdaye.com.geometricweather.weather;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -20,6 +21,8 @@ import wangdaye.com.geometricweather.db.DatabaseHelper;
 import wangdaye.com.geometricweather.weather.services.WeatherService;
 
 public class WeatherHelper {
+
+    private static final String TAG = "WeatherHelper";
 
     private final WeatherServiceSet mServiceSet;
     private final List<AsyncHelper.Controller> mControllers = new ArrayList<>();
@@ -41,7 +44,9 @@ public class WeatherHelper {
 
     public void requestWeather(Context c, Location location, @NonNull final OnRequestWeatherListener l) {
         final WeatherService service = mServiceSet.get(location.getWeatherSource());
+        Log.i(TAG, "requestWeather: source=" + location.getWeatherSource() + " cityId=" + location.getCityId() + " city=" + location.getCity());
         if (!NetworkUtils.isAvailable(c)) {
+            Log.w(TAG, "requestWeather: NO NETWORK");
             l.requestWeatherFailed(location);
             return;
         }

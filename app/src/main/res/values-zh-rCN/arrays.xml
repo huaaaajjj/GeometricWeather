@@ -7,12 +7,16 @@
         <item>Accu Weather</item>
         <item>OpenWeather</item>
         <item>Météo France</item>
+        <item>Open-Meteo（免费）</item>
+        <item>WeatherAPI</item>
     </string-array>
     <string-array name="weather_source_voices">
         <item>彩云天气</item>
         <item>ACCU天气</item>
         <item>OPEN天气</item>
         <item>Météo France</item>
+        <item>Open Meteo</item>
+        <item>Weather API</item>
     </string-array>
 
     <!-- Location service. -->

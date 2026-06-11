@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -28,11 +29,9 @@ import wangdaye.com.geometricweather.settings.SettingsManager;
 import wangdaye.com.geometricweather.weather.WeatherServiceSet;
 import wangdaye.com.geometricweather.weather.services.WeatherService;
 
-/**
- * Location helper.
- * */
-
 public class LocationHelper {
+
+    private static final String TAG = "LocHelper";
 
     private final LocationService[] mLocationServices;
     private final WeatherServiceSet mWeatherServiceSet;
@@ -88,6 +87,7 @@ public class LocationHelper {
 
         final LocationProvider provider = SettingsManager.getInstance(context).getLocationProvider();
         final LocationService service = getLocationService(provider);
+        Log.i(TAG, "requestLocation: provider=" + provider + " cityId=" + location.getCityId() + " fmtId=" + location.getFormattedId() + " isUsable=" + location.isUsable());
         if (service.getPermissions().length != 0) {
             // if needs any location permission.
             if (!NetworkUtils.isAvailable(context) || (ActivityCompat.checkSelfPermission(
@@ -118,10 +118,12 @@ public class LocationHelper {
                 context,
                 result -> {
                     if (result == null) {
+                        Log.w(TAG, "GPS FAILED: result=null, falling back");
                         usableCheckListener.requestLocationFailed(location);
                         return;
                     }
 
+                    Log.i(TAG, "GPS OK: lat=" + result.getLatitude() + " lon=" + result.getLongitude());
                     requestAvailableWeatherLocation(
                             context,
                             Location.copy(
@@ -140,20 +142,24 @@ public class LocationHelper {
                                                  @NonNull Location location,
                                                  @NonNull OnRequestLocationListener l) {
         WeatherSource source = SettingsManager.getInstance(context).getWeatherSource();
+        Log.i(TAG, "reverseGeocode: source=" + source + " lat=" + location.getLatitude() + " lon=" + location.getLongitude() + " cityId=" + location.getCityId());
 
         final WeatherService service = mWeatherServiceSet.get(source);
         service.requestLocation(context, location, new WeatherService.RequestLocationCallback() {
             @Override
             public void requestLocationSuccess(String query, List<Location> locationList) {
+                Log.i(TAG, "reverseGeocode OK: " + locationList.size() + " results");
                 if (locationList.size() > 0) {
                     Location src = locationList.get(0);
                     Location result = Location.copy(src, true, src.isResidentPosition());
+                    Log.i(TAG, "reverseGeocode result: city=" + result.getCity() + " province=" + result.getProvince() + " cityId=" + result.getCityId() + " fmtId=" + result.getFormattedId());
                     wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.runOnIO(() -> {
                         DatabaseHelper.getInstance(context).writeLocation(result);
                         wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.delayRunOnUI(
                                 () -> l.requestLocationSuccess(result), 0);
                     });
                 } else {
+                    Log.w(TAG, "reverseGeocode EMPTY list");
                     wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.delayRunOnUI(
                             () -> l.requestLocationFailed(location), 0);
                 }
@@ -161,6 +167,7 @@ public class LocationHelper {
 
             @Override
             public void requestLocationFailed(String query) {
+                Log.w(TAG, "reverseGeocode FAILED: query=" + query);
                 wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.delayRunOnUI(
                         () -> l.requestLocationFailed(location), 0);
             }
