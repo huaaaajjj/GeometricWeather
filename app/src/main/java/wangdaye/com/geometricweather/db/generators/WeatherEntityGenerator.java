@@ -68,14 +68,17 @@ public class WeatherEntityGenerator {
         entity.uvLevel = weather.getCurrent().getUV().getLevel();
         entity.uvDescription = weather.getCurrent().getUV().getDescription();
 
-        entity.aqiText = weather.getCurrent().getAirQuality().getAqiText();
-        entity.aqiIndex = weather.getCurrent().getAirQuality().getAqiIndex();
-        entity.pm25 = weather.getCurrent().getAirQuality().getPM25();
-        entity.pm10 = weather.getCurrent().getAirQuality().getPM10();
-        entity.so2 = weather.getCurrent().getAirQuality().getSO2();
-        entity.no2 = weather.getCurrent().getAirQuality().getNO2();
-        entity.o3 = weather.getCurrent().getAirQuality().getO3();
-        entity.co = weather.getCurrent().getAirQuality().getCO();
+        var currentAirQuality = weather.getCurrent().getAirQuality();
+        if (currentAirQuality != null) {
+            entity.aqiText = currentAirQuality.getAqiText();
+            entity.aqiIndex = currentAirQuality.getAqiIndex();
+            entity.pm25 = currentAirQuality.getPM25();
+            entity.pm10 = currentAirQuality.getPM10();
+            entity.so2 = currentAirQuality.getSO2();
+            entity.no2 = currentAirQuality.getNO2();
+            entity.o3 = currentAirQuality.getO3();
+            entity.co = currentAirQuality.getCO();
+        }
 
         entity.relativeHumidity = weather.getCurrent().getRelativeHumidity();
         entity.pressure = weather.getCurrent().getPressure();

@@ -54,7 +54,10 @@ public class Current implements Serializable {
         this.precipitationProbability = precipitationProbability;
         this.wind = wind;
         this.uv = uv;
-        this.airQuality = airQuality;
+        // @NonNull is not runtime-enforced in Java; some converters (Open-Meteo/OWM) pass null.
+        // Coerce to an empty AirQuality so every consumer can rely on a non-null value.
+        this.airQuality = airQuality != null ? airQuality
+                : new AirQuality(null, null, null, null, null, null, null, null);
         this.relativeHumidity = relativeHumidity;
         this.pressure = pressure;
         this.visibility = visibility;

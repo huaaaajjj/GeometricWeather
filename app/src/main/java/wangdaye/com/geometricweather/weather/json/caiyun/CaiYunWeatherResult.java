@@ -115,7 +115,8 @@ public class CaiYunWeatherResult {
         public List<SkyconBean> skycon;
         public List<SkyconBean> skycon_08h_20h;
         public List<SkyconBean> skycon_20h_32h;
-        public List<AirQualityDailyBean> air_quality;
+        // CaiYun v2.6 returns daily.air_quality as an object ({aqi:[...], pm25:[...]}), not an array.
+        public AirQualityDailyBean air_quality;
         public LifeIndexDailyBean life_index;
     }
 
@@ -232,7 +233,9 @@ public class CaiYunWeatherResult {
         public List<PressureHourlyBean> pressure;
         public List<VisibilityHourlyBean> visibility;
         public List<DswrfHourlyBean> dswrf;
-        public List<AirQualityHourlyBean> air_quality;
+        // CaiYun v2.6 returns hourly.air_quality as an object ({aqi:[...], pm25:[...]}), not an
+        // array. The converter doesn't use it, so accept any shape to avoid a parse failure.
+        public com.google.gson.JsonElement air_quality;
     }
 
     public static class TemperatureHourlyBean {

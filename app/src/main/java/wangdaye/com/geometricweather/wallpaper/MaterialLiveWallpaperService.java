@@ -18,9 +18,12 @@ import android.view.OrientationEventListener;
 import android.view.SurfaceHolder;
 import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Size;
 import androidx.core.content.res.ResourcesCompat;
+
+import java.util.List;
 
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.weather.WeatherCode;
@@ -85,15 +88,21 @@ public class MaterialLiveWallpaperService extends WallpaperService {
                         || mHandler == null) {
                     return;
                 }
+                // The surface can be released during teardown while a draw is still in flight;
+                // lockCanvas/unlockCanvasAndPost would then throw "Surface has already been released".
+                if (mHolder == null || mHolder.getSurface() == null || !mHolder.getSurface().isValid()) {
+                    return;
+                }
 
                 mIntervalComputer.invalidate();
 
                 mRotators[0].updateRotation(mRotation2D, mIntervalComputer.getInterval());
                 mRotators[1].updateRotation(mRotation3D, mIntervalComputer.getInterval());
 
-                Canvas canvas = mHolder.lockCanvas();
-                if (canvas != null) {
-                    try {
+                Canvas canvas = null;
+                try {
+                    canvas = mHolder.lockCanvas();
+                    if (canvas != null) {
                         if (mSizes[0] != canvas.getWidth()
                                 || mSizes[1] != canvas.getHeight()) {
                             mSizes[0] = canvas.getWidth();
@@ -127,10 +136,17 @@ public class MaterialLiveWallpaperService extends WallpaperService {
                                 (float) mRotators[1].getRotation()
                         );
                         canvas.restore();
-                    } catch (Exception ignored) {
-                        // do nothing.
                     }
-                    mHolder.unlockCanvasAndPost(canvas);
+                } catch (Exception ignored) {
+                    // surface released or draw failed — skip this frame.
+                } finally {
+                    if (canvas != null) {
+                        try {
+                            mHolder.unlockCanvasAndPost(canvas);
+                        } catch (Exception ignored) {
+                            // surface already released.
+                        }
+                    }
                 }
             }
         };
@@ -246,6 +262,86 @@ public class MaterialLiveWallpaperService extends WallpaperService {
             mOpenGravitySensor = openGravitySensor;
         }
 
+        // Runs on the UI thread once location + weather have been read off the main thread.
+        private void applyWeatherAndStartDrawing(@NonNull Location location) {
+            // The wallpaper may have been hidden again while the DB read was in flight.
+            if (!mVisible) {
+                return;
+            }
+
+            LiveWallpaperConfigManager configManager = LiveWallpaperConfigManager.getInstance(
+                    MaterialLiveWallpaperService.this
+            );
+            String weatherKind = configManager.getWeatherKind();
+            if (weatherKind.equals("auto")) {
+                weatherKind = location.getWeather() != null
+                        ? location.getWeather().getCurrent().getWeatherCode().getId()
+                        : "";
+            }
+            String dayNightType = configManager.getDayNightType();
+            boolean daytime = true;
+            switch (dayNightType) {
+                case "auto":
+                    daytime = location.isDaylight();
+                    break;
+
+                case "day":
+                    daytime = true;
+                    break;
+
+                case "night":
+                    daytime = false;
+                    break;
+            }
+
+            if (!TextUtils.isEmpty(weatherKind)) {
+                setWeather(
+                        WeatherViewController.getWeatherKind(
+                                WeatherCode.getInstance(weatherKind)
+                        ),
+                        daytime
+                );
+            }
+            setWeatherImplementor();
+            setIntervalComputer();
+            setOpenGravitySensor(
+                    SettingsManager.getInstance(getApplicationContext()).isGravitySensorEnabled());
+
+            // getDisplay() throws UnsupportedOperationException on a WallpaperService (non-visual)
+            // Context; DisplayManager works on any context.
+            float screenRefreshRate = 60;
+            try {
+                android.hardware.display.DisplayManager dm =
+                        (android.hardware.display.DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
+                android.view.Display display = (dm != null)
+                        ? dm.getDisplay(android.view.Display.DEFAULT_DISPLAY) : null;
+                if (display != null) {
+                    screenRefreshRate = display.getRefreshRate();
+                }
+            } catch (Exception ignored) {
+                screenRefreshRate = 60;
+            }
+            if (screenRefreshRate < 60) {
+                screenRefreshRate = 60;
+            }
+            // Cancel any previous interval before starting a new one, and only post to the draw
+            // thread while it is alive — otherwise a leaked/late interval floods logcat with
+            // "sending message to a Handler on a dead thread".
+            if (mIntervalController != null) {
+                mIntervalController.cancel();
+                mIntervalController = null;
+            }
+            mIntervalController = AsyncHelper.intervalRunOnUI(
+                    () -> {
+                        if (mHandler != null && mHandlerThread != null && mHandlerThread.isAlive()) {
+                            mHandler.post(mDrawableRunnable);
+                        }
+                    },
+                    (long) (1000.0 / screenRefreshRate),
+                    0
+            );
+        }
+
         @Override
         public void onCreate(SurfaceHolder surfaceHolder) {
             mDeviceOrientation = DeviceOrientation.TOP;
@@ -316,73 +412,17 @@ public class MaterialLiveWallpaperService extends WallpaperService {
                         mOrientationListener.enable();
                     }
 
-                    Location location = DatabaseHelper
-                            .getInstance(MaterialLiveWallpaperService.this)
-                            .readLocationList()
-                            .get(0);
-                    location = Location.copy(
-                            location,
-                            DatabaseHelper
-                                    .getInstance(MaterialLiveWallpaperService.this)
-                                    .readWeather(location)
-                    );
-
-                    LiveWallpaperConfigManager configManager = LiveWallpaperConfigManager.getInstance(
-                            MaterialLiveWallpaperService.this
-                    );
-                    String weatherKind = configManager.getWeatherKind();
-                    if (weatherKind.equals("auto")) {
-                        weatherKind = location.getWeather() != null
-                                ? location.getWeather().getCurrent().getWeatherCode().getId()
-                                : "";
-                    }
-                    String dayNightType = configManager.getDayNightType();
-                    boolean daytime = true;
-                    switch (dayNightType) {
-                        case "auto":
-                            daytime = location.isDaylight();
-                            break;
-
-                        case "day":
-                            daytime = true;
-                            break;
-
-                        case "night":
-                            daytime = false;
-                            break;
-                    }
-
-                    if (!TextUtils.isEmpty(weatherKind)) {
-                        setWeather(
-                                WeatherViewController.getWeatherKind(
-                                        WeatherCode.getInstance(weatherKind)
-                                ),
-                                daytime
-                        );
-                    }
-                    setWeatherImplementor();
-                    setIntervalComputer();
-                    setOpenGravitySensor(
-                            SettingsManager.getInstance(getApplicationContext()).isGravitySensorEnabled());
-
-                    float screenRefreshRate;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        android.view.Display display = getDisplay();
-                        screenRefreshRate = display != null ? display.getRefreshRate() : 60;
-                    } else {
-                        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-                        screenRefreshRate = windowManager != null
-                                ? windowManager.getDefaultDisplay().getRefreshRate()
-                                : 60;
-                    }
-                    if (screenRefreshRate < 60) {
-                        screenRefreshRate = 60;
-                    }
-                    mIntervalController = AsyncHelper.intervalRunOnUI(
-                            () -> mHandler.post(mDrawableRunnable),
-                            (long) (1000.0 / screenRefreshRate),
-                            0
-                    );
+                    // Never touch Room on the main thread (onVisibilityChanged runs on the
+                    // main thread): read location + weather on IO, then set up the renderer
+                    // back on the UI thread.
+                    AsyncHelper.runOnIO(() -> {
+                        DatabaseHelper db = DatabaseHelper.getInstance(MaterialLiveWallpaperService.this);
+                        List<Location> list = db.readLocationList();
+                        final Location resolved = (list != null && !list.isEmpty())
+                                ? Location.copy(list.get(0), db.readWeather(list.get(0)))
+                                : Location.buildLocal();
+                        AsyncHelper.delayRunOnUI(() -> applyWeatherAndStartDrawing(resolved), 0);
+                    });
                 } else {
                     if (mIntervalController != null) {
                         mIntervalController.cancel();
@@ -399,8 +439,25 @@ public class MaterialLiveWallpaperService extends WallpaperService {
 
         @Override
         public void onDestroy() {
-            onVisibilityChanged(false);
-            mHandlerThread.quit();
+            // Unconditional teardown: onVisibilityChanged(false) is a no-op when already hidden,
+            // which would leave the draw interval posting to a quit HandlerThread (flooding
+            // logcat with "sending message to a Handler on a dead thread"). Cancel everything
+            // here regardless of mVisible, and stop the interval before quitting the thread.
+            mVisible = false;
+            if (mIntervalController != null) {
+                mIntervalController.cancel();
+                mIntervalController = null;
+            }
+            mOrientationListener.disable();
+            if (mSensorManager != null) {
+                mSensorManager.unregisterListener(mGravityListener, mGravitySensor);
+            }
+            if (mHandler != null) {
+                mHandler.removeCallbacksAndMessages(null);
+            }
+            if (mHandlerThread != null) {
+                mHandlerThread.quitSafely();
+            }
         }
     }
 }

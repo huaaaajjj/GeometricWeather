@@ -234,9 +234,8 @@ public class CaiyunResultConverter {
 
     private static AirQuality getDailyAirQuality(Context context, CaiYunWeatherResult.DailyBean daily, int i) {
         try {
-            if (daily.air_quality != null && daily.air_quality.size() > 0) {
-                int index = Math.min(i, daily.air_quality.size() - 1);
-                CaiYunWeatherResult.AirQualityDailyBean aqDay = daily.air_quality.get(index);
+            CaiYunWeatherResult.AirQualityDailyBean aqDay = daily.air_quality;
+            if (aqDay != null) {
                 int aqiValue = 0;
                 if (aqDay.aqi != null && aqDay.aqi.size() > 0) {
                     int aqiIndex = Math.min(i, aqDay.aqi.size() - 1);

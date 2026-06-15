@@ -11,10 +11,8 @@ import dagger.hilt.components.SingletonComponent;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.converter.gson.GsonConverterFactory;
-import wangdaye.com.geometricweather.BuildConfig;
 import wangdaye.com.geometricweather.GeometricWeather;
 import wangdaye.com.geometricweather.common.retrofit.TLSCompactHelper;
-import wangdaye.com.geometricweather.common.retrofit.interceptors.CaiYunSignatureInterceptor;
 import wangdaye.com.geometricweather.common.retrofit.interceptors.GzipInterceptor;
 
 @InstallIn(SingletonComponent.class)
@@ -25,11 +23,10 @@ public class RetrofitModule {
     @Singleton
     public OkHttpClient provideOkHttpClient(GzipInterceptor gzipInterceptor,
                                             HttpLoggingInterceptor loggingInterceptor) {
+        // No CaiYun signature interceptor: the standard v2.6 token endpoint authenticates by the
+        // token in the URL path and rejects requests carrying x-cy-signature headers (HTTP 400).
         return TLSCompactHelper.getClientBuilder()
                 .addInterceptor(gzipInterceptor)
-                .addInterceptor(new CaiYunSignatureInterceptor(
-                        BuildConfig.CAIYUN_WEATHER_KEY,
-                        BuildConfig.CAIYUN_APP_SECRET))
                 .addInterceptor(loggingInterceptor)
                 .build();
     }

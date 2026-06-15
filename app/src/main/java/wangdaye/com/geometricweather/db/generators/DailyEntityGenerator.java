@@ -104,45 +104,63 @@ public class DailyEntityGenerator {
         entity.nighttimeCloudCover = daily.night().getCloudCover();
 
         // sun.
-        entity.sunRiseDate = daily.sun().getRiseDate();
-        entity.sunSetDate = daily.sun().getSetDate();
+        var sun = daily.sun();
+        if (sun != null) {
+            entity.sunRiseDate = sun.getRiseDate();
+            entity.sunSetDate = sun.getSetDate();
+        }
 
         // moon.
-        entity.moonRiseDate = daily.moon().getRiseDate();
-        entity.moonSetDate = daily.moon().getSetDate();
+        var moon = daily.moon();
+        if (moon != null) {
+            entity.moonRiseDate = moon.getRiseDate();
+            entity.moonSetDate = moon.getSetDate();
+        }
 
         // moon phase.
-        entity.moonPhaseAngle = daily.getMoonPhase().getAngle();
-        entity.moonPhaseDescription = daily.getMoonPhase().getDescription();
+        var moonPhase = daily.getMoonPhase();
+        if (moonPhase != null) {
+            entity.moonPhaseAngle = moonPhase.getAngle();
+            entity.moonPhaseDescription = moonPhase.getDescription();
+        }
 
         // aqi.
-        entity.aqiText = daily.getAirQuality().getAqiText();
-        entity.aqiIndex = daily.getAirQuality().getAqiIndex();
-        entity.pm25 = daily.getAirQuality().getPM25();
-        entity.pm10 = daily.getAirQuality().getPM10();
-        entity.so2 = daily.getAirQuality().getSO2();
-        entity.no2 = daily.getAirQuality().getNO2();
-        entity.o3 = daily.getAirQuality().getO3();
-        entity.co = daily.getAirQuality().getCO();
+        var dailyAirQuality = daily.getAirQuality();
+        if (dailyAirQuality != null) {
+            entity.aqiText = dailyAirQuality.getAqiText();
+            entity.aqiIndex = dailyAirQuality.getAqiIndex();
+            entity.pm25 = dailyAirQuality.getPM25();
+            entity.pm10 = dailyAirQuality.getPM10();
+            entity.so2 = dailyAirQuality.getSO2();
+            entity.no2 = dailyAirQuality.getNO2();
+            entity.o3 = dailyAirQuality.getO3();
+            entity.co = dailyAirQuality.getCO();
+        }
 
         // pollen.
-        entity.grassIndex = daily.getPollen().getGrassIndex();
-        entity.grassLevel = daily.getPollen().getGrassLevel();
-        entity.grassDescription = daily.getPollen().getGrassDescription();
-        entity.moldIndex = daily.getPollen().getMoldIndex();
-        entity.moldLevel = daily.getPollen().getMoldLevel();
-        entity.moldDescription = daily.getPollen().getMoldDescription();
-        entity.ragweedIndex = daily.getPollen().getRagweedIndex();
-        entity.ragweedLevel = daily.getPollen().getRagweedLevel();
-        entity.ragweedDescription = daily.getPollen().getRagweedDescription();
-        entity.treeIndex = daily.getPollen().getTreeIndex();
-        entity.treeLevel = daily.getPollen().getTreeLevel();
-        entity.treeDescription = daily.getPollen().getTreeDescription();
+        var pollen = daily.getPollen();
+        if (pollen != null) {
+            entity.grassIndex = pollen.getGrassIndex();
+            entity.grassLevel = pollen.getGrassLevel();
+            entity.grassDescription = pollen.getGrassDescription();
+            entity.moldIndex = pollen.getMoldIndex();
+            entity.moldLevel = pollen.getMoldLevel();
+            entity.moldDescription = pollen.getMoldDescription();
+            entity.ragweedIndex = pollen.getRagweedIndex();
+            entity.ragweedLevel = pollen.getRagweedLevel();
+            entity.ragweedDescription = pollen.getRagweedDescription();
+            entity.treeIndex = pollen.getTreeIndex();
+            entity.treeLevel = pollen.getTreeLevel();
+            entity.treeDescription = pollen.getTreeDescription();
+        }
 
         // uv.
-        entity.uvIndex = daily.getUV().getIndex();
-        entity.uvLevel = daily.getUV().getLevel();
-        entity.uvDescription = daily.getUV().getDescription();
+        var uv = daily.getUV();
+        if (uv != null) {
+            entity.uvIndex = uv.getIndex();
+            entity.uvLevel = uv.getLevel();
+            entity.uvDescription = uv.getDescription();
+        }
 
         entity.hoursOfSun = daily.getHoursOfSun();
 

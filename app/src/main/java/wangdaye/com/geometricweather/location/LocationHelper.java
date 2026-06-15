@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -33,6 +34,8 @@ import wangdaye.com.geometricweather.weather.services.WeatherService;
  * */
 
 public class LocationHelper {
+
+    private static final String TAG = "LocHelper";
 
     private final LocationService[] mLocationServices;
     private final WeatherServiceSet mWeatherServiceSet;
@@ -77,14 +80,20 @@ public class LocationHelper {
         final OnRequestLocationListener usableCheckListener = new OnRequestLocationListener() {
             @Override
             public void requestLocationSuccess(Location requestLocation) {
+                Log.i(TAG, "requestLocationSuccess: city=" + requestLocation.getCity()
+                        + " cityId=" + requestLocation.getCityId()
+                        + " fmtId=" + requestLocation.getFormattedId());
                 l.requestLocationSuccess(requestLocation);
             }
 
             @Override
             public void requestLocationFailed(Location requestLocation) {
                 if (requestLocation.isUsable()) {
+                    Log.w(TAG, "requestLocationFailed but location usable: city="
+                            + requestLocation.getCity() + " cityId=" + requestLocation.getCityId());
                     l.requestLocationFailed(requestLocation);
                 } else {
+                    Log.w(TAG, "requestLocationFailed & unusable -> fallback to default (Beijing)");
                     Location finalLocation = Location.copy(
                             Location.buildDefaultLocation(
                                     SettingsManager.getInstance(context).getWeatherSource()
@@ -103,6 +112,8 @@ public class LocationHelper {
 
         final LocationProvider provider = SettingsManager.getInstance(context).getLocationProvider();
         final LocationService service = getLocationService(provider);
+        Log.i(TAG, "requestLocation: provider=" + provider + " inCityId=" + location.getCityId()
+                + " usable=" + location.isUsable() + " background=" + background);
         if (service.getPermissions().length != 0) {
             // if needs any location permission.
             if (!NetworkUtils.isAvailable(context) || (ActivityCompat.checkSelfPermission(
@@ -112,6 +123,7 @@ public class LocationHelper {
                     context,
                     Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED)) {
+                Log.w(TAG, "abort: no network or no location permission granted");
                 usableCheckListener.requestLocationFailed(location);
                 return;
             }
@@ -133,10 +145,12 @@ public class LocationHelper {
                 context,
                 result -> {
                     if (result == null) {
+                        Log.w(TAG, "GPS result is null");
                         usableCheckListener.requestLocationFailed(location);
                         return;
                     }
 
+                    Log.i(TAG, "GPS OK: lat=" + result.getLatitude() + " lon=" + result.getLongitude());
                     requestAvailableWeatherLocation(
                             context,
                             Location.copy(
@@ -155,6 +169,8 @@ public class LocationHelper {
                                                  @NonNull Location location,
                                                  @NonNull OnRequestLocationListener l) {
         WeatherSource source = SettingsManager.getInstance(context).getWeatherSource();
+        Log.i(TAG, "reverseGeocode: source=" + source + " lat=" + location.getLatitude()
+                + " lon=" + location.getLongitude());
 
         final WeatherService service = mWeatherServiceSet.get(source);
         service.requestLocation(context, location, new WeatherService.RequestLocationCallback() {
@@ -163,18 +179,22 @@ public class LocationHelper {
                 if (locationList.size() > 0) {
                     Location src = locationList.get(0);
                     Location result = Location.copy(src, true, src.isResidentPosition());
+                    Log.i(TAG, "reverseGeocode OK: " + locationList.size() + " results, city="
+                            + result.getCity() + " cityId=" + result.getCityId());
                     wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.runOnIO(() -> {
                         DatabaseHelper.getInstance(context).writeLocation(result);
                         wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.delayRunOnUI(
                                 () -> l.requestLocationSuccess(result), 0);
                     });
                 } else {
+                    Log.w(TAG, "reverseGeocode returned empty list");
                     requestLocationFailed(query);
                 }
             }
 
             @Override
             public void requestLocationFailed(String query) {
+                Log.w(TAG, "reverseGeocode FAILED: query=" + query);
                 l.requestLocationFailed(location);
             }
         });

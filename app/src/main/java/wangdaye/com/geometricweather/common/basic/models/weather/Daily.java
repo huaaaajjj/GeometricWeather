@@ -39,10 +39,17 @@ public class Daily implements Serializable {
         this.date = date;
         this.time = time;
         this.halfDays = new HalfDay[] {day, night};
-        this.astros = new Astro[] {sun, moon};
+        // @NonNull is not runtime-enforced in Java; coordinate providers (Open-Meteo/OWM) leave
+        // these null. Coerce to empty defaults so all consumers can rely on non-null values.
+        this.astros = new Astro[] {
+                sun != null ? sun : new Astro(null, null),
+                moon != null ? moon : new Astro(null, null)
+        };
         this.moonPhase = moonPhase;
-        this.airQuality = airQuality;
-        this.pollen = pollen;
+        this.airQuality = airQuality != null ? airQuality
+                : new AirQuality(null, null, null, null, null, null, null, null);
+        this.pollen = pollen != null ? pollen
+                : new Pollen(null, null, null, null, null, null, null, null, null, null, null, null);
         this.uv = uv;
         this.hoursOfSun = hoursOfSun;
     }

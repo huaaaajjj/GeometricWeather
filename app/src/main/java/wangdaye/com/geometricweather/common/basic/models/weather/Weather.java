@@ -83,6 +83,9 @@ public class Weather
     }
 
     public boolean isDaylight(TimeZone timeZone) {
+        if (getDailyForecast().isEmpty() || getDailyForecast().get(0).sun() == null) {
+            return DisplayUtils.isDaylight(timeZone);
+        }
         Date riseDate = getDailyForecast().get(0).sun().getRiseDate();
         Date setDate = getDailyForecast().get(0).sun().getSetDate();
         if (riseDate == null || setDate == null) {

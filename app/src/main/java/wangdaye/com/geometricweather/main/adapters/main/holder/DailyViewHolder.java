@@ -198,7 +198,7 @@ public class DailyViewHolder extends AbstractMainCardViewHolder {
 
                 case TAG_AIR_QUALITY:
                     for (Daily daily : weather.getDailyForecast()) {
-                        if (daily.getAirQuality().isValid()) {
+                        if (daily.getAirQuality() != null && daily.getAirQuality().isValid()) {
                             tagList.add(new MainTag(context.getString(R.string.tag_aqi), MainTag.Type.AIR_QUALITY));
                             break;
                         }

@@ -86,22 +86,31 @@
   - 匹配原 RxJava observeOn(mainThread()) 行为
   - 修复 "Cannot invoke setValue on a background thread" 崩溃
 
-## 禁止
+## 3.3.6 回退线修复（分支 rollback/3.3.6，HEAD=v3.3.6）
 
-- 改变数据库结构
-- 重写 UI
+> 背景：3.3.13 引入了定位"显示默认"等回归，故回退到 v3.3.6 重新开发（3.3.13 的全部改动备份在提交 4054781 与 stash）。在 3.3.6 基础上做有针对性修复，**不带回** 3.3.13 的定位改动（保留 3.3.6 的北京兜底，实测定位更好）。
+
+- 数据提供商中文界面补全：`values-zh-rCN/arrays.xml` 的 `weather_sources`/`weather_source_voices` 补 Open-Meteo、WeatherAPI（4→6）；`strings.xml` 补 3 个分区标题 + 高级页 14 条 API KEY 文案
+- 全链路诊断日志：LocHelper（定位/逆地理编码/北京兜底）、WeatherHelper、AccuWeatherService（geoPosition HTTP 码 + 异常）、CaiYunService（HTTP 码 + 解析结果）
+- 修复彩云 HTTP 400：移除 `CaiYunSignatureInterceptor`（标准 v2.6 token 接口不需签名，签名头反被拒）；改用 local.properties 的有效 token；删除 CAIYUN_APP_SECRET
+- 修复彩云解析崩溃：v2.6 的 `hourly.air_quality`（未用，改 JsonElement 容错）与 `daily.air_quality`（由 List 改为对象 + 同步改 converter）实际是对象不是数组
+- 全面空安全（治本）：`Current`/`Daily` 构造器对 @NonNull 但实际可能为 null 的字段（AirQuality/Pollen/Astro sun&moon）强制兜底空对象 → 一次性消除 HeaderViewHolder/MainAdapter/DailyViewHolder/WeatherEntityGenerator/DailyEntityGenerator/Weather.isDaylight 等处的 NPE/越界
+- 修复动态壁纸：① onVisibilityChanged 主线程读 Room → AsyncHelper.runOnIO + 空列表兜底 ② getDisplay() 在 WallpaperService(非视觉 Context) 抛异常 → 改用 DisplayManager ③ 绘制 runnable 加 Surface.isValid() + try/finally 防 "Surface has already been released" ④ onDestroy 无条件取消绘制 interval + quitSafely，interval 重建前先 cancel 且仅在线程存活时 post → 消除 12 万条/120s "dead thread" 刷屏
+- 实测（小米 HyperOS 真机）：定位解析到天津、彩云 HTTP 200 + 转换 OK、动态壁纸正常渲染、0 崩溃、0 dead-thread 刷屏
+
+
 
 ## 当前版本
 
-| 组件 | 版本 |
-|------|------|
-| Gradle | 8.7 |
-| AGP | 8.4.0 |
-| Kotlin | 1.9.24 |
+| 组件             | 版本   |
+| ---------------- | ------ |
+| Gradle           | 8.7    |
+| AGP              | 8.4.0  |
+| Kotlin           | 1.9.24 |
 | Compose Compiler | 1.5.14 |
-| compileSdk | 35 |
-| targetSdk | 35 |
-| minSdk | 21 |
+| compileSdk       | 35     |
+| targetSdk        | 35     |
+| minSdk           | 21     |
 
 ## 版本号策略
 
