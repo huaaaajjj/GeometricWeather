@@ -97,6 +97,8 @@
 - 全面空安全（治本）：`Current`/`Daily` 构造器对 @NonNull 但实际可能为 null 的字段（AirQuality/Pollen/Astro sun&moon）强制兜底空对象 → 一次性消除 HeaderViewHolder/MainAdapter/DailyViewHolder/WeatherEntityGenerator/DailyEntityGenerator/Weather.isDaylight 等处的 NPE/越界
 - 修复动态壁纸：① onVisibilityChanged 主线程读 Room → AsyncHelper.runOnIO + 空列表兜底 ② getDisplay() 在 WallpaperService(非视觉 Context) 抛异常 → 改用 DisplayManager ③ 绘制 runnable 加 Surface.isValid() + try/finally 防 "Surface has already been released" ④ onDestroy 无条件取消绘制 interval + quitSafely，interval 重建前先 cancel 且仅在线程存活时 post → 消除 12 万条/120s "dead thread" 刷屏
 - 实测（小米 HyperOS 真机）：定位解析到天津、彩云 HTTP 200 + 转换 OK、动态壁纸正常渲染、0 崩溃、0 dead-thread 刷屏
+- 清理本次调试日志（LocationHelper/WeatherHelper 还原无日志；Accu/CaiYun 去日志保留空安全防护）
+- 设为主分支并发布：master 重置到该修复线并 force-push（3.3.7-3.3.13 保留在 tag v3.3.7~v3.3.13 与分支 backup/3.3.13-fixes）；版本 3.3.6 → **3.4.0**（versionCode 30400，高于旧 30313）；发布 v3.4.0 Release
 
 
 

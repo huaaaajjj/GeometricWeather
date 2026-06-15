@@ -1,7 +1,6 @@
 package wangdaye.com.geometricweather.weather;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -21,8 +20,6 @@ import wangdaye.com.geometricweather.db.DatabaseHelper;
 import wangdaye.com.geometricweather.weather.services.WeatherService;
 
 public class WeatherHelper {
-
-    private static final String TAG = "WeatherHelper";
 
     private final WeatherServiceSet mServiceSet;
     private final List<AsyncHelper.Controller> mControllers = new ArrayList<>();
@@ -44,10 +41,7 @@ public class WeatherHelper {
 
     public void requestWeather(Context c, Location location, @NonNull final OnRequestWeatherListener l) {
         final WeatherService service = mServiceSet.get(location.getWeatherSource());
-        Log.i(TAG, "requestWeather: source=" + location.getWeatherSource()
-                + " cityId=" + location.getCityId() + " city=" + location.getCity());
         if (!NetworkUtils.isAvailable(c)) {
-            Log.w(TAG, "requestWeather: no network");
             l.requestWeatherFailed(location);
             return;
         }
@@ -58,7 +52,6 @@ public class WeatherHelper {
             public void requestWeatherSuccess(@NonNull Location requestLocation) {
                 Weather weather = requestLocation.getWeather();
                 if (weather != null) {
-                    Log.i(TAG, "requestWeather SUCCESS: cityId=" + requestLocation.getCityId());
                     AsyncHelper.runOnIO(() -> {
                         DatabaseHelper.getInstance(c).writeWeather(requestLocation, weather);
                         if (weather.getYesterday() == null) {
@@ -69,15 +62,12 @@ public class WeatherHelper {
                         AsyncHelper.delayRunOnUI(() -> l.requestWeatherSuccess(requestLocation), 0);
                     });
                 } else {
-                    Log.w(TAG, "requestWeather SUCCESS but weather null -> failed");
                     requestWeatherFailed(requestLocation);
                 }
             }
 
             @Override
             public void requestWeatherFailed(@NonNull Location requestLocation) {
-                Log.w(TAG, "requestWeather FAILED: source=" + requestLocation.getWeatherSource()
-                        + " cityId=" + requestLocation.getCityId() + " (using cached weather if any)");
                 AsyncHelper.runOnIO(() -> {
                     Location result = Location.copy(
                             requestLocation,

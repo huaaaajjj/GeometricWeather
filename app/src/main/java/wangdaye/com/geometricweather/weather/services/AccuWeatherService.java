@@ -1,7 +1,6 @@
 package wangdaye.com.geometricweather.weather.services;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -29,8 +28,6 @@ import wangdaye.com.geometricweather.weather.json.accu.AccuLocationResult;
 import wangdaye.com.geometricweather.weather.json.accu.AccuMinuteResult;
 
 public class AccuWeatherService extends WeatherService {
-
-    private static final String TAG = "AccuWeatherService";
 
     private final AccuWeatherApi mApi;
     private final List<AsyncHelper.Controller> mControllers = new ArrayList<>();
@@ -144,13 +141,8 @@ public class AccuWeatherService extends WeatherService {
             } catch (InterruptedException ignored) {
             }
             if (anyRequiredFailed.get()) {
-                Log.w(TAG, "requestWeather FAILED for cityId=" + location.getCityId()
-                        + " current=" + (currentResult.get() != null)
-                        + " daily=" + (dailyResult.get() != null)
-                        + " hourly=" + (hourlyResult.get() != null));
                 callback.requestWeatherFailed(location);
             } else if (currentResult.get() == null || currentResult.get().isEmpty()) {
-                Log.w(TAG, "requestWeather: current list empty for cityId=" + location.getCityId());
                 callback.requestWeatherFailed(location);
             } else {
                 WeatherResultWrapper wrapper = AccuResultConverter.convert(
@@ -164,10 +156,8 @@ public class AccuWeatherService extends WeatherService {
                         alertResult.get()
                 );
                 if (wrapper != null && wrapper.result != null) {
-                    Log.i(TAG, "requestWeather OK for cityId=" + location.getCityId());
                     callback.requestWeatherSuccess(Location.copy(location, wrapper.result));
                 } else {
-                    Log.w(TAG, "requestWeather: conversion returned null for cityId=" + location.getCityId());
                     callback.requestWeatherFailed(location);
                 }
             }
@@ -210,27 +200,21 @@ public class AccuWeatherService extends WeatherService {
 
         mControllers.add(AsyncHelper.runOnIO(() -> {
             try {
-                retrofit2.Response<AccuLocationResult> response = mApi.getWeatherLocationByGeoPosition(
+                AccuLocationResult result = mApi.getWeatherLocationByGeoPosition(
                         "Always",
                         SettingsManager.getInstance(context).getProviderAccuWeatherKey(),
                         coords,
                         languageCode
-                ).execute();
-                Log.i(TAG, "geoPosition reverseGeocode: HTTP " + response.code() + " for " + coords);
-                AccuLocationResult result = response.body();
+                ).execute().body();
                 if (result != null) {
                     List<Location> locationList = new ArrayList<>();
                     Location loc = AccuResultConverter.convert(location, result, null);
                     if (loc != null) locationList.add(loc);
-                    Log.i(TAG, "geoPosition OK: resolved="
-                            + (loc != null ? loc.getCity() + "/" + loc.getCityId() : "null-after-convert"));
                     callback.requestLocationSuccess(coords, locationList);
                 } else {
-                    Log.w(TAG, "geoPosition body null, HTTP " + response.code() + " " + response.message());
                     callback.requestLocationFailed(coords);
                 }
             } catch (Exception e) {
-                Log.e(TAG, "geoPosition reverseGeocode exception for " + coords, e);
                 callback.requestLocationFailed(coords);
             }
         }));
