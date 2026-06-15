@@ -75,8 +75,11 @@ class LiveWallpaperConfigActivity : GeoActivity() {
                     onBackPressed = { finish() },
                 )
             },
-        ) {
-            LazyColumn(modifier = Modifier.fillMaxHeight()) {
+        ) { paddings ->
+            LazyColumn(
+                modifier = Modifier.fillMaxHeight(),
+                contentPadding = paddings,
+            ) {
                 items(1) {
                     Spinner(
                         currentVal = weatherKindValueNow,
