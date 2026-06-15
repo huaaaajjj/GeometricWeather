@@ -4,6 +4,17 @@
 
 **这是一个勉强能用的修改版本。** 基于上游仓库 [WangDaYeeeeee/GeometricWeather](https://github.com/WangDaYeeeeee/GeometricWeather) 修改。
 
+## 最新版本：3.4.0
+
+在 v3.3.6 基础上重建（回退了 3.3.7–3.3.13 引入的定位回归），并修复了一批崩溃与数据问题：
+
+- **彩云天气**：移除多余的签名拦截（标准 v2.6 接口不需签名，曾返回 HTTP 400），修正 air_quality 解析 → 恢复可用
+- **空安全**：`Current`/`Daily` 对 AirQuality/Pollen/日出日落 兜底，消除主页、每日卡片、数据库写入等处的连环崩溃（坐标型数据源返回 null 时）
+- **动态壁纸**：修复主线程读库崩溃、`getDisplay()` 异常、Surface 释放崩溃及绘制循环日志泄漏
+- **设置 · 数据提供商**：补全简体中文界面
+
+→ [下载 3.4.0](https://github.com/huaaaajjj/GeometricWeather/releases/tag/v3.4.0)
+
 ## 版本号说明
 
 - **3.2.x** — 小更新（Bug 修复、小功能调整）
@@ -16,7 +27,7 @@
 - 修复 AccuWeather、OpenWeather、彩云天气等 API 兼容性
 - 设置界面性能优化及 UI 调整
 - 修复 MIUI 系统兼容性问题
-- 所有 Release 默认以 Prerelease 发布（除非特别说明）
+- 持续修复崩溃、提升稳定性（空安全、动态壁纸、定位等）
 
 ## 可用天气提供商
 
@@ -26,7 +37,7 @@
 | AccuWeather | 内置 Key | ✅ 正常 |
 | OpenWeather | 内置 Key | ✅ 正常 |
 | WeatherAPI | 内置 Key | ✅ 正常 |
-| CaiYun (彩云天气) | 内置 Key | ✅ 正常 |
+| CaiYun (彩云天气) | 内置 Key | ✅ 正常（仅中国地区） |
 | Meteo France | 内置 Key | ⚠️ 仅限法国地区 |
 
 ## 下载
