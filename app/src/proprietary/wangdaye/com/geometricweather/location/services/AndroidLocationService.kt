@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Criteria
+import android.location.Geocoder
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -12,6 +13,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.WorkerThread
+import wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper
+import java.util.Locale
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -92,10 +95,12 @@ open class AndroidLocationService : LocationService(), LocationListener {
     private var locationCallback: LocationCallback? = null
     private var lastKnownLocation: Location? = null
     private var gmsLastKnownLocation: Location? = null
+    private var appContext: Context? = null
 
     override fun requestLocation(context: Context, callback: LocationCallback) {
         cancel()
 
+        appContext = context.applicationContext
         locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
         fusedLocationClient = if (isGMSEnabled(context)) {
             LocationServices.getFusedLocationProviderClient(context)
@@ -153,16 +158,45 @@ open class AndroidLocationService : LocationService(), LocationListener {
         )
 
     private fun handleLocation(location: Location?) {
-        locationCallback?.onCompleted(
-            location?.let { buildResult(it) }
-        )
+        if (location == null) {
+            locationCallback?.onCompleted(null)
+            return
+        }
+        // Reverse-geocode off the main thread (Geocoder does blocking network I/O), then
+        // deliver the result back on the main thread.
+        AsyncHelper.runOnIO(Runnable {
+            val result = buildResult(location)
+            AsyncHelper.delayRunOnUI(Runnable { locationCallback?.onCompleted(result) }, 0L)
+        })
     }
 
     @WorkerThread
     private fun buildResult(location: Location): Result {
+        var province = ""
+        var city = ""
+        var district = ""
+        try {
+            val ctx = appContext
+            if (ctx != null && Geocoder.isPresent()) {
+                @Suppress("DEPRECATION")
+                val addresses = Geocoder(ctx, Locale.getDefault())
+                    .getFromLocation(location.latitude, location.longitude, 1)
+                if (!addresses.isNullOrEmpty()) {
+                    val address = addresses[0]
+                    province = address.adminArea ?: ""
+                    city = address.locality ?: address.subAdminArea ?: ""
+                    district = address.subLocality ?: ""
+                }
+            }
+        } catch (e: Exception) {
+            // Geocoder throws IOException when the backend is unavailable; fall back to coords.
+        }
         return Result(
             location.latitude.toFloat(),
-            location.longitude.toFloat()
+            location.longitude.toFloat(),
+            province,
+            city,
+            district
         )
     }
 

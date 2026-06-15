@@ -27,8 +27,7 @@ def decodeBase64(String encoded) {
 // Embedded API keys (base64 encoded to avoid secret scanning)
 def EMBEDDED_ACCU_KEY = decodeBase64("enBrYV8wYTM0YTEzMTY2OWM0NDBhODc0YTYzY2E1M2Q5Yjk1Yl81ZTdkYjUzMg==")
 def EMBEDDED_OWM_KEY = decodeBase64("NmI5NDNlMjJhN2Q0YTM4ODg4ZjY3MzI1YzFlNzQxOWU=")
-def EMBEDDED_CAIYUN_KEY = decodeBase64("eGdzcnJqYXFmbXJhM2V3eg==")
-def EMBEDDED_CAIYUN_SECRET = decodeBase64("Q3d2bW5YOVlVNkhOU2ltdE5nYVNQRmJDcHNjYnVFY1Q=")
+def EMBEDDED_CAIYUN_KEY = decodeBase64("SFlNbzJkV2tiQjczTjdydA==")
 def EMBEDDED_WEATHERAPI_KEY = decodeBase64("ZjlhOTJmYjQ4NzI3NDg3NmEwYjgyMzA1MjYwOTA2")
 
 // Load local.properties first, fall back to gradle.properties
@@ -45,8 +44,8 @@ android {
         applicationId "wangdaye.com.geometricweather"
         minSdk 21
         targetSdk 35
-        versionCode 30312
-        versionName "3.3.12"
+        versionCode 30313
+        versionName "3.3.13"
         multiDexEnabled true
         ndk {
             abiFilters "x86", "armeabi-v7a", "x86_64", "arm64-v8a"
@@ -84,8 +83,9 @@ android {
     buildTypes.each {
         it.buildConfigField "String", "CN_WEATHER_BASE_URL", localProperties.getProperty("CN_WEATHER_BASE_URL", CN_WEATHER_BASE_URL)
         it.buildConfigField "String", "CAIYUN_WEATHER_BASE_URL", localProperties.getProperty("CAIYUN_WEATHER_BASE_URL", CAIYUN_WEATHER_BASE_URL)
+        // CaiYun weather token (令牌) goes directly in the request URL. Override with a valid
+        // token in local.properties: CAIYUN_WEATHER_KEY="your_token". No signature is required.
         it.buildConfigField "String", "CAIYUN_WEATHER_KEY", localProperties.getProperty("CAIYUN_WEATHER_KEY", "\"$EMBEDDED_CAIYUN_KEY\"")
-        it.buildConfigField "String", "CAIYUN_APP_SECRET", localProperties.getProperty("CAIYUN_APP_SECRET", "\"$EMBEDDED_CAIYUN_SECRET\"")
         it.buildConfigField "String", "ACCU_WEATHER_BASE_URL", localProperties.getProperty("ACCU_WEATHER_BASE_URL", ACCU_WEATHER_BASE_URL)
         it.buildConfigField "String", "ACCU_WEATHER_KEY", localProperties.getProperty("ACCU_WEATHER_KEY", "\"$EMBEDDED_ACCU_KEY\"")
         it.buildConfigField "String", "ACCU_CURRENT_KEY", localProperties.getProperty("ACCU_CURRENT_KEY", "\"$EMBEDDED_ACCU_KEY\"")

@@ -130,7 +130,11 @@ public class LocationHelper {
                                     location,
                                     result.getLatitude(),
                                     result.getLongitude(),
-                                    TimeZone.getDefault()
+                                    TimeZone.getDefault(),
+                                    location.getCountry(),
+                                    result.getProvince(),
+                                    result.getCity(),
+                                    result.getDistrict()
                             ),
                             usableCheckListener
                     );
@@ -151,7 +155,16 @@ public class LocationHelper {
                 Log.i(TAG, "reverseGeocode OK: " + locationList.size() + " results");
                 if (locationList.size() > 0) {
                     Location src = locationList.get(0);
-                    Location result = Location.copy(src, true, src.isResidentPosition());
+                    // ACCU/CaiYun resolve a real cityId. Coordinate-based providers
+                    // (Open-Meteo / WeatherAPI) echo the location back unusable; synthesize a
+                    // stable cityId from coordinates and apply the configured source so the
+                    // current position becomes usable and keeps its GPS-resolved name.
+                    Location result = src.isUsable()
+                            ? Location.copy(src, true, src.isResidentPosition())
+                            : Location.copyCurrentPosition(
+                                    src,
+                                    currentPositionCityId(src.getLatitude(), src.getLongitude()),
+                                    source);
                     Log.i(TAG, "reverseGeocode result: city=" + result.getCity() + " province=" + result.getProvince() + " cityId=" + result.getCityId() + " fmtId=" + result.getFormattedId());
                     wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.runOnIO(() -> {
                         DatabaseHelper.getInstance(context).writeLocation(result);
@@ -172,6 +185,13 @@ public class LocationHelper {
                         () -> l.requestLocationFailed(location), 0);
             }
         });
+    }
+
+    // Stable, coordinate-derived id (~1 km granularity) used as the cityId for current-position
+    // locations resolved by coordinate-based providers, so the weather cache key (cityId + source)
+    // stays consistent across location updates.
+    private static String currentPositionCityId(float latitude, float longitude) {
+        return String.format(java.util.Locale.US, "%.2f,%.2f", latitude, longitude);
     }
 
     public void cancel() {

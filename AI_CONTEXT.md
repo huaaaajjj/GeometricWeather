@@ -97,6 +97,14 @@
   - MainAdapter: onBindViewHolder 中添加 mLocation null 检查，getItemCount/getItemViewType 添加 mViewTypeList null 检查
   - MainThemeColorProvider: getColor()/getContext() 方法添加 instance null 检查，返回安全默认值
   - 防止 RecyclerView 布局时和 MainThemeColorProvider 未绑定时的 NPE 崩溃
+- 修复动态壁纸闪退 (v3.3.13): MaterialLiveWallpaperService.onVisibilityChanged 在主线程直接访问 Room (readLocationList/readWeather) 崩溃 → 移至 AsyncHelper.runOnIO，读完回 UI 线程渲染；空位置列表用 buildLocal 兜底，不再 .get(0) 越界
+- 修复定位成功但主页一直显示默认位置 (v3.3.13): 定位链路丢弃了已解析的省市区
+  - AMapLocationService: 已 setNeedAddress 但 Result 只传经纬度 → 补传 province/city/district/street
+  - AndroidLocationService (proprietary+opensource，NATIVE 为默认定位源): buildResult 加 Geocoder 反查地址，放 IO 线程执行
+  - LocationHelper: GPS 成功后透传地址；OpenMeteo/WeatherAPI 的反查是空实现(原样回传 NULL_ID)，对不可用结果用坐标合成稳定 cityId(%.2f) + 配置的天气源，使 isUsable=true 且有城市名
+  - Location.kt: 新增 copy(src,lat,lon,tz,country,province,city,district) 与 copyCurrentPosition(src,cityId,source) 两个静态helper
+- 修复彩云天气无法使用 (v3.3.13): 标准 v2.6 接口只认 URL 路径里的天气 token、不需要签名；原代码把 AppKey 当 token 并附加 HMAC 签名头导致被拒 → 移除 RetrofitModule 中 CaiYunSignatureInterceptor 注册及 CAIYUN_APP_SECRET，改用 local.properties 提供的有效 token (CAIYUN_WEATHER_KEY)
+- 版本号 3.3.12 → 3.3.13
 
 ## 禁止
 

@@ -160,6 +160,41 @@ class Location @JvmOverloads constructor(
             timeZone = timeZone,
         )
 
+        // Carry a reverse-geocoded address (and coordinates) onto a location.
+        @JvmStatic
+        fun copy(
+            src: Location,
+            latitude: Float,
+            longitude: Float,
+            timeZone: TimeZone,
+            country: String,
+            province: String,
+            city: String,
+            district: String,
+        ) = src.copy(
+            latitude = latitude,
+            longitude = longitude,
+            timeZone = timeZone,
+            country = country,
+            province = province,
+            city = city,
+            district = district,
+        )
+
+        // Make a reverse-geocoded current position usable for coordinate-based providers
+        // (Open-Meteo / WeatherAPI) that don't return a real cityId: assign a stable cityId
+        // and the configured weather source, keeping isCurrentPosition = true.
+        @JvmStatic
+        fun copyCurrentPosition(
+            src: Location,
+            cityId: String,
+            weatherSource: WeatherSource,
+        ) = src.copy(
+            cityId = cityId,
+            weatherSource = weatherSource,
+            isCurrentPosition = true,
+        )
+
         @JvmField
         val CREATOR = object: Parcelable.Creator<Location> {
 

@@ -18,9 +18,12 @@ import android.view.OrientationEventListener;
 import android.view.SurfaceHolder;
 import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Size;
 import androidx.core.content.res.ResourcesCompat;
+
+import java.util.List;
 
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.weather.WeatherCode;
@@ -246,6 +249,71 @@ public class MaterialLiveWallpaperService extends WallpaperService {
             mOpenGravitySensor = openGravitySensor;
         }
 
+        // Runs on the UI thread once the location + weather have been read off the main thread.
+        private void applyWeatherAndStartDrawing(@NonNull Location location) {
+            // The wallpaper may have been hidden again while the DB read was in flight.
+            if (!mVisible) {
+                return;
+            }
+
+            LiveWallpaperConfigManager configManager = LiveWallpaperConfigManager.getInstance(
+                    MaterialLiveWallpaperService.this
+            );
+            String weatherKind = configManager.getWeatherKind();
+            if (weatherKind.equals("auto")) {
+                weatherKind = location.getWeather() != null
+                        ? location.getWeather().getCurrent().getWeatherCode().getId()
+                        : "";
+            }
+            String dayNightType = configManager.getDayNightType();
+            boolean daytime = true;
+            switch (dayNightType) {
+                case "auto":
+                    daytime = location.isDaylight();
+                    break;
+
+                case "day":
+                    daytime = true;
+                    break;
+
+                case "night":
+                    daytime = false;
+                    break;
+            }
+
+            if (!TextUtils.isEmpty(weatherKind)) {
+                setWeather(
+                        WeatherViewController.getWeatherKind(
+                                WeatherCode.getInstance(weatherKind)
+                        ),
+                        daytime
+                );
+            }
+            setWeatherImplementor();
+            setIntervalComputer();
+            setOpenGravitySensor(
+                    SettingsManager.getInstance(getApplicationContext()).isGravitySensorEnabled());
+
+            float screenRefreshRate;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                android.view.Display display = getDisplay();
+                screenRefreshRate = display != null ? display.getRefreshRate() : 60;
+            } else {
+                WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+                screenRefreshRate = windowManager != null
+                        ? windowManager.getDefaultDisplay().getRefreshRate()
+                        : 60;
+            }
+            if (screenRefreshRate < 60) {
+                screenRefreshRate = 60;
+            }
+            mIntervalController = AsyncHelper.intervalRunOnUI(
+                    () -> mHandler.post(mDrawableRunnable),
+                    (long) (1000.0 / screenRefreshRate),
+                    0
+            );
+        }
+
         @Override
         public void onCreate(SurfaceHolder surfaceHolder) {
             mDeviceOrientation = DeviceOrientation.TOP;
@@ -316,73 +384,17 @@ public class MaterialLiveWallpaperService extends WallpaperService {
                         mOrientationListener.enable();
                     }
 
-                    Location location = DatabaseHelper
-                            .getInstance(MaterialLiveWallpaperService.this)
-                            .readLocationList()
-                            .get(0);
-                    location = Location.copy(
-                            location,
-                            DatabaseHelper
-                                    .getInstance(MaterialLiveWallpaperService.this)
-                                    .readWeather(location)
-                    );
-
-                    LiveWallpaperConfigManager configManager = LiveWallpaperConfigManager.getInstance(
-                            MaterialLiveWallpaperService.this
-                    );
-                    String weatherKind = configManager.getWeatherKind();
-                    if (weatherKind.equals("auto")) {
-                        weatherKind = location.getWeather() != null
-                                ? location.getWeather().getCurrent().getWeatherCode().getId()
-                                : "";
-                    }
-                    String dayNightType = configManager.getDayNightType();
-                    boolean daytime = true;
-                    switch (dayNightType) {
-                        case "auto":
-                            daytime = location.isDaylight();
-                            break;
-
-                        case "day":
-                            daytime = true;
-                            break;
-
-                        case "night":
-                            daytime = false;
-                            break;
-                    }
-
-                    if (!TextUtils.isEmpty(weatherKind)) {
-                        setWeather(
-                                WeatherViewController.getWeatherKind(
-                                        WeatherCode.getInstance(weatherKind)
-                                ),
-                                daytime
-                        );
-                    }
-                    setWeatherImplementor();
-                    setIntervalComputer();
-                    setOpenGravitySensor(
-                            SettingsManager.getInstance(getApplicationContext()).isGravitySensorEnabled());
-
-                    float screenRefreshRate;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        android.view.Display display = getDisplay();
-                        screenRefreshRate = display != null ? display.getRefreshRate() : 60;
-                    } else {
-                        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-                        screenRefreshRate = windowManager != null
-                                ? windowManager.getDefaultDisplay().getRefreshRate()
-                                : 60;
-                    }
-                    if (screenRefreshRate < 60) {
-                        screenRefreshRate = 60;
-                    }
-                    mIntervalController = AsyncHelper.intervalRunOnUI(
-                            () -> mHandler.post(mDrawableRunnable),
-                            (long) (1000.0 / screenRefreshRate),
-                            0
-                    );
+                    // Never touch Room on the main thread (onVisibilityChanged runs on the
+                    // main thread): read location + weather on IO, then set up the renderer
+                    // back on the UI thread.
+                    AsyncHelper.runOnIO(() -> {
+                        DatabaseHelper db = DatabaseHelper.getInstance(MaterialLiveWallpaperService.this);
+                        List<Location> list = db.readLocationList();
+                        final Location resolved = (list != null && !list.isEmpty())
+                                ? Location.copy(list.get(0), db.readWeather(list.get(0)))
+                                : Location.buildLocal();
+                        AsyncHelper.delayRunOnUI(() -> applyWeatherAndStartDrawing(resolved), 0);
+                    });
                 } else {
                     if (mIntervalController != null) {
                         mIntervalController.cancel();

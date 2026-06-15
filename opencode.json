@@ -1,12 +1,12 @@
 {
     "$schema": "https://opencode.ai/config.json",
     "provider": {
-        "tju": {
+        "tju2": {
             "name": "TJU",
             "npm": "@ai-sdk/openai-compatible",
             "options": {
-                "baseURL": "http://127.0.0.1:4000",
-                "apiKey": "anything"
+                "baseURL": "https://ai.tju.edu.cn/api/v3",
+                "apiKey": "tk-tVkFDYsvxr2t4vqszyH8gPmQ4it225sb6vpyyPQlL8sZzhk2"
             },
             "models": {
                 "tju-llm": {
@@ -14,5 +14,7 @@
                 }
             }
         }
-    }
+    },
+    "model": "tju/tju-llm",
+    "small_model": "tju/tju-llm"
 }
