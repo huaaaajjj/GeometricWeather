@@ -25,6 +25,7 @@
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote"
+            android:foregroundServiceType="location"
             android:networkSecurityConfig="@xml/network_security_config" />
 
         <meta-data
@@ -32,6 +33,7 @@
             android:value="d0c7b8cb40629a2061fa2fce08659d24" />
         <service
             android:name="com.amap.api.location.APSService"
+            android:foregroundServiceType="location"
             android:networkSecurityConfig="@xml/network_security_config" />
 
     </application>
