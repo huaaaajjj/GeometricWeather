@@ -119,10 +119,12 @@ public class WeatherHelper {
                     locationList.addAll(result);
                 }
             }
+            // Hop back to the main thread: callers update LiveData in these callbacks,
+            // and LiveData.setValue() throws if invoked off the main thread.
             if (!locationList.isEmpty()) {
-                l.requestLocationSuccess(query, locationList);
+                AsyncHelper.delayRunOnUI(() -> l.requestLocationSuccess(query, locationList), 0);
             } else {
-                l.requestLocationFailed(query);
+                AsyncHelper.delayRunOnUI(() -> l.requestLocationFailed(query), 0);
             }
         }));
     }

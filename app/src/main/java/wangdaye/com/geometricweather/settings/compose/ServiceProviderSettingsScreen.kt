@@ -44,21 +44,26 @@ fun ServiceProviderSettingsScreen(
             nameArrayId = R.array.weather_sources,
             selectedKey = SettingsManager.getInstance(context).weatherSource.id,
             onValueChanged = { sourceId ->
-                SettingsManager
-                    .getInstance(context)
-                    .weatherSource = WeatherSource.getInstance(sourceId)
+                val newSource = WeatherSource.getInstance(sourceId)
+                // 持久化 + 发 SettingsChangedMessage（同步调用，保持 UI 选中态与现有刷新时序）
+                SettingsManager.getInstance(context).weatherSource = newSource
 
                 wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.runOnIO {
-                    val locationList = DatabaseHelper.getInstance(context).readLocationList()
-                    val index = locationList.indexOfFirst { it.isCurrentPosition }
-                    if (index >= 0) {
-                        locationList[index] = locationList[index].copy(
-                            weather = null,
-                            weatherSource = SettingsManager.getInstance(context).weatherSource
-                        ).copy()
-                        DatabaseHelper.getInstance(context).deleteWeather(locationList[index])
-                        DatabaseHelper.getInstance(context).writeLocationList(locationList)
-                    }
+                    val db = DatabaseHelper.getInstance(context)
+                    val oldList = db.readLocationList()
+
+                    // 1) 清掉旧缓存：天气按 (cityId, 旧源) 存储，必须用旧 location 删除
+                    oldList.forEach { db.deleteWeather(it) }
+
+                    // 2) 所有地区改为新源（不只定位地区）。非定位地区 formattedId 随之变化，
+                    //    writeLocationList 整表重写可处理；去重避免同城不同源条目塌缩到同一主键。
+                    val seen = HashSet<String>()
+                    val newList = oldList
+                        .map { it.copy(weatherSource = newSource) }
+                        .filter { seen.add(it.formattedId) }
+
+                    // 只写 location 表；重载时各地区 readWeather 命中空 → 自动重新拉取
+                    db.writeLocationList(newList)
                 }
             }
         )
