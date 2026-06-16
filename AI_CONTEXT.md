@@ -101,6 +101,7 @@
 - 设为主分支并发布：master 重置到该修复线并 force-push（3.3.7-3.3.13 保留在 tag v3.3.7~v3.3.13 与分支 backup/3.3.13-fixes）；版本 3.3.6 → **3.4.0**（versionCode 30400，高于旧 30313）；发布 v3.4.0 Release
 - 修复动态壁纸配置页内容被顶栏遮挡（Material3Scaffold innerPadding 未应用到 LazyColumn）；发布 **3.4.1**（30401）
 - 回填 3.3.7–3.3.13 的非定位崩溃修复到 3.4.x（不带回定位回归）：MainThemeColorProvider 空安全、MainActivityViewModel 空 validList 越界（首装崩溃）、DefaultResourceProvider 图标缺失 NPE（getDrawable 兜底 SunDrawable）、Baidu/AMap 服务补 foregroundServiceType=location；发布 **3.4.2**（30402）
+- P3 清理：GeometricWeather.setDayNightMode 的 observeForever 改为稳定 Observer + 先 remove 再加（防累积）；MfResultConverter 的 Europe/Paris 去掉 TODO（MF 仅法国、搜索结果无 tz，真实 tz 随预报返回，故 Paris 正确）
 
 
 

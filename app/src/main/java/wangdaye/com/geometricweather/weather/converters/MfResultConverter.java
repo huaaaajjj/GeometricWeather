@@ -113,7 +113,7 @@ public class MfResultConverter {
                     result.postCode, // cityId
                     (float) result.lat,
                     (float) result.lon,
-                    TimeZone.getTimeZone("Europe/Paris"), // TODO
+                    TimeZone.getTimeZone("Europe/Paris"), // Météo France serves France only; MfLocationResult has no tz (real tz comes with the forecast)
                     result.country,
                     location.getProvince(), // Domain (département)
                     location.getCity(),
@@ -135,7 +135,7 @@ public class MfResultConverter {
                     result.postCode, // cityId
                     (float) result.lat,
                     (float) result.lon,
-                    TimeZone.getTimeZone("Europe/Paris"), // TODO
+                    TimeZone.getTimeZone("Europe/Paris"), // Météo France serves France only; MfLocationResult has no tz (real tz comes with the forecast)
                     result.country != null ? result.country : "",
                     result.admin2 != null ? result.admin2 : "", // Domain (département)
                     result.name != null ? result.name + (result.postCode == null ? "" : (" (" + result.postCode + ")")) : "",

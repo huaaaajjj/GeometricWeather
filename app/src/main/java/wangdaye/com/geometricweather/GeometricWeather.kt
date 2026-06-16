@@ -5,6 +5,7 @@ import android.content.pm.ApplicationInfo
 import android.os.Process
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.hilt.work.HiltWorkerFactory
+import androidx.lifecycle.Observer
 import androidx.multidex.MultiDexApplication
 import androidx.work.Configuration
 import dagger.hilt.android.HiltAndroidApp
@@ -219,13 +220,17 @@ class GeometricWeather : MultiDexApplication(),
         }
     }
 
+    private val uiModeObserver = Observer<Int> { mode ->
+        AppCompatDelegate.setDefaultNightMode(mode)
+    }
+
     private fun setDayNightMode() {
-        AppCompatDelegate.setDefaultNightMode(
-            ThemeManager.getInstance(this).uiMode.value!!
-        )
-        ThemeManager.getInstance(this).uiMode.observeForever {
-            AppCompatDelegate.setDefaultNightMode(it)
-        }
+        val uiMode = ThemeManager.getInstance(this).uiMode
+        AppCompatDelegate.setDefaultNightMode(uiMode.value!!)
+        // Stable observer + remove-before-add so repeated calls can't accumulate observers
+        // (observeForever has no LifecycleOwner to auto-remove it).
+        uiMode.removeObserver(uiModeObserver)
+        uiMode.observeForever(uiModeObserver)
     }
 
     fun recreateAllActivities() {
