@@ -28,6 +28,7 @@ import android.widget.RemoteViews;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -127,23 +128,25 @@ public abstract class AbstractWidgetConfigActivity extends GeoActivity
         setContentView(R.layout.activity_widget_config);
 
         initData();
-    }
 
-    @Override
-    public void onBackPressed() {
-        if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-            setBottomSheetState(true);
-            return;
-        }
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                    setBottomSheetState(true);
+                    return;
+                }
 
-        long time = System.currentTimeMillis();
-        if (time - mLastBackPressedTime < 2000) {
-            super.onBackPressed();
-            return;
-        }
+                long time = System.currentTimeMillis();
+                if (time - mLastBackPressedTime < 2000) {
+                    finish();
+                    return;
+                }
 
-        mLastBackPressedTime = time;
-        SnackbarHelper.showSnackbar(getString(R.string.feedback_click_again_to_exit));
+                mLastBackPressedTime = time;
+                SnackbarHelper.showSnackbar(getString(R.string.feedback_click_again_to_exit));
+            }
+        });
     }
 
     @Override

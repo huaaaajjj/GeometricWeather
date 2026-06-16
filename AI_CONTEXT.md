@@ -102,6 +102,7 @@
 - 修复动态壁纸配置页内容被顶栏遮挡（Material3Scaffold innerPadding 未应用到 LazyColumn）；发布 **3.4.1**（30401）
 - 回填 3.3.7–3.3.13 的非定位崩溃修复到 3.4.x（不带回定位回归）：MainThemeColorProvider 空安全、MainActivityViewModel 空 validList 越界（首装崩溃）、DefaultResourceProvider 图标缺失 NPE（getDrawable 兜底 SunDrawable）、Baidu/AMap 服务补 foregroundServiceType=location；发布 **3.4.2**（30402）
 - P3 清理：GeometricWeather.setDayNightMode 的 observeForever 改为稳定 Observer + 先 remove 再加（防累积）；MfResultConverter 的 Europe/Paris 去掉 TODO（MF 仅法国、搜索结果无 tz，真实 tz 随预报返回，故 Paris 正确）；发布 **3.4.3**（30403）
+- 新增 Android（16）预测性返回：manifest `<application>` 开 `enableOnBackInvokedCallback="true"`（全 app 生效，绝大多数页面不拦截 back，自动获得预测返回动画）；`SearchActivity`/`AbstractWidgetConfigActivity` 的 legacy `onBackPressed()` 覆写迁移到 `OnBackPressedDispatcher` + `OnBackPressedCallback`（真机验证 "OnBackInvokedCallback is not enabled" 警告消失、0 崩溃）
 
 
 

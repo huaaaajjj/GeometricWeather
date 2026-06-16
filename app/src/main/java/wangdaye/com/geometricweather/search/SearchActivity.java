@@ -17,6 +17,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -141,15 +142,17 @@ public class SearchActivity extends GeoActivity
 
         initModel();
         initView();
-    }
 
-    @Override
-    public void onBackPressed() {
-        if (mMaterialSheetFab.isSheetVisible()) {
-            mMaterialSheetFab.hideSheet();
-        } else {
-            finishSelf(null);
-        }
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (mMaterialSheetFab.isSheetVisible()) {
+                    mMaterialSheetFab.hideSheet();
+                } else {
+                    finishSelf(null);
+                }
+            }
+        });
     }
 
     // init.

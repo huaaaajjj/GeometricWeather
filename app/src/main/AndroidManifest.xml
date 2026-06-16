@@ -48,6 +48,7 @@
         android:name=".GeometricWeather"
         android:supportsRtl="true"
         android:largeHeap="true"
+        android:enableOnBackInvokedCallback="true"
         android:theme="@style/GeometricWeatherTheme"
         android:networkSecurityConfig="@xml/network_security_config"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning,ManifestResource,RtlEnabled,UnusedAttribute"
