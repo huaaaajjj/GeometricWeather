@@ -13,6 +13,7 @@
         <item>Météo France</item>
         <item>Open-Meteo</item>
         <item>WeatherAPI</item>
+        <item>China Meteorological Administration</item>
     </string-array>
     <string-array name="weather_source_voices">
         <item>CaiYun App.com</item>
@@ -21,6 +22,7 @@
         <item>Météo France</item>
         <item>Open Meteo</item>
         <item>Weather API</item>
+        <item>China Meteorological Administration</item>
     </string-array>
     <string-array name="weather_source_values">
         <item>caiyun</item>
@@ -29,6 +31,7 @@
         <item>mf</item>
         <item>open_meteo</item>
         <item>weatherapi</item>
+        <item>cma</item>
     </string-array>
 
     <!-- Location service. -->

@@ -17,7 +17,7 @@ object Utils {
         value = enum.id,
         nameArrayId = enum.nameArrayId,
         valueArrayId = enum.valueArrayId
-    )!!
+    ) ?: enum.id
 
     fun getVoice(
         context: Context,
@@ -27,7 +27,7 @@ object Utils {
         value = enum.id,
         nameArrayId = enum.voiceArrayId,
         valueArrayId = enum.valueArrayId
-    )!!
+    ) ?: enum.id
 
     fun getNameByValue(
         res: Resources,

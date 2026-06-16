@@ -17,7 +17,8 @@ enum class WeatherSource(
     MF("mf", -0xffa76e, "meteofrance.com"),
     CAIYUN("caiyun", -0xa14472, "caiyunapp.com"),
     OPEN_METEO("open_meteo", -0x7a3a1a, "open-meteo.com"),
-    WEATHERAPI("weatherapi", -0x2a5a2a, "weatherapi.com");
+    WEATHERAPI("weatherapi", -0x2a5a2a, "weatherapi.com"),
+    CMA("cma", 0xFF0E5FA4.toInt(), "weather.cma.cn");
 
     companion object {
 
@@ -40,6 +41,9 @@ enum class WeatherSource(
             }
             if (value.lowercase().contains("weatherapi")) {
                 return WEATHERAPI
+            }
+            if (value.lowercase().contains("cma")) {
+                return CMA
             }
             return ACCU
         }

@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource;
 import wangdaye.com.geometricweather.weather.services.AccuWeatherService;
 import wangdaye.com.geometricweather.weather.services.CaiYunWeatherService;
+import wangdaye.com.geometricweather.weather.services.CmaWeatherService;
 import wangdaye.com.geometricweather.weather.services.MfWeatherService;
 import wangdaye.com.geometricweather.weather.services.OpenMeteoWeatherService;
 import wangdaye.com.geometricweather.weather.services.OwmWeatherService;
@@ -24,14 +25,16 @@ public class WeatherServiceSet {
                              MfWeatherService mfWeatherService,
                              OwmWeatherService owmWeatherService,
                              OpenMeteoWeatherService openMeteoWeatherService,
-                             WeatherApiWeatherService weatherApiWeatherService) {
+                             WeatherApiWeatherService weatherApiWeatherService,
+                             CmaWeatherService cmaWeatherService) {
         mWeatherServices = new WeatherService[] {
                 accuWeatherService,
                 caiYunWeatherService,
                 mfWeatherService,
                 owmWeatherService,
                 openMeteoWeatherService,
-                weatherApiWeatherService
+                weatherApiWeatherService,
+                cmaWeatherService
         };
     }
 
@@ -52,6 +55,9 @@ public class WeatherServiceSet {
 
             case WEATHERAPI:
                 return mWeatherServices[5];
+
+            case CMA:
+                return mWeatherServices[6];
 
             default: // ACCU.
                 return mWeatherServices[0];

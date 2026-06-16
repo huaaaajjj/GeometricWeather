@@ -11,6 +11,7 @@ import wangdaye.com.geometricweather.BuildConfig;
 import wangdaye.com.geometricweather.weather.apis.AccuWeatherApi;
 import wangdaye.com.geometricweather.weather.apis.AtmoAuraIqaApi;
 import wangdaye.com.geometricweather.weather.apis.CaiYunApi;
+import wangdaye.com.geometricweather.weather.apis.CmaApi;
 import wangdaye.com.geometricweather.weather.apis.MfWeatherApi;
 import wangdaye.com.geometricweather.weather.apis.OpenMeteoApi;
 import wangdaye.com.geometricweather.weather.apis.OwmApi;
@@ -95,6 +96,17 @@ public class ApiModule {
                 .addConverterFactory(converterFactory)
                 .build()
                 .create((WeatherApiApi.class));
+    }
+
+    @Provides
+    public CmaApi provideCmaApi(OkHttpClient client,
+                                GsonConverterFactory converterFactory) {
+        return new Retrofit.Builder()
+                .baseUrl(BuildConfig.CMA_BASE_URL)
+                .client(client)
+                .addConverterFactory(converterFactory)
+                .build()
+                .create((CmaApi.class));
     }
 
 }

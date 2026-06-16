@@ -9,6 +9,7 @@
         <item>Météo France</item>
         <item>Open-Meteo</item>
         <item>WeatherAPI</item>
+        <item>中国气象局</item>
     </string-array>
     <string-array name="weather_source_voices">
         <item>彩云天气</item>
@@ -17,6 +18,7 @@
         <item>Météo France</item>
         <item>Open-Meteo</item>
         <item>WeatherAPI</item>
+        <item>中国气象局</item>
     </string-array>
 
     <!-- Location service. -->
