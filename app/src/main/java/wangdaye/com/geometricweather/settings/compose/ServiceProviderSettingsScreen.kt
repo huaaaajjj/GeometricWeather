@@ -69,6 +69,15 @@ fun ServiceProviderSettingsScreen(
         )
     }
 
+    clickablePreferenceItem(R.string.settings_title_weather_source_status) {
+        PreferenceView(
+            titleId = it,
+            summaryId = R.string.settings_summary_weather_source_status,
+        ) {
+            navController.navigate(SettingsScreenRouter.WeatherSourceStatus.route)
+        }
+    }
+
     sectionFooterItem(R.string.settings_category_weather_data)
     sectionHeaderItem(R.string.settings_category_location)
 

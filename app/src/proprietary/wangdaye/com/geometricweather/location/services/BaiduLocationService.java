@@ -37,7 +37,11 @@ public class BaiduLocationService extends LocationService {
                     case 161:
                         Result result = new Result(
                                 (float) bdLocation.getLatitude(),
-                                (float) bdLocation.getLongitude()
+                                (float) bdLocation.getLongitude(),
+                                bdLocation.getCountry(),
+                                bdLocation.getProvince(),
+                                bdLocation.getCity(),
+                                bdLocation.getDistrict()
                         );
                         mLocationCallback.onCompleted(result);
                         break;

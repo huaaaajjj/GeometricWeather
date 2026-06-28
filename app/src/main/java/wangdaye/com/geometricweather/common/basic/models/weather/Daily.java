@@ -45,7 +45,7 @@ public class Daily implements Serializable {
                 sun != null ? sun : new Astro(null, null),
                 moon != null ? moon : new Astro(null, null)
         };
-        this.moonPhase = moonPhase;
+        this.moonPhase = moonPhase != null ? moonPhase : new MoonPhase(null, null);
         this.airQuality = airQuality != null ? airQuality
                 : new AirQuality(null, null, null, null, null, null, null, null);
         this.pollen = pollen != null ? pollen

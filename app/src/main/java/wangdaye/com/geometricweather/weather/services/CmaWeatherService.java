@@ -79,7 +79,8 @@ public class CmaWeatherService extends WeatherService {
                 // from another provider, or its weather/view returns data:"" for an unknown id).
                 // Resolve a real station by coordinates / name / IP and retry.
                 if (!usable(result)) {
-                    String stationId = resolveStationId(context, location);
+                    Location station = resolveStation(context, location);
+                    String stationId = station != null ? station.getCityId() : null;
                     if (!TextUtils.isEmpty(stationId)
                             && !stationId.equals(location.getCityId())) {
                         result = tryGetWeather(stationId);
@@ -148,33 +149,7 @@ public class CmaWeatherService extends WeatherService {
                                 @NonNull RequestLocationCallback callback) {
         mController = AsyncHelper.runOnIO(() -> {
             try {
-                // 1. nearest station by GPS coordinates (most reliable for current position).
-                Station nearest = findNearestStation(context,
-                        location.getLatitude(), location.getLongitude());
-                Location resolved = nearest != null
-                        ? buildStationLocation(nearest.id, nearest.name,
-                                location.getLatitude(), location.getLongitude())
-                        : null;
-
-                // 2. fall back to the reverse-geocoded place name via pinyin autocomplete.
-                if (resolved == null) {
-                    String name = firstNonEmpty(
-                            location.getDistrict(), location.getCity(), location.getProvince());
-                    if (!TextUtils.isEmpty(name)) {
-                        List<Location> found = requestLocation(context, name);
-                        if (!found.isEmpty()) {
-                            resolved = found.get(0);
-                        }
-                    }
-                }
-
-                // 3. last resort: CMA resolves the nearest station by IP when stationid is empty.
-                if (resolved == null) {
-                    CmaWeatherResult wr = tryGetWeather("");
-                    if (wr != null && wr.data != null && wr.data.location != null) {
-                        resolved = buildLocationFromView(wr.data.location);
-                    }
-                }
+                Location resolved = resolveStation(context, location);
 
                 if (resolved != null) {
                     List<Location> list = new ArrayList<>();
@@ -220,25 +195,29 @@ public class CmaWeatherService extends WeatherService {
                 && result.data.daily != null && !result.data.daily.isEmpty();
     }
 
-    // Resolve a CMA stationId for a location whose cityId is not (or no longer) a CMA station.
+    // Resolve a CMA station for a location whose cityId is not (or no longer) a CMA station:
+    // nearest station by GPS (most reliable for current position), else the reverse-geocoded
+    // place name via pinyin autocomplete, else CMA's IP-based resolution (last resort, since a
+    // mobile IP can be far from the user). Returns null if all three fail.
     @Nullable
-    private String resolveStationId(Context context, Location location) {
+    private Location resolveStation(Context context, Location location) {
         Station nearest = findNearestStation(context,
                 location.getLatitude(), location.getLongitude());
         if (nearest != null) {
-            return nearest.id;
+            return buildStationLocation(nearest.id, nearest.name,
+                    location.getLatitude(), location.getLongitude());
         }
         String name = firstNonEmpty(
                 location.getDistrict(), location.getCity(), location.getProvince());
         if (!TextUtils.isEmpty(name)) {
             List<Location> found = requestLocation(context, name);
             if (!found.isEmpty()) {
-                return found.get(0).getCityId();
+                return found.get(0);
             }
         }
         CmaWeatherResult wr = tryGetWeather("");
         if (wr != null && wr.data != null && wr.data.location != null) {
-            return wr.data.location.id;
+            return buildLocationFromView(wr.data.location);
         }
         return null;
     }

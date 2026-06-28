@@ -139,11 +139,15 @@ public class LocationHelper {
 
                     requestAvailableWeatherLocation(
                             context,
-                            Location.copy(
-                                    location,
+                            location.copy(
+                                    null,
                                     result.getLatitude(),
                                     result.getLongitude(),
-                                    TimeZone.getDefault()
+                                    TimeZone.getDefault(),
+                                    result.getCountry(),
+                                    result.getProvince(),
+                                    result.getCity(),
+                                    result.getDistrict()
                             ),
                             usableCheckListener
                     );

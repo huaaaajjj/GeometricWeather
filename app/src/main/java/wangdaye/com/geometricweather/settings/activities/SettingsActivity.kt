@@ -125,6 +125,9 @@ class SettingsActivity : GeoActivity() {
                         navController = navController
                     )
                 }
+                composable(SettingsScreenRouter.WeatherSourceStatus.route) {
+                    WeatherSourceStatusScreen(context = this@SettingsActivity)
+                }
                 composable(SettingsScreenRouter.ServiceProviderAdvanced.route) {
                     SettingsProviderAdvancedSettingsScreen(
                         context = this@SettingsActivity

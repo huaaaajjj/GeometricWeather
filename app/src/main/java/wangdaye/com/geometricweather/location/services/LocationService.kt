@@ -19,9 +19,15 @@ abstract class LocationService {
 
     // location.
 
-    data class Result(
+    data class Result @JvmOverloads constructor(
         val latitude: Float,
-        val longitude: Float
+        val longitude: Float,
+        // Reverse-geocoded address from the location SDK (when setNeedAddress is on). Null when the
+        // service only returns coordinates; the weather source then resolves the place by lat/lon.
+        val country: String? = null,
+        val province: String? = null,
+        val city: String? = null,
+        val district: String? = null
     )
     interface LocationCallback {
         fun onCompleted(result: Result?)

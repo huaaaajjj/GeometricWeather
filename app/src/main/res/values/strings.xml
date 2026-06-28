@@ -377,6 +377,8 @@
     <string name="settings_summary_live_wallpaper">Set Material weather animation as live wallpaper</string>
     <string name="settings_title_service_provider">Service provider</string>
     <string name="settings_summary_service_provider">Select service provider of weather data and location information</string>
+    <string name="settings_title_weather_source_status">Weather source status</string>
+    <string name="settings_summary_weather_source_status">Availability &amp; data coverage of each weather source</string>
     <string name="settings_title_service_provider_advanced">Advanced service provider settings</string>
     <string name="settings_summary_service_provider_advanced">Proceed with caution</string>
     <string name="settings_title_weather_source">Weather source</string>

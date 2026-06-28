@@ -9,6 +9,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import wangdaye.com.geometricweather.BuildConfig;
 import wangdaye.com.geometricweather.weather.apis.AccuWeatherApi;
+import wangdaye.com.geometricweather.weather.apis.ApihzApi;
 import wangdaye.com.geometricweather.weather.apis.AtmoAuraIqaApi;
 import wangdaye.com.geometricweather.weather.apis.CaiYunApi;
 import wangdaye.com.geometricweather.weather.apis.CmaApi;
@@ -107,6 +108,17 @@ public class ApiModule {
                 .addConverterFactory(converterFactory)
                 .build()
                 .create((CmaApi.class));
+    }
+
+    @Provides
+    public ApihzApi provideApihzApi(OkHttpClient client,
+                                    GsonConverterFactory converterFactory) {
+        return new Retrofit.Builder()
+                .baseUrl(BuildConfig.APIHZ_BASE_URL)
+                .client(client)
+                .addConverterFactory(converterFactory)
+                .build()
+                .create((ApihzApi.class));
     }
 
 }

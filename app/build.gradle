@@ -25,10 +25,16 @@ def decodeBase64(String encoded) {
 }
 
 // Embedded API keys (base64 encoded to avoid secret scanning)
-def EMBEDDED_ACCU_KEY = decodeBase64("enBrYV8wYTM0YTEzMTY2OWM0NDBhODc0YTYzY2E1M2Q5Yjk1Yl81ZTdkYjUzMg==")
+// AccuWeather keys from upstream WangDaYeeeeee/GeometricWeather (placeholders — currently revoked,
+// return 401; replace with a fresh key from developer.accuweather.com to re-enable the ACCU source).
+def EMBEDDED_ACCU_WEATHER_KEY = decodeBase64("c3JSTGVBbVRyb3hQaW5ERzhBdXMzSWtsNnRMR0pkOTQ=")
+def EMBEDDED_ACCU_CURRENT_KEY = decodeBase64("MTMxNzc4NTI2MzA5NDUzMjk1YzljZTIzNTBhNzllODc=")
+def EMBEDDED_ACCU_AQI_KEY = decodeBase64("N2Y4YzRkYTNjZTk4NDlmZmIyMTM0ZjA3NTIwMWM0NWE=")
 def EMBEDDED_OWM_KEY = decodeBase64("NmI5NDNlMjJhN2Q0YTM4ODg4ZjY3MzI1YzFlNzQxOWU=")
 def EMBEDDED_CAIYUN_KEY = decodeBase64("SFlNbzJkV2tiQjczTjdydA==")
 def EMBEDDED_WEATHERAPI_KEY = decodeBase64("ZjlhOTJmYjQ4NzI3NDg3NmEwYjgyMzA1MjYwOTA2")
+def EMBEDDED_APIHZ_ID = decodeBase64("MTAwMTg0MTk=")
+def EMBEDDED_APIHZ_KEY = decodeBase64("YWE3N2JkZjkzMWM4NDhlYzcyN2FhYTkyZTYxZGEzYjc=")
 
 // Load local.properties first, fall back to gradle.properties
 def localProperties = new Properties()
@@ -44,8 +50,8 @@ android {
         applicationId "wangdaye.com.geometricweather"
         minSdk 21
         targetSdk 35
-        versionCode 30407
-        versionName "3.4.7"
+        versionCode 30501
+        versionName "3.5.1"
         multiDexEnabled true
         ndk {
             abiFilters "x86", "armeabi-v7a", "x86_64", "arm64-v8a"
@@ -85,9 +91,9 @@ android {
         it.buildConfigField "String", "CAIYUN_WEATHER_BASE_URL", localProperties.getProperty("CAIYUN_WEATHER_BASE_URL", CAIYUN_WEATHER_BASE_URL)
         it.buildConfigField "String", "CAIYUN_WEATHER_KEY", localProperties.getProperty("CAIYUN_WEATHER_KEY", "\"$EMBEDDED_CAIYUN_KEY\"")
         it.buildConfigField "String", "ACCU_WEATHER_BASE_URL", localProperties.getProperty("ACCU_WEATHER_BASE_URL", ACCU_WEATHER_BASE_URL)
-        it.buildConfigField "String", "ACCU_WEATHER_KEY", localProperties.getProperty("ACCU_WEATHER_KEY", "\"$EMBEDDED_ACCU_KEY\"")
-        it.buildConfigField "String", "ACCU_CURRENT_KEY", localProperties.getProperty("ACCU_CURRENT_KEY", "\"$EMBEDDED_ACCU_KEY\"")
-        it.buildConfigField "String", "ACCU_AQI_KEY", localProperties.getProperty("ACCU_AQI_KEY", "\"$EMBEDDED_ACCU_KEY\"")
+        it.buildConfigField "String", "ACCU_WEATHER_KEY", localProperties.getProperty("ACCU_WEATHER_KEY", "\"$EMBEDDED_ACCU_WEATHER_KEY\"")
+        it.buildConfigField "String", "ACCU_CURRENT_KEY", localProperties.getProperty("ACCU_CURRENT_KEY", "\"$EMBEDDED_ACCU_CURRENT_KEY\"")
+        it.buildConfigField "String", "ACCU_AQI_KEY", localProperties.getProperty("ACCU_AQI_KEY", "\"$EMBEDDED_ACCU_AQI_KEY\"")
         it.buildConfigField "String", "OWM_KEY", localProperties.getProperty("OWM_KEY", "\"$EMBEDDED_OWM_KEY\"")
         it.buildConfigField "String", "OWM_BASE_URL", localProperties.getProperty("OWM_BASE_URL", OWM_BASE_URL)
         it.buildConfigField "String", "BAIDU_IP_LOCATION_BASE_URL", localProperties.getProperty("BAIDU_IP_LOCATION_BASE_URL", BAIDU_IP_LOCATION_BASE_URL)
@@ -103,6 +109,9 @@ android {
         it.buildConfigField "String", "WEATHERAPI_BASE_URL", localProperties.getProperty("WEATHERAPI_BASE_URL", "\"https://api.weatherapi.com/\"")
         it.buildConfigField "String", "WEATHERAPI_KEY", localProperties.getProperty("WEATHERAPI_KEY", "\"$EMBEDDED_WEATHERAPI_KEY\"")
         it.buildConfigField "String", "CMA_BASE_URL", localProperties.getProperty("CMA_BASE_URL", "\"https://weather.cma.cn/\"")
+        it.buildConfigField "String", "APIHZ_BASE_URL", localProperties.getProperty("APIHZ_BASE_URL", "\"https://cn.apihz.cn/\"")
+        it.buildConfigField "String", "APIHZ_ID", localProperties.getProperty("APIHZ_ID", "\"$EMBEDDED_APIHZ_ID\"")
+        it.buildConfigField "String", "APIHZ_KEY", localProperties.getProperty("APIHZ_KEY", "\"$EMBEDDED_APIHZ_KEY\"")
 
     }
     lint {

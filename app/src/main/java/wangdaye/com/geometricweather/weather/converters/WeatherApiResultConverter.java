@@ -1,6 +1,7 @@
 package wangdaye.com.geometricweather.weather.converters;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,7 +41,7 @@ public class WeatherApiResultConverter {
         if (result == null || result.current == null) return null;
         try {
             return new Weather(
-                    new Base(result.location != null ? result.location.name : "",
+                    new Base(location.getCityId(),
                             System.currentTimeMillis(), new Date(), System.currentTimeMillis(),
                             new Date(), System.currentTimeMillis()),
                     convertCurrent(context, result),
@@ -48,7 +49,7 @@ public class WeatherApiResultConverter {
                     convertDailyList(context, result),
                     convertHourlyList(context, result),
                     new ArrayList<>(),
-                    convertAlertList(result)
+                    convertAlertList(result, location)
             );
         } catch (Exception e) {
             return null;
@@ -176,18 +177,44 @@ public class WeatherApiResultConverter {
     }
 
     @NonNull
-    private static List<Alert> convertAlertList(WeatherApiResult result) {
+    private static List<Alert> convertAlertList(WeatherApiResult result, Location location) {
         List<Alert> list = new ArrayList<>();
         if (result.alerts == null || result.alerts.alert == null) return list;
 
         long id = 0;
         for (WeatherApiResult.Alert a : result.alerts.alert) {
+            // WeatherAPI sometimes attaches an alert for a different region (observed: a Beijing
+            // 延庆区 warning returned for a Tianjin point). Drop alerts whose areas field names a
+            // province/city other than this location's.
+            if (isForeignArea(a, location)) continue;
+
             Date date = parseDateTime(a.effective);
             long time = date != null ? date.getTime() : System.currentTimeMillis();
             list.add(new Alert(id++, date != null ? date : new Date(), time,
                     a.headline, a.desc, a.event, 1, 0xFFFFB82B));
         }
         return list;
+    }
+
+    // True when the alert clearly belongs to another Chinese admin area than the location.
+    // Only judges when WeatherAPI provided an areas field and we have a location name to compare.
+    private static boolean isForeignArea(WeatherApiResult.Alert a, Location location) {
+        if (location == null || !location.isChina() || TextUtils.isEmpty(a.areas)) {
+            return false;
+        }
+        if (TextUtils.isEmpty(location.getProvince()) && TextUtils.isEmpty(location.getCity())) {
+            return false;
+        }
+        String text = a.areas + " " + (a.headline != null ? a.headline : "");
+        boolean ours = nameMentioned(text, location.getProvince())
+                || nameMentioned(text, location.getCity());
+        return !ours;
+    }
+
+    private static boolean nameMentioned(String text, String adminName) {
+        if (TextUtils.isEmpty(text) || TextUtils.isEmpty(adminName)) return false;
+        String stem = adminName.replaceAll("(省|市|自治区|特别行政区|地区|盟)$", "");
+        return !TextUtils.isEmpty(stem) && text.contains(stem);
     }
 
     @Nullable

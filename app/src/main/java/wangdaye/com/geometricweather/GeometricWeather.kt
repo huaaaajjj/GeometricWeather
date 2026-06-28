@@ -11,7 +11,9 @@ import androidx.work.Configuration
 import dagger.hilt.android.HiltAndroidApp
 import wangdaye.com.geometricweather.common.basic.GeoActivity
 import wangdaye.com.geometricweather.common.utils.LanguageUtils
+import wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper
 import wangdaye.com.geometricweather.common.utils.helpers.BuglyHelper
+import wangdaye.com.geometricweather.db.DatabaseHelper
 import wangdaye.com.geometricweather.settings.SettingsManager
 import wangdaye.com.geometricweather.theme.ThemeManager
 import java.io.BufferedReader
@@ -199,6 +201,20 @@ class GeometricWeather : MultiDexApplication(),
 
         if (getProcessName().equals(packageName)) {
             setDayNightMode()
+            cleanupOrphanWeatherOnce()
+        }
+    }
+
+    // One-shot purge of weather rows orphaned by the old WeatherAPI cityId bug. Guarded so it runs
+    // only once per install; the underlying delete is idempotent regardless.
+    private fun cleanupOrphanWeatherOnce() {
+        val prefs = getSharedPreferences("app_init", Context.MODE_PRIVATE)
+        if (prefs.getBoolean("orphan_weather_cleaned", false)) {
+            return
+        }
+        AsyncHelper.runOnIO {
+            DatabaseHelper.getInstance(this).cleanupOrphanWeather()
+            prefs.edit().putBoolean("orphan_weather_cleaned", true).apply()
         }
     }
 

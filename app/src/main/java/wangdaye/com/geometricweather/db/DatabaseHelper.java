@@ -187,6 +187,15 @@ public class DatabaseHelper {
 
         List<MinutelyEntity> minutelyList = mDao.selectMinutelyListByCityIdAndSource(cityId, source);
         if (!minutelyList.isEmpty()) mDao.deleteMinutelyList(minutelyList);
+
+        List<AlertEntity> alertList = mDao.selectAlertListByCityIdAndSource(cityId, source);
+        if (!alertList.isEmpty()) mDao.deleteAlertList(alertList);
+    }
+
+    // Removes weather rows left orphaned by the old WeatherAPI key bug (kept by API place name,
+    // matching no saved location). Safe to run repeatedly; deletes nothing once cleaned.
+    public void cleanupOrphanWeather() {
+        mDao.deleteOrphanWeather();
     }
 
     // history.

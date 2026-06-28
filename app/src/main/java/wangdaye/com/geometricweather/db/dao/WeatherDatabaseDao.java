@@ -102,6 +102,11 @@ public interface WeatherDatabaseDao {
     @Query("SELECT * FROM weather WHERE cityId = :cityId AND weatherSource = :weatherSource")
     List<WeatherEntity> selectWeatherListByCityIdAndSource(String cityId, String weatherSource);
 
+    // One-time cleanup of weather rows whose cityId belongs to no saved location (orphans left by
+    // the old WeatherAPI bug that keyed weather rows by the API place name instead of cityId).
+    @Query("DELETE FROM weather WHERE cityId NOT IN (SELECT cityId FROM location)")
+    void deleteOrphanWeather();
+
     // ---------- History ----------
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -7,31 +7,34 @@
 
     <!-- Chinese source. -->
     <string-array name="weather_sources">
+        <item>WeatherAPI</item>
+        <item>Open-Meteo</item>
         <item>caiyunapp.com (Only For China)</item>
-        <item>accuweather.com</item>
+        <item>China Weather (apihz.cn)</item>
+        <item>China Meteorological Administration</item>
         <item>OpenWeather</item>
         <item>Météo France</item>
-        <item>Open-Meteo</item>
-        <item>WeatherAPI</item>
-        <item>China Meteorological Administration</item>
+        <item>accuweather.com</item>
     </string-array>
     <string-array name="weather_source_voices">
+        <item>Weather API</item>
+        <item>Open Meteo</item>
         <item>CaiYun App.com</item>
-        <item>ACCU weather.com</item>
+        <item>China Weather</item>
+        <item>China Meteorological Administration</item>
         <item>Open Weather</item>
         <item>Météo France</item>
-        <item>Open Meteo</item>
-        <item>Weather API</item>
-        <item>China Meteorological Administration</item>
+        <item>ACCU weather.com</item>
     </string-array>
     <string-array name="weather_source_values">
+        <item>weatherapi</item>
+        <item>open_meteo</item>
         <item>caiyun</item>
-        <item>accu</item>
+        <item>apihz</item>
+        <item>cma</item>
         <item>owm</item>
         <item>mf</item>
-        <item>open_meteo</item>
-        <item>weatherapi</item>
-        <item>cma</item>
+        <item>accu</item>
     </string-array>
 
     <!-- Location service. -->

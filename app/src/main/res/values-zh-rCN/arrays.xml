@@ -3,22 +3,24 @@
 
     <!-- Chinese source. -->
     <string-array name="weather_sources">
+        <item>WeatherAPI</item>
+        <item>Open-Meteo</item>
         <item>彩云天气（仅中国地区）</item>
-        <item>Accu Weather</item>
+        <item>中国天气网</item>
+        <item>中国气象局</item>
         <item>OpenWeather</item>
         <item>Météo France</item>
-        <item>Open-Meteo</item>
-        <item>WeatherAPI</item>
-        <item>中国气象局</item>
+        <item>Accu Weather</item>
     </string-array>
     <string-array name="weather_source_voices">
+        <item>WeatherAPI</item>
+        <item>Open-Meteo</item>
         <item>彩云天气</item>
-        <item>ACCU天气</item>
+        <item>中国天气网</item>
+        <item>中国气象局</item>
         <item>OPEN天气</item>
         <item>Météo France</item>
-        <item>Open-Meteo</item>
-        <item>WeatherAPI</item>
-        <item>中国气象局</item>
+        <item>ACCU天气</item>
     </string-array>
 
     <!-- Location service. -->

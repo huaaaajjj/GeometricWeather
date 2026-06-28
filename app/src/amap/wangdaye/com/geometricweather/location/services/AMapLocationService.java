@@ -41,7 +41,11 @@ public class AMapLocationService extends LocationService {
                     );
                     Result result = new Result(
                             (float) wgs84[0],
-                            (float) wgs84[1]
+                            (float) wgs84[1],
+                            aMapLocation.getCountry(),
+                            aMapLocation.getProvince(),
+                            aMapLocation.getCity(),
+                            aMapLocation.getDistrict()
                     );
                     mLocationCallback.onCompleted(result);
                 } else {
