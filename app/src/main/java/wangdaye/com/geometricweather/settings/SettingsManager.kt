@@ -108,7 +108,7 @@ class SettingsManager private constructor(context: Context) {
             notifySettingsChanged()
         }
         get() = WeatherSource.getInstance(
-            config.getString("weather_source", "accu") ?: ""
+            config.getString("weather_source", "weatherapi") ?: ""
         )
 
     var locationProvider: LocationProvider

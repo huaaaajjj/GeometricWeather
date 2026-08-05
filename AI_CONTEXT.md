@@ -14,7 +14,7 @@
 
 ## 实现状态
 
-- 当前发布版本：**3.5.1**（versionCode 30501），主分支 `master`（基于 v3.3.6 重建线）。
+- 当前发布版本：**3.5.1**（versionCode 30501）；master 已升到 **3.5.2**（30502，未发布）。主分支 `master`（基于 v3.3.6 重建线）。
 - 8 个天气源全部可用：ACCU、OWM、MF（仅法国）、CAIYUN、OPEN_METEO、WEATHERAPI、CMA、APIHZ（中国天气网）。
 - 工具链已现代化（见版本矩阵）；RxJava 已全部迁移到 Coroutines；GreenDAO 已迁移到 Room。
 
@@ -142,6 +142,7 @@
 - 维护清理：CMA `resolveStation()` 去重（`requestWeather`/`requestLocation` 共用一套坐标/地名/IP 兜底）；删除无引用的 `LogHelper.java`；移除空的 `common/rxjava/` 目录
 - **3.4.9**：中国天气网 APIHZ 接入按城市接口 `tqyb.php`（`sheng`+`place`），补足 `tqybip.php` 仅按 IP 的短板。`ApihzApi` 加 `getWeatherByPlace`（原 IP 法改名 `getWeatherByIp`）；`requestWeather` 改为**按地名取数**：`fetchForLocation` 把地区省/区/市归一化后**依次尝试** 省+地点 → 仅地点 → IP 兜底；`requestLocation(query)` 改为**真实搜索**（`tqyb.php` 仅地点查，命中即按 `sheng/shi/经纬度` 建 `Location`，cityId=省+市）。复用既有 DTO/转换器，无新增源/arrays/枚举。要点（实测接口怪癖）：① `place` 带「区」会 400（`海淀区`✗/`海淀`✓）→ 去尾「区」；② 直辖市 `sheng` 带「市」会 400（`北京市`✗/`北京`✓）→ 去尾「市」（省/自治区保留）；③ 接口**区级覆盖不全**（`海淀`✓ 但 `天河`/`渝中`✗）→ 区不中再退到市（→`广州`/`重庆`），故按 区→市 两级候选；④ 仅地点查最宽松，搜索与兜底都走它；⑤ Retrofit `@Query` 自动 UTF-8 编码中文（Node 实测北京海淀/南京/上海/重庆/广州/深圳均命中，国外退 IP）。已 `assemblePubDebug` 通过
 - **3.5.1**：正式发布版（`assemblePubRelease` 已签名 + R8 minify/shrinkResources）。汇总本会话：APIHZ(中国天气网)源、定位精确到区县、天气源可用性实测页、WeatherAPI 错地区预警过滤 + 缓存键修复 + 孤儿行清理。真机验证（MI 9，卸 debug 装 release）：启动 0 崩溃、自动定位「南开区」、WeatherAPI 联网拉取并 Gson 解析正常（证明 R8 没误删 DTO——`proguard-rules.pro:20` 的 `weather.json.**` 通配覆盖了新增 `weather.json.apihz`）、当前/体感/AQI/5天预报齐全。
+- **3.5.2**：默认天气源 ACCU → WEATHERAPI（`SettingsManager.weatherSource` 的 `getString("weather_source", …)` 兜底值）。ACCU 的内置 Key 已过期且暂无新 Key，新装用户首次进 App 会直接落到死源、拉不到天气。全仓库只有 `WeatherSource` 枚举一处 `"accu"` 字面量，无第二处硬编码默认值；`getInstance("weatherapi")` 命中 WEATHERAPI（`contains` 匹配）。仅影响**新装**（老用户 prefs 里已存的源不变，可在 设置→数据提供商 自行切换，可用性见「天气源可用性」页）。
 - **3.4.15**：一次性清理 3.4.14 之前残留的孤儿 weather 行（按接口地名 Tianjin/Wangdingdi/Shuchenghsien 或旧源 cityId 存的、不属于任何已存地区的行）。`WeatherDatabaseDao` 加 `@Query("DELETE FROM weather WHERE cityId NOT IN (SELECT cityId FROM location)") deleteOrphanWeather()`、`DatabaseHelper.cleanupOrphanWeather()`、`GeometricWeather.onCreate` 主进程内 `cleanupOrphanWeatherOnce()`（`app_init` 偏好 `orphan_weather_cleaned` 一次性守卫 + `AsyncHelper.runOnIO`）。只清 weather 表（daily/hourly/alert/history 本就按 `location.getCityId()` 存，无孤儿）。真机验证：weather 行 36(6 个 cityId)→1(仅 54517_tj)、0 崩溃。注意：验证时 DELETE 落在 `-wal` 里，必须连 `-wal`/`-shm` 一起 pull 才能看到合并后的真实状态（只 cat 主 db 文件会看到旧数据，是假象）。
 - **3.4.14**：修复 3.4.13 遗留的 WeatherAPI 缓存键错配。`WeatherApiResultConverter.convert` 里 `Base.cityId` 改用 `location.getCityId()`（原来用 `result.location.name`=Tianjin/Wangdingdi… 随接口地名漂移）。根因：`WeatherEntityGenerator` 按 `weather.getBase().getCityId()` 存 weather 行，而 `readWeather`/`deleteWeather` 按 `location.getCityId()` 读删 → 键对不上：① WeatherAPI 天气**永远读不到缓存**（冷启动每次重新拉）；② weather 表按接口地名无界累积。改后与其余所有转换器一致（CMA/APIHZ 本就用 `location.getCityId()`）。真机验证：刷新后 weather 行落到 `54517_tj`，连刷两次稳定 1 行（不再累积）、预警仍 0、0 崩溃。旧的 Tianjin/Wangdingdi 孤儿行是修复前残留，不再增长、不被读取（未做迁移清理）。
 - **3.4.13**：修复「定位南开区但预警显示延庆区」。双根因：① **WeatherAPI 接口数据张冠李戴**——对天津坐标返回了北京延庆区预警（`areas=北京市`、`headline=延庆区气象台…`，接口自己 `location` 都识别成 Tianjin 却附了北京预警）。在 `WeatherApiResultConverter.convertAlertList` 加按行政区过滤：`areas` 非空、且 `areas+headline` 既不含本地 province 也不含 city 词根（去掉 省/市/自治区/特别行政区/地区/盟 后缀）时丢弃该预警（只在 isChina 且有地名可比时才判，避免误删）。② **`DatabaseHelper.deleteWeather` 漏删 alert 表**（只删了 weather/daily/hourly/minutely/history）→ 每次刷新预警累积（实测同一条延庆预警攒了 26 份）。补 `selectAlertListByCityIdAndSource`+`deleteAlertList`，对所有源生效。真机验证（MI 9，weatherapi 源）：南开区刷新后 `(54517_tj,weatherapi)` 预警 26→0、天气页无预警横幅、头部显示「南开区」27°、0 崩溃。**遗留 BUG（未改）**：`WeatherApiResultConverter` 把 `Base.cityId` 设成 `result.location.name`（Tianjin/Wangdingdi…随接口地名变）而非 `location.getCityId()`，致 weather 表按接口地名累积、与 `deleteWeather` 按 cityId 删除不匹配（weather 行无界增长）；alert 走 `location.getCityId()` 不受影响，故本次预警修复完整。
@@ -155,7 +156,7 @@
 - **Room 禁止主线程访问**，一律 `AsyncHelper.runOnIO`（历史多次崩溃来源）。
 - **CMA**：weather.cma.cn WAF 拦截默认 okhttp UA（已加浏览器 UA，仅限 CMA）；其无坐标→站点接口，靠全国站点图找最近站点。
 - **APIHZ（中国天气网）**：主走 `tqyb.php`（`sheng`+`place`）按城市取数，`tqybip.php` 仅作 IP 兜底。接口名怪癖：`place` 去尾「区」、直辖市 `sheng` 去尾「市」；区级覆盖不全，按 区→市→IP 依次兜底（见 3.4.9）。海外地名查不到 → 退 IP（国外 IP 接口默认返回北京）。
-- **ACCU 的 Key 已过期**（2026-06-28 实测：geoposition/currentconditions 均返回 403 `"This API Key has expired"`）→ AccuWeather 源当前完全不可用，需在 `build.gradle` 换新 Key（`EMBEDDED_ACCU_KEY`）。本是功能最全的源（15天/24时/UV/AQI/分钟级/预警）。
+- **ACCU 的 Key 已过期**（2026-06-28 实测：geoposition/currentconditions 均返回 403 `"This API Key has expired"`）→ AccuWeather 源当前完全不可用，需在 `build.gradle:30-32` 换新 Key（三个：`EMBEDDED_ACCU_WEATHER_KEY`/`EMBEDDED_ACCU_CURRENT_KEY`/`EMBEDDED_ACCU_AQI_KEY`，base64 编码；也可在 `local.properties` 覆盖，优先级更高）。本是功能最全的源（15天/24时/UV/AQI/分钟级/预警）。**3.5.2 起默认源已改为 WEATHERAPI**，避免新装用户落到死源。
 - **CAIYUN 为试用 Token**（`HYMo2dWkbB73N7rt`）：daily 上限仅 **3 天**、无 minutely 分钟级降水块；realtime/daily 字段齐全（体感/UV(life_index)/AQI/能见度）。如需 15 天+分钟级须换正式 Token。
 - **各源数据丰富度实测**（2026-06-28，北京/MF用巴黎）：OPEN_METEO 16天·384时·全字段(无AQI/预警)；WEATHERAPI 14天·336时·含AQI+预警(最全可用源)；CAIYUN 3天·48时·含AQI/UV；APIHZ 7天·56时(逐3h)·无UV/AQI/能见度；CMA 7天·逐时(网页抓取)·无UV/AQI；OWM 5天/40点(3h步长)·有AQI·2.5无UV；MF(法)15天·98时。
 - minSdk 实际为 21（目标 24，暂不升级）。
