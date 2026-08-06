@@ -1,0 +1,73 @@
+---
+name: release
+description: 发布一个新版本：升版本号、本地构建签名 release APK、真机验证、打 tag、发 GitHub Release。当用户说「发版」「打个新版本」「出个 release」「升版本号」时使用。
+---
+
+# 发版
+
+**CI 不可靠（jitpack 403），一律本地构建验证后再发。** 需要 JDK 17。
+
+## 一、升版本号
+
+`app/build.gradle` 的 `defaultConfig`，两个都要改且必须同步：
+
+```gradle
+versionCode 30502        // 单调递增，格式 = 3.5.2 → 30502
+versionName "3.5.2"
+```
+
+约定：`3.x.y` 的 `y` 是小修复，`x` 是较大改动。
+
+## 二、追加变更日志
+
+`AI_CONTEXT.md` 的「变更日志」一行（**中文**），同时同步顶部「当前发布版本」。
+写**根因和结论**，不要写「修了个 bug」—— 这份日志是下次接手时唯一的上下文。
+
+## 三、构建
+
+```bash
+./gradlew assemblePubRelease
+```
+
+产物（`versionNameSuffix "_pub"` 拼进文件名）：
+
+```
+app/build/outputs/apk/pub/release/GeometricWeather-v<versionName>_pub.apk
+```
+
+release 开了 `minifyEnabled` + `shrinkResources`，签名用仓库里的 `geometricweather.jks`。
+
+## 四、真机验证（不可跳过）
+
+**debug 和 release 签名不同，装不上去，必须先卸载。** 别用 `-r`。
+
+```bash
+adb uninstall wangdaye.com.geometricweather
+adb install app/build/outputs/apk/pub/release/GeometricWeather-v<ver>_pub.apk
+```
+
+R8 冒烟测试（这一步专门抓 shrink 误删）：
+
+1. 冷启动不崩
+2. **联网拉一次天气并正常显示** —— 这是在验证 Gson DTO 没被 R8 删掉。新加的源如果 DTO 包不在 `proguard-rules.pro` 的 `weather.json.**` 通配下，就会在这里炸。
+3. 定位正常（显示到区县）
+4. `adb logcat -b crash -d` 为空
+
+崩了就用 `/crash-triage`，release 包的 mapping 在 `app/build/outputs/mapping/pubRelease/mapping.txt`。
+
+## 五、打 tag 并推送
+
+```bash
+git tag v3.5.2
+git push origin master --tags
+```
+
+## 六、GitHub Release
+
+- **日常版发 Prerelease**
+- 正式版**手动创建**，不走 Action 自动发布
+
+## 注意
+
+- 签名密钥库和口令是明文写在 `app/build.gradle` 里、且 `.jks` 在仓库中。这个仓库是 public 的 —— 任何人都能签出一个 Android 认为是"同一个 app 的更新"的包。自用无妨，要对外分发就得换 key 并从历史里清掉。
+- 别改数据库 schema（锁定 v63）。
