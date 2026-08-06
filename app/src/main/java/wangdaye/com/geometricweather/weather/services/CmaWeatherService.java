@@ -12,6 +12,7 @@ import com.google.gson.JsonElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.inject.Inject;
 
@@ -40,7 +41,9 @@ import wangdaye.com.geometricweather.weather.json.cma.CmaWeatherResult;
 public class CmaWeatherService extends WeatherService {
 
     private final CmaApi mApi;
-    private final List<Call<?>> mCalls = new ArrayList<>();
+    // add() 发生在 runOnIO 的 IO 线程内，cancel() 在调用线程迭代 —— 裸 ArrayList 会抛
+    // ConcurrentModificationException。每次请求只 add 1~3 个，COW 的复制开销可忽略。
+    private final List<Call<?>> mCalls = new CopyOnWriteArrayList<>();
     private AsyncHelper.Controller mController;
 
     private static final TimeZone CN_TZ = TimeZone.getTimeZone("Asia/Shanghai");
