@@ -14,7 +14,7 @@
 
 ## 实现状态
 
-- 当前发布版本：**3.5.1**（versionCode 30501）；master 已升到 **3.5.2**（30502，未发布）。主分支 `master`（基于 v3.3.6 重建线）。
+- 当前发布版本：**3.5.2**（versionCode 30502，正在发布）。上一发布版 3.5.1（30501）。主分支 `master`（基于 v3.3.6 重建线）。
 - 8 个天气源全部可用：ACCU、OWM、MF（仅法国）、CAIYUN、OPEN_METEO、WEATHERAPI、CMA、APIHZ（中国天气网）。
 - 工具链已现代化（见版本矩阵）；RxJava 已全部迁移到 Coroutines；GreenDAO 已迁移到 Room。
 

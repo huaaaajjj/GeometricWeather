@@ -52,7 +52,8 @@ class Location(
         const val CURRENT_POSITION_ID = "CURRENT_POSITION"
 
         @JvmStatic
-        fun buildLocal(): Location {
+        @JvmOverloads
+        fun buildLocal(weatherSource: WeatherSource = WeatherSource.WEATHERAPI): Location {
             return Location(
                 cityId =  NULL_ID,
                 latitude = 0f,
@@ -62,7 +63,7 @@ class Location(
                 province = "",
                 city = "",
                 district = "",
-                weatherSource = WeatherSource.ACCU,
+                weatherSource = weatherSource,
                 isCurrentPosition = true,
                 isResidentPosition = false,
                 isChina = false

@@ -28,6 +28,7 @@ import wangdaye.com.geometricweather.db.generators.HistoryEntityGenerator;
 import wangdaye.com.geometricweather.db.generators.HourlyEntityGenerator;
 import wangdaye.com.geometricweather.db.generators.LocationEntityGenerator;
 import wangdaye.com.geometricweather.db.generators.MinutelyEntityGenerator;
+import wangdaye.com.geometricweather.settings.SettingsManager;
 import wangdaye.com.geometricweather.db.generators.WeatherEntityGenerator;
 import wangdaye.com.geometricweather.common.utils.FileUtils;
 
@@ -45,10 +46,12 @@ public class DatabaseHelper {
 
     private final WeatherDatabaseDao mDao;
     private final Object mWritingLock;
+    private final Context mContext;
 
     private DatabaseHelper(Context c) {
         mDao = GeometricWeatherDatabase.getInstance(c).weatherDatabaseDao();
         mWritingLock = new Object();
+        mContext = c.getApplicationContext();
     }
 
     // location.
@@ -97,7 +100,11 @@ public class DatabaseHelper {
         if (entityList.isEmpty()) {
             synchronized (mWritingLock) {
                 if (mDao.countLocation() == 0) {
-                    LocationEntity entity = LocationEntityGenerator.generate(Location.buildLocal());
+                    // The first-install "current position" row must follow the configured source.
+                    // It used to hardcode ACCU, whose key is expired, so new installs landed on a
+                    // dead source no matter what the default setting said.
+                    LocationEntity entity = LocationEntityGenerator.generate(Location.buildLocal(
+                            SettingsManager.getInstance(mContext).getWeatherSource()));
                     mDao.insertLocation(entity);
                     entityList = new ArrayList<>();
                     entityList.add(entity);
