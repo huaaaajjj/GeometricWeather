@@ -98,13 +98,17 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
         String windTitle = context.getString(R.string.live)
                 + " : "
                 + weather.getCurrent().getWind().getWindDescription(context, speedUnit);
-        String windContent = context.getString(R.string.daytime)
-                + " : "
-                + weather.getDailyForecast().get(0).day().getWind().getWindDescription(context, speedUnit)
-                + "\n"
-                + context.getString(R.string.nighttime)
-                + " : "
-                + weather.getDailyForecast().get(0).night().getWind().getWindDescription(context, speedUnit);
+        // Right after a source switch the cached weather can carry an empty daily list, so the
+        // day/night lines must not assume index 0 exists.
+        String windContent = weather.getDailyForecast().isEmpty()
+                ? ""
+                : context.getString(R.string.daytime)
+                        + " : "
+                        + weather.getDailyForecast().get(0).day().getWind().getWindDescription(context, speedUnit)
+                        + "\n"
+                        + context.getString(R.string.nighttime)
+                        + " : "
+                        + weather.getDailyForecast().get(0).night().getWind().getWindDescription(context, speedUnit);
         mIndexList.add(
                 new Index(
                         R.drawable.ic_wind,

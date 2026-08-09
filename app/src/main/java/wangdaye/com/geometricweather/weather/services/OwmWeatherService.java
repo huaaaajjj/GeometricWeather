@@ -116,7 +116,7 @@ public class OwmWeatherService extends WeatherService {
         List<OwmLocationResult> resultList;
         try {
             resultList = mApi.callWeatherLocation(
-                    SettingsManager.getInstance(context).getProviderOwmKey(), query).execute().body();
+                    SettingsManager.getInstance(context).getProviderOwmKey(), query, 5).execute().body();
         } catch (IOException e) {
             e.printStackTrace();
             return new ArrayList<>();
@@ -141,7 +141,7 @@ public class OwmWeatherService extends WeatherService {
             try {
                 List<OwmLocationResult> results = mApi.getWeatherLocationByGeoPosition(
                         SettingsManager.getInstance(context).getProviderOwmKey(),
-                        location.getLatitude(), location.getLongitude()
+                        location.getLatitude(), location.getLongitude(), 1
                 ).execute().body();
                 if (results != null && !results.isEmpty()) {
                     List<Location> locationList = new ArrayList<>();

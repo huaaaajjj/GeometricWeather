@@ -55,7 +55,10 @@ private val DOWN = Color(0xFFD13B3B)
 private val MISS = Color(0xFFBDBDBD)
 private val BUSY = Color(0xFFD9A000)
 
-private const val CHECK_TIMEOUT_MS = 25_000L
+// Must exceed the services' own budget, or a slow source is reported as unavailable before it
+// resolves: OkHttp connect/read timeout is 30s (TLSCompactHelper) and the fan-out services wait
+// on latch.await(30s). A single TLS handshake stalling then read as "不可用" at 25s.
+private const val CHECK_TIMEOUT_MS = 35_000L
 
 // 源, 可用, 天, 时, 体感, UV, 气压, 湿度, 降水, AQI, 预警, 日出
 private val COLUMNS = listOf(

@@ -51,7 +51,10 @@ public class WeatherHelper {
             @Override
             public void requestWeatherSuccess(@NonNull Location requestLocation) {
                 Weather weather = requestLocation.getWeather();
-                if (weather != null) {
+                // An empty daily list is not usable weather: ~76 call sites across the UI, widgets
+                // and notifications read getDailyForecast().get(0) unguarded. Treating it as a
+                // failure here keeps the previously cached weather instead of crashing downstream.
+                if (weather != null && !weather.getDailyForecast().isEmpty()) {
                     AsyncHelper.runOnIO(() -> {
                         DatabaseHelper.getInstance(c).writeWeather(requestLocation, weather);
                         if (weather.getYesterday() == null) {

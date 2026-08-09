@@ -23,6 +23,7 @@ import wangdaye.com.geometricweather.common.ui.widgets.insets.FitStatusBarTopApp
 import wangdaye.com.geometricweather.settings.compose.ServiceProviderSettingsScreen
 import wangdaye.com.geometricweather.settings.compose.SettingsProviderAdvancedSettingsScreen
 import wangdaye.com.geometricweather.settings.compose.SettingsScreenRouter
+import wangdaye.com.geometricweather.settings.compose.WeatherSourceStatusScreen
 import wangdaye.com.geometricweather.theme.compose.GeometricWeatherTheme
 
 class SelectProviderActivity : GeoActivity() {
@@ -62,6 +63,9 @@ class SelectProviderActivity : GeoActivity() {
                         context = this@SelectProviderActivity,
                         navController = navController
                     )
+                }
+                composable(SettingsScreenRouter.WeatherSourceStatus.route) {
+                    WeatherSourceStatusScreen(context = this@SelectProviderActivity)
                 }
                 composable(SettingsScreenRouter.ServiceProviderAdvanced.route) {
                     SettingsProviderAdvancedSettingsScreen(

@@ -161,6 +161,10 @@ public class DatabaseHelper {
         }
 
         List<DailyEntity> dailyList = mDao.selectDailyListByCityIdAndSource(cityId, sourceId);
+        // Rows cached before the WeatherHelper guard can still hold an empty daily list, which the
+        // UI/widget/notification code reads via getDailyForecast().get(0) without checking.
+        if (dailyList.isEmpty()) return null;
+
         List<HourlyEntity> hourlyList = mDao.selectHourlyListByCityIdAndSource(cityId, sourceId);
         List<MinutelyEntity> minutelyList = mDao.selectMinutelyListByCityIdAndSource(cityId, sourceId);
         List<AlertEntity> alertList = mDao.selectAlertListByCityIdAndSource(cityId, sourceId);

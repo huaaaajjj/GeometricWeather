@@ -7,14 +7,14 @@ import wangdaye.com.geometricweather.weather.json.owm.*;
 import java.util.List;
 
 public interface OwmApi {
-    @GET("data/2.5/weather")
-    Call<List<OwmLocationResult>> callWeatherLocation(@Query("appid") String apikey, @Query("q") String q);
+    // Geocoding API returns a flat JSON array of {name, lat, lon, country}, which is what
+    // OwmLocationResult models. data/2.5/find returns {"list":[...]} instead, so decoding it as
+    // List<OwmLocationResult> always threw JsonSyntaxException and city search silently came back empty.
+    @GET("geo/1.0/direct")
+    Call<List<OwmLocationResult>> callWeatherLocation(@Query("appid") String apikey, @Query("q") String q, @Query("limit") int limit);
 
-    @GET("data/2.5/find")
-    Call<List<OwmLocationResult>> getWeatherLocation(@Query("appid") String apikey, @Query("q") String q);
-
-    @GET("data/2.5/find")
-    Call<List<OwmLocationResult>> getWeatherLocationByGeoPosition(@Query("appid") String apikey, @Query("lat") double lat, @Query("lon") double lon);
+    @GET("geo/1.0/reverse")
+    Call<List<OwmLocationResult>> getWeatherLocationByGeoPosition(@Query("appid") String apikey, @Query("lat") double lat, @Query("lon") double lon, @Query("limit") int limit);
 
     @GET("data/2.5/weather")
     Call<OwmCurrentResult> getCurrentWeather(@Query("appid") String apikey, @Query("lat") double lat, @Query("lon") double lon, @Query("units") String units, @Query("lang") String lang);
