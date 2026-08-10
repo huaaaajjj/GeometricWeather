@@ -1,0 +1,21 @@
+{
+ "type": "Feature",
+ "geometry": {
+  "type": "Point",
+  "coordinates": [
+   2.34,
+   48.86
+  ]
+ },
+ "properties": {
+  "ephemeris": {
+   "sunrise_time": "2026-08-10T04:37:12.462Z",
+   "sunset_time": "2026-08-10T19:17:34.932Z",
+   "moonrise_time": "2026-08-10T01:09:18.168Z",
+   "moonset_time": "2026-08-10T18:25:25.288Z",
+   "moon_phase": "0.92",
+   "moon_phase_description": "Waning Crescent",
+   "saint": "Saint Laurent"
+  }
+ }
+}

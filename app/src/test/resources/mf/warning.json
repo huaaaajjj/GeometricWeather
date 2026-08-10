@@ -1,0 +1,104 @@
+{
+ "update_time": 1786334430,
+ "end_validity_time": 1786399200,
+ "domain_id": "75",
+ "color_max": 2,
+ "timelaps": [
+  {
+   "phenomenon_id": "6",
+   "timelaps_items": [
+    {
+     "begin_time": 1786334400,
+     "end_time": 1786356000,
+     "color_id": 1
+    },
+    {
+     "begin_time": 1786356000,
+     "end_time": 1786399200,
+     "color_id": 2
+    }
+   ]
+  },
+  {
+   "phenomenon_id": "1",
+   "timelaps_items": [
+    {
+     "begin_time": 1786334400,
+     "end_time": 1786399200,
+     "color_id": 1
+    }
+   ]
+  },
+  {
+   "phenomenon_id": "2",
+   "timelaps_items": [
+    {
+     "begin_time": 1786334400,
+     "end_time": 1786399200,
+     "color_id": 1
+    }
+   ]
+  },
+  {
+   "phenomenon_id": "3",
+   "timelaps_items": [
+    {
+     "begin_time": 1786334400,
+     "end_time": 1786399200,
+     "color_id": 1
+    }
+   ]
+  },
+  {
+   "phenomenon_id": "5",
+   "timelaps_items": [
+    {
+     "begin_time": 1786334400,
+     "end_time": 1786399200,
+     "color_id": 1
+    }
+   ]
+  },
+  {
+   "phenomenon_id": "4",
+   "timelaps_items": []
+  }
+ ],
+ "phenomenons_items": [
+  {
+   "phenomenon_id": "6",
+   "phenomenon_max_color_id": 2
+  },
+  {
+   "phenomenon_id": "1",
+   "phenomenon_max_color_id": 1
+  },
+  {
+   "phenomenon_id": "2",
+   "phenomenon_max_color_id": 1
+  },
+  {
+   "phenomenon_id": "3",
+   "phenomenon_max_color_id": 1
+  },
+  {
+   "phenomenon_id": "5",
+   "phenomenon_max_color_id": 1
+  },
+  {
+   "phenomenon_id": "4",
+   "phenomenon_max_color_id": 1
+  }
+ ],
+ "advices": null,
+ "consequences": null,
+ "max_count_items": null,
+ "comments": {
+  "title": "Commentaire carte",
+  "text": [
+   "Épisode caniculaire s'étendant sur une grande partie sud-est du pays."
+  ]
+ },
+ "text": null,
+ "text_avalanche": null
+}

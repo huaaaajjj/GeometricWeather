@@ -1,8 +1,10 @@
 package wangdaye.com.geometricweather.weather.services;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +25,6 @@ import wangdaye.com.geometricweather.weather.converters.MfResultConverter;
 import wangdaye.com.geometricweather.weather.json.atmoaura.AtmoAuraQAResult;
 import wangdaye.com.geometricweather.weather.json.mf.MfCurrentResult;
 import wangdaye.com.geometricweather.weather.json.mf.MfEphemerisResult;
-import wangdaye.com.geometricweather.weather.json.mf.MfForecastResult;
 import wangdaye.com.geometricweather.weather.json.mf.MfForecastV2Result;
 import wangdaye.com.geometricweather.weather.json.mf.MfLocationResult;
 import wangdaye.com.geometricweather.weather.json.mf.MfRainResult;
@@ -45,11 +46,11 @@ public class MfWeatherService extends WeatherService {
     public void requestWeather(Context context, Location location, @NonNull RequestWeatherCallback callback) {
         String languageCode = SettingsManager.getInstance(context).getLanguage().getCode();
 
-        CountDownLatch latch = new CountDownLatch(6);
+        CountDownLatch latch = new CountDownLatch(5);
         AtomicBoolean anyRequiredFailed = new AtomicBoolean(false);
 
         AtomicReference<MfCurrentResult> currentResult = new AtomicReference<>(null);
-        AtomicReference<MfForecastResult> forecastResult = new AtomicReference<>(null);
+        AtomicReference<MfForecastV2Result> forecastResult = new AtomicReference<>(null);
         AtomicReference<MfEphemerisResult> ephemerisResult = new AtomicReference<>(null);
         AtomicReference<MfRainResult> rainResult = new AtomicReference<>(null);
         AtomicReference<MfWarningsResult> warningsResult = new AtomicReference<>(null);
@@ -70,6 +71,9 @@ public class MfWeatherService extends WeatherService {
             latch.countDown();
         }));
 
+        // Warnings are keyed by the French department number, which only the forecast response
+        // carries (location.getProvince() holds a department name once the user is located), so
+        // this call is chained after the forecast rather than fanned out with it.
         mControllers.add(AsyncHelper.runOnIO(() -> {
             try {
                 forecastResult.set(mMfApi.getForecast(
@@ -81,6 +85,16 @@ public class MfWeatherService extends WeatherService {
                 }
             } catch (Exception e) {
                 anyRequiredFailed.set(true);
+            }
+            try {
+                String department = getDepartment(forecastResult.get(), location);
+                if (department != null) {
+                    warningsResult.set(mMfApi.getWarnings(
+                            department, null,
+                            SettingsManager.getInstance(context).getProviderMfWsftKey()
+                    ).execute().body());
+                }
+            } catch (Exception ignored) {
             }
             latch.countDown();
         }));
@@ -109,30 +123,7 @@ public class MfWeatherService extends WeatherService {
 
         mControllers.add(AsyncHelper.runOnIO(() -> {
             try {
-                warningsResult.set(mMfApi.getWarnings(
-                        location.getProvince(), null,
-                        SettingsManager.getInstance(context).getProviderMfWsftKey()
-                ).execute().body());
-            } catch (Exception ignored) {
-            }
-            latch.countDown();
-        }));
-
-        mControllers.add(AsyncHelper.runOnIO(() -> {
-            try {
-                if (location.getProvince().equals("Auvergne-Rhône-Alpes")
-                        || location.getProvince().equals("01")
-                        || location.getProvince().equals("03")
-                        || location.getProvince().equals("07")
-                        || location.getProvince().equals("15")
-                        || location.getProvince().equals("26")
-                        || location.getProvince().equals("38")
-                        || location.getProvince().equals("42")
-                        || location.getProvince().equals("43")
-                        || location.getProvince().equals("63")
-                        || location.getProvince().equals("69")
-                        || location.getProvince().equals("73")
-                        || location.getProvince().equals("74")) {
+                if (isAtmoAuraDepartment(location.getProvince())) {
                     aqiResult.set(mAtmoAuraApi.getQAFull(
                             SettingsManager.getInstance(context).getProviderIqaAtmoAuraKey(),
                             location.getLatitude(),
@@ -199,17 +190,15 @@ public class MfWeatherService extends WeatherService {
 
         mControllers.add(AsyncHelper.runOnIO(() -> {
             try {
-                MfForecastV2Result result = mMfApi.getForecastV2(
+                MfForecastV2Result result = mMfApi.getForecast(
                         location.getLatitude(),
                         location.getLongitude(),
                         languageCode,
                         SettingsManager.getInstance(context).getProviderMfWsftKey()
                 ).execute().body();
-                if (result != null) {
+                if (result != null && result.properties != null && result.properties.insee != null) {
                     List<Location> locationList = new ArrayList<>();
-                    if (result.properties.insee != null) {
-                        locationList.add(MfResultConverter.convert(null, result));
-                    }
+                    locationList.add(MfResultConverter.convert(null, result));
                     callback.requestLocationSuccess(
                             location.getLatitude() + "," + location.getLongitude(),
                             locationList
@@ -227,29 +216,31 @@ public class MfWeatherService extends WeatherService {
         }));
     }
 
-    public void requestLocation(Context context, String query,
-                                @NonNull RequestLocationCallback callback) {
-        mControllers.add(AsyncHelper.runOnIO(() -> {
-            try {
-                List<MfLocationResult> results = mMfApi.getWeatherLocation(
-                        query, 48.86d, 2.34d,
-                        SettingsManager.getInstance(context).getProviderMfWsftKey()
-                ).execute().body();
-                if (results != null && results.size() != 0) {
-                    List<Location> locationList = new ArrayList<>();
-                    for (MfLocationResult r : results) {
-                        if (r.postCode != null) {
-                            locationList.add(MfResultConverter.convert(null, r));
-                        }
-                    }
-                    callback.requestLocationSuccess(query, locationList);
-                } else {
-                    callback.requestLocationFailed(query);
-                }
-            } catch (Exception e) {
-                callback.requestLocationFailed(query);
-            }
-        }));
+    /** MF keys warnings by department number ("75"); the forecast is the only source of it. */
+    @Nullable
+    private static String getDepartment(@Nullable MfForecastV2Result forecast, Location location) {
+        if (forecast != null && forecast.properties != null
+                && !TextUtils.isEmpty(forecast.properties.frenchDepartment)) {
+            return forecast.properties.frenchDepartment;
+        }
+        // Fall back to the stored province only when it already looks like a department number.
+        String province = location.getProvince();
+        return province != null && province.matches("\\d{2,3}[AB]?") ? province : null;
+    }
+
+    /** Atmo Aura publishes air quality for the Auvergne-Rhône-Alpes departments only. */
+    private static boolean isAtmoAuraDepartment(@Nullable String province) {
+        if (TextUtils.isEmpty(province)) {
+            return false;
+        }
+        switch (province) {
+            case "Auvergne-Rhône-Alpes":
+            case "01": case "03": case "07": case "15": case "26": case "38":
+            case "42": case "43": case "63": case "69": case "73": case "74":
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override

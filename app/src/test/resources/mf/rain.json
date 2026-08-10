@@ -1,0 +1,67 @@
+{
+ "update_time": "2026-08-10T11:55:00.000Z",
+ "type": "Feature",
+ "geometry": {
+  "type": "Point",
+  "coordinates": [
+   2.340591,
+   48.859333
+  ]
+ },
+ "properties": {
+  "altitude": 31,
+  "name": "Paris—1er Arrondissement",
+  "country": "FR - France",
+  "french_department": "75",
+  "rain_product_available": 1,
+  "timezone": "Europe/Paris",
+  "confidence": 0,
+  "forecast": [
+   {
+    "time": "2026-08-10T12:10:00.000Z",
+    "rain_intensity": 1,
+    "rain_intensity_description": "No rain"
+   },
+   {
+    "time": "2026-08-10T12:15:00.000Z",
+    "rain_intensity": 1,
+    "rain_intensity_description": "No rain"
+   },
+   {
+    "time": "2026-08-10T12:20:00.000Z",
+    "rain_intensity": 1,
+    "rain_intensity_description": "No rain"
+   },
+   {
+    "time": "2026-08-10T12:25:00.000Z",
+    "rain_intensity": 1,
+    "rain_intensity_description": "No rain"
+   },
+   {
+    "time": "2026-08-10T12:30:00.000Z",
+    "rain_intensity": 1,
+    "rain_intensity_description": "No rain"
+   },
+   {
+    "time": "2026-08-10T12:35:00.000Z",
+    "rain_intensity": 1,
+    "rain_intensity_description": "No rain"
+   },
+   {
+    "time": "2026-08-10T12:45:00.000Z",
+    "rain_intensity": 1,
+    "rain_intensity_description": "No rain"
+   },
+   {
+    "time": "2026-08-10T12:55:00.000Z",
+    "rain_intensity": 1,
+    "rain_intensity_description": "No rain"
+   },
+   {
+    "time": "2026-08-10T13:05:00.000Z",
+    "rain_intensity": 1,
+    "rain_intensity_description": "No rain"
+   }
+  ]
+ }
+}

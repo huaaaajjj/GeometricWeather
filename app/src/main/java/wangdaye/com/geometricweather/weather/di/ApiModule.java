@@ -1,5 +1,17 @@
 package wangdaye.com.geometricweather.weather.di;
 
+import android.text.TextUtils;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
@@ -56,12 +68,35 @@ public class ApiModule {
     }
 
     @Provides
-    public MfWeatherApi provideMfWeatherApi(OkHttpClient client,
-                                            GsonConverterFactory converterFactory) {
+    public MfWeatherApi provideMfWeatherApi(OkHttpClient client) {
+        // Météo France stamps everything as UTC ISO-8601 ("2026-08-10T09:00:00.000Z"). The shared
+        // Gson's "yyyy-MM-dd'T'HH:mm:ss" silently drops the trailing ".000Z" and reads the value as
+        // device-local, which skews every time by the device's UTC offset. The 'X' pattern that
+        // would handle this is only available from API 24, so parse UTC explicitly instead.
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, type, ctx) -> {
+                    String text = json.getAsString();
+                    if (TextUtils.isEmpty(text)) {
+                        return null;
+                    }
+                    for (String pattern : new String[]{
+                            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "yyyy-MM-dd'T'HH:mm:ss'Z'"}) {
+                        SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.US);
+                        format.setTimeZone(TimeZone.getTimeZone("UTC"));
+                        format.setLenient(false);
+                        try {
+                            return format.parse(text);
+                        } catch (ParseException ignored) {
+                            // try the next pattern
+                        }
+                    }
+                    return null;
+                })
+                .create();
         return new Retrofit.Builder()
                 .baseUrl(BuildConfig.MF_WSFT_BASE_URL)
                 .client(client)
-                .addConverterFactory(converterFactory)
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build()
                 .create((MfWeatherApi.class));
     }

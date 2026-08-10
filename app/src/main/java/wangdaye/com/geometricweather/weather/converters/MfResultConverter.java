@@ -39,204 +39,190 @@ import wangdaye.com.geometricweather.common.basic.models.weather.WindDegree;
 import wangdaye.com.geometricweather.weather.json.atmoaura.AtmoAuraQAResult;
 import wangdaye.com.geometricweather.weather.json.mf.MfCurrentResult;
 import wangdaye.com.geometricweather.weather.json.mf.MfEphemerisResult;
-import wangdaye.com.geometricweather.weather.json.mf.MfForecastResult;
 import wangdaye.com.geometricweather.weather.json.mf.MfForecastV2Result;
 import wangdaye.com.geometricweather.weather.json.mf.MfLocationResult;
 import wangdaye.com.geometricweather.weather.json.mf.MfRainResult;
 import wangdaye.com.geometricweather.weather.json.mf.MfWarningsResult;
 import wangdaye.com.geometricweather.weather.services.WeatherService;
 
+/**
+ * Météo France serves GeoJSON features (everything under "properties") with ISO-8601 timestamps.
+ * Provider fields are frequently null — guard every one of them, since the Weather model's
+ * @NonNull assertions throw and the outer catch would turn that into a silent "no data".
+ */
 public class MfResultConverter {
+
+    private static final long ONE_HOUR = 3600 * 1000L;
 
     // Result of a coordinates search
     @NonNull
     public static Location convert(@Nullable Location location, MfForecastV2Result result) {
-        if (location != null
+        MfForecastV2Result.ForecastProperties properties = result.properties;
+        Float latitude = null;
+        Float longitude = null;
+        if (result.geometry != null && result.geometry.coordinates != null
+                && result.geometry.coordinates.size() >= 2) {
+            longitude = result.geometry.coordinates.get(0);
+            latitude = result.geometry.coordinates.get(1);
+        }
+
+        boolean keepAddress = location != null
                 && !TextUtils.isEmpty(location.getProvince())
                 && !TextUtils.isEmpty(location.getCity())
-                && !TextUtils.isEmpty(location.getDistrict())) {
-            return new Location(
-                    result.properties.insee, // cityId
-                    result.geometry.coordinates.get(1),
-                    result.geometry.coordinates.get(0),
-                    TimeZone.getTimeZone(result.properties.timezone),
-                    result.properties.country,
-                    location.getProvince(), // Domain (département)
-                    location.getCity(),
-                    location.getDistrict(),
-                    null,
-                    WeatherSource.MF,
-                    false,
-                    false,
-                    !TextUtils.isEmpty(result.properties.country)
-                            && (result.properties.country.startsWith("CN")
-                            || result.properties.country.startsWith("cn")
-                            || result.properties.country.startsWith("HK")
-                            || result.properties.country.startsWith("hk")
-                            || result.properties.country.startsWith("TW")
-                            || result.properties.country.startsWith("tw"))
-            );
-        } else {
-            return new Location(
-                    result.properties.insee, // cityId
-                    result.geometry.coordinates.get(1),
-                    result.geometry.coordinates.get(0),
-                    TimeZone.getTimeZone(result.properties.timezone),
-                    result.properties.country != null ? result.properties.country : "",
-                    result.properties.frenchDepartment != null
-                            ? result.properties.frenchDepartment : "", // Domain (département)
-                    result.properties.name != null ? result.properties.name : "",
-                    "",
-                    null,
-                    WeatherSource.MF,
-                    false,
-                    false,
-                    !TextUtils.isEmpty(result.properties.country)
-                            && (result.properties.country.startsWith("CN")
-                            || result.properties.country.startsWith("cn")
-                            || result.properties.country.startsWith("HK")
-                            || result.properties.country.startsWith("hk")
-                            || result.properties.country.startsWith("TW")
-                            || result.properties.country.startsWith("tw"))
-            );
-        }
+                && !TextUtils.isEmpty(location.getDistrict());
+
+        return new Location(
+                properties.insee, // cityId
+                latitude != null ? latitude : (location != null ? location.getLatitude() : 0f),
+                longitude != null ? longitude : (location != null ? location.getLongitude() : 0f),
+                TimeZone.getTimeZone(
+                        properties.timezone != null ? properties.timezone : "Europe/Paris"),
+                properties.country != null ? properties.country : "",
+                keepAddress
+                        ? location.getProvince()
+                        : (properties.frenchDepartment != null ? properties.frenchDepartment : ""),
+                keepAddress
+                        ? location.getCity()
+                        : (properties.name != null ? properties.name : ""),
+                keepAddress ? location.getDistrict() : "",
+                null,
+                WeatherSource.MF,
+                false,
+                false,
+                isChinese(properties.country)
+        );
     }
 
     // Result of a query string search
     @NonNull
     public static Location convert(@Nullable Location location, MfLocationResult result) {
-        if (location != null
+        boolean keepAddress = location != null
                 && !TextUtils.isEmpty(location.getProvince())
                 && !TextUtils.isEmpty(location.getCity())
-                && !TextUtils.isEmpty(location.getDistrict())) {
-            return new Location(
-                    result.postCode, // cityId
-                    (float) result.lat,
-                    (float) result.lon,
-                    TimeZone.getTimeZone("Europe/Paris"), // Météo France serves France only; MfLocationResult has no tz (real tz comes with the forecast)
-                    result.country,
-                    location.getProvince(), // Domain (département)
-                    location.getCity(),
-                    location.getDistrict(),
-                    null,
-                    WeatherSource.MF,
-                    false,
-                    false,
-                    !TextUtils.isEmpty(result.country)
-                            && (result.country.equals("CN")
-                            || result.country.equals("cn")
-                            || result.country.equals("HK")
-                            || result.country.equals("hk")
-                            || result.country.equals("TW")
-                            || result.country.equals("tw"))
-            );
-        } else {
-            return new Location(
-                    result.postCode, // cityId
-                    (float) result.lat,
-                    (float) result.lon,
-                    TimeZone.getTimeZone("Europe/Paris"), // Météo France serves France only; MfLocationResult has no tz (real tz comes with the forecast)
-                    result.country != null ? result.country : "",
-                    result.admin2 != null ? result.admin2 : "", // Domain (département)
-                    result.name != null ? result.name + (result.postCode == null ? "" : (" (" + result.postCode + ")")) : "",
-                    "",
-                    null,
-                    WeatherSource.MF,
-                    false,
-                    false,
-                    !TextUtils.isEmpty(result.country)
-                            && (result.country.equals("CN")
-                            || result.country.equals("cn")
-                            || result.country.equals("HK")
-                            || result.country.equals("hk")
-                            || result.country.equals("TW")
-                            || result.country.equals("tw"))
-            );
+                && !TextUtils.isEmpty(location.getDistrict());
+
+        return new Location(
+                result.postCode, // cityId
+                (float) result.lat,
+                (float) result.lon,
+                TimeZone.getTimeZone("Europe/Paris"), // Météo France serves France only; MfLocationResult has no tz (real tz comes with the forecast)
+                result.country != null ? result.country : "",
+                keepAddress
+                        ? location.getProvince()
+                        : (result.admin2 != null ? result.admin2 : ""), // Domain (département)
+                keepAddress
+                        ? location.getCity()
+                        : (result.name != null ? result.name + (result.postCode == null ? "" : (" (" + result.postCode + ")")) : ""),
+                keepAddress ? location.getDistrict() : "",
+                null,
+                WeatherSource.MF,
+                false,
+                false,
+                isChinese(result.country)
+        );
+    }
+
+    private static boolean isChinese(@Nullable String country) {
+        if (TextUtils.isEmpty(country)) {
+            return false;
         }
+        String code = country.toUpperCase();
+        return code.startsWith("CN") || code.startsWith("HK") || code.startsWith("TW");
     }
 
     @NonNull
     public static WeatherService.WeatherResultWrapper convert(Context context,
                                                               Location location,
                                                               MfCurrentResult currentResult,
-                                                              MfForecastResult forecastResult,
+                                                              MfForecastV2Result forecastResult,
                                                               MfEphemerisResult ephemerisResult,
                                                               MfRainResult rainResult,
                                                               MfWarningsResult warningsResult,
                                                               @Nullable AtmoAuraQAResult aqiAtmoAuraResult) {
         try {
-            List<Hourly> hourly = getHourlyList(context, forecastResult.forecasts, forecastResult.probabilityForecast);
+            MfForecastV2Result.ForecastProperties properties = forecastResult.properties;
+            List<MfForecastV2Result.ForecastProperties.HourForecast> hourlyForecast =
+                    properties.forecast != null ? properties.forecast : new ArrayList<>();
+            List<MfForecastV2Result.ForecastProperties.ForecastV2> dailyForecast =
+                    properties.dailyForecast != null ? properties.dailyForecast : new ArrayList<>();
+
+            List<Hourly> hourly = getHourlyList(
+                    context, hourlyForecast, properties.probabilityForecast);
+            List<Daily> daily = getDailyList(
+                    context, dailyForecast, hourlyForecast, hourly, ephemerisResult, aqiAtmoAuraResult);
+            if (daily.isEmpty()) {
+                // Every consumer assumes at least one day; an empty list crashes the UI downstream.
+                return new WeatherService.WeatherResultWrapper(null);
+            }
+
+            long updateTime = forecastResult.updateTime != null
+                    ? forecastResult.updateTime.getTime() : System.currentTimeMillis();
+
             Weather weather = new Weather(
                     new Base(
                             location.getCityId(),
                             System.currentTimeMillis(),
-                            new Date(forecastResult.updatedOn * 1000),
-                            forecastResult.updatedOn * 1000,
+                            new Date(updateTime),
+                            updateTime,
                             new Date(),
                             System.currentTimeMillis()
                     ),
-                    new Current(
-                            currentResult.observation.weather.desc,
-                            getWeatherCode(currentResult.observation.weather.icon),
-                            new Temperature(
-                                    toInt(currentResult.observation.temperature),
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null
-                            ),
-                            new Precipitation(
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null
-                            ),
-                            new PrecipitationProbability(
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null
-                            ),
-                            new Wind(
-                                    currentResult.observation.wind.icon,
-                                    new WindDegree(currentResult.observation.wind.direction, currentResult.observation.wind.direction == -1),
-                                    currentResult.observation.wind.speed * 3.6f,
-                                    CommonConverter.getWindLevel(context, currentResult.observation.wind.speed * 3.6f)
-                            ),
-                            new UV(null, null, null),
-                            getAirQuality(new Date(), aqiAtmoAuraResult),
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null
-                    ),
+                    getCurrent(context, currentResult, aqiAtmoAuraResult),
                     null, // TODO: Fill in with observation data instead
-                    getDailyList(context, forecastResult, hourly, ephemerisResult, aqiAtmoAuraResult),
+                    daily,
                     hourly,
-                    getMinutelyList(forecastResult.dailyForecasts.get(0).sun.rise, forecastResult.dailyForecasts.get(0).sun.set, rainResult),
+                    getMinutelyList(daily.get(0).sun(), rainResult),
                     getWarningsList(warningsResult)
             );
             return new WeatherService.WeatherResultWrapper(weather);
         } catch (Exception ignored) {
-            /*Log.d("GEOM", ignored.getMessage());
-            for (StackTraceElement stackTraceElement : ignored.getStackTrace()) {
-                Log.d("GEOM", stackTraceElement.toString());
-            }*/
             return new WeatherService.WeatherResultWrapper(null);
         }
     }
 
+    private static Current getCurrent(Context context,
+                                      @Nullable MfCurrentResult currentResult,
+                                      @Nullable AtmoAuraQAResult aqiAtmoAuraResult) {
+        MfCurrentResult.Properties.Observation observation =
+                currentResult != null && currentResult.properties != null
+                        ? currentResult.properties.gridded : null;
+
+        Float windSpeed = observation != null && observation.windSpeed != null
+                ? observation.windSpeed * 3.6f : null;
+
+        return new Current(
+                observation != null && observation.weatherDescription != null
+                        ? observation.weatherDescription : "",
+                getWeatherCode(observation != null ? observation.weatherIcon : null),
+                new Temperature(
+                        observation != null ? toInt(observation.temperature) : 0,
+                        null, null, null, null, null, null
+                ),
+                new Precipitation(null, null, null, null, null),
+                new PrecipitationProbability(null, null, null, null, null),
+                new Wind(
+                        observation != null && observation.windIcon != null ? observation.windIcon : "",
+                        getWindDegree(observation != null ? observation.windDirection : null),
+                        windSpeed,
+                        windSpeed != null ? CommonConverter.getWindLevel(context, windSpeed) : ""
+                ),
+                new UV(null, null, null),
+                getAirQuality(new Date(), aqiAtmoAuraResult),
+                null, null, null, null, null, null, null, null
+        );
+    }
+
+    /** MF reports -1 for a variable wind direction. */
+    private static WindDegree getWindDegree(@Nullable Integer direction) {
+        if (direction == null || direction == -1) {
+            return new WindDegree(0, true);
+        }
+        return new WindDegree(direction, false);
+    }
+
     // This can be improved by adding Aqi results from other regions
     private static AirQuality getAirQuality(Date requestedDate, @Nullable AtmoAuraQAResult aqiAtmoAuraResult) {
-        if (aqiAtmoAuraResult == null) {
+        if (aqiAtmoAuraResult == null || aqiAtmoAuraResult.indexs == null) {
             return new AirQuality(
                     null, null,
                     null, null,
@@ -245,34 +231,14 @@ public class MfResultConverter {
             );
         } else {
             SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
-            if (fmt.format(requestedDate).equals(fmt.format(aqiAtmoAuraResult.indexs.yesterday.date))) {
-                return new AirQuality(
-                        aqiAtmoAuraResult.indexs.yesterday.aggregatedIndex.quali, (int) Math.round(aqiAtmoAuraResult.indexs.yesterday.aggregatedIndex.val),
-                        null, (float) aqiAtmoAuraResult.indexs.yesterday.pm10.val,
-                        null, (float) aqiAtmoAuraResult.indexs.yesterday.no2.val,
-                        (float) aqiAtmoAuraResult.indexs.yesterday.o3.val, null
-                );
-            } else if (fmt.format(requestedDate).equals(fmt.format(aqiAtmoAuraResult.indexs.today.date))) {
-                return new AirQuality(
-                        aqiAtmoAuraResult.indexs.today.aggregatedIndex.quali, (int) Math.round(aqiAtmoAuraResult.indexs.today.aggregatedIndex.val),
-                        null, (float) aqiAtmoAuraResult.indexs.today.pm10.val,
-                        null, (float) aqiAtmoAuraResult.indexs.today.no2.val,
-                        (float) aqiAtmoAuraResult.indexs.today.o3.val, null
-                );
-            } else if (fmt.format(requestedDate).equals(fmt.format(aqiAtmoAuraResult.indexs.tomorrow.date))) {
-                return new AirQuality(
-                        aqiAtmoAuraResult.indexs.tomorrow.aggregatedIndex.quali, (int) Math.round(aqiAtmoAuraResult.indexs.tomorrow.aggregatedIndex.val),
-                        null, (float) aqiAtmoAuraResult.indexs.tomorrow.pm10.val,
-                        null, (float) aqiAtmoAuraResult.indexs.tomorrow.no2.val,
-                        (float) aqiAtmoAuraResult.indexs.tomorrow.o3.val, null
-                );
-            } else if (aqiAtmoAuraResult.indexs.inTwoDays != null && fmt.format(requestedDate).equals(fmt.format(aqiAtmoAuraResult.indexs.inTwoDays.date))) {
-                return new AirQuality(
-                        aqiAtmoAuraResult.indexs.inTwoDays.aggregatedIndex.quali, (int) Math.round(aqiAtmoAuraResult.indexs.inTwoDays.aggregatedIndex.val),
-                        null, (float) aqiAtmoAuraResult.indexs.inTwoDays.pm10.val,
-                        null, (float) aqiAtmoAuraResult.indexs.inTwoDays.no2.val,
-                        (float) aqiAtmoAuraResult.indexs.inTwoDays.o3.val, null
-                );
+            if (matchesDay(fmt, requestedDate, aqiAtmoAuraResult.indexs.yesterday)) {
+                return getAirQuality(aqiAtmoAuraResult.indexs.yesterday);
+            } else if (matchesDay(fmt, requestedDate, aqiAtmoAuraResult.indexs.today)) {
+                return getAirQuality(aqiAtmoAuraResult.indexs.today);
+            } else if (matchesDay(fmt, requestedDate, aqiAtmoAuraResult.indexs.tomorrow)) {
+                return getAirQuality(aqiAtmoAuraResult.indexs.tomorrow);
+            } else if (matchesDay(fmt, requestedDate, aqiAtmoAuraResult.indexs.inTwoDays)) {
+                return getAirQuality(aqiAtmoAuraResult.indexs.inTwoDays);
             } else {
                 return new AirQuality(
                         null, null,
@@ -284,8 +250,26 @@ public class MfResultConverter {
         }
     }
 
-    private static HalfDay getHalfDay(Context context, boolean isDaytime, List<Hourly> hourly, List<MfForecastResult.Forecast> hourlyForecast, MfForecastResult.DailyForecast dailyForecast) {
-        Integer temp = isDaytime? toInt(dailyForecast.temperature.max) : toInt(dailyForecast.temperature.min);
+    private static boolean matchesDay(SimpleDateFormat fmt, Date requestedDate,
+                                      @Nullable AtmoAuraQAResult.MultiDaysIndexs.MultiIndex index) {
+        return index != null && index.date != null
+                && fmt.format(requestedDate).equals(fmt.format(index.date));
+    }
+
+    private static AirQuality getAirQuality(AtmoAuraQAResult.MultiDaysIndexs.MultiIndex index) {
+        return new AirQuality(
+                index.aggregatedIndex != null ? index.aggregatedIndex.quali : null,
+                index.aggregatedIndex != null ? (int) Math.round(index.aggregatedIndex.val) : null,
+                null, index.pm10 != null ? (float) index.pm10.val : null,
+                null, index.no2 != null ? (float) index.no2.val : null,
+                index.o3 != null ? (float) index.o3.val : null, null
+        );
+    }
+
+    private static HalfDay getHalfDay(Context context, boolean isDaytime, List<Hourly> hourly,
+                                      List<MfForecastV2Result.ForecastProperties.HourForecast> hourlyForecast,
+                                      MfForecastV2Result.ForecastProperties.ForecastV2 dailyForecast) {
+        Integer temp = isDaytime ? toIntOrNull(dailyForecast.tMax) : toIntOrNull(dailyForecast.tMin);
         Integer tempWindChill = null;
 
         Float precipitationTotal = 0.0f;
@@ -297,45 +281,39 @@ public class MfResultConverter {
         Float probPrecipitationSnow = 0.0f;
         Float probPrecipitationIce = 0.0f;
 
+        long dayStart = dailyForecast.time.getTime();
+
         for (Hourly hour : hourly) {
-            if ((isDaytime && (hour.getTime() / 1000) >= dailyForecast.dt + 6 * 3600 && (hour.getTime() / 1000) < dailyForecast.dt + 18 * 3600)
-                    || (!isDaytime && (hour.getTime() / 1000) >= dailyForecast.dt + 18 * 3600 && (hour.getTime() / 1000) < dailyForecast.dt + 30 * 3600)) {
+            if (isInHalfDay(hour.getTime(), dayStart, isDaytime)) {
                 // Temperature
                 if (isDaytime) {
                     if (temp == null || hour.getTemperature().getTemperature() > temp) {
                         temp = hour.getTemperature().getTemperature();
                     }
-                    if (tempWindChill == null || hour.getTemperature().getWindChillTemperature() > tempWindChill) {
-                        tempWindChill = hour.getTemperature().getWindChillTemperature();
+                    Integer windChill = hour.getTemperature().getWindChillTemperature();
+                    if (windChill != null && (tempWindChill == null || windChill > tempWindChill)) {
+                        tempWindChill = windChill;
                     }
-                }
-                if (!isDaytime) {
+                } else {
                     if (temp == null || hour.getTemperature().getTemperature() < temp) {
                         temp = hour.getTemperature().getTemperature();
                     }
-                    if (tempWindChill == null || hour.getTemperature().getWindChillTemperature() < tempWindChill) {
-                        tempWindChill = hour.getTemperature().getWindChillTemperature();
+                    Integer windChill = hour.getTemperature().getWindChillTemperature();
+                    if (windChill != null && (tempWindChill == null || windChill < tempWindChill)) {
+                        tempWindChill = windChill;
                     }
                 }
 
                 // Precipitation
-                precipitationTotal += hour.getPrecipitation().getTotal();
-                precipitationRain += hour.getPrecipitation().getRain();
-                precipitationSnow += hour.getPrecipitation().getSnow();
+                precipitationTotal += orZero(hour.getPrecipitation().getTotal());
+                precipitationRain += orZero(hour.getPrecipitation().getRain());
+                precipitationSnow += orZero(hour.getPrecipitation().getSnow());
 
                 // Precipitation probability
-                if (hour.getPrecipitationProbability().getTotal() != null && hour.getPrecipitationProbability().getTotal() > probPrecipitationTotal) {
-                    probPrecipitationTotal = hour.getPrecipitationProbability().getTotal();
-                }
-                if (hour.getPrecipitationProbability().getRain() != null && hour.getPrecipitationProbability().getRain() > probPrecipitationRain) {
-                    probPrecipitationRain = hour.getPrecipitationProbability().getRain();
-                }
-                if (hour.getPrecipitationProbability().getSnow() != null && hour.getPrecipitationProbability().getSnow() > probPrecipitationSnow) {
-                    probPrecipitationSnow = hour.getPrecipitationProbability().getSnow();
-                }
-                if (hour.getPrecipitationProbability().getIce() != null && hour.getPrecipitationProbability().getIce() > probPrecipitationIce) {
-                    probPrecipitationIce = hour.getPrecipitationProbability().getIce();
-                }
+                probPrecipitationTotal = max(probPrecipitationTotal, hour.getPrecipitationProbability().getTotal());
+                probPrecipitationRain = max(probPrecipitationRain, hour.getPrecipitationProbability().getRain());
+                probPrecipitationSnow = max(probPrecipitationSnow, hour.getPrecipitationProbability().getSnow());
+                probPrecipitationIce = max(probPrecipitationIce, hour.getPrecipitationProbability().getIce());
             }
         }
 
@@ -345,27 +323,30 @@ public class MfResultConverter {
         Float windSpeed = null;
         String windLevel = "Pas d’info";
 
-        for (MfForecastResult.Forecast hourForecast : hourlyForecast) {
-            if ((isDaytime && hourForecast.dt >= dailyForecast.dt + 6 * 3600 && hourForecast.dt < dailyForecast.dt + 18 * 3600)
-                    || (!isDaytime && hourForecast.dt >= dailyForecast.dt + 18 * 3600 && hourForecast.dt < dailyForecast.dt + 30 * 3600)) {
-                if (cloudCover == null || hourForecast.clouds > cloudCover) {
-                    cloudCover = hourForecast.clouds;
-                }
-                if (windSpeed == null || hourForecast.wind.speed * 3.6f > windSpeed) {
-                    windDirection = hourForecast.wind.icon;
-                    windDegree = new WindDegree(hourForecast.wind.direction.equals("Variable") ? 0.0f : Float.parseFloat(hourForecast.wind.direction), hourForecast.wind.direction.equals("Variable"));
-                    windSpeed = hourForecast.wind.speed * 3.6f;
-                    windLevel = CommonConverter.getWindLevel(context, hourForecast.wind.speed * 3.6f);
-                }
+        for (MfForecastV2Result.ForecastProperties.HourForecast hourForecast : hourlyForecast) {
+            if (hourForecast.time == null
+                    || !isInHalfDay(hourForecast.time.getTime(), dayStart, isDaytime)) {
+                continue;
+            }
+            if (hourForecast.totalCloudCover != null
+                    && (cloudCover == null || hourForecast.totalCloudCover > cloudCover)) {
+                cloudCover = hourForecast.totalCloudCover;
+            }
+            if (hourForecast.windSpeed != null
+                    && (windSpeed == null || hourForecast.windSpeed * 3.6f > windSpeed)) {
+                windDirection = hourForecast.windIcon != null ? hourForecast.windIcon : windDirection;
+                windDegree = getWindDegree(hourForecast.windDirection);
+                windSpeed = hourForecast.windSpeed * 3.6f;
+                windLevel = CommonConverter.getWindLevel(context, windSpeed);
             }
         }
 
         return new HalfDay(
-                dailyForecast.weather12H == null ? "" : dailyForecast.weather12H.desc,
-                dailyForecast.weather12H == null ? "" : dailyForecast.weather12H.desc,
-                dailyForecast.weather12H == null ? WeatherCode.CLEAR : getWeatherCode(dailyForecast.weather12H.icon),
+                dailyForecast.dailyWeatherDescription == null ? "" : dailyForecast.dailyWeatherDescription,
+                dailyForecast.dailyWeatherDescription == null ? "" : dailyForecast.dailyWeatherDescription,
+                getWeatherCode(dailyForecast.dailyWeatherIcon),
                 new Temperature(
-                        temp,
+                        temp != null ? temp : 0,
                         null,
                         null,
                         null,
@@ -404,68 +385,90 @@ public class MfResultConverter {
         );
     }
 
-    private static List<Daily> getDailyList(Context context, MfForecastResult forecastsResult, List<Hourly> hourly, MfEphemerisResult ephemerisResult, @Nullable AtmoAuraQAResult aqiAtmoAuraResult) {
-        List<Daily> dailyList = new ArrayList<>(forecastsResult.dailyForecasts.size());
+    /** Day runs 06:00–18:00 after the day's midnight; night runs 18:00–06:00 the following day. */
+    private static boolean isInHalfDay(long time, long dayStart, boolean isDaytime) {
+        return isDaytime
+                ? time >= dayStart + 6 * ONE_HOUR && time < dayStart + 18 * ONE_HOUR
+                : time >= dayStart + 18 * ONE_HOUR && time < dayStart + 30 * ONE_HOUR;
+    }
 
-        for (MfForecastResult.DailyForecast dailyForecast : forecastsResult.dailyForecasts) {
-            // Don't add day if temperature is given null as it would crash the app (not nullable)
-            if (dailyForecast.temperature.min != null && dailyForecast.temperature.max != null) {
-                dailyList.add(
-                        new Daily(
-                                new Date(dailyForecast.dt * 1000),
-                                dailyForecast.dt * 1000,
-                                getHalfDay(context, true, hourly, forecastsResult.forecasts, dailyForecast),
-                                getHalfDay(context, false, hourly, forecastsResult.forecasts, dailyForecast),
-                                new Astro(new Date(dailyForecast.sun.rise * 1000), new Date(dailyForecast.sun.set * 1000)),
-                                // Note: Below is the same moon data for all days, but since we are only showing the data for the current day in the app, this does not matter
-                                //new Astro(ephemerisResult.properties.ephemeris.moonriseTime, ephemerisResult.properties.ephemeris.moonsetTime), // FIXME: Weird issue, input is UTC (due to Z) but system thinks it's system timezone
-                                new Astro(null, null),
-                                new MoonPhase(CommonConverter.getMoonPhaseAngle(ephemerisResult.properties.ephemeris.moonPhaseDescription), ephemerisResult.properties.ephemeris.moonPhaseDescription),
-                                getAirQuality(new Date(dailyForecast.dt * 1000), aqiAtmoAuraResult),
-                                new Pollen(null, null, null, null, null, null, null, null, null, null, null, null),
-                                new UV(dailyForecast.uv, null, null),
-                                getHoursOfDay(new Date(dailyForecast.sun.rise * 1000), new Date(dailyForecast.sun.set * 1000))
-                        )
-                );
+    private static float orZero(@Nullable Float value) {
+        return value != null ? value : 0f;
+    }
+
+    private static Float max(Float current, @Nullable Float candidate) {
+        return candidate != null && candidate > current ? candidate : current;
+    }
+
+    private static List<Daily> getDailyList(Context context,
+                                            List<MfForecastV2Result.ForecastProperties.ForecastV2> dailyForecasts,
+                                            List<MfForecastV2Result.ForecastProperties.HourForecast> hourlyForecast,
+                                            List<Hourly> hourly,
+                                            @Nullable MfEphemerisResult ephemerisResult,
+                                            @Nullable AtmoAuraQAResult aqiAtmoAuraResult) {
+        MfEphemerisResult.Properties.Ephemeris ephemeris =
+                ephemerisResult != null && ephemerisResult.properties != null
+                        ? ephemerisResult.properties.ephemeris : null;
+
+        List<Daily> dailyList = new ArrayList<>(dailyForecasts.size());
+        for (MfForecastV2Result.ForecastProperties.ForecastV2 dailyForecast : dailyForecasts) {
+            // Skip days without a date or temperature: both are non-nullable downstream, and MF
+            // pads the tail of the range with entries that carry neither.
+            if (dailyForecast.time == null
+                    || dailyForecast.tMin == null || dailyForecast.tMax == null) {
+                continue;
             }
+            dailyList.add(
+                    new Daily(
+                            dailyForecast.time,
+                            dailyForecast.time.getTime(),
+                            getHalfDay(context, true, hourly, hourlyForecast, dailyForecast),
+                            getHalfDay(context, false, hourly, hourlyForecast, dailyForecast),
+                            new Astro(dailyForecast.sunriseTime, dailyForecast.sunsetTime),
+                            // Note: Below is the same moon data for all days, but since we are only showing the data for the current day in the app, this does not matter
+                            new Astro(
+                                    ephemeris != null ? ephemeris.moonriseTime : null,
+                                    ephemeris != null ? ephemeris.moonsetTime : null
+                            ),
+                            new MoonPhase(
+                                    ephemeris != null
+                                            ? CommonConverter.getMoonPhaseAngle(ephemeris.moonPhaseDescription) : null,
+                                    ephemeris != null ? ephemeris.moonPhaseDescription : null
+                            ),
+                            getAirQuality(dailyForecast.time, aqiAtmoAuraResult),
+                            new Pollen(null, null, null, null, null, null, null, null, null, null, null, null),
+                            new UV(dailyForecast.uvIndex, null, null),
+                            getHoursOfDay(dailyForecast.sunriseTime, dailyForecast.sunsetTime)
+                    )
+            );
         }
         return dailyList;
     }
 
-    private static Float getRainCumul(MfForecastResult.Forecast.Rain rain) {
-        if (rain.cumul1H != null) {
-            return rain.cumul1H;
-        } else if (rain.cumul3H != null) {
-            return rain.cumul3H;
-        } else if (rain.cumul6H != null) {
-            return rain.cumul6H;
-        } else if (rain.cumul12H != null) {
-            return rain.cumul12H;
-        } else if (rain.cumul24H != null) {
-            return rain.cumul24H;
+    /** MF publishes cumulative rain/snow over several windows; take the shortest one available. */
+    @Nullable
+    private static Float getShortestCumul(@Nullable Float cumul1H, @Nullable Float cumul3H,
+                                          @Nullable Float cumul6H, @Nullable Float cumul12H,
+                                          @Nullable Float cumul24H) {
+        if (cumul1H != null) {
+            return cumul1H;
+        } else if (cumul3H != null) {
+            return cumul3H;
+        } else if (cumul6H != null) {
+            return cumul6H;
+        } else if (cumul12H != null) {
+            return cumul12H;
         }
-        return null;
+        return cumul24H;
     }
 
-    private static Float getSnowCumul(MfForecastResult.Forecast.Snow snow) {
-        if (snow.cumul1H != null) {
-            return snow.cumul1H;
-        } else if (snow.cumul3H != null) {
-            return snow.cumul3H;
-        } else if (snow.cumul6H != null) {
-            return snow.cumul6H;
-        } else if (snow.cumul12H != null) {
-            return snow.cumul12H;
-        } else if (snow.cumul24H != null) {
-            return snow.cumul24H;
-        }
-        return null;
-    }
-
-    private static Precipitation getHourlyPrecipitation(MfForecastResult.Forecast hourlyForecast) {
-        Float rainCumul = getRainCumul(hourlyForecast.rain);
-        Float snowCumul = getSnowCumul(hourlyForecast.snow);
-        Float totalCumul = null;
+    private static Precipitation getHourlyPrecipitation(
+            MfForecastV2Result.ForecastProperties.HourForecast hourlyForecast) {
+        Float rainCumul = getShortestCumul(hourlyForecast.rain1h, hourlyForecast.rain3h,
+                hourlyForecast.rain6h, hourlyForecast.rain12h, hourlyForecast.rain24h);
+        Float snowCumul = getShortestCumul(hourlyForecast.snow1h, hourlyForecast.snow3h,
+                hourlyForecast.snow6h, hourlyForecast.snow12h, hourlyForecast.snow24h);
+        Float totalCumul;
 
         if (rainCumul == null) {
             totalCumul = snowCumul;
@@ -484,44 +487,60 @@ public class MfResultConverter {
         );
     }
 
-    private static PrecipitationProbability getHourlyPrecipitationProbability(List<MfForecastResult.ProbabilityForecast> probabilityForecastResult, long dt) {
+    private static PrecipitationProbability getHourlyPrecipitationProbability(
+            @Nullable List<MfForecastV2Result.ForecastProperties.ProbabilityForecastV2> probabilityForecastResult,
+            long time) {
         Float rainProbability = null;
         Float snowProbability = null;
         Float iceProbability = null;
 
-        for (MfForecastResult.ProbabilityForecast probabilityForecast : probabilityForecastResult) {
+        if (probabilityForecastResult == null) {
+            return new PrecipitationProbability(null, null, null, null, null);
+        }
+
+        for (MfForecastV2Result.ForecastProperties.ProbabilityForecastV2 probabilityForecast
+                : probabilityForecastResult) {
+            if (probabilityForecast.time == null) {
+                continue;
+            }
+            long start = probabilityForecast.time.getTime();
+
             /*
              * Probablity are given every 3 hours, sometimes every 6 hours.
              * Sometimes every 3 hour-schedule give 3 hours probability AND 6 hours probability,
              * sometimes only one of them
              * It's not very clear but we take all hours in order.
              */
-            if (probabilityForecast.dt == dt || (probabilityForecast.dt + 3600) == dt || (probabilityForecast.dt + 3600 * 2) == dt) {
-                if (probabilityForecast.rain.proba3H != null) {
-                    rainProbability = probabilityForecast.rain.proba3H * 1f;
-                } else if (probabilityForecast.rain.proba6H != null) {
-                    rainProbability = probabilityForecast.rain.proba6H * 1f;
+            if (time >= start && time < start + 3 * ONE_HOUR) {
+                if (probabilityForecast.rainHazard3h != null) {
+                    rainProbability = probabilityForecast.rainHazard3h * 1f;
+                } else if (probabilityForecast.rainHazard6h != null) {
+                    rainProbability = probabilityForecast.rainHazard6h * 1f;
                 }
-                if (probabilityForecast.snow.proba3H != null) {
-                    snowProbability = probabilityForecast.snow.proba3H * 1f;
-                } else if (probabilityForecast.snow.proba6H != null) {
-                    snowProbability = probabilityForecast.snow.proba6H * 1f;
+                if (probabilityForecast.snowHazard3h != null) {
+                    snowProbability = probabilityForecast.snowHazard3h * 1f;
+                } else if (probabilityForecast.snowHazard6h != null) {
+                    snowProbability = probabilityForecast.snowHazard6h * 1f;
                 }
-                iceProbability = probabilityForecast.freezing * 1f;
+                if (probabilityForecast.freezingHazard != null) {
+                    iceProbability = probabilityForecast.freezingHazard * 1f;
+                }
             }
 
             /*
              * If it's found as part of the "6 hour schedule" and we find later a "3 hour schedule"
              * the "3 hour schedule" will overwrite the "6 hour schedule" below with the above
              */
-            if ((probabilityForecast.dt + 3600 * 3) == dt || (probabilityForecast.dt + 3600 * 4) == dt || (probabilityForecast.dt + 3600 * 5) == dt) {
-                if (probabilityForecast.rain.proba6H != null) {
-                    rainProbability = probabilityForecast.rain.proba6H * 1f;
+            if (time >= start + 3 * ONE_HOUR && time < start + 6 * ONE_HOUR) {
+                if (probabilityForecast.rainHazard6h != null) {
+                    rainProbability = probabilityForecast.rainHazard6h * 1f;
                 }
-                if (probabilityForecast.snow.proba6H != null) {
-                    snowProbability = probabilityForecast.snow.proba6H * 1f;
+                if (probabilityForecast.snowHazard6h != null) {
+                    snowProbability = probabilityForecast.snowHazard6h * 1f;
                 }
-                iceProbability = probabilityForecast.freezing * 1f;
+                if (probabilityForecast.freezingHazard != null) {
+                    iceProbability = probabilityForecast.freezingHazard * 1f;
+                }
             }
         }
 
@@ -539,34 +558,44 @@ public class MfResultConverter {
         );
     }
 
-    private static List<Hourly> getHourlyList(Context context, List<MfForecastResult.Forecast> hourlyForecastResult, List<MfForecastResult.ProbabilityForecast> probabilityForecastResult) {
+    private static List<Hourly> getHourlyList(
+            Context context,
+            List<MfForecastV2Result.ForecastProperties.HourForecast> hourlyForecastResult,
+            @Nullable List<MfForecastV2Result.ForecastProperties.ProbabilityForecastV2> probabilityForecastResult) {
         List<Hourly> hourlyList = new ArrayList<>(hourlyForecastResult.size());
-        for (MfForecastResult.Forecast hourlyForecast : hourlyForecastResult) {
+        for (MfForecastV2Result.ForecastProperties.HourForecast hourlyForecast : hourlyForecastResult) {
+            // Time and temperature are non-nullable downstream; MF leaves both out on padded entries.
+            if (hourlyForecast.time == null || hourlyForecast.t == null) {
+                continue;
+            }
+            Float windSpeed = hourlyForecast.windSpeed != null
+                    ? hourlyForecast.windSpeed * 3.6f : null;
             hourlyList.add(
                     new Hourly(
-                            new Date(hourlyForecast.dt * 1000),
-                            hourlyForecast.dt * 1000,
+                            hourlyForecast.time,
+                            hourlyForecast.time.getTime(),
                             // TODO: Probably not the best way to check if it is daytime or nighttime
-                            // Use CommonConverter.isDaylight(sunrise, sunset, new Date(hourlyForecast.dt * 1000)) instead
-                            !hourlyForecast.weather.icon.endsWith("n"),
-                            hourlyForecast.weather.desc,
-                            getWeatherCode(hourlyForecast.weather.icon),
+                            // Use CommonConverter.isDaylight(sunrise, sunset, hourlyForecast.time) instead
+                            hourlyForecast.weatherIcon == null || !hourlyForecast.weatherIcon.endsWith("n"),
+                            hourlyForecast.weatherDescription != null ? hourlyForecast.weatherDescription : "",
+                            getWeatherCode(hourlyForecast.weatherIcon),
                             new Temperature(
-                                    toInt(hourlyForecast.temperature.value),
+                                    toInt(hourlyForecast.t),
                                     null,
                                     null,
                                     null,
-                                    toInt(hourlyForecast.temperature.windChill),
+                                    toIntOrNull(hourlyForecast.tWindchill),
                                     null,
                                     null
                             ),
                             getHourlyPrecipitation(hourlyForecast),
-                            getHourlyPrecipitationProbability(probabilityForecastResult, hourlyForecast.dt),
+                            getHourlyPrecipitationProbability(
+                                    probabilityForecastResult, hourlyForecast.time.getTime()),
                             new Wind(
-                                    hourlyForecast.wind.icon,
-                                    new WindDegree(hourlyForecast.wind.direction.equals("Variable") ? 0.0f : Float.parseFloat(hourlyForecast.wind.direction), hourlyForecast.wind.direction.equals("Variable")),
-                                    hourlyForecast.wind.speed * 3.6f,
-                                    CommonConverter.getWindLevel(context, hourlyForecast.wind.speed * 3.6f)
+                                    hourlyForecast.windIcon != null ? hourlyForecast.windIcon : "",
+                                    getWindDegree(hourlyForecast.windDirection),
+                                    windSpeed,
+                                    windSpeed != null ? CommonConverter.getWindLevel(context, windSpeed) : ""
                             ),
                             new UV(null, null, null)
                     )
@@ -575,21 +604,36 @@ public class MfResultConverter {
         return hourlyList;
     }
 
-    private static List<Minutely> getMinutelyList(long sunrise, long sunset, @Nullable MfRainResult rainResult) {
-        if (rainResult == null) {
+    private static List<Minutely> getMinutelyList(Astro sun, @Nullable MfRainResult rainResult) {
+        if (rainResult == null || rainResult.properties == null
+                || rainResult.properties.rainForecasts == null
+                || rainResult.properties.rainForecasts.isEmpty()) {
             return new ArrayList<>();
         }
-        List<Minutely> minutelyList = new ArrayList<>(rainResult.rainForecasts.size());
-        long minuteZero = rainResult.rainForecasts.get(0).date / 60;
-        for (MfRainResult.RainForecast rainForecast : rainResult.rainForecasts) {
+        List<MfRainResult.Properties.RainForecast> rainForecasts = rainResult.properties.rainForecasts;
+        List<Minutely> minutelyList = new ArrayList<>(rainForecasts.size());
+        Long minuteZero = null;
+        for (MfRainResult.Properties.RainForecast rainForecast : rainForecasts) {
+            if (rainForecast.time == null) {
+                continue;
+            }
+            long minute = rainForecast.time.getTime() / 60000;
+            if (minuteZero == null) {
+                minuteZero = minute;
+            }
             minutelyList.add(
                     new Minutely(
-                            new Date(rainForecast.date * 1000),
-                            rainForecast.date * 1000,
-                            CommonConverter.isDaylight(new Date(sunrise * 1000), new Date(sunset * 1000), new Date(rainForecast.date * 1000)),
-                            rainForecast.desc,
-                            rainForecast.rain > 1 ? WeatherCode.RAIN : getWeatherCode(null),
-                            toInt((rainForecast.date / 60) - minuteZero), // TODO
+                            rainForecast.time,
+                            rainForecast.time.getTime(),
+                            sun.getRiseDate() != null && sun.getSetDate() != null
+                                    && CommonConverter.isDaylight(
+                                            sun.getRiseDate(), sun.getSetDate(), rainForecast.time),
+                            rainForecast.rainIntensityDescription != null
+                                    ? rainForecast.rainIntensityDescription : "",
+                            // 1 means "no rain"; anything above that is an actual rain step.
+                            rainForecast.rainIntensity != null && rainForecast.rainIntensity > 1
+                                    ? WeatherCode.RAIN : getWeatherCode(null),
+                            (int) (minute - minuteZero),
                             null,
                             null
                     )
@@ -598,32 +642,38 @@ public class MfResultConverter {
         return minutelyList;
     }
 
-    private static List<Alert> getWarningsList(MfWarningsResult warningsResult) {
-        List<Alert> alertList = new ArrayList<>(warningsResult.phenomenonsItems == null ? 0 : warningsResult.phenomenonsItems.size());
-        if (warningsResult.phenomenonsItems != null) {
-            for (MfWarningsResult.PhenomenonMaxColor phemononItem : warningsResult.phenomenonsItems) {
-                if (phemononItem.phenomenoMaxColorId > 1) { // Do not warn when there is nothing to warn (green alert)
-                    alertList.add(
-                            new Alert(
-                                    phemononItem.phenomenonId,
-                                    new Date(warningsResult.updateTime * 1000), // FIXME: Do not take updateTime but phenomonon time instead
-                                    warningsResult.updateTime * 1000, // FIXME: Do not take updateTime but phenomonon time instead
-                                    getWarningType(phemononItem.phenomenonId) + " — " + getWarningText(phemononItem.phenomenoMaxColorId),
-                                    "", // TODO: Longer description (I think there is a report in the web service when alert is orange or red)
-                                    getWarningType(phemononItem.phenomenonId),
-                                    phemononItem.phenomenoMaxColorId, // TODO: Check Priority
-                                    getWarningColor(phemononItem.phenomenoMaxColorId)
-                            )
-                    );
-                }
-            }
-            Alert.deduplication(alertList);
+    private static List<Alert> getWarningsList(@Nullable MfWarningsResult warningsResult) {
+        if (warningsResult == null || warningsResult.phenomenonsItems == null) {
+            return new ArrayList<>();
         }
+        List<Alert> alertList = new ArrayList<>(warningsResult.phenomenonsItems.size());
+        for (MfWarningsResult.PhenomenonMaxColor phemononItem : warningsResult.phenomenonsItems) {
+            if (phemononItem.phenomenoMaxColorId > 1) { // Do not warn when there is nothing to warn (green alert)
+                alertList.add(
+                        new Alert(
+                                phemononItem.phenomenonId,
+                                new Date(warningsResult.updateTime * 1000), // FIXME: Do not take updateTime but phenomonon time instead
+                                warningsResult.updateTime * 1000, // FIXME: Do not take updateTime but phenomonon time instead
+                                getWarningType(phemononItem.phenomenonId) + " — " + getWarningText(phemononItem.phenomenoMaxColorId),
+                                "", // TODO: Longer description (I think there is a report in the web service when alert is orange or red)
+                                getWarningType(phemononItem.phenomenonId),
+                                phemononItem.phenomenoMaxColorId, // TODO: Check Priority
+                                getWarningColor(phemononItem.phenomenoMaxColorId)
+                        )
+                );
+            }
+        }
+        Alert.deduplication(alertList);
         return alertList;
     }
 
-    private static int toInt(double value) {
-        return (int) (value + 0.5);
+    private static int toInt(@Nullable Float value) {
+        return value != null ? (int) (value + 0.5) : 0;
+    }
+
+    @Nullable
+    private static Integer toIntOrNull(@Nullable Float value) {
+        return value != null ? (int) (value + 0.5) : null;
     }
 
     private static String getWarningType(int phemononId) {
@@ -721,7 +771,10 @@ public class MfResultConverter {
         }
     }
 
-    private static float getHoursOfDay(Date sunrise, Date sunset) {
+    private static float getHoursOfDay(@Nullable Date sunrise, @Nullable Date sunset) {
+        if (sunrise == null || sunset == null) {
+            return 0;
+        }
         return (float) (
                 (sunset.getTime() - sunrise.getTime()) // get delta millisecond.
                         / 1000 // second.
@@ -729,62 +782,4 @@ public class MfResultConverter {
                         / 60.0 // hours.
         );
     }
-
-
-    /*private static AirQuality getDailyAirQuality(Context context,
-                                                 List<MfDailyResult.DailyForecasts.AirAndPollen> list) {
-        MfDailyResult.DailyForecasts.AirAndPollen aqi = getAirAndPollen(list, "AirQuality");
-        Integer index = aqi == null ? null : aqi.Value;
-        if (index != null && index == 0) {
-            index = null;
-        }
-        return new AirQuality(
-                CommonConverter.getAqiQuality(context, index),
-                index,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-    }
-    private static Pollen getDailyPollen(List<MfDailyResult.DailyForecasts.AirAndPollen> list) {
-        MfDailyResult.DailyForecasts.AirAndPollen grass = getAirAndPollen(list, "Grass");
-        MfDailyResult.DailyForecasts.AirAndPollen mold = getAirAndPollen(list, "Mold");
-        MfDailyResult.DailyForecasts.AirAndPollen ragweed = getAirAndPollen(list, "Ragweed");
-        MfDailyResult.DailyForecasts.AirAndPollen tree = getAirAndPollen(list, "Tree");
-        return new Pollen(
-                grass == null ? null : grass.Value,
-                grass == null ? null : grass.CategoryValue,
-                grass == null ? null : grass.Category,
-                mold == null ? null : mold.Value,
-                mold == null ? null : mold.CategoryValue,
-                mold == null ? null : mold.Category,
-                ragweed == null ? null : ragweed.Value,
-                ragweed == null ? null : ragweed.CategoryValue,
-                ragweed == null ? null : ragweed.Category,
-                tree == null ? null : tree.Value,
-                tree == null ? null : tree.CategoryValue,
-                tree == null ? null : tree.Category
-        );
-    }
-    private static UV getDailyUV(List<MfDailyResult.DailyForecasts.AirAndPollen> list) {
-        MfDailyResult.DailyForecasts.AirAndPollen uv = getAirAndPollen(list, "UVIndex");
-        return new UV(
-                uv == null ? null : uv.Value,
-                uv == null ? null : uv.Category,
-                null
-        );
-    }
-    @Nullable
-    private static MfDailyResult.DailyForecasts.AirAndPollen getAirAndPollen(
-            List<MfDailyResult.DailyForecasts.AirAndPollen> list, String name) {
-        for (MfDailyResult.DailyForecasts.AirAndPollen item : list) {
-            if (item.Name.equals(name)) {
-                return item;
-            }
-        }
-        return null;
-    }*/
 }

@@ -2,29 +2,20 @@ package wangdaye.com.geometricweather.weather.apis;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
 import wangdaye.com.geometricweather.weather.json.mf.*;
 import java.util.List;
 
 public interface MfWeatherApi {
-    @GET("v2/forecast")
+    // Place search. Note this is NOT under /v2 — /v2/forecast?q= answers with a single forecast
+    // feature rather than a list of places.
+    @GET("places")
     Call<List<MfLocationResult>> callWeatherLocation(@Query("q") String q, @Query("lat") double lat, @Query("lon") double lon, @Query("token") String token);
 
+    // Serves both weather and location resolution: the response carries insee/timezone/department
+    // alongside the forecast.
     @GET("v2/forecast")
-    Call<List<MfLocationResult>> getWeatherLocation(@Query("q") String q, @Query("lat") double lat, @Query("lon") double lon, @Query("token") String token);
-
-    @GET("v2/forecast")
-    Call<MfForecastResult> getForecast(@Query("lat") double lat, @Query("lon") double lon, @Query("lang") String lang, @Query("token") String token);
-
-    @GET("v2/forecast")
-    Call<MfForecastV2Result> getForecastV2(@Query("lat") double lat, @Query("lon") double lon, @Query("lang") String lang, @Query("token") String token);
-
-    @GET("v2/forecast")
-    Call<MfForecastResult> getForecastInstants(@Query("lat") double lat, @Query("lon") double lon, @Query("lang") String lang, @Query("instants") int instants, @Query("token") String token);
-
-    @GET("v2/forecast/site/{id}")
-    Call<MfForecastResult> getForecastInseepp(@Path("id") String id, @Query("lang") String lang, @Query("token") String token);
+    Call<MfForecastV2Result> getForecast(@Query("lat") double lat, @Query("lon") double lon, @Query("lang") String lang, @Query("token") String token);
 
     @GET("v2/observation")
     Call<MfCurrentResult> getCurrent(@Query("lat") double lat, @Query("lon") double lon, @Query("lang") String lang, @Query("token") String token);
@@ -35,6 +26,8 @@ public interface MfWeatherApi {
     @GET("v2/ephemeris")
     Call<MfEphemerisResult> getEphemeris(@Query("lat") double lat, @Query("lon") double lon, @Query("lang") String lang, @Query("token") String token);
 
-    @GET("v3/warnings")
+    // domain is the French department number ("75"). /v3/warnings 404s with "You haven't access to
+    // this url" — the served path is /v3/warning/full.
+    @GET("v3/warning/full")
     Call<MfWarningsResult> getWarnings(@Query("domain") String domain, @Query("formatDate") String formatDate, @Query("token") String token);
 }

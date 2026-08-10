@@ -1,0 +1,24 @@
+{
+ "update_time": "2026-08-10T11:55:00.000Z",
+ "type": "Feature",
+ "geometry": {
+  "type": "Point",
+  "coordinates": [
+   2.34,
+   48.86
+  ]
+ },
+ "properties": {
+  "timezone": "Europe/Paris",
+  "gridded": {
+   "time": "2026-08-10T11:55:00.000Z",
+   "T": 29.3,
+   "wind_speed": 2,
+   "wind_speed_gust": 0,
+   "wind_direction": 30,
+   "wind_icon": "NNE",
+   "weather_icon": "p1j",
+   "weather_description": "Sunny"
+  }
+ }
+}

@@ -25,6 +25,11 @@ public abstract class WeatherService {
         public WeatherResultWrapper(@Nullable Weather weather) {
             result = weather;
         }
+
+        @Nullable
+        public Weather getResult() {
+            return result;
+        }
     }
 
     public interface RequestWeatherCallback {
