@@ -1,35 +1,27 @@
 package basic.option.appearance;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.Mockito;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import wangdaye.com.geometricweather.common.basic.models.options.appearance.DailyTrendDisplay;
 
-import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(TextUtils.class)
+// See CardDisplayTest: PowerMock does not run on JDK 17, and Robolectric's real TextUtils removes
+// the need for static mocking.
+@RunWith(RobolectricTestRunner.class)
+@Config(sdk = 34)
 public class DailyTrendDisplayTest {
-
-    @BeforeClass
-    public static void setup() throws Exception {
-        PowerMockito.mockStatic(TextUtils.class);
-        PowerMockito.when(TextUtils.class, "isEmpty", anyString()).thenReturn(false);
-    }
 
     @Test
     public void toDailyTrendDisplayList() {
@@ -42,6 +34,12 @@ public class DailyTrendDisplayTest {
         Assert.assertEquals(list.get(2), DailyTrendDisplay.TAG_WIND);
         Assert.assertEquals(list.get(3), DailyTrendDisplay.TAG_UV_INDEX);
         Assert.assertEquals(list.get(4), DailyTrendDisplay.TAG_PRECIPITATION);
+    }
+
+    /** The real TextUtils.isEmpty short-circuits an empty value to an empty list. */
+    @Test
+    public void toDailyTrendDisplayListOfEmptyValue() {
+        Assert.assertTrue(DailyTrendDisplay.toDailyTrendDisplayList("").isEmpty());
     }
 
     @Test
@@ -60,7 +58,7 @@ public class DailyTrendDisplayTest {
 
     @Test
     public void getSummary() {
-        Context context = PowerMockito.mock(Context.class);
+        Context context = Mockito.mock(Context.class);
         doReturn("Name").when(context).getString(anyInt());
 
         List<DailyTrendDisplay> list = new ArrayList<>();
@@ -70,8 +68,7 @@ public class DailyTrendDisplayTest {
         list.add(DailyTrendDisplay.TAG_UV_INDEX);
         list.add(DailyTrendDisplay.TAG_PRECIPITATION);
 
-        String value = "Name, Name, Name, Name, Name";
-
-        Assert.assertThat(DailyTrendDisplay.getSummary(context, list), is(value));
+        Assert.assertEquals("Name, Name, Name, Name, Name",
+                DailyTrendDisplay.getSummary(context, list));
     }
 }

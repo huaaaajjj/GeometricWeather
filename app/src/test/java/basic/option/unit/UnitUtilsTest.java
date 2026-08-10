@@ -1,42 +1,33 @@
 package basic.option.unit;
 
-import android.annotation.SuppressLint;
-
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
+import wangdaye.com.geometricweather.common.basic.models.options._basic.Utils;
+
+// Was @RunWith(PowerMockRunner.class) — which does not run on JDK 17 — around local copies of
+// formatFloat/formatInt, so it asserted nothing about the app. No runner is needed: point the same
+// assertions at the real Utils instead.
 public class UnitUtilsTest {
 
     @Test
     public void formatFloat() {
-        Assert.assertEquals(formatFloat(14.34234f), "14.34");
-        Assert.assertEquals(formatFloat(14.34834f), "14.35");
-        Assert.assertEquals(formatFloat(14.34834f, 3), "14.348");
-        Assert.assertEquals(formatFloat(14.34864f, 3), "14.349");
+        Assert.assertEquals("14.34", Utils.INSTANCE.formatFloat(14.34234f));
+        Assert.assertEquals("14.35", Utils.INSTANCE.formatFloat(14.34834f));
+        Assert.assertEquals("14.348", Utils.INSTANCE.formatFloat(14.34834f, 3));
+        Assert.assertEquals("14.349", Utils.INSTANCE.formatFloat(14.34864f, 3));
+    }
+
+    /** A whole value is printed without decimals — the part the old local copy did not have. */
+    @Test
+    public void formatFloatOfWholeValue() {
+        Assert.assertEquals("14", Utils.INSTANCE.formatFloat(14f));
+        Assert.assertEquals("14", Utils.INSTANCE.formatFloat(14f, 3));
     }
 
     @Test
     public void formatInt() {
-        Assert.assertEquals(formatInt(14), "14");
-        Assert.assertEquals(formatInt(16), "16");
-    }
-
-    static String formatFloat(float value) {
-        return formatFloat(value, 2);
-    }
-
-    static String formatFloat(float value, int decimalNumber) {
-        return String.format(
-                "%." + decimalNumber + "f",
-                value
-        );
-    }
-
-    @SuppressLint("DefaultLocale")
-    static String formatInt(int value) {
-        return String.format("%d", value);
+        Assert.assertEquals("14", Utils.INSTANCE.formatInt(14));
+        Assert.assertEquals("16", Utils.INSTANCE.formatInt(16));
     }
 }

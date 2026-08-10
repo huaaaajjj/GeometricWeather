@@ -199,10 +199,8 @@ dependencies {
     testImplementation "androidx.test:runner:1.5.2"
     testImplementation "androidx.test:rules:1.5.0"
     testImplementation "org.mockito:mockito-core:5.12.0"
-    testImplementation "org.powermock:powermock-api-mockito2:2.0.9"
-    testImplementation "org.powermock:powermock-module-junit4:2.0.9"
-    testImplementation "org.powermock:powermock-module-junit4-rule:2.0.9"
-    testImplementation "org.powermock:powermock-classloading-xstream:2.0.9"
+    // PowerMock removed: 2.0.9 cannot run on JDK 17 (InaccessibleObjectException, module java.base
+    // does not "opens java.lang"). The four tests that used it now run on Robolectric + Mockito.
     testImplementation "org.robolectric:robolectric:4.12.2"
 
     // material design.
