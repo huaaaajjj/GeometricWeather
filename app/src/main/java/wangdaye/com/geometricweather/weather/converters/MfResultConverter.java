@@ -158,6 +158,14 @@ public class MfResultConverter {
             long updateTime = forecastResult.updateTime != null
                     ? forecastResult.updateTime.getTime() : System.currentTimeMillis();
 
+            // v2/observation only carries T / wind / weather text — no humidity, pressure or
+            // precipitation. Backfill those from the hour nearest the observation.
+            MfCurrentResult.Properties.Observation observation =
+                    currentResult != null && currentResult.properties != null
+                            ? currentResult.properties.gridded : null;
+            long observedAt = observation != null && observation.time != null
+                    ? observation.time.getTime() : System.currentTimeMillis();
+
             Weather weather = new Weather(
                     new Base(
                             location.getCityId(),
@@ -167,7 +175,8 @@ public class MfResultConverter {
                             new Date(),
                             System.currentTimeMillis()
                     ),
-                    getCurrent(context, currentResult, aqiAtmoAuraResult),
+                    getCurrent(context, observation,
+                            getNearestHour(hourlyForecast, observedAt), aqiAtmoAuraResult),
                     null, // TODO: Fill in with observation data instead
                     daily,
                     hourly,
@@ -180,25 +189,57 @@ public class MfResultConverter {
         }
     }
 
-    private static Current getCurrent(Context context,
-                                      @Nullable MfCurrentResult currentResult,
-                                      @Nullable AtmoAuraQAResult aqiAtmoAuraResult) {
-        MfCurrentResult.Properties.Observation observation =
-                currentResult != null && currentResult.properties != null
-                        ? currentResult.properties.gridded : null;
+    /** The hourly step closest to {@code time}; MF's first step is the current hour. */
+    @Nullable
+    private static MfForecastV2Result.ForecastProperties.HourForecast getNearestHour(
+            List<MfForecastV2Result.ForecastProperties.HourForecast> hourlyForecast, long time) {
+        MfForecastV2Result.ForecastProperties.HourForecast nearest = null;
+        long nearestDelta = Long.MAX_VALUE;
+        for (MfForecastV2Result.ForecastProperties.HourForecast hour : hourlyForecast) {
+            if (hour.time == null) {
+                continue;
+            }
+            long delta = Math.abs(hour.time.getTime() - time);
+            if (delta < nearestDelta) {
+                nearestDelta = delta;
+                nearest = hour;
+            }
+        }
+        return nearest;
+    }
 
+    private static Current getCurrent(Context context,
+                                      @Nullable MfCurrentResult.Properties.Observation observation,
+                                      @Nullable MfForecastV2Result.ForecastProperties.HourForecast nearestHour,
+                                      @Nullable AtmoAuraQAResult aqiAtmoAuraResult) {
         Float windSpeed = observation != null && observation.windSpeed != null
                 ? observation.windSpeed * 3.6f : null;
 
+        // Temperature and weather text come from the observation, falling back to the nearest hour
+        // so a failed observation shows a real forecast value rather than 0°.
+        Float temperature = observation != null && observation.temperature != null
+                ? observation.temperature : (nearestHour != null ? nearestHour.t : null);
+        String weatherText = observation != null && observation.weatherDescription != null
+                ? observation.weatherDescription
+                : (nearestHour != null && nearestHour.weatherDescription != null
+                        ? nearestHour.weatherDescription : "");
+        String weatherIcon = observation != null && observation.weatherIcon != null
+                ? observation.weatherIcon : (nearestHour != null ? nearestHour.weatherIcon : null);
+
         return new Current(
-                observation != null && observation.weatherDescription != null
-                        ? observation.weatherDescription : "",
-                getWeatherCode(observation != null ? observation.weatherIcon : null),
+                weatherText,
+                getWeatherCode(weatherIcon),
                 new Temperature(
-                        observation != null ? toInt(observation.temperature) : 0,
-                        null, null, null, null, null, null
+                        toInt(temperature),
+                        // MF's T_windchill is the "température ressentie" it shows to users.
+                        nearestHour != null ? toIntOrNull(nearestHour.tWindchill) : null,
+                        null, null,
+                        nearestHour != null ? toIntOrNull(nearestHour.tWindchill) : null,
+                        null, null
                 ),
-                new Precipitation(null, null, null, null, null),
+                nearestHour != null
+                        ? getHourlyPrecipitation(nearestHour)
+                        : new Precipitation(null, null, null, null, null),
                 new PrecipitationProbability(null, null, null, null, null),
                 new Wind(
                         observation != null && observation.windIcon != null ? observation.windIcon : "",
@@ -208,7 +249,12 @@ public class MfResultConverter {
                 ),
                 new UV(null, null, null),
                 getAirQuality(new Date(), aqiAtmoAuraResult),
-                null, null, null, null, null, null, null, null
+                nearestHour != null && nearestHour.relativeHumidity != null
+                        ? nearestHour.relativeHumidity * 1f : null,
+                nearestHour != null ? nearestHour.pSea : null,
+                null, null,
+                nearestHour != null ? nearestHour.totalCloudCover : null,
+                null, null, null
         );
     }
 
@@ -581,7 +627,9 @@ public class MfResultConverter {
                             getWeatherCode(hourlyForecast.weatherIcon),
                             new Temperature(
                                     toInt(hourlyForecast.t),
-                                    null,
+                                    // Same value in both slots: MF's T_windchill is what it labels
+                                    // "ressentie", and HourlyWeatherDialog reads realFeel only.
+                                    toIntOrNull(hourlyForecast.tWindchill),
                                     null,
                                     null,
                                     toIntOrNull(hourlyForecast.tWindchill),

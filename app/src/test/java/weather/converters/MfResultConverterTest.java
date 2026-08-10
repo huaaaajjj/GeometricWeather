@@ -194,6 +194,45 @@ public class MfResultConverterTest {
     }
 
     /**
+     * v2/observation carries only T / wind / weather text, so humidity, pressure, precipitation and
+     * the felt temperature are backfilled from the hourly step nearest the observation. The fixture
+     * observes at 11:55Z, so that step is 12:00Z (T_windchill 32.2) — not 11:00Z (30.2) and not the
+     * first entry at 09:00Z (28.4), which is what a naive "take hour[0]" would pick.
+     */
+    @Test
+    public void currentIsBackfilledFromNearestHour() {
+        Weather weather = convertAll();
+        assertNotNull(weather);
+
+        assertEquals(32, weather.getCurrent().getTemperature().getRealFeelTemperature().intValue());
+        assertEquals(35f, weather.getCurrent().getRelativeHumidity(), 0.01f);
+        assertEquals(1017.9f, weather.getCurrent().getPressure(), 0.01f);
+        assertEquals(0f, weather.getCurrent().getPrecipitation().getTotal(), 0.01f);
+        // The observation still wins for temperature and text.
+        assertEquals(29, weather.getCurrent().getTemperature().getTemperature());
+        assertEquals("Sunny", weather.getCurrent().getWeatherText());
+
+        // HourlyWeatherDialog reads realFeel, so the hourly steps must carry it too.
+        assertEquals(28,
+                weather.getHourlyForecast().get(0).getTemperature().getRealFeelTemperature().intValue());
+    }
+
+    /**
+     * A missing observation must not show 0° — temperature and text fall back to the nearest hour.
+     */
+    @Test
+    public void currentFallsBackToForecastWithoutObservation() {
+        Weather weather = convert(
+                load("forecast.json", MfForecastV2Result.class), null, null, null);
+        assertNotNull(weather);
+
+        // Without an observation the reference time is "now", which is past the fixture's range, so
+        // the nearest step is its last one — the point is that it is a real value, not 0.
+        assertTrue(weather.getCurrent().getTemperature().getTemperature() != 0);
+        assertFalse(weather.getCurrent().getWeatherText().isEmpty());
+    }
+
+    /**
      * Optional calls (observation, rain, warnings) are allowed to fail without sinking the whole
      * refresh — the forecast alone must still produce a Weather.
      */
