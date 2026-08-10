@@ -25,7 +25,7 @@ Lazy = efficient, not careless. Understand the whole flow first, *then* take the
 1. **Read before writing.** Trace every file the change touches and the real flow end to end. Laziness that skips comprehension ships a confident wrong fix.
 2. **Climb the ladder**, take the highest rung that works, stop there.
 3. **Smallest correct diff.** Change it once, where all callers route through.
-4. **New code in Kotlin.** Fixing a `.java` bug? Opportunistically migrate that file — incremental, never bulk rewrites.
+4. **New code in Kotlin.** Fixing a `.java` bug? Opportunistically migrate that file — incremental, never bulk rewrites. **A converter gets a test before it gets migrated** — `weather/converters/` is the crash hot spot, and a silent behaviour drift there is worse than Java's verbosity. No test, no migration. (Also: never migrate `db/` — the schema is pinned at v63 — and never turn a `weather/json/` DTO into a non-null Kotlin `data class`: Gson allocates via `Unsafe`, skips the null checks, and moves the NPE to a random later call site.)
 5. **Preserve existing style** — match the surrounding code's naming, idiom, and comment density.
 6. **Leave one runnable check** for non-trivial logic (a branch, loop, parser): an `assert`-based self-check or one small unit test. No frameworks/fixtures unless asked. Trivial one-liners need none.
 7. **Build before claiming done** (see expectations below). Report outcomes faithfully — if a step was skipped or a test failed, say so.
