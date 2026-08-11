@@ -21,7 +21,7 @@ Requires **JDK 17**. CI (`.github/workflows/android.yml`) builds `assembleFdroid
 
 ## Project structure
 
-MVVM + Hilt DI throughout. UI is a **hybrid**: legacy Views/RecyclerView/XML (main weather screen, widgets) coexist with Jetpack Compose (settings, allergen screens, theming). Async is **Kotlin Coroutines via `AsyncHelper`** — RxJava was fully removed (the empty `common/rxjava/` package is a leftover).
+MVVM + Hilt DI throughout. UI is a **hybrid**: legacy Views/RecyclerView/XML (main weather screen, widgets) coexist with Jetpack Compose (settings, allergen screens, theming). Async is **Kotlin Coroutines via `AsyncHelper`** — RxJava was fully removed.
 
 ### Weather provider pipeline
 
@@ -71,7 +71,7 @@ Provider keys are **base64-encoded in `app/build.gradle`** (`decodeBase64(...)` 
 - SDK levels: `compileSdk`/`targetSdk` **35**, `minSdk` **21** (held at 21 deliberately — only raise to 24 if a required library forces it). Namespace `wangdaye.com.geometricweather`.
 - **Don't rewrite the UI; preserve the original visual style** (project constraint).
 - Versioning: `3.2.x` = small fixes, `3.x` = larger changes. Bump `versionCode`/`versionName` in `app/build.gradle` when shipping.
-- The repo root holds build artifacts and JVM crash dumps (`hs_err_pid*.log`, `*.apk`, `index.html`) — not source; ignore them.
+- The repo root can accumulate build artifacts and JVM crash dumps (`hs_err_pid*.log`, `*.apk`) — not source; they are gitignored, ignore them.
 
 (General coding style, the Kotlin-migration rule, and the review checklist are in [`AGENTS.md`](AGENTS.md).)
 

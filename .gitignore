@@ -9,7 +9,17 @@
 /captures
 /local.properties
 *.apk
+*.aab
 *.pdf
 build_output.txt
 hs_err_pid*.log
 error_log.txt
+# AGP 输出目录（历史上被误提交过 3.102 的产物）
+/release/
+/app/release/
+/app/pub/
+/app/gplay/
+/app/fdroid/
+output-metadata.json
+# 本机 AI 工具配置
+/opencode.json
