@@ -124,9 +124,12 @@ public class WeatherApiResultConverterTest {
         assertEquals("Patchy rain nearby", weather.getCurrent().getWeatherText());
         assertEquals(WeatherCode.RAIN, weather.getCurrent().getWeatherCode());
 
-        // aqi=yes: us-epa-index 2 lands in both index and level, pm2_5 29.0 in the reading.
+        // aqi=yes. Upstream us-epa-index is 2, but that is a 1..6 category, not an AQI; the model's
+        // index is a 0..500 China AQI computed from the concentrations (pm2.5 29.0 -> 41,
+        // pm10 32.6 -> 33, worst pollutant wins).
         assertTrue(weather.getCurrent().getAirQuality().isValid());
-        assertEquals(2, weather.getCurrent().getAirQuality().getAqiIndex().intValue());
+        assertEquals(41, weather.getCurrent().getAirQuality().getAqiIndex().intValue());
+        assertEquals("Fresh air", weather.getCurrent().getAirQuality().getAqiText());
         assertEquals(29f, weather.getCurrent().getAirQuality().getPM25(), 0.01f);
 
         Daily first = weather.getDailyForecast().get(0);

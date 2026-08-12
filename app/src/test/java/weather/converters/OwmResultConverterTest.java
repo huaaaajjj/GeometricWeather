@@ -119,7 +119,12 @@ public class OwmResultConverterTest {
         assertEquals(10f, weather.getCurrent().getVisibility(), 0.01f);
         // air_pollution is a separate call whose result used to be accepted and discarded.
         assertTrue(weather.getCurrent().getAirQuality().isValid());
-        assertEquals(2, weather.getCurrent().getAirQuality().getAqiIndex().intValue());
+        // Upstream main.aqi is 2, but that is a 1..5 category — the model's index is a 0..500
+        // China AQI, so it is computed from the concentrations instead: pm2.5 11.12 -> 16,
+        // pm10 20.04 -> 20, worst pollutant wins. Writing the category straight through used to
+        // put every reading in the <=50 band, i.e. green no matter how bad the air was.
+        assertEquals(20, weather.getCurrent().getAirQuality().getAqiIndex().intValue());
+        assertEquals("Fresh air", weather.getCurrent().getAirQuality().getAqiText());
         assertEquals(11.12f, weather.getCurrent().getAirQuality().getPM25(), 0.01f);
         assertEquals("小雨", weather.getCurrent().getWeatherText());
         assertEquals(WeatherCode.RAIN, weather.getCurrent().getWeatherCode());

@@ -86,7 +86,7 @@ public class OwmResultConverter {
                                             context, msToKph(currentResult.wind.speed))
                             ),
                             new UV(null, null, null),
-                            convertAirQuality(airPollutionResult),
+                            convertAirQuality(context, airPollutionResult),
                             (float) currentResult.main.humidity,
                             (float) currentResult.main.pressure,
                             // OWM reports visibility in metres; the model works in kilometres.
@@ -310,7 +310,8 @@ public class OwmResultConverter {
     }
 
     @Nullable
-    private static AirQuality convertAirQuality(@Nullable OwmAirPollutionResult result) {
+    private static AirQuality convertAirQuality(Context context,
+                                                @Nullable OwmAirPollutionResult result) {
         if (result == null || result.list == null || result.list.isEmpty()) {
             return null;
         }
@@ -318,12 +319,18 @@ public class OwmResultConverter {
         if (bean == null || bean.components == null) {
             return null;
         }
-        Integer index = bean.main != null ? bean.main.aqi : null;
+        float pm25 = (float) bean.components.pm2_5;
+        float pm10 = (float) bean.components.pm10;
+
+        // main.aqi 是 1~5 的档位号（Good..Very Poor），不是 0~500 的 AQI —— 原样写进
+        // aqiIndex 会让五档全部落在 ≤50 的第一档，空气再脏也是绿色。按中国标准用浓度
+        // 换算（与彩云取 aqi.chn 一致）。
+        Integer index = CommonConverter.getAqiIndexFromConcentration(pm25, pm10);
         return new AirQuality(
-                index != null ? String.valueOf(index) : null,
+                CommonConverter.getAqiQuality(context, index),
                 index,
-                (float) bean.components.pm2_5,
-                (float) bean.components.pm10,
+                pm25,
+                pm10,
                 (float) bean.components.so2,
                 (float) bean.components.no2,
                 (float) bean.components.o3,

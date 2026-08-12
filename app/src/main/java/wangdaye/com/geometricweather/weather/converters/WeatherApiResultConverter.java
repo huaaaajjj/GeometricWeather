@@ -84,7 +84,7 @@ public class WeatherApiResultConverter {
                         new WindDegree(windDir, false), windSpeed,
                         CommonConverter.getWindLevel(context, windSpeed)),
                 new UV(uvIndex, null, null),
-                convertAirQuality(c.airQuality),
+                convertAirQuality(context, c.airQuality),
                 humidity, pressure, visibility, null, cloud, null, null, null
         );
     }
@@ -144,7 +144,7 @@ public class WeatherApiResultConverter {
             MoonPhase moonPhase = fd.astro != null ? convertMoonPhase(fd.astro.moonPhase) : null;
 
             list.add(new Daily(date, date.getTime(), day, night, sun, moon, moonPhase,
-                    convertAirQuality(d.airQuality), null, new UV(uvIndex, null, null), 0f));
+                    convertAirQuality(context, d.airQuality), null, new UV(uvIndex, null, null), 0f));
         }
         return list;
     }
@@ -228,13 +228,25 @@ public class WeatherApiResultConverter {
     }
 
     @Nullable
-    private static AirQuality convertAirQuality(WeatherApiResult.AirQuality aq) {
+    private static AirQuality convertAirQuality(Context context, WeatherApiResult.AirQuality aq) {
         if (aq == null) return null;
+
+        Float pm25 = aq.pm25 != null ? aq.pm25.floatValue() : null;
+        Float pm10 = aq.pm10 != null ? aq.pm10.floatValue() : null;
+
+        // us-epa-index 是 1~6 的档位号，原样写进 aqiIndex 会被当成 0~500 的 AQI，
+        // 六档全部落在 ≤50 的第一档 → 空气再脏也是绿色。有浓度就按中国标准算真实
+        // AQI（与彩云取 aqi.chn 一致），档位号仅在无浓度时兜底。
+        Integer index = CommonConverter.getAqiIndexFromConcentration(pm25, pm10);
+        if (index == null) {
+            index = CommonConverter.getAqiIndexFromUsEpaCategory(aq.usEpaIndex);
+        }
+
         return new AirQuality(
-                aq.usEpaIndex != null ? String.valueOf(aq.usEpaIndex) : null,
-                aq.usEpaIndex,
-                aq.pm25 != null ? aq.pm25.floatValue() : null,
-                aq.pm10 != null ? aq.pm10.floatValue() : null,
+                CommonConverter.getAqiQuality(context, index),
+                index,
+                pm25,
+                pm10,
                 aq.so2 != null ? aq.so2.floatValue() : null,
                 aq.no2 != null ? aq.no2.floatValue() : null,
                 aq.o3 != null ? aq.o3.floatValue() : null,
