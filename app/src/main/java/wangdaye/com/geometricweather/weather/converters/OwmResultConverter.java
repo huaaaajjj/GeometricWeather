@@ -81,14 +81,16 @@ public class OwmResultConverter {
                             new Wind(
                                     getWindDirection((float) currentResult.wind.deg),
                                     new WindDegree((float) currentResult.wind.deg, false),
-                                    (float) currentResult.wind.speed,
-                                    CommonConverter.getWindLevel(context, (float) currentResult.wind.speed)
+                                    msToKph(currentResult.wind.speed),
+                                    CommonConverter.getWindLevel(
+                                            context, msToKph(currentResult.wind.speed))
                             ),
                             new UV(null, null, null),
-                            null,
+                            convertAirQuality(airPollutionResult),
                             (float) currentResult.main.humidity,
                             (float) currentResult.main.pressure,
-                            (float) currentResult.visibility,
+                            // OWM reports visibility in metres; the model works in kilometres.
+                            currentResult.visibility / 1000f,
                             null, null, null, null, null
                     ),
                     null,
@@ -185,8 +187,9 @@ public class OwmResultConverter {
         }
 
         avgHumidity /= entries.size();
-        float avgPop = (float) (totalPop / entries.size());
-        float avgWindSpeed = (float) (windSpeed / windCount);
+        // pop is a 0..1 probability; the model stores percentages.
+        float avgPop = (float) (totalPop / entries.size()) * 100f;
+        float avgWindSpeed = msToKph(windSpeed / windCount);
         float avgWindDeg = (float) (windDeg / windCount);
 
         Calendar calendar = Calendar.getInstance();
@@ -260,10 +263,12 @@ public class OwmResultConverter {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis((long) entry.dt * 1000);
 
+            float windKph = msToKph(entry.wind.speed);
+
             hourlyList.add(new Hourly(
                     calendar.getTime(),
                     calendar.getTimeInMillis(),
-                    true,
+                    isDaylight(entry, timezoneOffset),
                     getWeatherText(weatherId),
                     getWeatherCode(weatherId),
                     new Temperature(
@@ -273,17 +278,57 @@ public class OwmResultConverter {
                             entry.rain != null ? (float) entry.rain._3h : null,
                             null, null, null, null
                     ),
-                    new PrecipitationProbability((float) entry.pop, null, null, null, null),
+                    new PrecipitationProbability((float) entry.pop * 100f, null, null, null, null),
                     new Wind(
                             getWindDirection((float) entry.wind.deg),
                             new WindDegree((float) entry.wind.deg, false),
-                            (float) entry.wind.speed,
-                            CommonConverter.getWindLevel(context, (float) entry.wind.speed)
+                            windKph,
+                            CommonConverter.getWindLevel(context, windKph)
                     ),
                     new UV(null, null, null)
             ));
         }
         return hourlyList;
+    }
+
+    /**
+     * Every hourly entry used to be flagged as daytime, which put sun icons on the 3am steps of
+     * the hourly trend. OWM labels each step itself in sys.pod ("d"/"n"); fall back to the same
+     * 6..18 local-hour rule the daily bucketing uses when that is absent.
+     */
+    private static boolean isDaylight(OwmForecastResult.ListBean entry, int timezoneOffset) {
+        if (entry.sys != null && !TextUtils.isEmpty(entry.sys.pod)) {
+            return "d".equalsIgnoreCase(entry.sys.pod);
+        }
+        int hour = (int) ((entry.dt + timezoneOffset) % 86400 / 3600);
+        return hour >= 6 && hour < 18;
+    }
+
+    /** OWM's metric units report wind in m/s; the model works in km/h. */
+    private static float msToKph(double metresPerSecond) {
+        return (float) (metresPerSecond * 3.6);
+    }
+
+    @Nullable
+    private static AirQuality convertAirQuality(@Nullable OwmAirPollutionResult result) {
+        if (result == null || result.list == null || result.list.isEmpty()) {
+            return null;
+        }
+        OwmAirPollutionResult.AirPollution bean = result.list.get(0);
+        if (bean == null || bean.components == null) {
+            return null;
+        }
+        Integer index = bean.main != null ? bean.main.aqi : null;
+        return new AirQuality(
+                index != null ? String.valueOf(index) : null,
+                index,
+                (float) bean.components.pm2_5,
+                (float) bean.components.pm10,
+                (float) bean.components.so2,
+                (float) bean.components.no2,
+                (float) bean.components.o3,
+                (float) bean.components.co
+        );
     }
 
     public static Location convert(@Nullable Location location, OwmLocationResult result,

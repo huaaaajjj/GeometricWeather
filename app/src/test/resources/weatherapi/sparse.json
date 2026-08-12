@@ -1,0 +1,15 @@
+{
+ "location": {
+  "name": "Wangdingdi",
+  "region": "Tianjin",
+  "country": "China",
+  "tz_id": "Asia/Shanghai"
+ },
+ "current": {
+  "temp_c": 29.1,
+  "condition": {
+   "text": "Patchy rain nearby",
+   "code": 1063
+  }
+ }
+}

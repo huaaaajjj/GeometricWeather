@@ -1,0 +1,223 @@
+package weather.converters;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
+
+import com.google.gson.Gson;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import wangdaye.com.geometricweather.common.basic.models.Location;
+import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource;
+import wangdaye.com.geometricweather.common.basic.models.weather.Daily;
+import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
+import wangdaye.com.geometricweather.common.basic.models.weather.WeatherCode;
+import wangdaye.com.geometricweather.weather.converters.OwmResultConverter;
+import wangdaye.com.geometricweather.weather.json.owm.OwmAirPollutionResult;
+import wangdaye.com.geometricweather.weather.json.owm.OwmCurrentResult;
+import wangdaye.com.geometricweather.weather.json.owm.OwmForecastResult;
+import wangdaye.com.geometricweather.weather.services.WeatherService;
+
+/**
+ * OpenWeather is the only source whose daily forecast is *derived* rather than reported: the free
+ * 2.5 endpoints give 3-hour steps, and the converter buckets them into days itself. That bucketing
+ * is what produced the empty-daily crash fixed in the 3.5.x line, so it is what these tests pin.
+ *
+ * Fixtures are real data/2.5 responses for the Tianjin 南开 point (metric units, as the service
+ * requests), with the forecast trimmed from 40 entries to the first 10 — which is exactly two
+ * complete Asia/Shanghai days, so the bucket boundaries stay meaningful.
+ */
+@RunWith(RobolectricTestRunner.class)
+// Robolectric 4.12.2 ships no SDK 35 sandbox; targetSdk is 35, so pin the runtime to 34.
+@Config(sdk = 34)
+public class OwmResultConverterTest {
+
+    private Context mContext;
+    private Location mLocation;
+    private TimeZone mDefaultTimeZone;
+
+    @Before
+    public void setUp() {
+        mContext = ApplicationProvider.getApplicationContext();
+        // The converter buckets entries into days with a default-zone Calendar, so the JVM default
+        // decides where one day ends. Pin it to the fixture's own zone.
+        mDefaultTimeZone = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Shanghai"));
+
+        mLocation = new Location(
+                "54517_tj",
+                39.113019f, 117.150738f,
+                TimeZone.getTimeZone("Asia/Shanghai"),
+                "中国", "天津市", "天津市", "南开区",
+                null,
+                WeatherSource.OWM,
+                false, false, true
+        );
+    }
+
+    @After
+    public void tearDown() {
+        TimeZone.setDefault(mDefaultTimeZone);
+    }
+
+    private <T> T load(String name, Class<T> clazz) {
+        InputStream in = getClass().getClassLoader().getResourceAsStream("owm/" + name);
+        assertNotNull("fixture missing: " + name, in);
+        return new Gson().fromJson(new InputStreamReader(in, StandardCharsets.UTF_8), clazz);
+    }
+
+    private Weather convertFixture() {
+        WeatherService.WeatherResultWrapper wrapper = OwmResultConverter.convert(
+                mContext, mLocation,
+                load("current.json", OwmCurrentResult.class),
+                load("forecast.json", OwmForecastResult.class),
+                load("air_pollution.json", OwmAirPollutionResult.class));
+        return wrapper.getResult();
+    }
+
+    @Test
+    public void baseCityIdComesFromLocation() {
+        Weather weather = convertFixture();
+
+        assertNotNull(weather);
+        assertEquals("54517_tj", weather.getBase().getCityId());
+    }
+
+    @Test
+    public void currentComesFromTheCurrentEndpoint() {
+        Weather weather = convertFixture();
+        assertNotNull(weather);
+
+        // Unlike the other converters this one rounds rather than truncates: 29.25 -> 29,
+        // 32.15 -> 32.
+        assertEquals(29, weather.getCurrent().getTemperature().getTemperature());
+        assertEquals(32, weather.getCurrent().getTemperature().getRealFeelTemperature().intValue());
+        assertEquals(64f, weather.getCurrent().getRelativeHumidity(), 0.01f);
+        assertEquals(1005f, weather.getCurrent().getPressure(), 0.01f);
+        // OWM's metric units are m/s and metres; the model is km/h and km.
+        assertEquals(5.11f * 3.6f, weather.getCurrent().getWind().getSpeed(), 0.01f);
+        assertEquals(10f, weather.getCurrent().getVisibility(), 0.01f);
+        // air_pollution is a separate call whose result used to be accepted and discarded.
+        assertTrue(weather.getCurrent().getAirQuality().isValid());
+        assertEquals(2, weather.getCurrent().getAirQuality().getAqiIndex().intValue());
+        assertEquals(11.12f, weather.getCurrent().getAirQuality().getPM25(), 0.01f);
+        assertEquals("小雨", weather.getCurrent().getWeatherText());
+        assertEquals(WeatherCode.RAIN, weather.getCurrent().getWeatherCode());
+        // Base timestamps come from the observation's dt, not from the clock.
+        assertEquals(1786446932000L, weather.getBase().getPublishTime());
+    }
+
+    /**
+     * The 3-hour steps must collapse into whole local days. The fixture's 10 entries span
+     * 2026-08-11 20:00 through 2026-08-12 23:00 Asia/Shanghai, i.e. a 2-entry tail day followed by
+     * a full 8-entry day; getting the boundary wrong shows up as 1 or 3 buckets here.
+     */
+    @Test
+    public void threeHourStepsBucketIntoLocalDays() {
+        Weather weather = convertFixture();
+        assertNotNull(weather);
+
+        assertEquals(2, weather.getDailyForecast().size());
+        assertEquals(10, weather.getHourlyForecast().size());
+
+        Daily first = weather.getDailyForecast().get(0);
+        assertEquals("2026-08-11", format(first.getDate(), "yyyy-MM-dd"));
+        // Both of day 1's entries fall at 20:00 and 23:00 local, so there is no daytime sample at
+        // all and the day half has to fall back to the min/max midpoint instead of dividing by 0.
+        assertEquals(28, first.day().getTemperature().getTemperature());
+        assertEquals(28, first.night().getTemperature().getTemperature());
+
+        Daily second = weather.getDailyForecast().get(1);
+        assertEquals("2026-08-12", format(second.getDate(), "yyyy-MM-dd"));
+        // Day = mean of the 08/11/14/17h samples (24.64, 23.91, 23.71, 23.3) -> 23.89 -> 24.
+        assertEquals(24, second.day().getTemperature().getTemperature());
+        // Night = mean of the 02/05/20/23h samples (26.17, 25.24, 22.58, 22.6) -> 24.15 -> 24.
+        assertEquals(24, second.night().getTemperature().getTemperature());
+        assertEquals(WeatherCode.RAIN, second.day().getWeatherCode());
+        assertEquals("小雨", second.day().getWeatherText());
+
+        // Day starts at local midnight, not at the first sample's time.
+        assertEquals("2026-08-12 00:00", format(second.getDate(), "yyyy-MM-dd HH:mm"));
+    }
+
+    @Test
+    public void hourlyKeepsProviderOrderAndValues() {
+        Weather weather = convertFixture();
+        assertNotNull(weather);
+
+        assertEquals("2026-08-11 20:00",
+                format(weather.getHourlyForecast().get(0).getDate(), "yyyy-MM-dd HH:mm"));
+        assertEquals(28, weather.getHourlyForecast().get(0).getTemperature().getTemperature());
+        // rain.3h is the only precipitation figure the free endpoint gives, and its JSON key is
+        // "3h" — a name no Java field can carry, so it only binds via @SerializedName.
+        assertEquals(0.3f,
+                weather.getHourlyForecast().get(0).getPrecipitation().getTotal(), 0.01f);
+        // pop is a 0..1 probability upstream and a percentage in the model.
+        assertEquals(21f,
+                weather.getHourlyForecast().get(0).getPrecipitationProbability().getTotal(), 0.01f);
+        // sys.pod says "n" for this 20:00 local step; it used to be hardcoded to daytime.
+        assertFalse(weather.getHourlyForecast().get(0).isDaylight());
+        assertTrue(weather.getHourlyForecast().get(4).isDaylight());
+        assertEquals("2026-08-12 23:00",
+                format(weather.getHourlyForecast().get(9).getDate(), "yyyy-MM-dd HH:mm"));
+        assertEquals(WeatherCode.CLOUDY, weather.getHourlyForecast().get(1).getWeatherCode());
+    }
+
+    /**
+     * An empty forecast must not fail loudly here — but it does produce an empty daily list, which
+     * is exactly the state that used to crash DetailsAdapter/LocationModel at .get(0). The guards
+     * in WeatherHelper.requestWeatherSuccess and DatabaseHelper.readWeather are what stop it, so
+     * this test pins the shape those guards expect rather than a converter-side rejection.
+     */
+    @Test
+    public void emptyForecastYieldsEmptyDailyList() {
+        OwmForecastResult forecast = load("forecast.json", OwmForecastResult.class);
+        forecast.list.clear();
+
+        WeatherService.WeatherResultWrapper wrapper = OwmResultConverter.convert(
+                mContext, mLocation, load("current.json", OwmCurrentResult.class), forecast, null);
+
+        assertNotNull(wrapper.getResult());
+        assertTrue(wrapper.getResult().getDailyForecast().isEmpty());
+        assertTrue(wrapper.getResult().getHourlyForecast().isEmpty());
+    }
+
+    /**
+     * No current observation means no Weather at all: the wrapper's result must be null so the
+     * service reports failure and the cached weather survives.
+     */
+    @Test
+    public void missingCurrentIsRejected() {
+        OwmForecastResult forecast = load("forecast.json", OwmForecastResult.class);
+
+        assertNull(OwmResultConverter.convert(mContext, mLocation, null, forecast, null).getResult());
+
+        OwmCurrentResult current = load("current.json", OwmCurrentResult.class);
+        current.weather.clear();
+        assertNull(OwmResultConverter.convert(mContext, mLocation, current, forecast, null).getResult());
+    }
+
+    private String format(Date date, String pattern) {
+        return new SimpleDateFormat(pattern, Locale.US).format(date);
+    }
+}

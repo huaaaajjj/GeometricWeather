@@ -1,5 +1,7 @@
 package wangdaye.com.geometricweather.weather.json.owm;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 public class OwmForecastResult {
@@ -15,6 +17,12 @@ public class OwmForecastResult {
         public double pop;
         public CloudsBean clouds;
         public RainBean rain;
+        public SysBean sys;
+    }
+
+    public static class SysBean {
+        // "d" or "n" — the provider's own day/night flag for this step.
+        public String pod;
     }
 
     public static class MainBean {
@@ -43,6 +51,9 @@ public class OwmForecastResult {
     }
 
     public static class RainBean {
+        // The JSON key is "3h", which is not a legal Java identifier — without this annotation
+        // Gson looked for a field literally named "_3h" and every entry reported 0 mm.
+        @SerializedName("3h")
         public double _3h;
     }
 }

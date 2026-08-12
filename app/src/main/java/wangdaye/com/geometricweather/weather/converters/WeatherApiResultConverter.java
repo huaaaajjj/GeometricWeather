@@ -9,9 +9,11 @@ import androidx.annotation.Nullable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.weather.AirQuality;
@@ -36,6 +38,8 @@ import wangdaye.com.geometricweather.weather.json.weatherapi.WeatherApiResult;
 
 public class WeatherApiResultConverter {
 
+    private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
+
     @Nullable
     public static Weather convert(Context context, Location location, WeatherApiResult result) {
         if (result == null || result.current == null) return null;
@@ -46,7 +50,7 @@ public class WeatherApiResultConverter {
                             new Date(), System.currentTimeMillis()),
                     convertCurrent(context, result),
                     null,
-                    convertDailyList(context, result),
+                    convertDailyList(context, location, result),
                     convertHourlyList(context, result),
                     new ArrayList<>(),
                     convertAlertList(result, location)
@@ -86,7 +90,8 @@ public class WeatherApiResultConverter {
     }
 
     @NonNull
-    private static List<Daily> convertDailyList(Context context, WeatherApiResult result) {
+    private static List<Daily> convertDailyList(Context context, Location location,
+                                                WeatherApiResult result) {
         List<Daily> list = new ArrayList<>();
         if (result.forecast == null || result.forecast.forecastday == null) return list;
 
@@ -128,8 +133,13 @@ public class WeatherApiResultConverter {
 
             Astro sun = null, moon = null;
             if (fd.astro != null) {
-                sun = new Astro(parseTime(fd.astro.sunrise), parseTime(fd.astro.sunset));
-                moon = new Astro(parseTime(fd.astro.moonrise), parseTime(fd.astro.moonset));
+                TimeZone timeZone = location.getTimeZone();
+                sun = new Astro(
+                        parseDayTime(fd.date, fd.astro.sunrise, timeZone),
+                        parseDayTime(fd.date, fd.astro.sunset, timeZone));
+                moon = new Astro(
+                        parseDayTime(fd.date, fd.astro.moonrise, timeZone),
+                        parseDayTime(fd.date, fd.astro.moonset, timeZone));
             }
             MoonPhase moonPhase = fd.astro != null ? convertMoonPhase(fd.astro.moonPhase) : null;
 
@@ -278,19 +288,56 @@ public class WeatherApiResultConverter {
         }
     }
 
+    /**
+     * WeatherAPI reports astro as a bare 12-hour clock ("05:21 AM") with the date living one level
+     * up in forecastday.date. Parsing the clock alone yields 1970-01-01, which made
+     * {@link wangdaye.com.geometricweather.common.basic.models.weather.Weather#isDaylight} compare
+     * "now" against an epoch-day sunset and answer "night" forever. Anchor the clock to its own
+     * day, in the location's zone, so the result is a real instant.
+     */
     @Nullable
-    private static Date parseTime(String s) {
-        if (s == null || s.isEmpty()) return null;
+    private static Date parseDayTime(@Nullable String dayDate, @Nullable String clock,
+                                     @NonNull TimeZone timeZone) {
+        if (dayDate == null || clock == null || clock.isEmpty()) {
+            return null;
+        }
+
+        Date clockOnly = null;
+        for (String pattern : new String[] {"hh:mm a", "HH:mm"}) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat(pattern, Locale.US);
+                sdf.setTimeZone(UTC);
+                clockOnly = sdf.parse(clock);
+                break;
+            } catch (ParseException ignored) {
+                // try the next pattern
+            }
+        }
+        if (clockOnly == null) {
+            return null;
+        }
+
+        Calendar clockCalendar = Calendar.getInstance(UTC);
+        clockCalendar.setTime(clockOnly);
+
+        Date day;
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.US);
-            Date d = sdf.parse(s);
-            if (d != null) return d;
-        } catch (ParseException ignored) {}
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.US);
-            return sdf.parse(s);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+            sdf.setTimeZone(timeZone);
+            day = sdf.parse(dayDate);
         } catch (ParseException e) {
             return null;
         }
+        if (day == null) {
+            return null;
+        }
+
+        Calendar calendar = Calendar.getInstance(timeZone);
+        calendar.setTime(day);
+        calendar.set(Calendar.HOUR_OF_DAY, clockCalendar.get(Calendar.HOUR_OF_DAY));
+        calendar.set(Calendar.MINUTE, clockCalendar.get(Calendar.MINUTE));
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
     }
 }

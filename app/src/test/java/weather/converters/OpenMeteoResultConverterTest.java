@@ -1,0 +1,179 @@
+package weather.converters;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
+
+import com.google.gson.Gson;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import wangdaye.com.geometricweather.common.basic.models.Location;
+import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource;
+import wangdaye.com.geometricweather.common.basic.models.weather.Daily;
+import wangdaye.com.geometricweather.common.basic.models.weather.Hourly;
+import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
+import wangdaye.com.geometricweather.common.basic.models.weather.WeatherCode;
+import wangdaye.com.geometricweather.weather.converters.OpenMeteoResultConverter;
+import wangdaye.com.geometricweather.weather.json.openmeteo.OpenMeteoResult;
+
+/**
+ * Open-Meteo is the keyless fallback source, so it is the one users land on when every keyed
+ * provider is down — a silent conversion failure here has no backstop.
+ *
+ * Fixture is a real api.open-meteo.com/v1/forecast response for Beijing, requested with the exact
+ * current/hourly/daily field lists {@code OpenMeteoWeatherService} sends, only with
+ * forecast_days trimmed to 3 to keep it readable.
+ *
+ * Robolectric is needed because CommonConverter.getWindLevel resolves strings from resources.
+ */
+@RunWith(RobolectricTestRunner.class)
+// Robolectric 4.12.2 ships no SDK 35 sandbox; targetSdk is 35, so pin the runtime to 34.
+@Config(sdk = 34)
+public class OpenMeteoResultConverterTest {
+
+    private Context mContext;
+    private Location mLocation;
+    private TimeZone mDefaultTimeZone;
+
+    @Before
+    public void setUp() {
+        mContext = ApplicationProvider.getApplicationContext();
+        // The converter parses Open-Meteo's local-time strings with a default-zone
+        // SimpleDateFormat, matching the timezone the service asks the API for. Pin the JVM
+        // default so the parsed instants are reproducible on any machine.
+        mDefaultTimeZone = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Shanghai"));
+
+        mLocation = new Location(
+                "beijing",
+                39.9042f, 116.4074f,
+                TimeZone.getTimeZone("Asia/Shanghai"),
+                "中国", "北京市", "北京市", "",
+                null,
+                WeatherSource.OPEN_METEO,
+                false, false, true
+        );
+    }
+
+    @org.junit.After
+    public void tearDown() {
+        TimeZone.setDefault(mDefaultTimeZone);
+    }
+
+    private OpenMeteoResult load(String name) {
+        InputStream in = getClass().getClassLoader().getResourceAsStream("openmeteo/" + name);
+        assertNotNull("fixture missing: " + name, in);
+        return new Gson().fromJson(
+                new InputStreamReader(in, StandardCharsets.UTF_8), OpenMeteoResult.class);
+    }
+
+    /**
+     * The 3.4.13 / 3.4.14 bug in its general form: writing Base.cityId from anything other than
+     * Location.getCityId() breaks the cache key that readWeather/deleteWeather look rows up by.
+     */
+    @Test
+    public void baseCityIdComesFromLocation() {
+        Weather weather = OpenMeteoResultConverter.convert(mContext, mLocation, load("forecast.json"));
+
+        assertNotNull(weather);
+        assertEquals(mLocation.getCityId(), weather.getBase().getCityId());
+    }
+
+    @Test
+    public void fullResponseConvertsCompletely() {
+        Weather weather = OpenMeteoResultConverter.convert(mContext, mLocation, load("forecast.json"));
+        assertNotNull(weather);
+
+        assertEquals(3, weather.getDailyForecast().size());
+        assertEquals(3 * 24, weather.getHourlyForecast().size());
+
+        // Doubles are truncated, not rounded: 29.7 -> 29, 34.0 -> 34.
+        assertEquals(29, weather.getCurrent().getTemperature().getTemperature());
+        assertEquals(34, weather.getCurrent().getTemperature().getRealFeelTemperature().intValue());
+        assertEquals(70f, weather.getCurrent().getRelativeHumidity(), 0.01f);
+        assertEquals(1005.3f, weather.getCurrent().getPressure(), 0.01f);
+        assertEquals(22, weather.getCurrent().getCloudCover().intValue());
+        // Open-Meteo already reports km/h, so the speed must pass through unscaled.
+        assertEquals(9.9f, weather.getCurrent().getWind().getSpeed(), 0.01f);
+        assertEquals("S", weather.getCurrent().getWind().getDirection());
+        assertEquals("Mainly clear", weather.getCurrent().getWeatherText());
+
+        Daily first = weather.getDailyForecast().get(0);
+        assertEquals("2026-08-11", format(first.getDate()));
+        assertEquals(32, first.day().getTemperature().getTemperature());
+        assertEquals(25, first.night().getTemperature().getTemperature());
+        // WMO 55 (dense drizzle) is rain, not clear — the default branch of the code map returns
+        // CLEAR, so an unmapped code would silently read as sunshine.
+        assertEquals(WeatherCode.RAIN, first.day().getWeatherCode());
+        assertEquals("Drizzle", first.day().getWeatherText());
+        assertEquals(92f, first.day().getPrecipitationProbability().getTotal(), 0.01f);
+        assertEquals(7, first.getUV().getIndex().intValue());
+
+        // uv_index_max 1.35 truncates to 1, which is what the UV level thresholds read.
+        assertEquals(1, weather.getDailyForecast().get(1).getUV().getIndex().intValue());
+
+        // sunrise/sunset are requested by the service and were being dropped; without them
+        // Weather.isDaylight() falls back to a clock-only guess instead of the real sun times.
+        assertEquals("2026-08-11 05:22", format(first.sun().getRiseDate(), "yyyy-MM-dd HH:mm"));
+        assertEquals("2026-08-11 19:17", format(first.sun().getSetDate(), "yyyy-MM-dd HH:mm"));
+
+        Hourly firstHour = weather.getHourlyForecast().get(0);
+        assertEquals("2026-08-11T00:00", format(firstHour.getDate(), "yyyy-MM-dd'T'HH:mm"));
+        assertEquals(27, firstHour.getTemperature().getTemperature());
+        // is_day = 0 at midnight; getting this backwards flips every night icon to a daytime one.
+        assertFalse(firstHour.isDaylight());
+        assertTrue(weather.getHourlyForecast().get(12).isDaylight());
+    }
+
+    /**
+     * A 200 response that carries only "current" must still convert instead of tripping a @NonNull
+     * assertion — the converter's outer catch would turn that crash into a silent "no data".
+     *
+     * Note the empty daily list: unlike MfResultConverter this converter does not reject it, so an
+     * Open-Meteo response with no daily block relies entirely on the guards in
+     * WeatherHelper.requestWeatherSuccess and DatabaseHelper.readWeather to keep the 76 unguarded
+     * getDailyForecast().get(0) call sites from throwing.
+     */
+    @Test
+    public void sparseResponseDoesNotBlowUp() {
+        Weather weather = OpenMeteoResultConverter.convert(mContext, mLocation, load("sparse.json"));
+
+        assertNotNull("a sparse but valid 200 response should still convert", weather);
+        assertEquals(29, weather.getCurrent().getTemperature().getTemperature());
+        assertTrue(weather.getDailyForecast().isEmpty());
+        assertTrue(weather.getHourlyForecast().isEmpty());
+        assertTrue(weather.getAlertList().isEmpty());
+    }
+
+    @Test
+    public void nullResultIsRejected() {
+        assertNull(OpenMeteoResultConverter.convert(mContext, mLocation, null));
+    }
+
+    private String format(java.util.Date date) {
+        return format(date, "yyyy-MM-dd");
+    }
+
+    private String format(java.util.Date date, String pattern) {
+        return new SimpleDateFormat(pattern, Locale.US).format(date);
+    }
+}

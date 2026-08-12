@@ -92,8 +92,10 @@ public class CaiyunResultConverter {
                                     null
                             ),
                             getAirQuality(context, r.air_quality),
-                            (float) r.humidity,
-                            (float) r.pressure,
+                            // CaiYun reports humidity as a 0..1 fraction and pressure in pascals;
+                            // the model wants percent and hPa, same as every other source.
+                            (float) (r.humidity * 100),
+                            (float) (r.pressure / 100),
                             (float) r.visibility,
                             null, null, null, null,
                             result.result.forecast_keypoint
@@ -181,7 +183,7 @@ public class CaiyunResultConverter {
                             getWind(context, daily, i, false),
                             null
                     ),
-                    getAstro(daily, i),
+                    getAstro(daily, i, timezone),
                     new Astro(null, null),
                     new MoonPhase(null, null),
                     getDailyAirQuality(context, daily, i),
@@ -194,12 +196,13 @@ public class CaiyunResultConverter {
     }
 
     @Nullable
-    private static Astro getAstro(CaiYunWeatherResult.DailyBean daily, int i) {
+    private static Astro getAstro(CaiYunWeatherResult.DailyBean daily, int i, String timezone) {
         try {
             if (daily.astro != null && i < daily.astro.size()) {
+                CaiYunWeatherResult.AstroBean astro = daily.astro.get(i);
                 return new Astro(
-                        parseTime(daily.astro.get(i).sunrise.time),
-                        parseTime(daily.astro.get(i).sunset.time)
+                        parseTime(astro.date, astro.sunrise.time, timezone),
+                        parseTime(astro.date, astro.sunset.time, timezone)
                 );
             }
         } catch (Exception ignored) {}
@@ -357,14 +360,38 @@ public class CaiyunResultConverter {
         }
     }
 
+    /**
+     * CaiYun reports astro as a bare "HH:mm" clock next to the day's own date. Parsing the clock
+     * alone produced a 1970-01-01 instant, which made
+     * {@link wangdaye.com.geometricweather.common.basic.models.weather.Weather#isDaylight} compare
+     * "now" against an epoch-day sunset and answer "night" forever. Anchor the clock to its day.
+     */
     @Nullable
-    private static Date parseTime(String timeStr) {
+    private static Date parseTime(String dayDate, String timeStr, String timezone) {
         if (timeStr == null) return null;
+        Date day = parseDate(dayDate, timezone);
+        TimeZone zone = TimeZone.getTimeZone(timezone != null ? timezone : "Asia/Shanghai");
         try {
             java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(
                     "HH:mm", java.util.Locale.getDefault());
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-            return sdf.parse(timeStr);
+            Date clock = sdf.parse(timeStr);
+            if (clock == null) {
+                return null;
+            }
+            if (day == null) {
+                return clock;
+            }
+            Calendar clockCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            clockCalendar.setTime(clock);
+
+            Calendar calendar = Calendar.getInstance(zone);
+            calendar.setTime(day);
+            calendar.set(Calendar.HOUR_OF_DAY, clockCalendar.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, clockCalendar.get(Calendar.MINUTE));
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            return calendar.getTime();
         } catch (Exception e) {
             return null;
         }

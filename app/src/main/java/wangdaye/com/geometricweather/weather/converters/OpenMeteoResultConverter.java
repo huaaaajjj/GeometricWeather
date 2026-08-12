@@ -15,6 +15,7 @@ import java.util.TimeZone;
 
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.weather.AirQuality;
+import wangdaye.com.geometricweather.common.basic.models.weather.Astro;
 import wangdaye.com.geometricweather.common.basic.models.weather.Base;
 import wangdaye.com.geometricweather.common.basic.models.weather.Current;
 import wangdaye.com.geometricweather.common.basic.models.weather.Daily;
@@ -120,7 +121,13 @@ public class OpenMeteoResultConverter {
                             windSpeed, CommonConverter.getWindLevel(context, windSpeed)),
                     null
             );
-            list.add(new Daily(date, date.getTime(), day, night, null, null, null, null, null,
+            // sunrise/sunset are requested by the service and were being dropped on the floor,
+            // which left Weather.isDaylight() falling back to a clock-only guess.
+            Astro sun = new Astro(
+                    parseDateTime(getVal(result.daily.sunrise, i)),
+                    parseDateTime(getVal(result.daily.sunset, i)));
+
+            list.add(new Daily(date, date.getTime(), day, night, sun, null, null, null, null,
                     new UV(uvIndex, null, null), 0f));
         }
         return list;
@@ -217,6 +224,7 @@ public class OpenMeteoResultConverter {
 
     @Nullable
     private static Date parseDateTime(String s) {
+        if (s == null) return null;
         try { return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.US).parse(s); }
         catch (ParseException e) { return null; }
     }
