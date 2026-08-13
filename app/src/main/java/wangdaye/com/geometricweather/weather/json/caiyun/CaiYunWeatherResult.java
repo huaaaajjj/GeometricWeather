@@ -18,7 +18,21 @@ public class CaiYunWeatherResult {
         public RealtimeBean realtime;
         public DailyBean daily;
         public HourlyBean hourly;
+        public AlertBean alert;
         public String forecast_keypoint;
+    }
+
+    public static class AlertBean {
+        public List<AlertContent> content;
+    }
+
+    public static class AlertContent {
+        public String title;
+        public String description;
+        public String source;
+        public String status;
+        public String code;
+        public long pubtimestamp;
     }
 
     public static class RealtimeBean {

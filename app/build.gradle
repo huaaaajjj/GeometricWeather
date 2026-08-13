@@ -121,13 +121,11 @@ android {
     sourceSets{
         pub {
             java.srcDirs = ["src/bugly", "src/amap", "src/proprietary"]
-            manifest.srcFile "proprietary/AndroidManifest.xml"
             jniLibs.srcDir "libs"
             jni.srcDirs = []
         }
         gplay {
             java.srcDirs = ["src/nobugly", "src/noamap", "src/proprietary"]
-            manifest.srcFile "proprietary/AndroidManifest.xml"
             jniLibs.srcDir "libs"
             jni.srcDirs = []
         }

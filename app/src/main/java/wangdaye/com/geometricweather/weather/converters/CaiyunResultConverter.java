@@ -104,7 +104,7 @@ public class CaiyunResultConverter {
                     getDailyList(context, daily, result.timezone),
                     getHourlyList(context, hourly, result.timezone),
                     new ArrayList<Minutely>(),
-                    new ArrayList<Alert>()
+                    getAlertList(result.result.alert)
             );
             return new WeatherService.WeatherResultWrapper(weather);
         } catch (Exception e) {
@@ -292,6 +292,33 @@ public class CaiyunResultConverter {
                     new PrecipitationProbability(null, null, null, null, null),
                     new Wind("", new WindDegree(0, true), null, ""),
                     new UV(null, null, null)
+            ));
+        }
+        return list;
+    }
+
+    @NonNull
+    private static List<Alert> getAlertList(@Nullable CaiYunWeatherResult.AlertBean alertBean) {
+        List<Alert> list = new ArrayList<>();
+        if (alertBean == null || alertBean.content == null) {
+            return list;
+        }
+        long id = 0;
+        for (CaiYunWeatherResult.AlertContent c : alertBean.content) {
+            if (c == null || TextUtils.isEmpty(c.title)) {
+                continue;
+            }
+            long time = c.pubtimestamp > 0 ? c.pubtimestamp * 1000 : System.currentTimeMillis();
+            Date date = new Date(time);
+            list.add(new Alert(
+                    id++,
+                    date,
+                    time,
+                    c.title != null ? c.title : "",
+                    c.description != null ? c.description : "",
+                    c.code != null ? c.code : "",
+                    1,
+                    0xFFFFB82B
             ));
         }
         return list;

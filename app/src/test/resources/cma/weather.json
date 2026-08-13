@@ -1,0 +1,86 @@
+{
+  "msg": "OK",
+  "code": 200,
+  "data": {
+    "location": {
+      "id": "54517",
+      "name": "黑牛城",
+      "path": "中国,天津市,天津市,南开区",
+      "longitude": 117.22,
+      "latitude": 39.08,
+      "timezone": 8
+    },
+    "lastUpdate": "2026/08/14 10:00",
+    "now": {
+      "precipitation": 0.0,
+      "temperature": 29.3,
+      "pressure": 1008.0,
+      "humidity": 62.0,
+      "windDirection": "东南",
+      "windDirectionDegree": 135.0,
+      "windSpeed": 2.5,
+      "windScale": "2级",
+      "feelst": 32.5
+    },
+    "daily": [
+      {
+        "date": "2026/08/14",
+        "high": 32.0,
+        "low": 25.0,
+        "dayText": "多云",
+        "dayCode": 1,
+        "dayWindDirection": "东南",
+        "dayWindScale": "2级",
+        "nightText": "阴",
+        "nightCode": 2,
+        "nightWindDirection": "南",
+        "nightWindScale": "3级"
+      },
+      {
+        "date": "2026/08/15",
+        "high": 30.0,
+        "low": 24.0,
+        "dayText": "小雨",
+        "dayCode": 8,
+        "dayWindDirection": "东",
+        "dayWindScale": "3级",
+        "nightText": "中雨",
+        "nightCode": 9,
+        "nightWindDirection": "东北",
+        "nightWindScale": "4级"
+      },
+      {
+        "date": "2026/08/16",
+        "high": 28.0,
+        "low": 22.0,
+        "dayText": "雷阵雨",
+        "dayCode": 15,
+        "dayWindDirection": "北",
+        "dayWindScale": "4级",
+        "nightText": "阴",
+        "nightCode": 2,
+        "nightWindDirection": "西北",
+        "nightWindScale": "3级"
+      }
+    ],
+    "jieQi": "立秋",
+    "alarm": [
+      {
+        "id": "alert_001",
+        "headline": "天津市气象台发布暴雨黄色预警",
+        "title": "暴雨黄色预警",
+        "description": "预计今天下午到夜间，天津地区将出现暴雨天气，请注意防范。",
+        "effective": "2026/08/14 09:30",
+        "type": "暴雨"
+      },
+      {
+        "id": "alert_002",
+        "headline": "天津市气象台发布雷电黄色预警",
+        "title": "雷电黄色预警",
+        "description": "预计今天下午到夜间，天津地区有雷电活动，请注意防范。",
+        "effective": "2026/08/14 10:00",
+        "type": "雷电"
+      }
+    ]
+  }
+}

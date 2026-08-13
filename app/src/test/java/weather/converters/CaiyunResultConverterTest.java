@@ -182,16 +182,47 @@ public class CaiyunResultConverterTest {
     }
 
     /**
-     * The Weather constructor asserts @NonNull on the minutely and alert lists; passing null there
-     * was a crash. The trial token returns neither block, so these must be empty lists, never null.
+     * The Weather constructor asserts @NonNull on the minutely list; passing null there was a
+     * crash. The trial token returns no minutely block, so it must be an empty list, never null.
      */
     @Test
-    public void minutelyAndAlertListsAreEmptyNotNull() {
+    public void minutelyListIsEmptyNotNull() {
         Weather weather = convert(load());
         assertNotNull(weather);
 
         assertNotNull(weather.getMinutelyForecast());
         assertTrue(weather.getMinutelyForecast().isEmpty());
+    }
+
+    /**
+     * The trial token's ?alert=true used to be a white request: the DTO had no alert field, so the
+     * converter always returned an empty list. With the alert field wired up, a response carrying
+     * alert.content must produce real Alert objects.
+     */
+    @Test
+    public void alertListIsPopulatedFromResponse() {
+        Weather weather = convert(load());
+        assertNotNull(weather);
+
+        assertNotNull(weather.getAlertList());
+        assertEquals(1, weather.getAlertList().size());
+        assertEquals("天津市气象台发布暴雨黄色预警",
+                weather.getAlertList().get(0).getDescription());
+        // pubtimestamp 1786446000 -> 1786446000000 ms
+        assertEquals(1786446000000L, weather.getAlertList().get(0).getTime());
+    }
+
+    /**
+     * Missing alert block must still produce an empty list, never null (Weather constructor
+     * asserts @NonNull).
+     */
+    @Test
+    public void missingAlertYieldsEmptyList() {
+        CaiYunWeatherResult result = load();
+        result.result.alert = null;
+
+        Weather weather = convert(result);
+        assertNotNull(weather);
         assertNotNull(weather.getAlertList());
         assertTrue(weather.getAlertList().isEmpty());
     }

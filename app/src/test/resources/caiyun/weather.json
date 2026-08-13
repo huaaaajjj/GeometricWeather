@@ -12,6 +12,18 @@
   117.150738
  ],
  "result": {
+  "alert": {
+   "content": [
+    {
+     "title": "天津市气象台发布暴雨黄色预警",
+     "description": "预计今天下午到夜间，天津地区将出现暴雨天气，请注意防范。",
+     "source": "天津市气象台",
+     "status": "预警中",
+     "code": "11",
+     "pubtimestamp": 1786446000
+    }
+   ]
+  },
   "realtime": {
    "status": "ok",
    "temperature": 30.67,
