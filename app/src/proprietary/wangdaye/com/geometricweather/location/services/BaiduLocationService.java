@@ -107,6 +107,18 @@ public class BaiduLocationService extends LocationService {
 
     @Override
     public String[] getPermissions() {
+        // 存储权限只服务于百度 SDK 的两个旁路功能：/baidu/tempdata 离线定位缓存（e/a）
+        // 与 error_fs2.dat 错误日志（c/g）—— jar 里 238 个类仅这 3 个碰
+        // getExternalStorageDirectory，且全 jar 找不到 *_EXTERNAL_STORAGE 字符串，
+        // 说明 SDK 从不检查该权限，写失败即吞。定位主链路不依赖它；而 API 29+ 分区存储
+        // 已封死这条路径（30+ 连 requestLegacyExternalStorage 也失效）、33+ 系统直接忽略
+        // 该请求。净效果：只在 29~32 白弹一个「访问照片和媒体」框，授了也没有任何用处。
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return new String[] {
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+            };
+        }
         return new String[] {
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,

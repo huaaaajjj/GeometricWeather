@@ -103,6 +103,15 @@ public class AMapLocationService extends LocationService {
 
     @Override
     public String[] getPermissions() {
+        // 与百度那份同理：存储权限只服务于定位 SDK 的离线缓存，定位主链路不依赖它；
+        // API 29+ 分区存储已封死该路径、33+ 系统直接忽略该请求，
+        // 只会在 29~32 白弹一个「访问照片和媒体」框。
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return new String[] {
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+            };
+        }
         return new String[] {
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
