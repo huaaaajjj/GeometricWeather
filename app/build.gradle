@@ -200,6 +200,10 @@ dependencies {
     // PowerMock removed: 2.0.9 cannot run on JDK 17 (InaccessibleObjectException, module java.base
     // does not "opens java.lang"). The four tests that used it now run on Robolectric + Mockito.
     testImplementation "org.robolectric:robolectric:4.12.2"
+    // Lets the weather/services tests drive a real Retrofit stack against canned responses, so the
+    // orchestration (latch counts, required-vs-optional calls, fallback retries) is covered without
+    // touching a provider. Pinned to the OkHttp version above -- mockwebserver ships in that group.
+    testImplementation "com.squareup.okhttp3:mockwebserver:4.12.0"
 
     // material design.
     implementation "com.google.android.material:material:1.12.0"
