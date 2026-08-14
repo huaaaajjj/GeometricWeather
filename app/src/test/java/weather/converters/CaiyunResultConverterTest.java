@@ -247,6 +247,29 @@ public class CaiyunResultConverterTest {
         assertTrue(weather.getHourlyForecast().isEmpty());
     }
 
+    /**
+     * A malformed wind entry must degrade to the direction-less placeholder, not to a Wind built
+     * from nulls — three of Wind's four slots are @NonNull, and null-filled Winds are exactly what
+     * crashed the v2.6 migration. Only the affected day degrades; its neighbours keep their data.
+     */
+    @Test
+    public void nullWindEntryDegradesToAnEmptyWind() {
+        CaiYunWeatherResult result = load();
+        result.result.daily.wind.set(0, null);
+
+        Weather weather = convert(result);
+        assertNotNull(weather);
+
+        Daily first = weather.getDailyForecast().get(0);
+        assertEquals("", first.day().getWind().getDirection());
+        assertEquals("", first.day().getWind().getLevel());
+        assertNotNull(first.day().getWind().getDegree());
+        assertNull(first.day().getWind().getSpeed());
+
+        // Day 1 is untouched: direction 58.83 deg -> ENE on the 16-point compass.
+        assertEquals("ENE", weather.getDailyForecast().get(1).day().getWind().getDirection());
+    }
+
     @Test
     public void missingRealtimeIsRejected() {
         CaiYunWeatherResult result = load();
