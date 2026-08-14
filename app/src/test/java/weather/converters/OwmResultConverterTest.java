@@ -165,6 +165,36 @@ public class OwmResultConverterTest {
         assertEquals("2026-08-12 00:00", format(second.getDate(), "yyyy-MM-dd HH:mm"));
     }
 
+    /**
+     * A partial day with no sample on one side of the 6..18 split falls back to the (min+max)/2
+     * midpoint, and day 1 of the fixture is exactly that case. The running max used to be seeded
+     * with Double.MIN_VALUE — the smallest *positive* double, not the most negative one — so an
+     * all-sub-zero day never moved it off ~0 and the midpoint came out far too warm. A summer
+     * fixture cannot show this, hence the shift below freezing.
+     */
+    @Test
+    public void subZeroDayKeepsItsRealMaximum() {
+        OwmForecastResult forecast = load("forecast.json", OwmForecastResult.class);
+        for (OwmForecastResult.ListBean entry : forecast.list) {
+            entry.main.temp -= 40;
+            entry.main.temp_min -= 40;
+            entry.main.temp_max -= 40;
+        }
+
+        WeatherService.WeatherResultWrapper wrapper = OwmResultConverter.convert(
+                mContext, mLocation, load("current.json", OwmCurrentResult.class), forecast, null);
+        Weather weather = wrapper.getResult();
+        assertNotNull(weather);
+
+        // Day 1 holds only the 20:00 and 23:00 local steps: min -12.29, max -11.86, midpoint
+        // -12.075 -> -12. With the old seed the max stayed at ~0 and this read -6.
+        assertEquals(-12,
+                weather.getDailyForecast().get(0).day().getTemperature().getTemperature());
+        // The night half averages its own samples, so it lands on -12 either way.
+        assertEquals(-12,
+                weather.getDailyForecast().get(0).night().getTemperature().getTemperature());
+    }
+
     @Test
     public void hourlyKeepsProviderOrderAndValues() {
         Weather weather = convertFixture();

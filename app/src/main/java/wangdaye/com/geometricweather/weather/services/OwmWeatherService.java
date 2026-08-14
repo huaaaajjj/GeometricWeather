@@ -122,12 +122,10 @@ public class OwmWeatherService extends WeatherService {
             return new ArrayList<>();
         }
 
-        String zipCode = query.matches("[a-zA-Z0-9]*") ? query : null;
-
         List<Location> locationList = new ArrayList<>();
         if (resultList != null && resultList.size() != 0) {
             for (OwmLocationResult r : resultList) {
-                Location loc = OwmResultConverter.convert(null, r, zipCode);
+                Location loc = OwmResultConverter.convert(r);
                 if (loc != null) locationList.add(loc);
             }
         }
@@ -145,7 +143,7 @@ public class OwmWeatherService extends WeatherService {
                 ).execute().body();
                 if (results != null && !results.isEmpty()) {
                     List<Location> locationList = new ArrayList<>();
-                    Location loc = OwmResultConverter.convert(location, results.get(0), null);
+                    Location loc = OwmResultConverter.convert(results.get(0));
                     if (loc != null) locationList.add(loc);
                     callback.requestLocationSuccess(
                             location.getLatitude() + "," + location.getLongitude(), locationList);
