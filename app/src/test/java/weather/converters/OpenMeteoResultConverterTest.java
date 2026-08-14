@@ -159,6 +159,10 @@ public class OpenMeteoResultConverterTest {
 
         assertNotNull("a sparse but valid 200 response should still convert", weather);
         assertEquals(29, weather.getCurrent().getTemperature().getTemperature());
+        // No weather_code in the payload must not leave Current.weatherCode null: the model
+        // declares it @NonNull (unenforced in Java, so the old converter did leave it null) and
+        // every icon/colour consumer dereferences it. Missing reads as the CLEAR default.
+        assertEquals(WeatherCode.CLEAR, weather.getCurrent().getWeatherCode());
         assertTrue(weather.getDailyForecast().isEmpty());
         assertTrue(weather.getHourlyForecast().isEmpty());
         assertTrue(weather.getAlertList().isEmpty());
