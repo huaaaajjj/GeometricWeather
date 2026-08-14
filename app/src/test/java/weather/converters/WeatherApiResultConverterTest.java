@@ -240,6 +240,24 @@ public class WeatherApiResultConverterTest {
         assertTrue(weather.getAlertList().isEmpty());
     }
 
+    /**
+     * A response with no condition block used to leave Current.weatherCode null: the model declares
+     * it @NonNull (unenforced in Java, so the old converter did leave it null) and every icon and
+     * colour consumer dereferences it — a crash waiting on a sparse payload from the default
+     * source. Missing now reads as the same CLEAR default an unmapped code gets.
+     */
+    @Test
+    public void missingConditionDoesNotYieldNullWeatherCode() {
+        WeatherApiResult result = load("sparse.json");
+        result.current.condition = null;
+
+        Weather weather = WeatherApiResultConverter.convert(mContext, mLocation, result);
+
+        assertNotNull(weather);
+        assertEquals(WeatherCode.CLEAR, weather.getCurrent().getWeatherCode());
+        assertEquals("Unknown", weather.getCurrent().getWeatherText());
+    }
+
     @Test
     public void missingCurrentIsRejected() {
         WeatherApiResult result = load("forecast.json");
