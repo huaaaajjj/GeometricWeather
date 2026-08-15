@@ -112,8 +112,15 @@ object ApihzResultConverter {
         val sunMap = buildSunMap(r.suntimes)
         val list = ArrayList<Daily>()
 
-        // Day 1 is flat on the root; its date has no field of its own, so anchor it to today (CN).
-        addDaily(context, list, sunMap, todayCn(), r.weather1, r.weather2, r.wd1, r.wd2,
+        // Day 1 is flat on the root and carries no date of its own, so it has to be dated from
+        // something else. Derive it from day 2 rather than from the device clock: just after local
+        // midnight the API may still be serving yesterday as day 1, and dating that "today" makes
+        // it collide with day 2 — two entries then claim the same day, the first holding stale
+        // numbers, and everything that reads dailyForecast[0] as today (the header, every widget,
+        // the notifications) shows yesterday's forecast until the provider rolls over.
+        val secondDate = parseDate(r.weatherday2?.date)
+        addDaily(context, list, sunMap, secondDate?.let { dayBefore(it) } ?: todayCn(),
+            r.weather1, r.weather2, r.wd1, r.wd2,
             r.winddirection1, r.winddirection2, r.windleve1, r.windleve2)
 
         // Days 2-7 are nested objects, each with its own date.
@@ -285,6 +292,13 @@ object ApihzResultConverter {
         cal.set(Calendar.MINUTE, 0)
         cal.set(Calendar.SECOND, 0)
         cal.set(Calendar.MILLISECOND, 0)
+        return cal.time
+    }
+
+    private fun dayBefore(date: Date): Date {
+        val cal = Calendar.getInstance(CN_TZ)
+        cal.time = date
+        cal.add(Calendar.DAY_OF_MONTH, -1)
         return cal.time
     }
 
