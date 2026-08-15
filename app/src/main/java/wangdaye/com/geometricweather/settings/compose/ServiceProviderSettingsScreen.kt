@@ -38,11 +38,30 @@ fun ServiceProviderSettingsScreen(
     sectionHeaderItem(R.string.settings_category_weather_data)
 
     listPreferenceItem(R.string.settings_title_weather_source) { id ->
+        val values = stringArrayResource(R.array.weather_source_values)
+        val baseNames = stringArrayResource(R.array.weather_sources)
+
+        // AccuWeather's bundled key expired and there is no replacement, so the source answers
+        // nothing unless the user supplies their own key on the advanced screen. Mark it instead of
+        // letting it read like any other choice — picking it blind just yields "no data", with
+        // nothing on screen to explain why. The mark disappears once a key is set.
+        val accuIndex = values.indexOfFirst { it == WeatherSource.ACCU.id }
+        val accuNeedsKey = accuIndex >= 0
+                && SettingsManager.getInstance(context).customAccuWeatherKey.isEmpty()
+        val accuLabel = stringResource(
+            R.string.settings_weather_source_needs_own_key,
+            baseNames.getOrElse(accuIndex) { "" }
+        )
+        val names = Array(baseNames.size) { index ->
+            if (accuNeedsKey && index == accuIndex) accuLabel else baseNames[index]
+        }
+
         ListPreferenceView(
-            titleId = id,
-            valueArrayId = R.array.weather_source_values,
-            nameArrayId = R.array.weather_sources,
+            title = stringResource(id),
+            summary = { _, value -> names[values.indexOfFirst { it == value }] },
             selectedKey = SettingsManager.getInstance(context).weatherSource.id,
+            valueArray = values,
+            nameArray = names,
             onValueChanged = { sourceId ->
                 val newSource = WeatherSource.getInstance(sourceId)
                 // 持久化 + 发 SettingsChangedMessage（同步调用，保持 UI 选中态与现有刷新时序）
