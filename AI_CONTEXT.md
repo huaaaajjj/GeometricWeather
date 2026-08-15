@@ -14,7 +14,7 @@
 
 ## 实现状态
 
-- 当前发布版本：**3.5.6**（versionCode 30506，正在发布）。上一发布版 3.5.5（30505）。主分支 `master`（基于 v3.3.6 重建线）。
+- 当前发布版本：**3.5.7**（versionCode 30507，正式版）。上一发布版 3.5.6（30506，Prerelease）。主分支 `master`（基于 v3.3.6 重建线）。
 - 8 个天气源：WEATHERAPI（默认）、OPEN_METEO、CAIYUN、APIHZ（中国天气网）、CMA（中国气象局）、MF（仅法国）、OWM 可用；**ACCU 的内置 Key 已过期，当前不可用**（见「已知问题」）。
 - 工具链已现代化（见版本矩阵）；RxJava 已全部迁移到 Coroutines；GreenDAO 已迁移到 Room。
 
@@ -203,6 +203,8 @@
 - **`LocationHelper` 补测试（5 例）+ 修「地区可用时失败回调不回主线程」**。定位分两段：定位服务给坐标（百度/高德还给地址），再由当前天气源把坐标解析成它能供数的地区。① **可测性重构**（机械、行为不变）：原构造器**在内部 `new` 出 4 个定位服务**（`AndroidLocationService`/`BaiduLocationService`/`AMapLocationService`），塞不进假实现、连实例化都会拉起百度 SDK；改为主构造器委托给一个 `@VisibleForTesting` 的构造器接收 `LocationService[]`，Hilt 那条路径原样不变。② **查出并修掉线程不一致**：`requestLocation` 有三条返回路径，成功与北京兜底都走了 `delayRunOnUI` 回主线程，唯独「地区已可用但解析失败」那条是**直接同步回调**，而它恰恰是从天气服务的 IO 线程进来的 —— 与 3.4.x 修过的「搜索地点闪退」同一形状（当时也是漏了回主线程）。今天没崩是因为 `MainActivityRepository` 把它转交给了 `WeatherHelper`（后者有回主线程保证），属巧合而非设计；已补上 `delayRunOnUI`，三条路径统一。**测试是先写后修的**：`callbacksArriveOnTheMainThread` 一开始就挂在这条，修完转绿。③ 5 例覆盖：坐标→源解析→落库并上报、**北京兜底**（定位失败且原地区不可用 → 采用默认地区 101924 并持久化，这是 3.3.7–3.3.13 因定位回归被整体回退后**刻意保留**的行为，故钉住防止被"清理"）、原地区可用时定位失败不得被兜底覆盖、源解析不出地区算失败而非崩溃、回调必须回主线程。`./gradlew test assemblePubRelease` 六变体全绿、**127 例 0 失败**（原 122）。**真机验证**（MI 9，签名 release 原地升级）：百度定位仍解析到**舒城县**（区县级）、联网取数正常、0 崩溃 —— 定位是本项目唯一因回归被整体回退过的区域，故此项不可跳过。
 
 - **ACCU 在天气源选择页标注为不可用**。内置 Key 自 2026-06-28 起过期，而源列表里它和其余源看起来毫无区别 —— 选中后只会一直「获取天气数据失败」，界面上没有任何解释。**没有移除也没有禁用**：`SettingsManager.providerAccuWeatherKey` 是 `customValue.ifEmpty { defaultValue }`，用户在「高级 → 设置服务商 API KEY」填了自己的 Key 就能正常用，砍掉会误伤这条路径。改为在名称后追加标注，且**仅当 `customAccuWeatherKey` 为空**（即真的在用已失效的内置 Key）时显示，填了 Key 就自动消失。实现：`ServiceProviderSettingsScreen` 的天气源项由 `ListPreferenceView(nameArrayId=…)` 改为传显式 `nameArray`（与同页位置服务按 flavor 过滤的写法一致），按 `weather_source_values` 里的 `accu` 定位下标；新增字符串 `settings_weather_source_needs_own_key`（带 `%1$s` 格式参数，中英文各自控制括号与空格）。**真机验证**（MI 9，签名 release）：弹窗里显示「Accu Weather（不可用 —— 内置密钥已失效，需自填）」，选中后折叠行同样完整显示未被截断，其余 7 个源不受影响；切回中国天气网后正常取数、0 崩溃。`./gradlew test` 六变体全绿、127 例 0 失败。
+
+- **3.5.7**：**正式版**（`assemblePubRelease` 已签名 + R8 minify/shrinkResources；此前 3.5.2–3.5.6 均为 Prerelease）。汇总自 3.5.6 以来的两件事：① **`LocationHelper` 补测试 5 例 + 修「地区可用时失败回调不回主线程」** —— `requestLocation` 三条返回路径里，成功与北京兜底都回了主线程，唯独这条从天气服务 IO 线程进来的直接同步回调，与 3.4.x 修过的「搜索地点闪退」同一形状；顺带做了可测性重构（4 个定位服务由构造器内 `new` 改为 `@VisibleForTesting` 构造器注入，Hilt 路径不变）。② **天气源选择页标注 AccuWeather 不可用** —— 内置 Key 已过期而列表里它与其余源毫无区别，选中后只会一直失败且无任何解释；改为追加「不可用 —— 内置密钥已失效，需自填」，仅在 `customAccuWeatherKey` 为空时显示，用户填了自己的 Key 即消失（该源在自带 Key 下可正常使用，故不移除）。用例数 122 → 127。**release 包真机验证（MI 9/Android 14，按发版流程卸载后全新安装，全新数据）**：冷启动 0 崩溃、`logcat -b crash` 全程空；新装默认源确为 WeatherAPI 并联网拉取成功（23°、体感 27°、空气质量 优、日期「今日 8-15 / 周日 8-16 / 周一 8-17」正确、夜间配色正确）；天气源弹窗中 AccuWeather 显示「不可用 —— 内置密钥已失效，需自填」且换行完整可读，其余 7 个源无标注；切百度定位后解析到**舒城县**（区县级），刷新正常 —— 定位代码本版有改动，此项不可跳过。
 
 ## 已知问题 / 约束
 
