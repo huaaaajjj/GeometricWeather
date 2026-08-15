@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 
 import java.util.List;
@@ -46,13 +47,26 @@ public class LocationHelper {
     public LocationHelper(@ApplicationContext Context context,
                           BaiduIPLocationService baiduIPService,
                           WeatherServiceSet weatherServiceSet) {
-        mLocationServices = new LocationService[] {
-                new AndroidLocationService(),
-                new BaiduLocationService(context),
-                baiduIPService,
-                new AMapLocationService(context)
-        };
+        this(
+                new LocationService[] {
+                        new AndroidLocationService(),
+                        new BaiduLocationService(context),
+                        baiduIPService,
+                        new AMapLocationService(context)
+                },
+                weatherServiceSet
+        );
+    }
 
+    /**
+     * The services are handed in rather than built here so a test can stand in for them — the real
+     * ones pull in the Baidu and AMap SDKs, which cannot run off a device. The array order is the
+     * one {@link #getLocationService} indexes into: native, Baidu, Baidu-IP, AMap.
+     */
+    @VisibleForTesting
+    public LocationHelper(LocationService[] locationServices,
+                          WeatherServiceSet weatherServiceSet) {
+        mLocationServices = locationServices;
         mWeatherServiceSet = weatherServiceSet;
     }
 
@@ -83,7 +97,10 @@ public class LocationHelper {
             @Override
             public void requestLocationFailed(Location requestLocation) {
                 if (requestLocation.isUsable()) {
-                    l.requestLocationFailed(requestLocation);
+                    // Hop to the main thread like the other two outcomes below: this one is reached
+                    // from the weather service's IO thread, and callers set LiveData in here.
+                    wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.delayRunOnUI(
+                            () -> l.requestLocationFailed(requestLocation), 0);
                 } else {
                     Location finalLocation = Location.copy(
                             Location.buildDefaultLocation(
