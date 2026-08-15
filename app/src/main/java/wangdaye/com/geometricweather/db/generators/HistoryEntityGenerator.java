@@ -19,7 +19,19 @@ public class HistoryEntityGenerator {
         return entity;
     }
 
+    /**
+     * The history row records today's day/night temperatures, which only the first daily entry can
+     * supply. A weather with no daily entries therefore has no history to record — say so rather
+     * than indexing into an empty list, which takes the process down.
+     *
+     * WeatherHelper already refuses to accept such a weather, so this is the second line rather
+     * than the first; it exists because the crash here is fatal, not graceful.
+     */
+    @Nullable
     public static HistoryEntity generate(String cityId, WeatherSource source, Weather weather) {
+        if (weather.getDailyForecast().isEmpty()) {
+            return null;
+        }
         HistoryEntity entity = new HistoryEntity();
         entity.cityId = cityId;
         entity.weatherSource = source.getId();

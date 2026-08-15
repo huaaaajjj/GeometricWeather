@@ -133,8 +133,11 @@ public class DatabaseHelper {
                 location.getCityId(), location.getWeatherSource(), weather.getMinutelyForecast()));
         mDao.insertAlertList(AlertEntityGenerator.generate(
                 location.getCityId(), location.getWeatherSource(), weather.getAlertList()));
-        mDao.insertHistory(HistoryEntityGenerator.generate(
-                location.getCityId(), location.getWeatherSource(), weather));
+        HistoryEntity history = HistoryEntityGenerator.generate(
+                location.getCityId(), location.getWeatherSource(), weather);
+        if (history != null) {
+            mDao.insertHistory(history);
+        }
         if (weather.getYesterday() != null) {
             mDao.insertHistory(HistoryEntityGenerator.generate(
                     location.getCityId(), location.getWeatherSource(), weather.getYesterday()));
