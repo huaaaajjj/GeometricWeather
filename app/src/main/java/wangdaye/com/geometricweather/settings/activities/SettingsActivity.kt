@@ -128,11 +128,6 @@ class SettingsActivity : GeoActivity() {
                 composable(SettingsScreenRouter.WeatherSourceStatus.route) {
                     WeatherSourceStatusScreen(context = this@SettingsActivity)
                 }
-                composable(SettingsScreenRouter.ServiceProviderAdvanced.route) {
-                    SettingsProviderAdvancedSettingsScreen(
-                        context = this@SettingsActivity
-                    )
-                }
                 composable(SettingsScreenRouter.Unit.route) {
                     UnitSettingsScreen(
                         context = this@SettingsActivity

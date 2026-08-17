@@ -21,7 +21,6 @@ import wangdaye.com.geometricweather.common.basic.GeoActivity
 import wangdaye.com.geometricweather.common.ui.widgets.Material3Scaffold
 import wangdaye.com.geometricweather.common.ui.widgets.insets.FitStatusBarTopAppBar
 import wangdaye.com.geometricweather.settings.compose.ServiceProviderSettingsScreen
-import wangdaye.com.geometricweather.settings.compose.SettingsProviderAdvancedSettingsScreen
 import wangdaye.com.geometricweather.settings.compose.SettingsScreenRouter
 import wangdaye.com.geometricweather.settings.compose.WeatherSourceStatusScreen
 import wangdaye.com.geometricweather.theme.compose.GeometricWeatherTheme
@@ -66,11 +65,6 @@ class SelectProviderActivity : GeoActivity() {
                 }
                 composable(SettingsScreenRouter.WeatherSourceStatus.route) {
                     WeatherSourceStatusScreen(context = this@SelectProviderActivity)
-                }
-                composable(SettingsScreenRouter.ServiceProviderAdvanced.route) {
-                    SettingsProviderAdvancedSettingsScreen(
-                        context = this@SelectProviderActivity
-                    )
                 }
             }
         }

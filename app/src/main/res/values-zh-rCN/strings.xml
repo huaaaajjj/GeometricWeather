@@ -344,7 +344,7 @@
     <string name="settings_title_weather_source_status">天气源可用性</string>
     <string name="settings_summary_weather_source_status">各天气源的可用性与数据丰富度对比</string>
     <string name="settings_title_weather_source">天气源</string>
-    <string name="settings_weather_source_needs_own_key">%1$s（不可用 —— 内置密钥已失效，需自填）</string>
+    <string name="settings_weather_source_needs_own_key">%1$s（不可用 —— 内置密钥已失效）</string>
     <string name="settings_title_location_service">位置服务</string>
     <string name="settings_title_service_provider_advanced">设置服务商API KEY</string>
     <string name="settings_summary_service_provider_advanced">请谨慎行事</string>
