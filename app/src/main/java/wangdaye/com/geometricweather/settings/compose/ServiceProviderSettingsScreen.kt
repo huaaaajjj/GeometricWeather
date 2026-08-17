@@ -58,7 +58,7 @@ fun ServiceProviderSettingsScreen(
 
         ListPreferenceView(
             title = stringResource(id),
-            summary = { _, value -> names[values.indexOfFirst { it == value }] },
+            summary = { _, value -> names.getOrNull(values.indexOfFirst { it == value }) ?: value },
             selectedKey = SettingsManager.getInstance(context).weatherSource.id,
             valueArray = values,
             nameArray = names,

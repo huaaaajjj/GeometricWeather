@@ -44,7 +44,9 @@ fun ListPreferenceView(
     val names = stringArrayResource(nameArrayId)
     ListPreferenceView(
         title = stringResource(titleId),
-        summary = { _, value -> names[values.indexOfFirst { it == value }] },
+        // Positional lookup across two arrays: a locale that translated one and not the other used
+        // to take the screen down here. Fall back to the raw value rather than crash.
+        summary = { _, value -> names.getOrNull(values.indexOfFirst { it == value }) ?: value },
         selectedKey = selectedKey,
         valueArray = values,
         nameArray = names,

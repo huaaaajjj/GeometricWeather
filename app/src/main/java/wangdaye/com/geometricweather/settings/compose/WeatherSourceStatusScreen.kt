@@ -68,6 +68,7 @@ private val COLUMNS = listOf(
 
 // Display order = by availability (matches the source-picker order). France flag -> test with Paris.
 private val SOURCES = listOf(
+    Src(WeatherSource.COMPOSITE, "综合"),
     Src(WeatherSource.WEATHERAPI, "WeatherAPI"),
     Src(WeatherSource.OPEN_METEO, "Open-Meteo"),
     Src(WeatherSource.CAIYUN, "彩云天气"),

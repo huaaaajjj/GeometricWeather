@@ -9,6 +9,7 @@ import wangdaye.com.geometricweather.weather.services.AccuWeatherService;
 import wangdaye.com.geometricweather.weather.services.ApihzWeatherService;
 import wangdaye.com.geometricweather.weather.services.CaiYunWeatherService;
 import wangdaye.com.geometricweather.weather.services.CmaWeatherService;
+import wangdaye.com.geometricweather.weather.services.CompositeWeatherService;
 import wangdaye.com.geometricweather.weather.services.MfWeatherService;
 import wangdaye.com.geometricweather.weather.services.OpenMeteoWeatherService;
 import wangdaye.com.geometricweather.weather.services.OwmWeatherService;
@@ -28,7 +29,8 @@ public class WeatherServiceSet {
                              OpenMeteoWeatherService openMeteoWeatherService,
                              WeatherApiWeatherService weatherApiWeatherService,
                              CmaWeatherService cmaWeatherService,
-                             ApihzWeatherService apihzWeatherService) {
+                             ApihzWeatherService apihzWeatherService,
+                             CompositeWeatherService compositeWeatherService) {
         mWeatherServices = new WeatherService[] {
                 accuWeatherService,
                 caiYunWeatherService,
@@ -37,7 +39,8 @@ public class WeatherServiceSet {
                 openMeteoWeatherService,
                 weatherApiWeatherService,
                 cmaWeatherService,
-                apihzWeatherService
+                apihzWeatherService,
+                compositeWeatherService
         };
     }
 
@@ -64,6 +67,9 @@ public class WeatherServiceSet {
 
             case APIHZ:
                 return mWeatherServices[7];
+
+            case COMPOSITE:
+                return mWeatherServices[8];
 
             default: // ACCU.
                 return mWeatherServices[0];

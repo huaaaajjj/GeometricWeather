@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Weather sources -->
-    <string-array name="weather_sources">
-        <item>caiyunapp.com (apenas para China)</item>
-        <item>AccuWeather</item>
-        <item>OpenWeather</item>
-        <item>Météo France</item>
-    </string-array>
-
     <!-- Location service. -->
     <string-array name="location_services">
         <item>Localização Baidu</item>

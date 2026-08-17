@@ -3,14 +3,6 @@
     <!-- Do not translate those arrays which named "xxx_values". -->
     <!-- Do not translate those items with a value of "@string/xxx". -->
 
-    <!-- Weather sources -->
-    <string-array name="weather_sources">
-        <item>caiyunapp.com (Chine uniquement)</item>
-        <item>AccuWeather</item>
-        <item>OpenWeather</item>
-        <item>Météo France</item>
-    </string-array>
-
     <!-- Location service. -->
     <string-array name="location_services">
         <item>Baidu Location</item>

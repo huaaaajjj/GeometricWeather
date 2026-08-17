@@ -19,7 +19,10 @@ enum class WeatherSource(
     OPEN_METEO("open_meteo", -0x7a3a1a, "open-meteo.com"),
     WEATHERAPI("weatherapi", -0x2a5a2a, "weatherapi.com"),
     CMA("cma", 0xFF0E5FA4.toInt(), "weather.cma.cn"),
-    APIHZ("apihz", 0xFF2E9E5B.toInt(), "apihz.cn");
+    APIHZ("apihz", 0xFF2E9E5B.toInt(), "apihz.cn"),
+
+    // Appended, never inserted: Location parcels this enum by ordinal.
+    COMPOSITE("composite", 0xFF6B4FBB.toInt(), "open-meteo.com + weatherapi.com");
 
     companion object {
 
@@ -27,6 +30,9 @@ enum class WeatherSource(
         fun getInstance(
             value: String
         ): WeatherSource {
+            if (value.lowercase().contains("composite")) {
+                return COMPOSITE
+            }
             if (value.lowercase().contains("owm")) {
                 return OWM
             }

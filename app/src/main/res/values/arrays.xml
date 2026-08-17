@@ -7,6 +7,7 @@
 
     <!-- Chinese source. -->
     <string-array name="weather_sources">
+        <item>Composite (Open-Meteo + WeatherAPI)</item>
         <item>WeatherAPI</item>
         <item>Open-Meteo</item>
         <item>caiyunapp.com (Only For China)</item>
@@ -17,6 +18,7 @@
         <item>accuweather.com</item>
     </string-array>
     <string-array name="weather_source_voices">
+        <item>Composite</item>
         <item>Weather API</item>
         <item>Open Meteo</item>
         <item>CaiYun App.com</item>
@@ -27,6 +29,7 @@
         <item>ACCU weather.com</item>
     </string-array>
     <string-array name="weather_source_values">
+        <item>composite</item>
         <item>weatherapi</item>
         <item>open_meteo</item>
         <item>caiyun</item>
