@@ -79,9 +79,13 @@ class OpenMeteoWeatherService @Inject constructor(
                 "precipitation_sum,precipitation_probability_max,wind_speed_10m_max," +
                 "wind_gusts_10m_max,wind_direction_10m_dominant,uv_index_max,sunshine_duration"
 
-        private const val FORECAST_DAYS = 15
+        private const val FORECAST_DAYS = 16
 
-        // Yesterday, for the day-over-day comparison on the main screen.
-        private const val PAST_DAYS = 1
+        // Never ask for past days. The day-over-day comparison this once claimed to serve is fed by
+        // the history table (DatabaseHelper.readWeather), not by the response — and the converter
+        // never split a past day off, so with past_days=1 yesterday sat at dailyForecast[0] and its
+        // 24 hours sat at the head of hourlyForecast. The whole app reads index 0 as "today"/"now"
+        // (76 sites, plus HistoryEntityGenerator, which dated yesterday's temperatures as today's).
+        private const val PAST_DAYS = 0
     }
 }

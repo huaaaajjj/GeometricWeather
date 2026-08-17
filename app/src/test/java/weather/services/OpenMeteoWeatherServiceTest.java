@@ -86,6 +86,22 @@ public class OpenMeteoWeatherServiceTest {
         assertEquals("one call answers everything", 1, mServer.requestCount());
     }
 
+    /**
+     * past_days must stay 0. The converter never splits a past day off, so asking for one puts
+     * yesterday at dailyForecast[0] and its 24 hours at the head of hourlyForecast — and the app
+     * reads index 0 as "today"/"now" everywhere, including the history row it writes to the DB.
+     */
+    @Test
+    public void noPastDaysAreEverRequested() throws InterruptedException {
+        request().awaitWeather();
+
+        String path = mServer.requestedPath(FORECAST);
+        assertNotNull(path);
+        assertTrue("past days leak into index 0: " + path, path.contains("past_days=0"));
+        assertTrue("the 16-day horizon is why this source leads: " + path,
+                path.contains("forecast_days=16"));
+    }
+
     @Test
     public void anOutageIsReportedAsFailure() throws InterruptedException {
         mServer.failing(FORECAST, 503);
