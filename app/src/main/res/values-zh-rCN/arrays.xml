@@ -3,7 +3,7 @@
 
     <!-- Chinese source. -->
     <string-array name="weather_sources">
-        <item>综合（Open-Meteo + WeatherAPI）</item>
+        <item>综合（小时 Open-Meteo · 每日 中国天气网 · 空气 彩云）</item>
         <item>WeatherAPI</item>
         <item>Open-Meteo</item>
         <item>彩云天气（仅中国地区）</item>

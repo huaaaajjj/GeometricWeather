@@ -18,15 +18,16 @@ import java.util.TimeZone
 /**
  * Folds several providers' answers for the same place into one [Weather].
  *
- * The rule is **block-granular, never field-granular**. Whichever provider comes first in `results`
- * leads, and its entries travel whole: one day's temperature, condition text, precipitation and
- * wind always come from the same provider. Mixing those is how you end up rendering "clear sky"
- * over 5 mm of rain — an answer worse than either provider gave on its own.
+ * The rule is **block-granular, never field-granular**. Each block — the daily overview, the hourly
+ * series, the "now" reading, the air quality — has its own leader, and that leader's entries travel
+ * whole: one day's temperature, condition text, precipitation and wind always come from the same
+ * provider. Mixing those is how you end up rendering "clear sky" over 5 mm of rain — an answer worse
+ * than either provider gave on its own.
  *
- * Only blocks that describe something *independent* of the forecast narrative are taken from the
+ * Within a block, only readings that are *independent* of the forecast narrative are taken from the
  * others, and only where the leader left them empty: air quality, UV, pollen, sunrise/sunset, moon
- * phase, hours of sun. Days and hours the leader does not cover at all are appended whole, so the
- * series runs as long as the longest provider rather than as long as the leader.
+ * phase, hours of sun. Days and hours the leader does not cover at all are appended whole, so a
+ * series runs as long as the longest provider rather than as long as its leader.
  *
  * Alignment is by calendar day (in [timeZone]) and by absolute hour. Both hold as long as every
  * provider dates its entries the same way — today they all parse into the device time zone, so a
@@ -35,21 +36,42 @@ import java.util.TimeZone
  */
 object WeatherMerger {
 
+    /**
+     * @param results every provider that answered, in fallback order. Supplies the base timestamp,
+     *   the warnings and the minutely rain, and backs every block below.
+     * @param daily the same weathers reordered so whoever should lead the daily overview comes
+     *   first; likewise [hourly], [current] (the "now" reading and its detail scalars) and
+     *   [airQuality]. Preference, not binding — a provider that failed to answer, or that carries
+     *   nothing for the block, falls through to the next one, so a block still fills if anyone has
+     *   it. Omitting a list means "same order as [results]".
+     */
     @JvmStatic
-    fun merge(results: List<Weather>, timeZone: TimeZone): Weather? {
+    @JvmOverloads
+    fun merge(
+        results: List<Weather>,
+        timeZone: TimeZone,
+        daily: List<Weather> = results,
+        hourly: List<Weather> = results,
+        current: List<Weather> = results,
+        airQuality: List<Weather> = results
+    ): Weather? {
         if (results.isEmpty()) {
             return null
         }
-        val leader = results[0]
         if (results.size == 1) {
-            return leader
+            return results[0]
         }
+        // A caller that hands over an empty preference list means "no preference", not "no data".
+        val dailyOrder = daily.ifEmpty { results }
+        val hourlyOrder = hourly.ifEmpty { results }
+        val currentOrder = current.ifEmpty { results }
+        val airOrder = airQuality.ifEmpty { results }
         return Weather(
-            leader.base,
-            mergeCurrent(leader.current, results.drop(1).map { it.current }),
+            results[0].base,
+            mergeCurrent(currentOrder, airOrder),
             results.firstNotNullOfOrNull { it.yesterday },
-            mergeDaily(results, timeZone),
-            mergeHourly(results),
+            mergeDaily(dailyOrder, airOrder, timeZone),
+            mergeHourly(hourlyOrder),
             results.firstOrNull { it.minutelyForecast.isNotEmpty() }?.minutelyForecast ?: emptyList(),
             mergeAlerts(results)
         )
@@ -59,38 +81,53 @@ object WeatherMerger {
      * "Now" is a single instant every provider is describing at once, so the independent scalar
      * readings (humidity, pressure, visibility, …) are safe to take from whoever has them.
      */
-    private fun mergeCurrent(leader: Current, others: List<Current>) = Current(
-        leader.weatherText,
-        leader.weatherCode,
-        leader.temperature,
-        leader.precipitation,
-        leader.precipitationProbability,
-        leader.wind,
-        pick(listOf(leader.uv) + others.map { it.uv }, UV::isValid) ?: leader.uv,
-        pick(listOf(leader.airQuality) + others.map { it.airQuality }, AirQuality::isValid)
-            ?: leader.airQuality,
-        firstNonNull(leader.relativeHumidity, others.map { it.relativeHumidity }),
-        firstNonNull(leader.pressure, others.map { it.pressure }),
-        firstNonNull(leader.visibility, others.map { it.visibility }),
-        firstNonNull(leader.dewPoint, others.map { it.dewPoint }),
-        firstNonNull(leader.cloudCover, others.map { it.cloudCover }),
-        firstNonNull(leader.ceiling, others.map { it.ceiling }),
-        firstNonNull(leader.dailyForecast, others.map { it.dailyForecast }),
-        firstNonNull(leader.hourlyForecast, others.map { it.hourlyForecast })
-    )
+    private fun mergeCurrent(current: List<Weather>, air: List<Weather>): Current {
+        val leader = current[0].current
+        val others = current.drop(1).map { it.current }
+        val airCandidates = air.map { it.current.airQuality }
+        return Current(
+            leader.weatherText,
+            leader.weatherCode,
+            leader.temperature,
+            leader.precipitation,
+            leader.precipitationProbability,
+            leader.wind,
+            pick(listOf(leader.uv) + others.map { it.uv }, UV::isValid) ?: leader.uv,
+            pick(airCandidates + leader.airQuality + others.map { it.airQuality },
+                AirQuality::isValid) ?: leader.airQuality,
+            firstNonNull(leader.relativeHumidity, others.map { it.relativeHumidity }),
+            firstNonNull(leader.pressure, others.map { it.pressure }),
+            firstNonNull(leader.visibility, others.map { it.visibility }),
+            firstNonNull(leader.dewPoint, others.map { it.dewPoint }),
+            firstNonNull(leader.cloudCover, others.map { it.cloudCover }),
+            firstNonNull(leader.ceiling, others.map { it.ceiling }),
+            firstNonNull(leader.dailyForecast, others.map { it.dailyForecast }),
+            firstNonNull(leader.hourlyForecast, others.map { it.hourlyForecast })
+        )
+    }
 
-    private fun mergeDaily(results: List<Weather>, timeZone: TimeZone): List<Daily> {
+    private fun mergeDaily(
+        results: List<Weather>,
+        air: List<Weather>,
+        timeZone: TimeZone
+    ): List<Daily> {
         val format = SimpleDateFormat("yyyyMMdd", Locale.US).apply { this.timeZone = timeZone }
         val keyOf = { date: Date? -> date?.let { format.format(it) } }
-
-        val others = results.drop(1).map { weather ->
+        val byDay = { weather: Weather ->
             weather.dailyForecast.mapNotNull { d -> keyOf(d.date)?.let { it to d } }.toMap()
         }
+
+        val others = results.drop(1).map(byDay)
+        val airByDay = air.map(byDay)
 
         val merged = LinkedHashMap<String, Daily>()
         for (day in results[0].dailyForecast) {
             val key = keyOf(day.date) ?: continue
-            merged[key] = fillDaily(day, others.mapNotNull { it[key] })
+            merged[key] = fillDaily(
+                day,
+                others.mapNotNull { it[key] },
+                airByDay.mapNotNull { it[key] }
+            )
         }
         // Days beyond the leader's range: take the whole entry from the best source that has one.
         for (source in others) {
@@ -103,7 +140,7 @@ object WeatherMerger {
         return merged.values.sortedBy { it.time }
     }
 
-    private fun fillDaily(leader: Daily, others: List<Daily>) = Daily(
+    private fun fillDaily(leader: Daily, others: List<Daily>, air: List<Daily>) = Daily(
         leader.date,
         leader.time,
         leader.day(),
@@ -111,7 +148,8 @@ object WeatherMerger {
         pick(listOf(leader.sun()) + others.map { it.sun() }, Astro::isValid),
         pick(listOf(leader.moon()) + others.map { it.moon() }, Astro::isValid),
         pick(listOf(leader.moonPhase) + others.map { it.moonPhase }, MoonPhase::isValid),
-        pick(listOf(leader.airQuality) + others.map { it.airQuality }, AirQuality::isValid),
+        pick(air.map { it.airQuality } + leader.airQuality + others.map { it.airQuality },
+            AirQuality::isValid),
         pick(listOf(leader.pollen) + others.map { it.pollen }, Pollen::isValid),
         pick(listOf(leader.uv) + others.map { it.uv }, UV::isValid),
         if (leader.hoursOfSun > 0) leader.hoursOfSun

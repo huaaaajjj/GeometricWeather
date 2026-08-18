@@ -3,6 +3,7 @@ package weather.converters
 import com.google.gson.Gson
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -189,7 +190,109 @@ class WeatherMergerTest {
         assertNull(merge())
     }
 
+    /**
+     * There is no single leader any more: in production the hourly series comes from Open-Meteo, the
+     * daily overview from 中国天气网 and the "now" reading from 彩云. Which real provider fills which
+     * slot is the service's business — what has to hold here is that each block follows *its own*
+     * assignment and borrows nothing from another block's leader.
+     */
+    @Test
+    fun eachBlockFollowsItsOwnLeader() {
+        assertNotEqualsSomewhere(openMeteo, weatherApi)
+
+        val merged = WeatherMerger.merge(
+            results = listOf(openMeteo, weatherApi),
+            timeZone = TimeZone.getDefault(),
+            daily = listOf(weatherApi, openMeteo),
+            hourly = listOf(openMeteo, weatherApi),
+            current = listOf(weatherApi, openMeteo),
+            airQuality = listOf(weatherApi, openMeteo)
+        )!!
+
+        // The daily overview is its leader's, entry by whole entry.
+        weatherApi.dailyForecast.forEachIndexed { i, expected ->
+            val actual = merged.dailyForecast[i]
+            assertEquals(expected.date, actual.date)
+            assertEquals(expected.day().weatherText, actual.day().weatherText)
+            assertEquals(
+                expected.day().temperature.temperature,
+                actual.day().temperature.temperature
+            )
+        }
+
+        // The hourly series answers to a different provider. Compare at an hour both of them cover,
+        // since the union would be 72 entries long either way.
+        val shared = weatherApi.hourlyForecast
+            .map { it.time / HOUR_MS }
+            .first { hourAt(openMeteo, it) != null }
+        assertNotEquals(
+            "the fixtures agree on that hour — this would prove nothing",
+            hourAt(openMeteo, shared)!!.temperature.temperature,
+            hourAt(weatherApi, shared)!!.temperature.temperature
+        )
+        assertEquals(
+            hourAt(openMeteo, shared)!!.temperature.temperature,
+            hourAt(merged, shared)!!.temperature.temperature
+        )
+
+        // And "now" answers to a third assignment. (Not the temperature: both captures round to
+        // 29 there, so it would prove nothing — the condition text and the feels-like do differ.)
+        assertNotEquals(openMeteo.current.weatherText, weatherApi.current.weatherText)
+        assertEquals(weatherApi.current.weatherText, merged.current.weatherText)
+        assertEquals(
+            weatherApi.current.temperature.realFeelTemperature,
+            merged.current.temperature.realFeelTemperature
+        )
+    }
+
+    /**
+     * Air quality is assigned too, so it must come from that provider even when the block leader has
+     * a perfectly good reading of its own. That is the break from the old single-leader merge, where
+     * whoever led always won the field.
+     */
+    @Test
+    fun airQualityFollowsItsAssignmentEvenWhenTheLeaderHasOneOfItsOwn() {
+        val spiked = withPm25(199.0)
+        assertTrue(weatherApi.current.airQuality.isValid)
+        assertNotEquals(
+            weatherApi.current.airQuality.getPM25(),
+            spiked.current.airQuality.getPM25()
+        )
+
+        val merged = WeatherMerger.merge(
+            results = listOf(openMeteo, weatherApi, spiked),
+            timeZone = TimeZone.getDefault(),
+            daily = listOf(weatherApi, openMeteo, spiked),
+            hourly = listOf(openMeteo, weatherApi, spiked),
+            current = listOf(openMeteo, weatherApi, spiked),
+            airQuality = listOf(spiked, weatherApi, openMeteo)
+        )!!
+
+        assertEquals(spiked.current.airQuality.getPM25(), merged.current.airQuality.getPM25())
+        assertEquals(
+            spiked.dailyForecast[0].airQuality.getPM25(),
+            merged.dailyForecast[0].airQuality.getPM25()
+        )
+        // The blocks that were not assigned to it keep their own leaders.
+        assertEquals(openMeteo.current.weatherText, merged.current.weatherText)
+        assertEquals(
+            weatherApi.dailyForecast[0].day().weatherText,
+            merged.dailyForecast[0].day().weatherText
+        )
+    }
+
     // ---- harness ----
+
+    private fun hourAt(weather: Weather, bucket: Long) =
+        weather.hourlyForecast.firstOrNull { it.time / HOUR_MS == bucket }
+
+    /** The same WeatherAPI capture with a different PM2.5 — a stand-in for a second AQI provider. */
+    private fun withPm25(pm25: Double): Weather {
+        val result = fixture("weatherapi/forecast.json", WeatherApiResult::class.java)
+        result.current.airQuality.pm25 = pm25
+        result.forecast.forecastday.forEach { it.day.airQuality?.pm25 = pm25 }
+        return WeatherApiResultConverter.convert(context, location, result)!!
+    }
 
     private fun merge(vararg results: Weather) =
         WeatherMerger.merge(results.toList(), TimeZone.getDefault())
@@ -220,5 +323,9 @@ class WeatherMergerTest {
                 )
         }
         assertTrue("the two fixtures agree on every day — this test proves nothing", differs)
+    }
+
+    private companion object {
+        const val HOUR_MS = 60 * 60 * 1000L
     }
 }

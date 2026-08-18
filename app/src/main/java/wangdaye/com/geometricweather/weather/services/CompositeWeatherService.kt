@@ -16,25 +16,35 @@ import kotlin.coroutines.resume
 /**
  * Composite source: asks several providers at once and folds their answers into one.
  *
- * Every provider here is incomplete in a different way, so no single one is the best answer.
- * Open-Meteo reaches furthest (16 days / 384 hours, with UV) but carries no air quality and no
- * warnings at all; WeatherAPI is shorter but has both. Together they cover each other, and
- * [WeatherMerger] does the folding — see it for what may and may not be mixed.
+ * Every provider here is incomplete in a different way, so no single one is the best answer, and no
+ * single one leads everything either — each block is assigned to whoever is best at it:
  *
- * The mix is [sources], in priority order, and that list is the whole configuration: the first
- * provider leads and supplies whole entries, the rest only fill blocks it left empty and extend the
- * series past its range. A provider that fails, or never answers within [SOURCE_TIMEOUT_MS], simply
- * drops out — the refresh succeeds on whoever is left, and only fails if none of them answered.
+ * - **hourly** → Open-Meteo: the longest series by far (384 hours) and hour-by-hour rather than the
+ *   3-hour steps the Chinese sources give.
+ * - **daily overview** → 中国天气网 (APIHZ): a domestic forecast for a domestic place; it reaches
+ *   7 days, and Open-Meteo's days 8..16 are appended after it so the range is not lost.
+ * - **air quality** and the **"now" reading with its detail scalars** → 彩云: measured Chinese AQI
+ *   (Open-Meteo carries none at all) plus feels-like, humidity, pressure and visibility.
+ * - **warnings** → the union of everyone; WeatherAPI is the one that reliably has them.
  *
- * The cost is one extra network round trip per refresh. That is the trade: more complete data for
- * more data used.
+ * [WeatherMerger] does the folding — see it for what may and may not be mixed. The order is a
+ * preference, not a binding: a provider that fails, answers with nothing for its block, or never
+ * comes back within [SOURCE_TIMEOUT_MS] simply drops through to the next one. The refresh succeeds
+ * on whoever is left and only fails if nobody answered — so a place outside China, where APIHZ and
+ * 彩云 have nothing to say, still gets a full forecast from Open-Meteo and WeatherAPI.
+ *
+ * The cost is one network round trip per member per refresh. That is the trade: more complete data
+ * for more data used.
  */
 class CompositeWeatherService @Inject constructor(
-    openMeteo: OpenMeteoWeatherService,
-    weatherApi: WeatherApiWeatherService
+    private val openMeteo: OpenMeteoWeatherService,
+    private val apihz: ApihzWeatherService,
+    private val caiyun: CaiYunWeatherService,
+    private val weatherApi: WeatherApiWeatherService
 ) : WeatherService() {
 
-    private val sources = listOf<WeatherService>(openMeteo, weatherApi)
+    /** Fallback order for anything not assigned to a specific provider below. */
+    private val sources = listOf<WeatherService>(openMeteo, apihz, caiyun, weatherApi)
 
     private val requests = RequestScope()
 
@@ -45,13 +55,26 @@ class CompositeWeatherService @Inject constructor(
     ) {
         requests.launch {
             val answers = sources
-                .map { async { request(context, location, it) } }
+                .map { service -> async { service to request(context, location, service) } }
                 .awaitAll()
-                .filterNotNull()
+                .mapNotNull { (service, weather) -> weather?.let { service to it } }
+                .toMap()
+
+            // Preferred provider first, then everyone else as fallback.
+            val preferring = { first: WeatherService ->
+                (listOf(first) + sources).distinct().mapNotNull { answers[it] }
+            }
 
             // Device time zone, not the location's: that is the one every converter currently
             // parses its dates into, so it is the one the day keys have to line up in.
-            val weather = WeatherMerger.merge(answers, TimeZone.getDefault())
+            val weather = WeatherMerger.merge(
+                results = sources.mapNotNull { answers[it] },
+                timeZone = TimeZone.getDefault(),
+                daily = preferring(apihz),
+                hourly = preferring(openMeteo),
+                current = preferring(caiyun),
+                airQuality = preferring(caiyun)
+            )
 
             // Nothing below this point may reach the caller once cancel() has been called.
             if (!isActive) {
@@ -90,7 +113,12 @@ class CompositeWeatherService @Inject constructor(
         }
     }
 
-    /** Both providers are coordinate-only, so there is no place search to delegate. */
+    /**
+     * No place search. The members disagree on what a place even is — a coordinate for Open-Meteo
+     * and 彩云, a province/city name for APIHZ — and there is no answer that is right for all of
+     * them, so the composite serves whatever location it is handed (the resolved current position,
+     * or one saved under another source) and never rewrites it.
+     */
     override fun requestLocation(context: Context, query: String): List<Location> = emptyList()
 
     override fun requestLocation(
