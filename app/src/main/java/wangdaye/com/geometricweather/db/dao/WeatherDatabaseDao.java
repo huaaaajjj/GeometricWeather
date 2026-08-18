@@ -29,9 +29,6 @@ public interface WeatherDatabaseDao {
     @Query("DELETE FROM chinese_city")
     void deleteAllChineseCity();
 
-    @Query("SELECT * FROM chinese_city WHERE district = :name OR city = :name LIMIT 1")
-    ChineseCityEntity selectChineseCityByName(String name);
-
     /**
      * The OR chain reads as a fallback ladder from strongest match to weakest, but a WHERE clause
      * carries no priority: with LIMIT 1 and no ORDER BY, SQLite hands back whichever row it scans

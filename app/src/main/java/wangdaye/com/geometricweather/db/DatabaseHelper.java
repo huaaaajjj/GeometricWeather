@@ -241,12 +241,6 @@ public class DatabaseHelper {
     }
 
     @Nullable
-    public ChineseCity readChineseCity(@NonNull String name) {
-        ChineseCityEntity entity = mDao.selectChineseCityByName(name);
-        return entity != null ? ChineseCityEntityGenerator.generate(entity) : null;
-    }
-
-    @Nullable
     public ChineseCity readChineseCity(@NonNull String province,
                                        @NonNull String city,
                                        @NonNull String district) {
