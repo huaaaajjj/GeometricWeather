@@ -32,6 +32,17 @@ public interface WeatherDatabaseDao {
     @Query("SELECT * FROM chinese_city WHERE district = :name OR city = :name LIMIT 1")
     ChineseCityEntity selectChineseCityByName(String name);
 
+    /**
+     * The OR chain reads as a fallback ladder from strongest match to weakest, but a WHERE clause
+     * carries no priority: with LIMIT 1 and no ORDER BY, SQLite hands back whichever row it scans
+     * first, and in city_list.txt a prefecture's own row always precedes its districts. So the weak
+     * "city = :city" rung beat the exact "district AND city" rung and 2855 of the 3216 bundled
+     * cities resolved to the wrong one — every district in China collapsed into its prefecture city
+     * (安徽/六安/舒城 → 六安), coordinates included, which is ~50 km of error on the weather itself.
+     *
+     * The ORDER BY gives the ladder the priority the WHERE clause only looks like it has. Keep the
+     * two lists in the same order; a rung added to one belongs in the other.
+     */
     @Query("SELECT * FROM chinese_city WHERE district = :district AND city = :city " +
            "OR district = :district AND province = :province " +
            "OR city = :city AND province = :province " +
@@ -39,7 +50,15 @@ public interface WeatherDatabaseDao {
            "OR district = :city AND province = :province " +
            "OR district = :city AND city = :province " +
            "OR district = :city " +
-           "OR city = :district LIMIT 1")
+           "OR city = :district " +
+           "ORDER BY (district = :district AND city = :city) DESC, " +
+           "(district = :district AND province = :province) DESC, " +
+           "(city = :city AND province = :province) DESC, " +
+           "(city = :city) DESC, " +
+           "(district = :city AND province = :province) DESC, " +
+           "(district = :city AND city = :province) DESC, " +
+           "(district = :city) DESC, " +
+           "(city = :district) DESC LIMIT 1")
     ChineseCityEntity selectChineseCityByRegion(String province, String city, String district);
 
     @Query("SELECT * FROM chinese_city")

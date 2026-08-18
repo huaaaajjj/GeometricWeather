@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.TimeZone;
 
+import wangdaye.com.geometricweather.common.basic.models.ChineseCity;
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource;
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
@@ -111,17 +112,66 @@ public class DatabaseHelperTest {
         assertNull("writing an empty daily list must not blow up: " + thrown[0], thrown[0]);
     }
 
+    /**
+     * CaiYun does not keep the reverse-geocoded name: it replaces the current position with a row
+     * from the bundled city table, coordinates included. The lookup's OR chain reads as a ladder
+     * from exact to loose, but a WHERE clause has no priority — with LIMIT 1 and no ORDER BY the
+     * first row scanned won, and a prefecture's own row always precedes its districts, so every
+     * district collapsed into its prefecture (舒城 → 六安, ~50 km away).
+     */
+    @Test
+    public void aDistrictResolvesToTheDistrictAndNotItsPrefecture() {
+        ChineseCity[] found = new ChineseCity[4];
+        int[] loaded = new int[1];
+        offMainThread(() -> {
+            DatabaseHelper db = DatabaseHelper.getInstance(mContext);
+            db.ensureChineseCityList(mContext);
+            loaded[0] = db.countChineseCity();
+            found[0] = db.readChineseCity("安徽", "六安", "舒城");
+            found[1] = db.readChineseCity("天津", "天津", "南开");
+            found[2] = db.readChineseCity("广东", "深圳", "南山");
+            // No district to match: falling back to the prefecture is the right answer here.
+            found[3] = db.readChineseCity("安徽", "六安", "");
+        });
+
+        // Without this the whole test would pass vacuously on an empty table.
+        assertEquals("the bundled city table must actually load", 3216, loaded[0]);
+        assertNotNull(found[0]);
+        assertEquals("101221507", found[0].getCityId());
+        assertEquals("舒城", found[0].getDistrict());
+        // The coordinates travel with the row, so picking the wrong one moves the forecast.
+        assertEquals(31.46, Double.parseDouble(found[0].getLatitude()), 0.01);
+        assertEquals(116.94, Double.parseDouble(found[0].getLongitude()), 0.01);
+
+        assertNotNull(found[1]);
+        assertEquals("101031500", found[1].getCityId());
+        assertNotNull(found[2]);
+        assertEquals("101280604", found[2].getCityId());
+        assertNotNull(found[3]);
+        assertEquals("101221501", found[3].getCityId());
+    }
+
     // ---- harness ----
 
     /** Room refuses main-thread access, and under Robolectric the test thread is the main thread. */
     private static void offMainThread(Runnable block) {
+        Throwable[] thrown = new Throwable[1];
         Thread thread = new Thread(block);
+        // A silently dead worker leaves every result null, which reads like a logic failure rather
+        // than the crash it was; the same goes for a join that times out.
+        thread.setUncaughtExceptionHandler((t, e) -> thrown[0] = e);
         thread.start();
         try {
-            thread.join(20_000);
+            thread.join(60_000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             fail("interrupted waiting for a database call");
+        }
+        if (thrown[0] != null) {
+            throw new AssertionError("the database call threw", thrown[0]);
+        }
+        if (thread.isAlive()) {
+            fail("the database call did not finish in 60s");
         }
     }
 

@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import wangdaye.com.geometricweather.common.basic.models.ChineseCity;
@@ -31,7 +32,12 @@ public class FileUtils {
         InputStreamReader inputReader = null;
         BufferedReader bufReader = null;
         try {
-            inputReader = new InputStreamReader(context.getResources().getAssets().open(fileName));
+            // city_list.txt is UTF-8. Without saying so this decodes with the platform default,
+            // which is UTF-8 on Android but the host charset under JVM unit tests — on a GBK
+            // machine the whole table loads as mojibake and every name lookup misses (only the
+            // coordinate scan still works, since the numbers are ASCII).
+            inputReader = new InputStreamReader(
+                    context.getResources().getAssets().open(fileName), StandardCharsets.UTF_8);
             bufReader = new BufferedReader(inputReader);
             String line;
 
