@@ -37,7 +37,6 @@ public class ArcProgress extends View {
     private float mArcAngle;
     private float mProgressWidth;
     @ColorInt private int mProgressColor;
-    @ColorInt private int mShadowColor;
     @ColorInt private int mShaderColor;
     @ColorInt private int mBackgroundColor;
 
@@ -50,8 +49,9 @@ public class ArcProgress extends View {
     private float mBottomTextSize;
     @ColorInt private int mBottomTextColor;
 
-    private static final float SHADOW_ALPHA_FACTOR_LIGHT = 0.1f;
-    private static final float SHADOW_ALPHA_FACTOR_DARK = 0.1f;
+    /** A shadow has to darken, so it is black at these strengths — a dark surface needs more. */
+    private static final float SHADOW_ALPHA_FACTOR_LIGHT = 0.14f;
+    private static final float SHADOW_ALPHA_FACTOR_DARK = 0.30f;
 
     public ArcProgress(Context context) {
         this(context, null);
@@ -83,7 +83,6 @@ public class ArcProgress extends View {
         mProgressWidth = attributes.getDimension(
                 R.styleable.ArcProgress_progress_width, DisplayUtils.dpToPx(getContext(), 8));
         mProgressColor = attributes.getColor(R.styleable.ArcProgress_progress_color, Color.BLACK);
-        mShadowColor = Color.argb((int) (0.2 * 255), 0, 0, 0);
         mShaderColor = Color.argb((int) (0.2 * 255), 0, 0, 0);
         mBackgroundColor = attributes.getColor(
                 R.styleable.ArcProgress_background_color, Color.GRAY);
@@ -153,20 +152,14 @@ public class ArcProgress extends View {
 
     public void setProgressColor(@ColorInt int progressColor, boolean lightTheme) {
         mProgressColor = progressColor;
-        mShadowColor = getDarkerColor(progressColor);
+        // Black, not the progress colour: tinting with the arc's own colour darkens a light surface
+        // but *lightens* a dark one — by night the sector came out a glow that got brighter towards
+        // the rim (#2A272A at the centre, #3C3335 at the arc) instead of a shadow that deepens.
         mShaderColor = ColorUtils.setAlphaComponent(
-                progressColor,
+                Color.BLACK,
                 (int) (255 * (lightTheme ? SHADOW_ALPHA_FACTOR_LIGHT : SHADOW_ALPHA_FACTOR_DARK))
         );
         invalidate();
-    }
-
-    private int getDarkerColor(@ColorInt int color){
-        float[] hsv = new float[3];
-        Color.colorToHSV(color, hsv);
-        hsv[1] = hsv[1] + 0.15f;
-        hsv[2] = hsv[2] - 0.15f;
-        return Color.HSVToColor(hsv);
     }
 
     public void setArcBackgroundColor(@ColorInt int backgroundColor) {
