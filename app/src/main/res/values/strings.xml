@@ -102,6 +102,32 @@
     <string name="aqi_5">Heavy pollution</string>
     <string name="aqi_6">Severe pollution</string>
 
+    <!-- Detail readings named rather than numbered: the number itself sits in the gauge. -->
+    <string name="humidity_level_1">Dry</string>
+    <string name="humidity_level_2">Fair</string>
+    <string name="humidity_level_3">Humid</string>
+    <string name="humidity_level_4">Muggy</string>
+
+    <string name="pressure_level_1">Low</string>
+    <string name="pressure_level_2">Normal</string>
+    <string name="pressure_level_3">High</string>
+
+    <string name="visibility_level_1">Poor</string>
+    <string name="visibility_level_2">Hazy</string>
+    <string name="visibility_level_3">Fair</string>
+    <string name="visibility_level_4">Clear</string>
+
+    <string name="cloud_cover_level_1">Clear</string>
+    <string name="cloud_cover_level_2">Few</string>
+    <string name="cloud_cover_level_3">Cloudy</string>
+    <string name="cloud_cover_level_4">Overcast</string>
+
+    <string name="uv_level_1">Low</string>
+    <string name="uv_level_2">Moderate</string>
+    <string name="uv_level_3">High</string>
+    <string name="uv_level_4">Very high</string>
+    <string name="uv_level_5">Extreme</string>
+
     <string name="phase_new">New moon</string>
     <string name="phase_waxing_crescent">Waxing crescent</string>
     <string name="phase_first">First quarter</string>

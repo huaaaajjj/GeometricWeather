@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  One detail as a tile: label above the value on the left, and on the right either a gauge (when the
-  reading has a range worth showing) or the plain icon it always had. Two of these per row.
+  One detail as a tile: label above the reading said in words on the left, and on the right either a
+  gauge holding the number itself (when the reading has a range worth showing) or the plain icon it
+  always had. Two of these per row.
 -->
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -40,8 +41,11 @@
                 android:layout_marginTop="2dp"
                 android:ellipsize="end"
                 android:maxLines="1"
+                app:autoSizeMaxTextSize="@dimen/large_title_text_size"
+                app:autoSizeMinTextSize="12sp"
+                app:autoSizeTextType="uniform"
                 style="@style/large_title_text"
-                tools:text="80%" />
+                tools:text="舒适" />
 
         </LinearLayout>
 

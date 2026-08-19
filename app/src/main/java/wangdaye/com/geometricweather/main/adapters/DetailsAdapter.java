@@ -2,6 +2,7 @@ package wangdaye.com.geometricweather.main.adapters;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.cardview.widget.CardView;
 import androidx.core.widget.ImageViewCompat;
@@ -24,17 +26,20 @@ import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.options.unit.CloudCoverUnit;
 import wangdaye.com.geometricweather.common.basic.models.options.unit.RelativeHumidityUnit;
 import wangdaye.com.geometricweather.common.basic.models.options.unit.SpeedUnit;
+import wangdaye.com.geometricweather.common.basic.models.weather.UV;
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
 import wangdaye.com.geometricweather.common.ui.widgets.ArcProgress;
 import wangdaye.com.geometricweather.common.utils.DisplayUtils;
 import wangdaye.com.geometricweather.main.utils.MainThemeColorProvider;
 import wangdaye.com.geometricweather.settings.SettingsManager;
+import wangdaye.com.geometricweather.weather.converters.CommonConverter;
 
 /**
- * The details, as tiles: each reading is a label with its value, and beside it a gauge whenever the
- * reading has a range worth drawing (humidity out of 100, UV out of the scale, pressure around
- * standard, …). Readings with no natural range — dew point, ceiling — keep the icon they always had,
- * in the same spot, so the grid stays even.
+ * The details, as tiles: on the left the reading said in words — the band it falls in, not the
+ * digits — and on the right a gauge holding the number itself, whenever the reading has a range
+ * worth drawing (humidity out of 100, UV out of the scale, pressure around standard, …). Readings
+ * with no natural range — dew point, ceiling — have nowhere to put the number, so they keep the
+ * value on the left and the icon they always had, in the same spot, so the grid stays even.
  */
 public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHolder> {
 
@@ -51,7 +56,7 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
         /** Null leaves the gauge out and the icon in. */
         @Nullable Float progress;
         float max;
-        /** Drawn inside the gauge; the value on the left is not repeated unless it helps. */
+        /** The number, drawn inside the gauge; {@link #content} says the same reading in words. */
         String gaugeText;
         String gaugeBottomText;
 
@@ -147,12 +152,15 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
 
     public DetailsAdapter(Context context, Location location) {
         mLightTheme = MainThemeColorProvider.isLightTheme(context, location);
-        // The same elevated surface the tag chips sit on, so a tile reads as a layer of this card
-        // rather than a card of its own.
+        // One neutral elevation step above the card the tiles actually sit on. The list-item helper
+        // is the app's own idiom, but its usual tint is colorPrimary, which left these warm pink on
+        // a neutral card (#F7EEF2 on #FDFBFF by day, #312222 on #1C1B1F by night); colorOnSurface
+        // lifts the same surface without bending its hue, and keeps the caption contrast that a
+        // jump to colorSurfaceVariant threw away.
         mTileColor = DisplayUtils.getWidgetSurfaceColor(
                 DisplayUtils.DEFAULT_CARD_LIST_ITEM_ELEVATION_DP,
-                MainThemeColorProvider.getColor(mLightTheme, R.attr.colorPrimary),
-                MainThemeColorProvider.getColor(mLightTheme, R.attr.colorSurface)
+                MainThemeColorProvider.getColor(mLightTheme, R.attr.colorOnSurface),
+                MainThemeColorProvider.getColor(mLightTheme, R.attr.colorMainCardBackground)
         );
 
         mIndexList = new ArrayList<>();
@@ -161,25 +169,33 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
         Weather weather = location.getWeather();
         assert weather != null;
 
-        // Wind: speed is the value, the direction sits in the gauge (the providers give it as a
-        // compass abbreviation, not translated prose), and the arc fills over the Beaufort scale's
-        // practical top end rather than an arbitrary maximum.
+        // Wind: the Beaufort level is the words, the speed is the number in the gauge, and the
+        // compass abbreviation rides along with the label (the providers give "NNE", not prose).
+        // The arc fills over the scale's practical top end rather than an arbitrary maximum.
         String windDirection = weather.getCurrent().getWind().getDirection();
         float windSpeed = weather.getCurrent().getWind().getSpeed() == null
                 ? 0
                 : weather.getCurrent().getWind().getSpeed();
+        String windLevel = weather.getCurrent().getWind().getLevel();
+        if (TextUtils.isEmpty(windLevel)) {
+            // Some providers leave it empty (CaiYun's empty wind), and a cached row can hold null
+            // despite the model's @NonNull — nothing asserts it on the way out of Room.
+            windLevel = CommonConverter.getWindLevel(context, windSpeed);
+        }
         mIndexList.add(
                 new Index(
                         R.drawable.ic_wind,
-                        context.getString(R.string.wind),
-                        speedUnit.getValueTextWithoutUnit(windSpeed),
+                        TextUtils.isEmpty(windDirection)
+                                ? context.getString(R.string.wind)
+                                : context.getString(R.string.wind) + " · " + windDirection,
+                        windLevel,
                         context.getString(R.string.wind)
                                 + ", " + weather.getCurrent().getWind()
                                         .getWindDescription(context, speedUnit)
                 ).withGauge(
                         Math.min(windSpeed, WIND_SPEED_TOP),
                         WIND_SPEED_TOP,
-                        windDirection == null ? "" : windDirection,
+                        speedUnit.getValueTextWithoutUnit(windSpeed),
                         speedUnit.getName(context)
                 )
         );
@@ -190,28 +206,36 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
                     new Index(
                             R.drawable.ic_water_percent,
                             context.getString(R.string.humidity),
-                            RelativeHumidityUnit.PERCENT.getValueText(context, humidity)
-                    ).withGauge(humidity, 100, "", "%")
+                            context.getString(humidityLevel(humidity)),
+                            context.getString(R.string.humidity) + ", "
+                                    + RelativeHumidityUnit.PERCENT.getValueText(context, humidity)
+                    ).withGauge(humidity, 100, String.valueOf(humidity), "%")
             );
         }
 
         if (weather.getCurrent().getUV().isValid()) {
             Integer index = weather.getCurrent().getUV().getIndex();
             String level = weather.getCurrent().getUV().getLevel();
-            // Not the same number twice: with a level to name it ("moderate"), that is the value and
-            // the index goes in the gauge; without one, the index itself is the value.
-            boolean hasLevel = level != null && !level.isEmpty();
+            // The provider's own wording when it has one, our own bands when it does not.
+            String uvWord;
+            if (level != null && !level.isEmpty()) {
+                uvWord = level;
+            } else if (index != null) {
+                uvWord = context.getString(uvLevel(index));
+            } else {
+                uvWord = weather.getCurrent().getUV().getUVDescription();
+            }
             mIndexList.add(
                     new Index(
                             R.drawable.ic_uv,
                             context.getString(R.string.uv_index),
-                            hasLevel
-                                    ? level
-                                    : weather.getCurrent().getUV().getUVDescription()
+                            uvWord,
+                            context.getString(R.string.uv_index) + ", "
+                                    + weather.getCurrent().getUV().getShortUVDescription()
                     ).withGauge(
                             index == null ? 0 : Math.min(index, UV_TOP),
                             UV_TOP,
-                            hasLevel && index != null ? String.valueOf(index) : "",
+                            index == null ? "" : String.valueOf(index),
                             "UV"
                     )
             );
@@ -223,15 +247,15 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
                     new Index(
                             R.drawable.ic_gauge,
                             context.getString(R.string.pressure),
-                            String.valueOf(Math.round(
-                                    settings.getPressureUnit().getValueWithoutUnit(pressure))),
+                            context.getString(pressureLevel(pressure)),
                             context.getString(R.string.pressure)
                                     + ", " + settings.getPressureUnit().getValueVoice(context, pressure)
                     ).withGauge(
                             // Only the span either side of standard pressure carries information.
                             Math.min(Math.max(pressure - PRESSURE_FLOOR, 0), PRESSURE_SPAN),
                             PRESSURE_SPAN,
-                            "",
+                            String.valueOf(Math.round(
+                                    settings.getPressureUnit().getValueWithoutUnit(pressure))),
                             settings.getPressureUnit().getName(context)
                     )
             );
@@ -243,15 +267,15 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
                     new Index(
                             R.drawable.ic_eye,
                             context.getString(R.string.visibility),
-                            String.format(Locale.getDefault(), "%.1f",
-                                    settings.getDistanceUnit().getValueWithoutUnit(visibility)),
+                            context.getString(visibilityLevel(visibility)),
                             context.getString(R.string.visibility)
                                     + ", " + settings.getDistanceUnit().getValueVoice(context, visibility)
                     ).withGauge(
                             // Past this much, "clear" is the only thing left to say.
                             Math.min(visibility, VISIBILITY_TOP),
                             VISIBILITY_TOP,
-                            "",
+                            String.format(Locale.getDefault(), "%.1f",
+                                    settings.getDistanceUnit().getValueWithoutUnit(visibility)),
                             settings.getDistanceUnit().getName(context)
                     )
             );
@@ -276,8 +300,10 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
                     new Index(
                             R.drawable.ic_cloud,
                             context.getString(R.string.cloud_cover),
-                            CloudCoverUnit.PERCENT.getValueText(context, cloudCover)
-                    ).withGauge(cloudCover, 100, "", "%")
+                            context.getString(cloudCoverLevel(cloudCover)),
+                            context.getString(R.string.cloud_cover) + ", "
+                                    + CloudCoverUnit.PERCENT.getValueText(context, cloudCover)
+                    ).withGauge(cloudCover, 100, String.valueOf(cloudCover), "%")
             );
         }
 
@@ -323,4 +349,78 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
     private static final float PRESSURE_SPAN = 130;
     /** Kilometres, the model's own unit. */
     private static final float VISIBILITY_TOP = 20;
+
+    // The bands below read the model's own units — percent, millibars, kilometres — not whatever
+    // unit the tile happens to be displaying in. Package-private so DetailsLevelTest can check the
+    // edges without a Context.
+
+    /** Comfort bands: the middle one is the range you notice nothing in. */
+    @StringRes
+    static int humidityLevel(int percent) {
+        if (percent <= 30) {
+            return R.string.humidity_level_1;
+        } else if (percent <= 60) {
+            return R.string.humidity_level_2;
+        } else if (percent <= 80) {
+            return R.string.humidity_level_3;
+        } else {
+            return R.string.humidity_level_4;
+        }
+    }
+
+    /** The three sectors a barometer dial has always been printed with, in millibars. */
+    @StringRes
+    static int pressureLevel(float mb) {
+        if (mb < 1009) {
+            return R.string.pressure_level_1;
+        } else if (mb <= 1022) {
+            return R.string.pressure_level_2;
+        } else {
+            return R.string.pressure_level_3;
+        }
+    }
+
+    /** Fog, haze, then the point past which "clear" is all there is to say. Kilometres. */
+    @StringRes
+    static int visibilityLevel(float km) {
+        if (km < 1) {
+            return R.string.visibility_level_1;
+        } else if (km < 4) {
+            return R.string.visibility_level_2;
+        } else if (km < 10) {
+            return R.string.visibility_level_3;
+        } else {
+            return R.string.visibility_level_4;
+        }
+    }
+
+    /** Roughly the octas a sky report is written in: clear, few, broken, overcast. */
+    @StringRes
+    static int cloudCoverLevel(int percent) {
+        if (percent <= 20) {
+            return R.string.cloud_cover_level_1;
+        } else if (percent <= 50) {
+            return R.string.cloud_cover_level_2;
+        } else if (percent <= 85) {
+            return R.string.cloud_cover_level_3;
+        } else {
+            return R.string.cloud_cover_level_4;
+        }
+    }
+
+    /** The index's own bands — already the thresholds {@link UV} keeps for its colours. */
+    @StringRes
+    static int uvLevel(int index) {
+        if (index <= UV.UV_INDEX_LOW) {
+            return R.string.uv_level_1;
+        } else if (index <= UV.UV_INDEX_MIDDLE) {
+            return R.string.uv_level_2;
+        } else if (index <= UV.UV_INDEX_HIGH) {
+            return R.string.uv_level_3;
+        } else if (index <= UV.UV_INDEX_EXCESSIVE) {
+            return R.string.uv_level_4;
+        } else {
+            return R.string.uv_level_5;
+        }
+    }
 }

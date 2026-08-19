@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.LinearGradient;
 import android.graphics.Paint;
+import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.text.TextPaint;
@@ -195,15 +195,21 @@ public class ArcProgress extends View {
     }
 
     private void ensureShadowShader() {
-        mShaderColors[0] = mShaderColor;
-        mShaderColors[1] = Color.TRANSPARENT;
+        // Concentric with the arc rather than top-to-bottom: the tint sits under the stroke it
+        // belongs to and fades inwards, leaving the centre — where the reading is — clear.
+        mShaderColors[0] = Color.TRANSPARENT;
+        mShaderColors[1] = mShaderColor;
+
+        if (mRectF.width() <= 0) {
+            // Not measured yet, and a radial gradient needs a positive radius.
+            return;
+        }
 
         if (mShaderWrapper.isDifferent(
                 getMeasuredWidth(), getMeasuredHeight(), false, mShaderColors)) {
             mShaderWrapper.setShader(
-                    new LinearGradient(
-                            0, mRectF.top,
-                            0, mRectF.bottom,
+                    new RadialGradient(
+                            mRectF.centerX(), mRectF.centerY(), mRectF.width() / 2f,
                             mShaderColors[0], mShaderColors[1],
                             Shader.TileMode.CLAMP
                     ),
@@ -247,28 +253,17 @@ public class ArcProgress extends View {
         super.onDraw(canvas);
         float startAngle = 270 - mArcAngle / 2f;
         float progressSweepAngle = (float) (1.0 * mProgress / getMax() * mArcAngle);
-        float progressEndAngle = startAngle + progressSweepAngle;
-        float deltaAngle = (float) (mProgressWidth / 2 / Math.PI / (mRectF.width() / 2) * 180);
 
         if (mProgress > 0) {
             ensureShadowShader();
+        }
+        // No shader means the view has no size yet; painting the shadow then would be plain black.
+        if (mProgress > 0 && mShaderWrapper.getShader() != null) {
+            // A sector swept from the centre over exactly the arc's own angle — a fan that grows
+            // with the reading. It used to be a chord-shaped slab whose hard vertical edge cut
+            // straight down the middle of the gauge.
             mShadowPaint.setShader(mShaderWrapper.getShader());
-            if (progressEndAngle + deltaAngle >= 360) {
-                canvas.drawCircle(
-                        mRectF.centerX(),
-                        mRectF.centerY(),
-                        mRectF.width() / 2,
-                        mShadowPaint
-                );
-            } else if (progressEndAngle + deltaAngle > 180) {
-                canvas.drawArc(
-                        mRectF,
-                        360 - progressEndAngle - deltaAngle,
-                        360 - 2 * (360 - progressEndAngle - deltaAngle),
-                        false,
-                        mShadowPaint
-                );
-            }
+            canvas.drawArc(mRectF, startAngle, progressSweepAngle, true, mShadowPaint);
         }
 
         mProgressPaint.setColor(mBackgroundColor);

@@ -97,6 +97,32 @@
     <string name="aqi_5">重度污染</string>
     <string name="aqi_6">严重污染</string>
 
+    <!-- 详情读数用文字分级，具体数值放在右边的量规里 -->
+    <string name="humidity_level_1">干燥</string>
+    <string name="humidity_level_2">舒适</string>
+    <string name="humidity_level_3">潮湿</string>
+    <string name="humidity_level_4">闷湿</string>
+
+    <string name="pressure_level_1">偏低</string>
+    <string name="pressure_level_2">正常</string>
+    <string name="pressure_level_3">偏高</string>
+
+    <string name="visibility_level_1">很差</string>
+    <string name="visibility_level_2">较差</string>
+    <string name="visibility_level_3">一般</string>
+    <string name="visibility_level_4">通透</string>
+
+    <string name="cloud_cover_level_1">晴</string>
+    <string name="cloud_cover_level_2">少云</string>
+    <string name="cloud_cover_level_3">多云</string>
+    <string name="cloud_cover_level_4">阴</string>
+
+    <string name="uv_level_1">弱</string>
+    <string name="uv_level_2">中等</string>
+    <string name="uv_level_3">强</string>
+    <string name="uv_level_4">很强</string>
+    <string name="uv_level_5">极强</string>
+
     <string name="phase_new">新月</string>
     <string name="phase_waxing_crescent">蛾眉月</string>
     <string name="phase_first">上弦月</string>
