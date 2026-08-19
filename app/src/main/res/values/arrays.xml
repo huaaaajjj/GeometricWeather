@@ -7,7 +7,7 @@
 
     <!-- Chinese source. -->
     <string-array name="weather_sources">
-        <item>Composite (Open-Meteo + APIHZ + CaiYun)</item>
+        <item>Multi-source</item>
         <item>WeatherAPI</item>
         <item>Open-Meteo</item>
         <item>caiyunapp.com (Only For China)</item>
@@ -18,7 +18,7 @@
         <item>accuweather.com</item>
     </string-array>
     <string-array name="weather_source_voices">
-        <item>Composite</item>
+        <item>Multi-source</item>
         <item>Weather API</item>
         <item>Open Meteo</item>
         <item>CaiYun App.com</item>

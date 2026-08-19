@@ -7,6 +7,8 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
 import wangdaye.com.geometricweather.common.basic.models.Location
+import wangdaye.com.geometricweather.common.basic.models.options.provider.CompositeBlock
+import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather
 import wangdaye.com.geometricweather.weather.converters.WeatherMerger
 import java.util.TimeZone
@@ -17,7 +19,8 @@ import kotlin.coroutines.resume
  * Composite source: asks several providers at once and folds their answers into one.
  *
  * Every provider here is incomplete in a different way, so no single one is the best answer, and no
- * single one leads everything either — each block is assigned to whoever is best at it:
+ * single one leads everything either — each block is assigned to whoever is best at it. The
+ * assignment itself lives in [CompositeBlock], shared with the cards that print it:
  *
  * - **hourly** → Open-Meteo: the longest series by far (384 hours) and hour-by-hour rather than the
  *   3-hour steps the Chinese sources give.
@@ -43,8 +46,18 @@ class CompositeWeatherService @Inject constructor(
     private val weatherApi: WeatherApiWeatherService
 ) : WeatherService() {
 
-    /** Fallback order for anything not assigned to a specific provider below. */
-    private val sources = listOf<WeatherService>(openMeteo, apihz, caiyun, weatherApi)
+    /**
+     * The members, keyed by the source they are, so [CompositeBlock] can hand out the same
+     * assignment the cards print. Iteration order is the fallback order for anything unassigned.
+     */
+    private val members = linkedMapOf<WeatherSource, WeatherService>(
+        WeatherSource.OPEN_METEO to openMeteo,
+        WeatherSource.APIHZ to apihz,
+        WeatherSource.CAIYUN to caiyun,
+        WeatherSource.WEATHERAPI to weatherApi
+    )
+
+    private val sources = members.values.toList()
 
     private val requests = RequestScope()
 
@@ -60,9 +73,9 @@ class CompositeWeatherService @Inject constructor(
                 .mapNotNull { (service, weather) -> weather?.let { service to it } }
                 .toMap()
 
-            // Preferred provider first, then everyone else as fallback.
-            val preferring = { first: WeatherService ->
-                (listOf(first) + sources).distinct().mapNotNull { answers[it] }
+            // The block's own provider first, then everyone else as fallback.
+            val preferring = { block: CompositeBlock ->
+                (listOfNotNull(members[block.source]) + sources).distinct().mapNotNull { answers[it] }
             }
 
             // Device time zone, not the location's: that is the one every converter currently
@@ -70,11 +83,14 @@ class CompositeWeatherService @Inject constructor(
             val weather = WeatherMerger.merge(
                 results = sources.mapNotNull { answers[it] },
                 timeZone = TimeZone.getDefault(),
-                daily = preferring(apihz),
-                hourly = preferring(openMeteo),
-                current = preferring(caiyun),
-                airQuality = preferring(caiyun)
+                daily = preferring(CompositeBlock.DAILY),
+                hourly = preferring(CompositeBlock.HOURLY),
+                current = preferring(CompositeBlock.CURRENT),
+                airQuality = preferring(CompositeBlock.AIR_QUALITY)
             )
+                // The daily leader can lag: a domestic source still serves yesterday as its first
+                // day for hours after midnight, and everything downstream reads day 0 as today.
+                ?.withDaysFrom(System.currentTimeMillis())
 
             // Nothing below this point may reach the caller once cancel() has been called.
             if (!isActive) {

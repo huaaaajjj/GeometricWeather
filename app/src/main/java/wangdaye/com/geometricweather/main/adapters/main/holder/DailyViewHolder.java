@@ -30,6 +30,7 @@ import wangdaye.com.geometricweather.main.utils.MainThemeColorProvider;
 import wangdaye.com.geometricweather.main.widgets.TrendRecyclerViewScrollBar;
 import wangdaye.com.geometricweather.settings.SettingsManager;
 import wangdaye.com.geometricweather.theme.ThemeManager;
+import wangdaye.com.geometricweather.common.basic.models.options.provider.CompositeBlock;
 import wangdaye.com.geometricweather.theme.resource.providers.ResourceProvider;
 import wangdaye.com.geometricweather.theme.weatherView.WeatherViewController;
 
@@ -82,6 +83,8 @@ public class DailyViewHolder extends AbstractMainCardViewHolder {
                 );
 
         mTitle.setTextColor(colors[0]);
+        mTitle.setText(CompositeBlock.title(
+                context, location, CompositeBlock.DAILY, R.string.daily_overview));
 
         if (TextUtils.isEmpty(weather.getCurrent().getDailyForecast())) {
             mSubtitle.setVisibility(View.GONE);

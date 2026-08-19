@@ -384,6 +384,8 @@
     <string name="settings_title_weather_source">Weather source</string>
     <!-- %1$s is the source name. Shown only while the source falls back to the bundled key. -->
     <string name="settings_weather_source_needs_own_key">%1$s (unavailable — bundled key expired)</string>
+    <!-- Card title (%1$s) followed by the provider that block came from (%2$s). -->
+    <string name="composite_block_credit">%1$s · %2$s</string>
     <string name="settings_title_location_service">Location service</string>
     <string name="settings_title_dark_mode">Dark mode</string>
     <string name="settings_title_ui_style">Interface style</string>

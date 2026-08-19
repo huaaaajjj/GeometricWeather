@@ -27,6 +27,7 @@ import wangdaye.com.geometricweather.common.ui.widgets.ArcProgress;
 import wangdaye.com.geometricweather.main.adapters.AqiAdapter;
 import wangdaye.com.geometricweather.main.utils.MainThemeColorProvider;
 import wangdaye.com.geometricweather.theme.ThemeManager;
+import wangdaye.com.geometricweather.common.basic.models.options.provider.CompositeBlock;
 import wangdaye.com.geometricweather.theme.resource.providers.ResourceProvider;
 import wangdaye.com.geometricweather.theme.weatherView.WeatherViewController;
 
@@ -75,6 +76,8 @@ public class AirQualityViewHolder extends AbstractMainCardViewHolder {
 
         mEnable = true;
 
+        mTitle.setText(CompositeBlock.title(
+                context, location, CompositeBlock.AIR_QUALITY, R.string.air_quality));
         mTitle.setTextColor(
                 ThemeManager
                         .getInstance(context)

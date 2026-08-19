@@ -35,6 +35,7 @@ import wangdaye.com.geometricweather.main.utils.MainThemeColorProvider;
 import wangdaye.com.geometricweather.main.widgets.TrendRecyclerViewScrollBar;
 import wangdaye.com.geometricweather.settings.SettingsManager;
 import wangdaye.com.geometricweather.theme.ThemeManager;
+import wangdaye.com.geometricweather.common.basic.models.options.provider.CompositeBlock;
 import wangdaye.com.geometricweather.theme.resource.providers.ResourceProvider;
 import wangdaye.com.geometricweather.theme.weatherView.WeatherViewController;
 
@@ -92,6 +93,15 @@ public class HourlyViewHolder extends AbstractMainCardViewHolder {
         Weather weather = location.getWeather();
         assert weather != null;
 
+        // Every provider answers in whole days, so the series still opens at 00:00 late in the
+        // evening. This card is a forecast, not a log: start it at the hour it is now. The trend
+        // adapters read the hourly list off the location they are handed, so trimming it here is
+        // enough for the whole card — tags included.
+        Location hourlyLocation = Location.copy(
+                location, weather.withHoursFrom(System.currentTimeMillis()));
+        Weather hourlyWeather = hourlyLocation.getWeather();
+        assert hourlyWeather != null;
+
         int[] colors = ThemeManager
                 .getInstance(context)
                 .getWeatherThemeDelegate()
@@ -101,6 +111,8 @@ public class HourlyViewHolder extends AbstractMainCardViewHolder {
                         location.isDaylight()
                 );
         mTitle.setTextColor(colors[0]);
+        mTitle.setText(CompositeBlock.title(
+                context, location, CompositeBlock.HOURLY, R.string.hourly_overview));
 
         if (TextUtils.isEmpty(weather.getCurrent().getHourlyForecast())) {
             mSubtitle.setVisibility(View.GONE);
@@ -109,7 +121,7 @@ public class HourlyViewHolder extends AbstractMainCardViewHolder {
             mSubtitle.setText(weather.getCurrent().getHourlyForecast());
         }
 
-        List<TagAdapter.Tag> tagList = getTagList(weather, location.getWeatherSource());
+        List<TagAdapter.Tag> tagList = getTagList(hourlyWeather, location.getWeatherSource());
         if (tagList.size() < 2) {
             mTagView.setVisibility(View.GONE);
         } else {
@@ -138,7 +150,7 @@ public class HourlyViewHolder extends AbstractMainCardViewHolder {
                                     MainThemeColorProvider.getColor(location, R.attr.colorSurface)
                             ),
                             (checked, oldPosition, newPosition) -> {
-                                setTrendAdapterByTag(location, (MainTag) tagList.get(newPosition));
+                                setTrendAdapterByTag(hourlyLocation, (MainTag) tagList.get(newPosition));
                                 return false;
                             },
                             0
@@ -156,7 +168,7 @@ public class HourlyViewHolder extends AbstractMainCardViewHolder {
         mTrendRecyclerView.setAdapter(mTrendAdapter);
         mTrendRecyclerView.setKeyLineVisibility(
                 SettingsManager.getInstance(context).isTrendHorizontalLinesEnabled());
-        setTrendAdapterByTag(location, (MainTag) tagList.get(0));
+        setTrendAdapterByTag(hourlyLocation, (MainTag) tagList.get(0));
 
         mScrollBar.resetColor(location);
 

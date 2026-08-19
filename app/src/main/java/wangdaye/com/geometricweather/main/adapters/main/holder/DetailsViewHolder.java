@@ -13,6 +13,7 @@ import wangdaye.com.geometricweather.common.basic.GeoActivity;
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.main.adapters.DetailsAdapter;
 import wangdaye.com.geometricweather.theme.ThemeManager;
+import wangdaye.com.geometricweather.common.basic.models.options.provider.CompositeBlock;
 import wangdaye.com.geometricweather.theme.resource.providers.ResourceProvider;
 import wangdaye.com.geometricweather.theme.weatherView.WeatherViewController;
 
@@ -39,6 +40,8 @@ public class DetailsViewHolder extends AbstractMainCardViewHolder {
                 listAnimationEnabled, itemAnimationEnabled, firstCard);
 
         if (location.getWeather() != null) {
+            mTitle.setText(CompositeBlock.title(
+                    context, location, CompositeBlock.CURRENT, R.string.life_details));
             mTitle.setTextColor(
                     ThemeManager
                             .getInstance(context)

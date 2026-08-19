@@ -32,6 +32,7 @@ import wangdaye.com.geometricweather.common.ui.widgets.astro.SunMoonView;
 import wangdaye.com.geometricweather.main.utils.MainThemeColorProvider;
 import wangdaye.com.geometricweather.theme.ThemeManager;
 import wangdaye.com.geometricweather.theme.resource.ResourceHelper;
+import wangdaye.com.geometricweather.common.basic.models.options.provider.CompositeBlock;
 import wangdaye.com.geometricweather.theme.resource.providers.ResourceProvider;
 import wangdaye.com.geometricweather.theme.weatherView.WeatherViewController;
 
@@ -98,6 +99,8 @@ public class AstroViewHolder extends AbstractMainCardViewHolder {
                         location.isDaylight()
                 );
         mTitle.setTextColor(themeColors[0]);
+        mTitle.setText(CompositeBlock.title(
+                context, location, CompositeBlock.DAILY, R.string.sunrise_sunset));
 
         StringBuilder talkBackBuilder = new StringBuilder(mTitle.getText());
 

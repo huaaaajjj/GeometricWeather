@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -13,6 +14,8 @@ import wangdaye.com.geometricweather.common.utils.DisplayUtils;
 
 public class Weather
         implements Serializable {
+
+    private static final long ONE_HOUR = 60 * 60 * 1000L;
 
     @NonNull private final Base base;
     @NonNull private final Current current;
@@ -63,6 +66,63 @@ public class Weather
     @NonNull
     public List<Hourly> getHourlyForecast() {
         return hourlyForecast;
+    }
+
+    /**
+     * The same weather with the hours that have already gone by dropped, so an hourly view opens at
+     * the hour it is now. Providers answer in whole days, so without this the series still starts at
+     * 00:00 when it is 11 pm — most of the card is then a log of hours nobody can act on.
+     *
+     * The hour containing {@code time} is kept: it is the one happening now, not a past one.
+     *
+     * Returns this weather untouched when nothing would be dropped, and also when *everything*
+     * would be — a stale forecast is still worth showing, an empty card is not.
+     */
+    @NonNull
+    public Weather withHoursFrom(long time) {
+        List<Hourly> upcoming = new ArrayList<>();
+        for (Hourly hourly : hourlyForecast) {
+            if (hourly.getTime() + ONE_HOUR > time) {
+                upcoming.add(hourly);
+            }
+        }
+        if (upcoming.isEmpty() || upcoming.size() == hourlyForecast.size()) {
+            return this;
+        }
+        return new Weather(
+                base, current, yesterday, dailyForecast, upcoming, minutelyForecast, alertList);
+    }
+
+    /**
+     * The same weather with the days that are already over dropped, so {@code dailyForecast[0]} is
+     * today. Providers lag: a domestic source can still be serving yesterday as its first day for
+     * hours after midnight, and the whole app — header, widgets, notifications — reads index 0 as
+     * "today", so a stale leading day is not a cosmetic problem.
+     *
+     * Same two escapes as {@link #withHoursFrom(long)}: unchanged when nothing would go, and
+     * unchanged when everything would.
+     */
+    @NonNull
+    public Weather withDaysFrom(long time) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(time);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        long startOfToday = calendar.getTimeInMillis();
+
+        List<Daily> upcoming = new ArrayList<>();
+        for (Daily daily : dailyForecast) {
+            if (daily.getTime() >= startOfToday) {
+                upcoming.add(daily);
+            }
+        }
+        if (upcoming.isEmpty() || upcoming.size() == dailyForecast.size()) {
+            return this;
+        }
+        return new Weather(
+                base, current, yesterday, upcoming, hourlyForecast, minutelyForecast, alertList);
     }
 
     @NonNull

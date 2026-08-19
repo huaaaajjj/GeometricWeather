@@ -3,7 +3,7 @@
 
     <!-- Chinese source. -->
     <string-array name="weather_sources">
-        <item>綜合（逐時 Open-Meteo · 每日 中國天氣網 · 空氣 彩雲）</item>
+        <item>多源聚合</item>
         <item>WeatherAPI</item>
         <item>Open-Meteo</item>
         <item>彩雲天氣（僅中國地區）</item>
@@ -14,7 +14,7 @@
         <item>Accu Weather</item>
     </string-array>
     <string-array name="weather_source_voices">
-        <item>綜合天氣</item>
+        <item>多源聚合</item>
         <item>WeatherAPI</item>
         <item>Open-Meteo</item>
         <item>彩雲天氣</item>
