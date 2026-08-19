@@ -5,12 +5,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import wangdaye.com.geometricweather.R;
 import wangdaye.com.geometricweather.common.basic.GeoActivity;
 import wangdaye.com.geometricweather.common.basic.models.Location;
+import wangdaye.com.geometricweather.common.ui.decotarions.GridMarginsDecoration;
 import wangdaye.com.geometricweather.main.adapters.DetailsAdapter;
 import wangdaye.com.geometricweather.theme.ThemeManager;
 import wangdaye.com.geometricweather.common.basic.models.options.provider.CompositeBlock;
@@ -53,7 +54,18 @@ public class DetailsViewHolder extends AbstractMainCardViewHolder {
                             )[0]
             );
 
-            mDetailsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+            // Two tiles per row. The decoration is what puts air between them; it also pads the
+            // RecyclerView itself, so adding it twice on a rebind would keep growing that padding.
+            mDetailsRecyclerView.setLayoutManager(new GridLayoutManager(context, 2));
+            while (mDetailsRecyclerView.getItemDecorationCount() > 0) {
+                mDetailsRecyclerView.removeItemDecorationAt(0);
+            }
+            mDetailsRecyclerView.addItemDecoration(
+                    new GridMarginsDecoration(
+                            context.getResources().getDimension(R.dimen.little_margin),
+                            mDetailsRecyclerView
+                    )
+            );
             mDetailsRecyclerView.setAdapter(new DetailsAdapter(context, location));
         }
     }

@@ -5,6 +5,10 @@
     <dimen name="normal_margin">16dp</dimen>
     <dimen name="little_margin">8dp</dimen>
 
+    <!-- Details tiles: two per row, each a label + value with a gauge beside it. -->
+    <dimen name="details_tile_height">92dp</dimen>
+    <dimen name="details_tile_gauge_size">72dp</dimen>
+
     <!-- elevator. -->
     <dimen name="touch_rise_z">10dp</dimen>
 
