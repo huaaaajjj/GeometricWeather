@@ -17,8 +17,8 @@ import androidx.cardview.widget.CardView;
 import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.List;
 
 import wangdaye.com.geometricweather.R;
@@ -176,12 +176,10 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
         float windSpeed = weather.getCurrent().getWind().getSpeed() == null
                 ? 0
                 : weather.getCurrent().getWind().getSpeed();
-        String windLevel = weather.getCurrent().getWind().getLevel();
-        if (TextUtils.isEmpty(windLevel)) {
-            // Some providers leave it empty (CaiYun's empty wind), and a cached row can hold null
-            // despite the model's @NonNull — nothing asserts it on the way out of Room.
-            windLevel = CommonConverter.getWindLevel(context, windSpeed);
-        }
+        // Derived here, not read from Wind.getLevel(): every converter fills that field with this
+        // same function, so the stored string says nothing extra — it only freezes the language the
+        // forecast was fetched in. Cached data outlives a language change; this label should not.
+        String windLevel = CommonConverter.getWindLevel(context, windSpeed);
         mIndexList.add(
                 new Index(
                         R.drawable.ic_wind,
@@ -254,8 +252,7 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
                             // Only the span either side of standard pressure carries information.
                             Math.min(Math.max(pressure - PRESSURE_FLOOR, 0), PRESSURE_SPAN),
                             PRESSURE_SPAN,
-                            String.valueOf(Math.round(
-                                    settings.getPressureUnit().getValueWithoutUnit(pressure))),
+                            gaugeNumber(settings.getPressureUnit().getValueWithoutUnit(pressure)),
                             settings.getPressureUnit().getName(context)
                     )
             );
@@ -274,8 +271,7 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
                             // Past this much, "clear" is the only thing left to say.
                             Math.min(visibility, VISIBILITY_TOP),
                             VISIBILITY_TOP,
-                            String.format(Locale.getDefault(), "%.1f",
-                                    settings.getDistanceUnit().getValueWithoutUnit(visibility)),
+                            gaugeNumber(settings.getDistanceUnit().getValueWithoutUnit(visibility)),
                             settings.getDistanceUnit().getName(context)
                     )
             );
@@ -349,6 +345,26 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
     private static final float PRESSURE_SPAN = 130;
     /** Kilometres, the model's own unit. */
     private static final float VISIBILITY_TOP = 20;
+
+    /**
+     * The reading as it goes inside the gauge, where there is room for about four digits. How many
+     * of them should be decimals depends on the unit the user picked, not on the reading: 1006 mb
+     * wants none, 100.6 kPa would lose ~1 mb by rounding, 0.99 atm is nothing without decimals, and
+     * 10600 m has no business printing a tenth. Spending the four digits on whatever is left of the
+     * point gives exactly that.
+     *
+     * <p>{@link NumberFormat} rather than {@code String.format("%.1f")}: it drops decimals that come
+     * out empty ("10.6", not "10.60") while still writing the separator the user's locale uses.
+     */
+    static String gaugeNumber(float valueInDisplayUnit) {
+        float abs = Math.abs(valueInDisplayUnit);
+        NumberFormat format = NumberFormat.getInstance();
+        format.setMaximumFractionDigits(abs >= 1000 ? 0 : abs >= 10 ? 1 : 2);
+        format.setMinimumFractionDigits(0);
+        // A gauge is not a table: 10600 reads better than 10,600 in a 72dp circle.
+        format.setGroupingUsed(false);
+        return format.format(valueInDisplayUnit);
+    }
 
     // The bands below read the model's own units — percent, millibars, kilometres — not whatever
     // unit the tile happens to be displaying in. Package-private so DetailsLevelTest can check the

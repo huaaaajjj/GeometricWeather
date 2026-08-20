@@ -27,11 +27,16 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
+            <!--
+              Two lines for the label: it is two glyphs in Chinese but "Pression atmosphérique" in
+              French, and a dozen locales spell this reading out. Wrapping keeps it readable where
+              shrinking a 12sp caption would not; ellipsize stays as the last resort.
+            -->
             <TextView
                 android:id="@+id/item_details_title"
                 android:layout_width="match_parent"
                 android:ellipsize="end"
-                android:maxLines="1"
+                android:maxLines="2"
                 style="@style/subtitle_text"
                 tools:text="紫外线" />
 

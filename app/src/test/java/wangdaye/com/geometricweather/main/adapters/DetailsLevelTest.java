@@ -1,7 +1,11 @@
 package wangdaye.com.geometricweather.main.adapters;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Locale;
 
 import wangdaye.com.geometricweather.R;
 
@@ -13,6 +17,20 @@ import wangdaye.com.geometricweather.R;
  * <p>Lives in the adapter's package to reach its package-private band functions.
  */
 public class DetailsLevelTest {
+
+    private Locale mDefaultLocale;
+
+    /** The gauge number is formatted for the user's locale, so the assertions need a known one. */
+    @Before
+    public void pinLocale() {
+        mDefaultLocale = Locale.getDefault();
+        Locale.setDefault(Locale.US);
+    }
+
+    @After
+    public void restoreLocale() {
+        Locale.setDefault(mDefaultLocale);
+    }
 
     @Test
     public void humidityBands() {
@@ -94,6 +112,58 @@ public class DetailsLevelTest {
                 DetailsAdapter.uvLevel(12),
         };
         assertAllDifferent(uv);
+    }
+
+    /**
+     * The number inside the gauge, across the units the settings actually offer. Pressure and
+     * visibility are the two readings whose display unit can change the magnitude by 1000x, so
+     * rounding to whole numbers (what the tiles used to do) erased atm entirely and rounding to one
+     * decimal printed a meaningless tenth of a metre.
+     */
+    @Test
+    public void gaugeNumberKeepsDecimalsOnlyWhereTheyCarry() {
+        // Pressure at 1005.8 mb, as each unit shows it.
+        Assert.assertEquals("1006", DetailsAdapter.gaugeNumber(1005.8f));     // mb / hPa
+        Assert.assertEquals("100.6", DetailsAdapter.gaugeNumber(100.58f));    // kPa — a tenth is ~1 mb
+        Assert.assertEquals("754.4", DetailsAdapter.gaugeNumber(754.4f));     // mmHg
+        Assert.assertEquals("29.7", DetailsAdapter.gaugeNumber(29.7f));       // inHg
+        Assert.assertEquals("0.99", DetailsAdapter.gaugeNumber(0.9926f));     // atm — was "1"
+        Assert.assertEquals("1.03", DetailsAdapter.gaugeNumber(1.0259f));     // kgf/cm² — was "1"
+
+        // Visibility at 10.6 km, as each unit shows it.
+        Assert.assertEquals("10.6", DetailsAdapter.gaugeNumber(10.6f));       // km
+        Assert.assertEquals("10600", DetailsAdapter.gaugeNumber(10600f));     // m — was "10600.0"
+        Assert.assertEquals("6.59", DetailsAdapter.gaugeNumber(6.5858f));     // mi
+        Assert.assertEquals("34777", DetailsAdapter.gaugeNumber(34776.9f));   // ft
+    }
+
+    /** Whole values stay whole — no "9.00" in a gauge. */
+    @Test
+    public void gaugeNumberDropsEmptyDecimals() {
+        Assert.assertEquals("9", DetailsAdapter.gaugeNumber(9f));
+        Assert.assertEquals("0", DetailsAdapter.gaugeNumber(0f));
+        Assert.assertEquals("1013", DetailsAdapter.gaugeNumber(1013f));
+        // One real decimal, not a padded pair.
+        Assert.assertEquals("6.5", DetailsAdapter.gaugeNumber(6.5f));
+    }
+
+    /** Four digits and no thousands separator, so the number stays inside the circle. */
+    @Test
+    public void gaugeNumberStaysShort() {
+        Assert.assertEquals("10600", DetailsAdapter.gaugeNumber(10600f));
+        for (float v : new float[] {0f, 0.9926f, 9.98f, 29.7f, 100.58f, 1005.8f, 34776.9f}) {
+            Assert.assertTrue(
+                    "too wide: " + DetailsAdapter.gaugeNumber(v),
+                    DetailsAdapter.gaugeNumber(v).length() <= 6
+            );
+        }
+    }
+
+    /** The separator follows the locale — the reason this is NumberFormat and not "%.1f". */
+    @Test
+    public void gaugeNumberFollowsTheLocaleSeparator() {
+        Locale.setDefault(Locale.GERMANY);
+        Assert.assertEquals("10,6", DetailsAdapter.gaugeNumber(10.6f));
     }
 
     private static void assertAllDifferent(int[] resIds) {
