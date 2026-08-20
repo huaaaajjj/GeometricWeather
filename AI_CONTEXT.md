@@ -14,7 +14,7 @@
 
 ## 实现状态
 
-- 当前发布版本：**3.5.12**（versionCode 30512，正式版）。上一发布版 3.5.11（30511，正式版；**线上那份带两个亮色主题显示缺陷**，见变更日志末尾，已由 3.5.12 修复）。主分支 `master`（基于 v3.3.6 重建线）。
+- 当前发布版本：**3.5.13**（versionCode 30513，正式版）。上一发布版 3.5.12（30512，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
 - 8 个天气源：WEATHERAPI（默认）、OPEN_METEO、CAIYUN、APIHZ（中国天气网）、CMA（中国气象局）、MF（仅法国）、OWM 可用；**ACCU 的内置 Key 已过期，当前不可用**（见「已知问题」）。
 - 工具链已现代化（见版本矩阵）；RxJava 已全部迁移到 Coroutines；GreenDAO 已迁移到 Room。
 
@@ -250,6 +250,8 @@
 - **3.5.12**：**正式版**（`assemblePubRelease` 已签名 + R8 minify/shrinkResources）。只含上一条两个显示修复（亮色主题下设置页图标隐形、关于页头部被遮挡）。**3.5.11 线上那份带这两个缺陷**；另外 3.5.11 的 release 资产是 **CI 构建的那份**（本地验过的同名 APK 在修这两个 bug 时被覆盖，无法再上传同一二进制，如实记录）。3.5.12 的资产是本地构建并真机验证过的那份，sha256 与线上核对一致。用例数仍 **954**（六变体合计，159 例/变体；本次无新增测试，理由见上条）。
 
 - **关于页加「检查更新」，GitHub 拆成两条（上游在上、本 fork 在下）**（3.5.12 之后，尚未随任何版本发布）。① 「概览」分组顺序改为 **检查更新 → GitHub（原作者）→ GitHub（本分支）→ E-mail**：原来只有一条 GitHub 且指向上游 `WangDaYeeeeee/GeometricWeather`，现在补一条本 fork `huaaaajjj/GeometricWeather`。② **检查更新**：新增 `settings/utils/UpdateHelper.kt`，调 GitHub `releases/latest` 取 `tag_name`/`html_url`，与 `BuildConfig.VERSION_NAME` 比对，用 `SnackbarHelper` 回报「已是最新版本」/「发现新版本 x.y.z」（后者带「去下载」动作跳 release 页）。**三处刻意的取舍**：**不写 Gson DTO 而用 `JSONObject`** —— DTO 放在 `weather.json.**` 之外会被 R8 剥掉字段名（现有 keep 规则只覆盖那个包），JSONObject 无反射、不必新增 proguard 规则，也不用碰 Retrofit/Hilt；**不做自动更新** —— APK 分发，下载安装留给用户；**版本比较必须按数字**逐段比 —— 本仓库正好会踩字符串序的坑（`3.5.9` vs `3.5.12` 反了），同时容忍 tag 的 `v` 前缀与 `VERSION_NAME` 的 `_pub`/`_gplay`/`_fdroid` 后缀。请求带 `User-Agent`（GitHub 对无 UA 请求返回 403），10s 超时，任何异常都退化成「检查失败」；`AsyncHelper.runOnIO` 拿到的 `Controller` 存字段，重复点击直接返回、`onDestroy` 取消。图标复用现成的 `ic_top`（向上对齐箭头），未新画 vector。新增 10 条文案（4 个 locale）。`UpdateHelperTest` **6 例**：补丁/次版本/主版本升级、相同版本（含三种 flavor 后缀）、缺省位补零（3.6 == 3.6.0）、垃圾输入（`nightly`/空串/`v`）不得报更新。**变异检验**：把 `isNewer` 改成字符串比较 → 3 例 FAILED。六变体 954 → **990 例 0 失败**。**真机端到端验证（MI 9，签名 release，R8 开）**：装 3.5.12 点检查更新 → 「已是最新版本」；临时把 `versionName` 降成 3.5.0 重新构建安装（`adb install -r -d`）→ 「发现新版本 3.5.12」+「去下载」，点击跳浏览器打开 release 页；版本号**已改回 3.5.12** 并重装正常包；`logcat -b crash` 全程空。
+
+- **3.5.13**：**正式版**（`assemblePubRelease` 已签名 + R8 minify/shrinkResources）。只含上一条：关于页新增「检查更新」、GitHub 拆成「原作者 / 本分支」两条（上游在上）。**本版起用户可在应用内自己发现新版**（此前只能手动去 GitHub 看）。用例数 954 → **990**（六变体合计，165 例/变体）。
 
 ## 已知问题 / 约束
 
