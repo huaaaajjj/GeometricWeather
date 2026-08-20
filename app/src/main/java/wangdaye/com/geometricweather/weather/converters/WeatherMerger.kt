@@ -9,8 +9,11 @@ import wangdaye.com.geometricweather.common.basic.models.weather.HalfDay
 import wangdaye.com.geometricweather.common.basic.models.weather.Hourly
 import wangdaye.com.geometricweather.common.basic.models.weather.MoonPhase
 import wangdaye.com.geometricweather.common.basic.models.weather.Pollen
+import wangdaye.com.geometricweather.common.basic.models.weather.Precipitation
+import wangdaye.com.geometricweather.common.basic.models.weather.PrecipitationProbability
 import wangdaye.com.geometricweather.common.basic.models.weather.UV
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather
+import wangdaye.com.geometricweather.common.basic.models.weather.Wind
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -19,16 +22,16 @@ import java.util.TimeZone
 /**
  * Folds several providers' answers for the same place into one [Weather].
  *
- * The rule is **block-granular, never field-granular**. Each block — the daily overview, the hourly
- * series, the "now" reading, the air quality — has its own leader, and that leader's entries travel
- * whole: one day's temperature, condition text, precipitation and wind always come from the same
- * provider. Mixing those is how you end up rendering "clear sky" over 5 mm of rain — an answer worse
- * than either provider gave on its own.
+ * The rule is **block-granular by default**. Each block — the daily overview, the hourly series, the
+ * "now" reading, the air quality — has its own leader, and that leader's entries travel whole: a
+ * day's temperature and condition text always come from the same provider, because those two are
+ * what a forecast *is*. Mixing them is how you end up rendering "clear sky" at another provider's
+ * 31° — an answer worse than either gave on its own.
  *
  * Within a block, only readings that are *independent* of the forecast narrative are taken from the
  * others, and only where the leader left them empty: air quality, UV, pollen, sunrise/sunset, moon
- * phase, hours of sun, and — inside a half day — the chance of rain (see [fillChanceOfRain]; a
- * probability cannot contradict a condition text the way an amount would). Days and hours the leader
+ * phase, hours of sun, and — inside a half day — the chance of rain, the amount and the wind (see
+ * [fillHalfDay], which is where this rule is deliberately bent and why). Days and hours the leader
  * does not cover at all are appended whole, so a series runs as long as the longest provider rather
  * than as long as its leader.
  *
@@ -146,8 +149,8 @@ object WeatherMerger {
     private fun fillDaily(leader: Daily, others: List<Daily>, air: List<Daily>) = Daily(
         leader.date,
         leader.time,
-        fillChanceOfRain(leader.day(), others.map { it.day() }),
-        fillChanceOfRain(leader.night(), others.map { it.night() }),
+        fillHalfDay(leader.day(), others.map { it.day() }),
+        fillHalfDay(leader.night(), others.map { it.night() }),
         pick(listOf(leader.sun()) + others.map { it.sun() }, Astro::isValid),
         pick(listOf(leader.moon()) + others.map { it.moon() }, Astro::isValid),
         pick(listOf(leader.moonPhase) + others.map { it.moonPhase }, MoonPhase::isValid),
@@ -160,32 +163,36 @@ object WeatherMerger {
     )
 
     /**
-     * The one reading taken from another provider *inside* a half day, and only where the leader has
-     * none: the chance of rain. 中国天气网 leads the daily overview and carries no probability at
-     * all, so its seven days showed no chance while the appended days 8..16 — whole entries from
-     * Open-Meteo — did, which reads as "the forecast stops knowing halfway along".
+     * The three readings a day's card can draw that a leader may simply not carry: the chance of
+     * rain, how much of it, and the wind. 中国天气网 leads the daily overview and has none of them —
+     * its half days are built with `PrecipitationProbability(null, …)`, `Precipitation(null, …)` and
+     * a wind speed hard-coded to `0f` — so its seven days drew a bare temperature curve while the
+     * appended days 8..16, whole entries from Open-Meteo, drew all three. Each is filled from the
+     * first other provider that has one, and only where the leader has nothing.
      *
-     * A probability cannot contradict the leader the way an *amount* would: "cloudy, 30% chance" is
-     * an ordinary forecast, while "clear sky" over another provider's 5 mm is the nonsense this
-     * merge exists to avoid. So the amount, the duration and the condition text stay the leader's.
+     * Each sub-reading travels whole: a wind is a direction *and* a speed measured together, so
+     * grafting the vector is right and stitching one provider's bearing onto another's speed is not.
+     *
+     * **This is the one place the block rule is bent, deliberately.** The class comment warns that
+     * mixing a day's readings is how you render "clear sky" over another provider's 5 mm — and with
+     * the amount grafted, that combination is now reachable: 中国天气网 can say 晴 for a day
+     * Open-Meteo gives rain for. The judgement is that a mostly-empty card is the worse of the two
+     * failures, so completeness wins here; the condition text and the temperature, which are what a
+     * forecast *is*, still always come from the leader alone.
      */
-    private fun fillChanceOfRain(leader: HalfDay, others: List<HalfDay>): HalfDay {
-        if (leader.precipitationProbability.isValid) {
-            return leader
-        }
-        val donor = others.firstOrNull { it.precipitationProbability.isValid } ?: return leader
-        return HalfDay(
-            leader.weatherText,
-            leader.weatherPhase,
-            leader.weatherCode,
-            leader.temperature,
-            leader.precipitation,
-            donor.precipitationProbability,
-            leader.precipitationDuration,
-            leader.wind,
-            leader.cloudCover
-        )
-    }
+    private fun fillHalfDay(leader: HalfDay, others: List<HalfDay>) = HalfDay(
+        leader.weatherText,
+        leader.weatherPhase,
+        leader.weatherCode,
+        leader.temperature,
+        pick(listOf(leader.precipitation) + others.map { it.precipitation }, Precipitation::isValid)
+            ?: leader.precipitation,
+        pick(listOf(leader.precipitationProbability) + others.map { it.precipitationProbability },
+            PrecipitationProbability::isValid) ?: leader.precipitationProbability,
+        leader.precipitationDuration,
+        pick(listOf(leader.wind) + others.map { it.wind }, Wind::isValidSpeed) ?: leader.wind,
+        firstNonNull(leader.cloudCover, others.map { it.cloudCover })
+    )
 
     /**
      * Hours are bucketed by absolute time, not by wall clock: providers all report on the hour, so

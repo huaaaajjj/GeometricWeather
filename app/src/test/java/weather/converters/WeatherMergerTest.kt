@@ -18,8 +18,11 @@ import wangdaye.com.geometricweather.common.basic.models.Location
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource
 import wangdaye.com.geometricweather.common.basic.models.weather.Daily
 import wangdaye.com.geometricweather.common.basic.models.weather.HalfDay
+import wangdaye.com.geometricweather.common.basic.models.weather.Precipitation
 import wangdaye.com.geometricweather.common.basic.models.weather.PrecipitationProbability
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather
+import wangdaye.com.geometricweather.common.basic.models.weather.Wind
+import wangdaye.com.geometricweather.common.basic.models.weather.WindDegree
 import wangdaye.com.geometricweather.weather.converters.OpenMeteoResultConverter
 import wangdaye.com.geometricweather.weather.converters.WeatherApiResultConverter
 import wangdaye.com.geometricweather.weather.converters.WeatherMerger
@@ -334,17 +337,88 @@ class WeatherMergerTest {
             ownChance.day().precipitationProbability.total,
             mergedDay.day().precipitationProbability.total
         )
+        // Same for the wind the leader measured itself.
+        assertEquals(ownChance.day().wind.speed, mergedDay.day().wind.speed)
+    }
+
+    /**
+     * 中国天气网's actual shape: no chance of rain, no amount, and a wind speed hard-coded to 0. All
+     * three are filled from the provider that has them, while the day's own text and temperature —
+     * what makes it that forecast — stay the leader's.
+     */
+    @Test
+    fun theRainAndWindOfADayAreGraftedWhenTheLeaderHasNone() {
+        val leader = stripDailyRainAndWind(weatherApi)
+        // Guard the guard: the donor has to carry all three for those same days.
+        assertTrue(
+            "fixture drifted: Open-Meteo is supposed to carry daily rain and wind",
+            openMeteo.dailyForecast.any {
+                it.day().precipitationProbability.isValid &&
+                    it.day().precipitation.isValid &&
+                    it.day().wind.isValidSpeed
+            }
+        )
+
+        val merged = merge(leader, openMeteo)!!
+
+        var checked = 0
+        merged.dailyForecast.forEach { day ->
+            val donor = openMeteo.dailyForecast.firstOrNull { it.date == day.date } ?: return@forEach
+            val leaderDay = leader.dailyForecast.firstOrNull { it.date == day.date } ?: return@forEach
+            if (donor.day().precipitationProbability.isValid) {
+                assertEquals(
+                    donor.day().precipitationProbability.total,
+                    day.day().precipitationProbability.total
+                )
+            }
+            if (donor.day().precipitation.isValid) {
+                assertEquals(donor.day().precipitation.total, day.day().precipitation.total)
+            }
+            if (donor.day().wind.isValidSpeed) {
+                assertEquals(donor.day().wind.speed, day.day().wind.speed)
+                // The vector travels whole: no stitching one provider's bearing onto another's speed.
+                assertEquals(donor.day().wind.direction, day.day().wind.direction)
+            }
+            assertEquals(leaderDay.day().weatherText, day.day().weatherText)
+            assertEquals(leaderDay.day().temperature.temperature, day.day().temperature.temperature)
+            checked++
+        }
+        assertTrue("no day was checked — the test proves nothing", checked > 0)
     }
 
     /** A stand-in for 中国天气网, which fills every daily probability with nulls. */
-    private fun stripDailyChanceOfRain(weather: Weather) = Weather(
+    private fun stripDailyChanceOfRain(weather: Weather) =
+        mapDailyHalves(weather) { half ->
+            HalfDay(
+                half.weatherText, half.weatherPhase, half.weatherCode,
+                half.temperature, half.precipitation,
+                PrecipitationProbability(null, null, null, null, null),
+                half.precipitationDuration, half.wind, half.cloudCover
+            )
+        }
+
+    /** The rest of 中国天气网's shape: no amount either, and a wind that reports zero speed. */
+    private fun stripDailyRainAndWind(weather: Weather) =
+        mapDailyHalves(weather) { half ->
+            HalfDay(
+                half.weatherText, half.weatherPhase, half.weatherCode,
+                half.temperature,
+                Precipitation(null, null, null, null, null),
+                PrecipitationProbability(null, null, null, null, null),
+                half.precipitationDuration,
+                Wind(half.wind.direction, WindDegree(0f, false), 0f, "无风"),
+                half.cloudCover
+            )
+        }
+
+    private fun mapDailyHalves(weather: Weather, transform: (HalfDay) -> HalfDay) = Weather(
         weather.base,
         weather.current,
         weather.yesterday,
         weather.dailyForecast.map { day ->
             Daily(
                 day.date, day.time,
-                withoutChanceOfRain(day.day()), withoutChanceOfRain(day.night()),
+                transform(day.day()), transform(day.night()),
                 day.sun(), day.moon(), day.moonPhase, day.airQuality, day.pollen, day.uv,
                 day.hoursOfSun
             )
@@ -352,13 +426,6 @@ class WeatherMergerTest {
         weather.hourlyForecast,
         weather.minutelyForecast,
         weather.alertList
-    )
-
-    private fun withoutChanceOfRain(half: HalfDay) = HalfDay(
-        half.weatherText, half.weatherPhase, half.weatherCode,
-        half.temperature, half.precipitation,
-        PrecipitationProbability(null, null, null, null, null),
-        half.precipitationDuration, half.wind, half.cloudCover
     )
 
     private fun hourAt(weather: Weather, bucket: Long) =
