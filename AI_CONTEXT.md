@@ -14,7 +14,7 @@
 
 ## 实现状态
 
-- 当前发布版本：**3.5.11**（versionCode 30511，正式版）。上一发布版 3.5.10（30510，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
+- 当前发布版本：**3.5.12**（versionCode 30512，正式版）。上一发布版 3.5.11（30511，正式版；**线上那份带两个亮色主题显示缺陷**，见变更日志末尾，已由 3.5.12 修复）。主分支 `master`（基于 v3.3.6 重建线）。
 - 8 个天气源：WEATHERAPI（默认）、OPEN_METEO、CAIYUN、APIHZ（中国天气网）、CMA（中国气象局）、MF（仅法国）、OWM 可用；**ACCU 的内置 Key 已过期，当前不可用**（见「已知问题」）。
 - 工具链已现代化（见版本矩阵）；RxJava 已全部迁移到 Coroutines；GreenDAO 已迁移到 Room。
 
@@ -244,6 +244,10 @@
 - **嫁接范围扩到「降水量」与「风」，`fillChanceOfRain` 改成 `fillHalfDay`**（按用户「嫁接」的指示，紧接上一条）。上一条只补概率，是因为概率不会与天气文案自相矛盾；用户要求把另两项也补上，**这是刻意把 block 规则掰弯的地方，如实记在注释里**：`Precipitation` 与 `Wind` 现在也按「leader 有就用 leader、没有才取同一天第一个有的源」填充，于是「中国天气网说晴、Open-Meteo 给 5mm」这种组合**变成可达的**了 —— 取舍是"大半张卡是空的"比"偶发矛盾"更糟；**温度与天气文案仍然只来自 leader**（这两个才是"预报本身"），类注释里那句"never field-granular"已相应改写成"block-granular by default"并指向 `fillHalfDay`。**每个子读数整块搬**：风是"方向与风速同时测得"的向量，所以搬整个 `Wind`（APIHZ 的每日风本来是"有方向字符串、degree 写死 0f、speed 写死 0f、level 由 0 反推成无风"，整块换掉严格更好），不做"这家的方向 + 那家的风速"的拼接。实现上直接复用既有的 `pick(candidates, valid)`（leader 排第一，故 leader 有效就赢），没新写取值逻辑。`cloudCover` 用 `firstNonNull` 一并填（仅入库、界面未显示）。测试 11 → **12 例**（新增一例用"APIHZ 形状"的 leader —— 概率/降水量都为 null、风速 0f —— 断言三项都被填且方向与风速来自同一个源，同时文案与温度仍是 leader 的；并给「leader 自己有的不被覆盖」那例补了风速断言）。**变异检验两轮**：分别把降水量、风改回不嫁接 → 新增那例各 FAILED 一次。
 
 - **3.5.11**：**正式版**（`assemblePubRelease` 已签名 + R8 minify/shrinkResources）。汇总自 3.5.10 以来的两件事：① **英文 locale 实机验收修三项** —— 「气压」标签在十一种长译文下被截断（英文基串改 `Pressure`、标签允许两行）、风况档位被缓存冻结在取数时的语言（改为按风速现算）、量规数字按显示单位定小数位（`gaugeNumber()`，≥1000 取整 / ≥10 一位 / 其余两位，用 `NumberFormat` 跟随 locale 且去掉空小数位）；② **多源聚合下每日概览的降水概率/降水量/风嫁接进前七天** —— 根因是 `WeatherMerger.fillDaily` 从不填半日内部字段，而中国天气网这三项全空、第 8 天起的 Open-Meteo 整条又都有，恰好在 7 天边界断开。用例数 912 → **954**（六变体合计，159 例/变体）。**release 包真机验证**见上三条，0 崩溃。
+
+- **修亮色主题下设置页返回箭头/关于按钮隐形、关于页头部被顶栏遮挡**（3.5.11 发布后用户报告，两处都是 Compose 设置界面）。**① 图标隐形**：`FitStatusBarTopAppBar` 的返回箭头与 `SettingsActivity` 的 ⓘ 都硬写了 `tint = MaterialTheme.colorScheme.onPrimaryContainer` —— 那是"画在 `primaryContainer` 上"的前景色，而顶栏容器是 `surface`；顶栏本身已把 `navigationIconContentColor`/`actionIconContentColor` 设成 `onSurface`（标题用的就是它，一直可读），硬写的 tint 把它盖掉了。**取色实测**：两个图标被画成 `#FFFFFF`、顶栏 `#FFF8F7`，对比度约 1.02:1。**只在动态取色的亮色主题下出现** —— `GeometricWeatherTheme` 在 API 31+ 走 `dynamicLightColorScheme(wallpaper)`，该机（MI 9/Android 14，暖色壁纸）的 `onPrimaryContainer` 落在近白；静态调色板里它是深藏青 `#001B3F`，所以**只读代码看不出来，必须真机 + 取色**。**改法是删掉这两个 tint**（而不是换一个颜色常量）：让图标继承顶栏自己的内容色，两种主题、动态与静态调色板下都不会再错。**② 关于页头部被遮挡**：`AboutActivity` 的 `Material3Scaffold(...) { }` 把回调参数 `innerPadding` 丢了，`LazyColumn` 只有 `fillMaxHeight()`，于是列表从 scaffold 顶端起排、整个头部（应用图标 + 名称 + 版本号）压在固定高度顶栏底下；补 `.padding(innerPadding)` 即可（`SettingsActivity` 本来就这么写，这里是漏的）。**真机验证（MI 9，签名 release，临时切到亮色主题复现、验完恢复"自动"）**：设置页 ← 与 ⓘ 为清晰深色、关于页完整显示图标与「几何天气 / 3.5.12_pub」、`logcat -b crash` 空。**未加测试** —— 两处都是 Compose 渲染层的颜色与 padding，本仓库没有 Compose UI 测试基建（Robolectric 只用于转换器/合并器），加一套 `createComposeRule` 只为断言 tint 不成比例；改动本身是"删掉一处覆盖 + 补一个既有参数"。
+
+- **3.5.12**：**正式版**（`assemblePubRelease` 已签名 + R8 minify/shrinkResources）。只含上一条两个显示修复（亮色主题下设置页图标隐形、关于页头部被遮挡）。**3.5.11 线上那份带这两个缺陷**；另外 3.5.11 的 release 资产是 **CI 构建的那份**（本地验过的同名 APK 在修这两个 bug 时被覆盖，无法再上传同一二进制，如实记录）。3.5.12 的资产是本地构建并真机验证过的那份，sha256 与线上核对一致。用例数仍 **954**（六变体合计，159 例/变体；本次无新增测试，理由见上条）。
 
 ## 已知问题 / 约束
 

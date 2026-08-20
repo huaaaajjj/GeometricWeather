@@ -82,7 +82,11 @@ fun FitStatusBarTopAppBar(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(R.string.content_desc_back),
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                // No tint: the bar above already sets navigationIconContentColor to onSurface, which
+                // is the colour that is guaranteed to contrast with the bar. Overriding it with
+                // onPrimaryContainer — a colour defined against a *different* background — painted
+                // this arrow #FFFFFF on a #FFF8F7 bar under the device's dynamic light scheme, i.e.
+                // invisible.
             )
         }
     },

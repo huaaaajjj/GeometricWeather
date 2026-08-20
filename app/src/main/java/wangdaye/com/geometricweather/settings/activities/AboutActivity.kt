@@ -295,9 +295,13 @@ class AboutActivity : GeoActivity() {
                     scrollBehavior = scrollBehavior,
                 )
             },
-        ) {
+        ) { innerPadding ->
             LazyColumn(
-                modifier = Modifier.fillMaxHeight(),
+                // The scaffold's inset, or the list starts *behind* the pinned app bar and the
+                // header — icon, app name, version — is clipped under it.
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(innerPadding),
             ) {
                 item {
                     Header()

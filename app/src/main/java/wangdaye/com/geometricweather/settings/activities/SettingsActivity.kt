@@ -92,7 +92,9 @@ class SettingsActivity : GeoActivity() {
                             Icon(
                                 imageVector = Icons.Outlined.Info,
                                 contentDescription = stringResource(R.string.action_about),
-                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                // No tint — see the back arrow in FitStatusBarTopAppBar: the bar
+                                // sets actionIconContentColor, and onPrimaryContainer rendered this
+                                // white on a near-white bar under dynamic colours.
                             )
                         }
                     },
