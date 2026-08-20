@@ -5,6 +5,7 @@ import wangdaye.com.geometricweather.common.basic.models.weather.Alert
 import wangdaye.com.geometricweather.common.basic.models.weather.Astro
 import wangdaye.com.geometricweather.common.basic.models.weather.Current
 import wangdaye.com.geometricweather.common.basic.models.weather.Daily
+import wangdaye.com.geometricweather.common.basic.models.weather.HalfDay
 import wangdaye.com.geometricweather.common.basic.models.weather.Hourly
 import wangdaye.com.geometricweather.common.basic.models.weather.MoonPhase
 import wangdaye.com.geometricweather.common.basic.models.weather.Pollen
@@ -26,8 +27,10 @@ import java.util.TimeZone
  *
  * Within a block, only readings that are *independent* of the forecast narrative are taken from the
  * others, and only where the leader left them empty: air quality, UV, pollen, sunrise/sunset, moon
- * phase, hours of sun. Days and hours the leader does not cover at all are appended whole, so a
- * series runs as long as the longest provider rather than as long as its leader.
+ * phase, hours of sun, and — inside a half day — the chance of rain (see [fillChanceOfRain]; a
+ * probability cannot contradict a condition text the way an amount would). Days and hours the leader
+ * does not cover at all are appended whole, so a series runs as long as the longest provider rather
+ * than as long as its leader.
  *
  * Alignment is by calendar day (in [timeZone]) and by absolute hour. Both hold as long as every
  * provider dates its entries the same way — today they all parse into the device time zone, so a
@@ -143,8 +146,8 @@ object WeatherMerger {
     private fun fillDaily(leader: Daily, others: List<Daily>, air: List<Daily>) = Daily(
         leader.date,
         leader.time,
-        leader.day(),
-        leader.night(),
+        fillChanceOfRain(leader.day(), others.map { it.day() }),
+        fillChanceOfRain(leader.night(), others.map { it.night() }),
         pick(listOf(leader.sun()) + others.map { it.sun() }, Astro::isValid),
         pick(listOf(leader.moon()) + others.map { it.moon() }, Astro::isValid),
         pick(listOf(leader.moonPhase) + others.map { it.moonPhase }, MoonPhase::isValid),
@@ -155,6 +158,34 @@ object WeatherMerger {
         if (leader.hoursOfSun > 0) leader.hoursOfSun
         else others.firstOrNull { it.hoursOfSun > 0 }?.hoursOfSun ?: leader.hoursOfSun
     )
+
+    /**
+     * The one reading taken from another provider *inside* a half day, and only where the leader has
+     * none: the chance of rain. 中国天气网 leads the daily overview and carries no probability at
+     * all, so its seven days showed no chance while the appended days 8..16 — whole entries from
+     * Open-Meteo — did, which reads as "the forecast stops knowing halfway along".
+     *
+     * A probability cannot contradict the leader the way an *amount* would: "cloudy, 30% chance" is
+     * an ordinary forecast, while "clear sky" over another provider's 5 mm is the nonsense this
+     * merge exists to avoid. So the amount, the duration and the condition text stay the leader's.
+     */
+    private fun fillChanceOfRain(leader: HalfDay, others: List<HalfDay>): HalfDay {
+        if (leader.precipitationProbability.isValid) {
+            return leader
+        }
+        val donor = others.firstOrNull { it.precipitationProbability.isValid } ?: return leader
+        return HalfDay(
+            leader.weatherText,
+            leader.weatherPhase,
+            leader.weatherCode,
+            leader.temperature,
+            leader.precipitation,
+            donor.precipitationProbability,
+            leader.precipitationDuration,
+            leader.wind,
+            leader.cloudCover
+        )
+    }
 
     /**
      * Hours are bucketed by absolute time, not by wall clock: providers all report on the hour, so

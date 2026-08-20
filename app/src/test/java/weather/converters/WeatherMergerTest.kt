@@ -16,6 +16,9 @@ import androidx.test.core.app.ApplicationProvider
 import android.content.Context
 import wangdaye.com.geometricweather.common.basic.models.Location
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource
+import wangdaye.com.geometricweather.common.basic.models.weather.Daily
+import wangdaye.com.geometricweather.common.basic.models.weather.HalfDay
+import wangdaye.com.geometricweather.common.basic.models.weather.PrecipitationProbability
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather
 import wangdaye.com.geometricweather.weather.converters.OpenMeteoResultConverter
 import wangdaye.com.geometricweather.weather.converters.WeatherApiResultConverter
@@ -282,6 +285,81 @@ class WeatherMergerTest {
     }
 
     // ---- harness ----
+
+    /**
+     * 中国天气网 leads the daily overview and carries no chance of rain at all, so its seven days
+     * showed none while the appended days 8..16 (whole Open-Meteo entries) did. The probability is
+     * grafted from whoever has it — and only the probability: the day it lands in stays the leader's.
+     */
+    @Test
+    fun theChanceOfRainIsGraftedIntoDaysThatLackIt() {
+        val leaderWithoutChance = stripDailyChanceOfRain(weatherApi)
+        // Guard the guard: the donor must actually carry a probability for those same days.
+        assertTrue(
+            "fixture drifted: Open-Meteo is supposed to carry a daily chance of rain",
+            openMeteo.dailyForecast.any { it.day().precipitationProbability.isValid }
+        )
+
+        val merged = merge(leaderWithoutChance, openMeteo)!!
+
+        var grafted = 0
+        merged.dailyForecast.forEachIndexed { i, day ->
+            val donor = openMeteo.dailyForecast.firstOrNull { it.date == day.date } ?: return@forEachIndexed
+            if (!donor.day().precipitationProbability.isValid) return@forEachIndexed
+            assertEquals(
+                "day $i kept an empty chance of rain",
+                donor.day().precipitationProbability.total,
+                day.day().precipitationProbability.total
+            )
+            // …while everything that makes the day *that day* is still the leader's.
+            val leaderDay = leaderWithoutChance.dailyForecast.first { it.date == day.date }
+            assertEquals(leaderDay.day().weatherText, day.day().weatherText)
+            assertEquals(leaderDay.day().temperature.temperature, day.day().temperature.temperature)
+            assertEquals(
+                leaderDay.day().precipitation.total,
+                day.day().precipitation.total
+            )
+            grafted++
+        }
+        assertTrue("nothing was grafted — the test proves nothing", grafted > 0)
+    }
+
+    /** A leader that has its own probability keeps it; the donor's is not allowed to win. */
+    @Test
+    fun aChanceOfRainTheLeaderAlreadyHasIsLeftAlone() {
+        val ownChance = openMeteo.dailyForecast.first { it.day().precipitationProbability.isValid }
+        val merged = merge(openMeteo, stripDailyChanceOfRain(weatherApi))!!
+        val mergedDay = merged.dailyForecast.first { it.date == ownChance.date }
+        assertEquals(
+            ownChance.day().precipitationProbability.total,
+            mergedDay.day().precipitationProbability.total
+        )
+    }
+
+    /** A stand-in for 中国天气网, which fills every daily probability with nulls. */
+    private fun stripDailyChanceOfRain(weather: Weather) = Weather(
+        weather.base,
+        weather.current,
+        weather.yesterday,
+        weather.dailyForecast.map { day ->
+            Daily(
+                day.date, day.time,
+                withoutChanceOfRain(day.day()), withoutChanceOfRain(day.night()),
+                day.sun(), day.moon(), day.moonPhase, day.airQuality, day.pollen, day.uv,
+                day.hoursOfSun
+            )
+        },
+        weather.hourlyForecast,
+        weather.minutelyForecast,
+        weather.alertList
+    )
+
+    private fun withoutChanceOfRain(half: HalfDay) = HalfDay(
+        half.weatherText, half.weatherPhase, half.weatherCode,
+        half.temperature, half.precipitation,
+        PrecipitationProbability(null, null, null, null, null),
+        half.precipitationDuration, half.wind, half.cloudCover
+    )
 
     private fun hourAt(weather: Weather, bucket: Long) =
         weather.hourlyForecast.firstOrNull { it.time / HOUR_MS == bucket }
