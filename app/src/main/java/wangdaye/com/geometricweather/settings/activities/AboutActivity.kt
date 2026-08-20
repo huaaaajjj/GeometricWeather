@@ -33,8 +33,11 @@ import wangdaye.com.geometricweather.common.ui.widgets.generateCollapsedScrollBe
 import wangdaye.com.geometricweather.common.ui.widgets.getCardListItemMarginDp
 import wangdaye.com.geometricweather.common.ui.widgets.insets.FitStatusBarTopAppBar
 import wangdaye.com.geometricweather.common.ui.widgets.insets.bottomInsetItem
+import wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper
 import wangdaye.com.geometricweather.common.utils.helpers.IntentHelper
+import wangdaye.com.geometricweather.common.utils.helpers.SnackbarHelper
 import wangdaye.com.geometricweather.settings.utils.DonateHelper
+import wangdaye.com.geometricweather.settings.utils.UpdateHelper
 import wangdaye.com.geometricweather.theme.compose.DayNightTheme
 import wangdaye.com.geometricweather.theme.compose.GeometricWeatherTheme
 import wangdaye.com.geometricweather.theme.compose.rememberThemeRipple
@@ -53,14 +56,33 @@ private class ContributorItem(
 
 class AboutActivity : GeoActivity() {
 
+    /** In flight, so a second tap does not start a second request and onDestroy can drop it. */
+    private var updateCheck: AsyncHelper.Controller? = null
+
     private val aboutAppLinks = arrayOf(
         AboutAppLinkItem(
+            // ic_top is "align to top" — the closest thing to an update arrow already in the project.
+            iconId = R.drawable.ic_top,
+            titleId = R.string.check_for_updates,
+        ) {
+            checkForUpdates()
+        },
+        AboutAppLinkItem(
             iconId = R.drawable.ic_github,
-            titleId = R.string.gitHub,
+            titleId = R.string.github_upstream,
         ) {
             IntentHelper.startWebViewActivity(
                 this@AboutActivity,
                 "https://github.com/WangDaYeeeeee/GeometricWeather"
+            )
+        },
+        AboutAppLinkItem(
+            iconId = R.drawable.ic_github,
+            titleId = R.string.github_fork,
+        ) {
+            IntentHelper.startWebViewActivity(
+                this@AboutActivity,
+                "https://github.com/huaaaajjj/GeometricWeather"
             )
         },
         AboutAppLinkItem(
@@ -280,6 +302,49 @@ class AboutActivity : GeoActivity() {
                 ContentView()
             }
         }
+    }
+
+    override fun onDestroy() {
+        updateCheck?.cancel()
+        updateCheck = null
+        super.onDestroy()
+    }
+
+    /**
+     * Asks GitHub for this fork's latest release and says so in a snackbar: nothing to do, or a new
+     * version with an action that opens its page. Deliberately not an auto-updater — the app is
+     * distributed as an APK, so downloading and installing stays the user's own step.
+     */
+    private fun checkForUpdates() {
+        if (updateCheck != null) {
+            return
+        }
+        SnackbarHelper.showSnackbar(this, getString(R.string.checking_for_updates))
+        updateCheck = AsyncHelper.runOnIO<UpdateHelper.Latest>(
+            { emitter -> emitter.send(UpdateHelper.fetchLatest(), true) },
+            { latest, _ ->
+                updateCheck = null
+                if (isDestroyed || isFinishing) {
+                    return@runOnIO
+                }
+                when {
+                    latest == null -> SnackbarHelper.showSnackbar(
+                        this, getString(R.string.check_for_updates_failed)
+                    )
+                    UpdateHelper.isNewer(latest.version, BuildConfig.VERSION_NAME) ->
+                        SnackbarHelper.showSnackbar(
+                            this,
+                            getString(R.string.update_available, latest.version),
+                            getString(R.string.action_download)
+                        ) {
+                            IntentHelper.startWebViewActivity(this@AboutActivity, latest.url)
+                        }
+                    else -> SnackbarHelper.showSnackbar(
+                        this, getString(R.string.already_up_to_date)
+                    )
+                }
+            }
+        )
     }
 
     @Composable

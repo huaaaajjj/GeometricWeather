@@ -167,6 +167,15 @@
     <string name="email">E-mail</string>
     <string name="donate">Donate</string>
     <string name="gitHub">GitHub</string>
+    <!-- Two GitHub entries: the project this is forked from, and the fork that ships this build. -->
+    <string name="github_upstream">GitHub (upstream)</string>
+    <string name="github_fork">GitHub (this fork)</string>
+    <string name="check_for_updates">Check for updates</string>
+    <string name="checking_for_updates">Checking for updates…</string>
+    <string name="already_up_to_date">Already up to date</string>
+    <string name="update_available">Version %1$s is available</string>
+    <string name="check_for_updates_failed">Could not check for updates</string>
+    <string name="action_download">Download</string>
     <string name="contributor">Contributors</string>
     <string name="translator">Translators</string>
     <string name="thanks">Thanks</string>

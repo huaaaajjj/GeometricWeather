@@ -162,6 +162,15 @@
     <string name="email">E-mail</string>
     <string name="donate">捐贈</string>
     <string name="gitHub">GitHub</string>
+    <!-- 兩個 GitHub 入口：上游原項目，以及構建本包的這個 fork -->
+    <string name="github_upstream">GitHub（原作者）</string>
+    <string name="github_fork">GitHub（本分支）</string>
+    <string name="check_for_updates">檢查更新</string>
+    <string name="checking_for_updates">正在檢查更新…</string>
+    <string name="already_up_to_date">已是最新版本</string>
+    <string name="update_available">發現新版本 %1$s</string>
+    <string name="check_for_updates_failed">檢查更新失敗</string>
+    <string name="action_download">去下載</string>
     <string name="contributor">貢獻者</string>
     <string name="translator">譯者</string>
     <string name="thanks">鳴謝</string>
