@@ -253,6 +253,8 @@
 
 - **3.5.13**：**正式版**（`assemblePubRelease` 已签名 + R8 minify/shrinkResources）。只含上一条：关于页新增「检查更新」、GitHub 拆成「原作者 / 本分支」两条（上游在上）。**本版起用户可在应用内自己发现新版**（此前只能手动去 GitHub 看）。用例数 954 → **990**（六变体合计，165 例/变体）。
 
+- **README 重写 + 英文版 + 真机截图**（3.5.13 之后，纯文档，不动代码）。原 README 停在 3.4.0：自称「勉强能用的修改版本」、天气源表里 AccuWeather 还写着「✅ 正常」、多源聚合/中国天气网/中国气象局三个源根本没提。重写为：截图 → 下载 → 天气源对照表（9 个源的 Key / 覆盖范围 / 数据量 / 状态）→ 多源聚合按块取数的解释 → 与上游的区别 → 构建与 flavor → 已知限制 → 许可证与致谢。新增 `README_en.md`（同结构，两文顶部互链）与 `docs/screenshots/` 五张截图（3.5.13 签名 release、MI 9：主界面、每日/小时概览、空气质量、详情数据、天气源弹窗）—— 截图里正好带着每块的来源标注，比用文字解释多源聚合省事。**逐条对着代码核过，改掉三处写错的**：① 中国气象局的数据量原写「7 天 · 56 小时」（从中国天气网那行抄串了），它是网页抓取的逐时表、条数随页面而定，按 AI_CONTEXT 的实测值改成「7 天 · 逐时（网页抓取）」；② flavor 表的定位一列原写 pub=高德 / gplay=Play Services / fdroid=系统定位 —— 实际默认项是 `native`（`SettingsManager.kt:120` 默认 `"native"`），pub/gplay 用 `src/proprietary` 那份 `AndroidLocationService`（有 Play Services 走 fused、否则退 `LocationManager`），高德/百度只是设置里可选的项；gplay 的 `AMapLocationService` 是空壳（`src/noamap`，选了会退回系统定位），fdroid 的选项列表被 `ServiceProviderSettingsScreen.kt:108` 裁到只剩「百度 IP + 系统」；③ 多源聚合的「每日」那条补上「国内源不给的降水概率/降水量/风从别的源嫁接进前 7 天」（3.5.11 做的事，原文漏写）。其余说法均已验证：QWeather/Visual Crossing 在源码里确已删净、`WeatherMerger.mergeAlerts` 确是所有源的并集、`mergeDaily` 确会把领导源 7 天之外的日子整条接上、五张截图的标题与正文说明一致。**未做**：README 不列版本号清单（每次发版就过期，指到 Releases 即可）；英文化只覆盖 README，`AI_CONTEXT.md`/`AGENTS.md`/`CLAUDE.md` 仍是中文。
+
 ## 已知问题 / 约束
 
 
