@@ -220,33 +220,6 @@ public class AccuWeatherService extends WeatherService {
         }));
     }
 
-    public void requestLocation(Context context, String query,
-                                @NonNull RequestLocationCallback callback) {
-        String languageCode = SettingsManager.getInstance(context).getLanguage().getCode();
-        String zipCode = query.matches("[a-zA-Z0-9]") ? query : null;
-
-        mControllers.add(AsyncHelper.runOnIO(() -> {
-            try {
-                List<AccuLocationResult> results = mApi.getWeatherLocation(
-                        "Always",
-                        SettingsManager.getInstance(context).getProviderAccuWeatherKey(),
-                        query, languageCode
-                ).execute().body();
-                if (results != null && results.size() != 0) {
-                    List<Location> locationList = new ArrayList<>();
-                    for (AccuLocationResult r : results) {
-                        locationList.add(AccuResultConverter.convert(null, r, zipCode));
-                    }
-                    callback.requestLocationSuccess(query, locationList);
-                } else {
-                    callback.requestLocationFailed(query);
-                }
-            } catch (Exception e) {
-                callback.requestLocationFailed(query);
-            }
-        }));
-    }
-
     @Override
     public void cancel() {
         for (AsyncHelper.Controller c : mControllers) {

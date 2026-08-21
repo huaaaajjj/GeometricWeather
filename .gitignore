@@ -23,3 +23,5 @@ error_log.txt
 output-metadata.json
 # 本机 AI 工具配置
 /opencode.json
+# Claude Code 的临时 worktree（.claude/skills 仍然跟踪）
+/.claude/worktrees/

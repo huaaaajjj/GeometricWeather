@@ -11,9 +11,6 @@ public interface AccuWeatherApi {
     @GET("locations/v1/cities/translate.json")
     Call<List<AccuLocationResult>> callWeatherLocation(@Query("alias") String alias, @Query("apikey") String apikey, @Query("q") String q, @Query("language") String language);
 
-    @GET("locations/v1/cities/translate.json")
-    Call<List<AccuLocationResult>> getWeatherLocation(@Query("alias") String alias, @Query("apikey") String apikey, @Query("q") String q, @Query("language") String language);
-
     @GET("locations/v1/cities/geoposition/search.json")
     Call<AccuLocationResult> getWeatherLocationByGeoPosition(@Query("alias") String alias, @Query("apikey") String apikey, @Query("q") String q, @Query("language") String language);
 
