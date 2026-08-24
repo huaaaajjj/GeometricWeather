@@ -11,10 +11,13 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Checkbox
+import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Text
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +25,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import wangdaye.com.geometricweather.BuildConfig
@@ -36,6 +41,7 @@ import wangdaye.com.geometricweather.common.ui.widgets.insets.bottomInsetItem
 import wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper
 import wangdaye.com.geometricweather.common.utils.helpers.IntentHelper
 import wangdaye.com.geometricweather.common.utils.helpers.SnackbarHelper
+import wangdaye.com.geometricweather.settings.SettingsManager
 import wangdaye.com.geometricweather.settings.utils.DonateHelper
 import wangdaye.com.geometricweather.settings.utils.UpdateHelper
 import wangdaye.com.geometricweather.theme.compose.DayNightTheme
@@ -60,13 +66,6 @@ class AboutActivity : GeoActivity() {
     private var updateCheck: AsyncHelper.Controller? = null
 
     private val aboutAppLinks = arrayOf(
-        AboutAppLinkItem(
-            // ic_top is "align to top" — the closest thing to an update arrow already in the project.
-            iconId = R.drawable.ic_top,
-            titleId = R.string.check_for_updates,
-        ) {
-            checkForUpdates()
-        },
         AboutAppLinkItem(
             iconId = R.drawable.ic_github,
             titleId = R.string.github_upstream,
@@ -315,13 +314,13 @@ class AboutActivity : GeoActivity() {
      * version with an action that opens its page. Deliberately not an auto-updater — the app is
      * distributed as an APK, so downloading and installing stays the user's own step.
      */
-    private fun checkForUpdates() {
+    private fun checkForUpdates(prerelease: Boolean) {
         if (updateCheck != null) {
             return
         }
         SnackbarHelper.showSnackbar(this, getString(R.string.checking_for_updates))
         updateCheck = AsyncHelper.runOnIO<UpdateHelper.Latest>(
-            { emitter -> emitter.send(UpdateHelper.fetchLatest(), true) },
+            { emitter -> emitter.send(UpdateHelper.fetchLatest(prerelease), true) },
             { latest, _ ->
                 updateCheck = null
                 if (isDestroyed || isFinishing) {
@@ -371,6 +370,9 @@ class AboutActivity : GeoActivity() {
                 item {
                     Header()
                     SectionTitle(stringResource(R.string.about_app))
+                    // Its own row rather than an aboutAppLinks entry: it is the only one carrying a
+                    // trailing control, and the channel state belongs next to it.
+                    CheckForUpdatesLink()
                 }
                 items(aboutAppLinks) { item ->
                     AboutAppLink(
@@ -443,6 +445,76 @@ class AboutActivity : GeoActivity() {
             color = DayNightTheme.colors.captionColor,
             style = MaterialTheme.typography.labelMedium,
         )
+    }
+
+    /**
+     * "Check for updates" plus the channel it asks about. Tapping the row runs the check; the
+     * trailing checkbox switches between the stable channel and one that also sees prereleases —
+     * which this fork's daily builds are published as, so without it those builds are invisible to
+     * the check. The choice is persisted, so the next check remembers it.
+     */
+    @Composable
+    private fun CheckForUpdatesLink() {
+        val settings = remember { SettingsManager.getInstance(this@AboutActivity) }
+        val prerelease = remember { mutableStateOf(settings.isUpdateCheckIncludingPrerelease) }
+
+        Material3CardListItem {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = rememberThemeRipple(),
+                        onClick = { checkForUpdates(prerelease.value) },
+                    )
+                    .padding(dimensionResource(R.dimen.normal_margin)),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    // ic_top is "align to top" — the closest thing to an update arrow already here.
+                    painter = painterResource(R.drawable.ic_top),
+                    contentDescription = null,
+                    tint = DayNightTheme.colors.titleColor,
+                )
+                Spacer(modifier = Modifier.width(dimensionResource(R.dimen.normal_margin)))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.check_for_updates),
+                        color = DayNightTheme.colors.titleColor,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(R.dimen.little_margin)))
+                    Text(
+                        text = stringResource(
+                            if (prerelease.value) {
+                                R.string.update_channel_summary_prerelease
+                            } else {
+                                R.string.update_channel_summary_stable
+                            }
+                        ),
+                        color = DayNightTheme.colors.bodyColor,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+                Spacer(modifier = Modifier.width(dimensionResource(R.dimen.little_margin)))
+                // The box carries no visible label of its own — the summary above states the
+                // channel, so screen readers get the name from here.
+                val label = stringResource(R.string.update_channel_prerelease)
+                Checkbox(
+                    checked = prerelease.value,
+                    onCheckedChange = {
+                        prerelease.value = it
+                        settings.isUpdateCheckIncludingPrerelease = it
+                    },
+                    modifier = Modifier.semantics { contentDescription = label },
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = MaterialTheme.colorScheme.primary,
+                        uncheckedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        checkmarkColor = MaterialTheme.colorScheme.surface,
+                    ),
+                )
+            }
+        }
     }
 
     @Composable

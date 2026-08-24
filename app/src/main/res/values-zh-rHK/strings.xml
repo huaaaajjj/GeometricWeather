@@ -166,6 +166,10 @@
     <string name="github_upstream">GitHub（原作者）</string>
     <string name="github_fork">GitHub（本分支）</string>
     <string name="check_for_updates">檢查更新</string>
+    <!-- 本分支的每日構建是以 GitHub 預發佈形式發的，所以更新通道必須可選 -->
+    <string name="update_channel_prerelease">包含預發佈版</string>
+    <string name="update_channel_summary_prerelease">包含預發佈版（每日構建）</string>
+    <string name="update_channel_summary_stable">僅正式版</string>
     <string name="checking_for_updates">正在檢查更新…</string>
     <string name="already_up_to_date">已是最新版本</string>
     <string name="update_available">發現新版本 %1$s</string>

@@ -1,5 +1,7 @@
 package wangdaye.com.geometricweather.settings.utils
 
+import androidx.annotation.VisibleForTesting
+import org.json.JSONArray
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
@@ -17,15 +19,28 @@ object UpdateHelper {
     private const val LATEST_RELEASE_API =
         "https://api.github.com/repos/huaaaajjj/GeometricWeather/releases/latest"
 
+    /**
+     * The newest release of any kind. `releases/latest` skips prereleases by design, and this fork
+     * publishes its daily builds *as* prereleases, so that channel has to read the list instead —
+     * it comes back newest-first, and `per_page=1` keeps it to the single entry we compare against.
+     */
+    private const val NEWEST_RELEASE_API =
+        "https://api.github.com/repos/huaaaajjj/GeometricWeather/releases?per_page=1"
+
     const val RELEASES_PAGE = "https://github.com/huaaaajjj/GeometricWeather/releases/latest"
 
     class Latest(val version: String, val url: String)
 
-    /** Null on any failure — no network, rate limit, no release yet, malformed answer. */
-    fun fetchLatest(): Latest? {
+    /**
+     * Null on any failure — no network, rate limit, no release yet, malformed answer.
+     *
+     * @param prerelease include prereleases, i.e. report the newest release whatever its kind.
+     */
+    fun fetchLatest(prerelease: Boolean): Latest? {
         var connection: HttpURLConnection? = null
         return try {
-            connection = (URL(LATEST_RELEASE_API).openConnection() as HttpURLConnection).apply {
+            val api = if (prerelease) NEWEST_RELEASE_API else LATEST_RELEASE_API
+            connection = (URL(api).openConnection() as HttpURLConnection).apply {
                 requestMethod = "GET"
                 connectTimeout = TIMEOUT_MS
                 readTimeout = TIMEOUT_MS
@@ -36,20 +51,35 @@ object UpdateHelper {
             if (connection.responseCode != HttpURLConnection.HTTP_OK) {
                 return null
             }
-            val json = JSONObject(connection.inputStream.bufferedReader().use { it.readText() })
-            val tag = json.optString("tag_name")
-            if (tag.isEmpty()) {
-                null
-            } else {
-                Latest(
-                    version = normalize(tag),
-                    url = json.optString("html_url").ifEmpty { RELEASES_PAGE }
-                )
-            }
+            parse(connection.inputStream.bufferedReader().use { it.readText() })
         } catch (ignored: Exception) {
             null
         } finally {
             connection?.disconnect()
+        }
+    }
+
+    /**
+     * Reads the tag out of either shape GitHub answers with: `releases/latest` is one object,
+     * `releases` is an array. Sniffing the shape rather than taking a flag keeps the two impossible
+     * to desync — no caller can ask for the list and then read it as an object.
+     */
+    @VisibleForTesting
+    fun parse(body: String): Latest? {
+        val json = if (body.trimStart().startsWith("[")) {
+            JSONArray(body).optJSONObject(0)
+        } else {
+            JSONObject(body)
+        } ?: return null
+
+        val tag = json.optString("tag_name")
+        return if (tag.isEmpty()) {
+            null
+        } else {
+            Latest(
+                version = normalize(tag),
+                url = json.optString("html_url").ifEmpty { RELEASES_PAGE }
+            )
         }
     }
 

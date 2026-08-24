@@ -171,6 +171,10 @@
     <string name="github_upstream">GitHub (upstream)</string>
     <string name="github_fork">GitHub (this fork)</string>
     <string name="check_for_updates">Check for updates</string>
+    <!-- This fork publishes its daily builds as GitHub prereleases, so the channel has to be a choice. -->
+    <string name="update_channel_prerelease">Include prereleases</string>
+    <string name="update_channel_summary_prerelease">Prereleases included (daily builds)</string>
+    <string name="update_channel_summary_stable">Stable releases only</string>
     <string name="checking_for_updates">Checking for updates…</string>
     <string name="already_up_to_date">Already up to date</string>
     <string name="update_available">Version %1$s is available</string>

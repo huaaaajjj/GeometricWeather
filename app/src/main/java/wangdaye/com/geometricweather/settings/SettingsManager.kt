@@ -480,6 +480,19 @@ class SettingsManager private constructor(context: Context) {
         defaultValue: String,
     ) = customValue.ifEmpty { defaultValue }
 
+    // update check.
+
+    /**
+     * Which GitHub channel [wangdaye.com.geometricweather.settings.utils.UpdateHelper] asks about.
+     * No [notifySettingsChanged] on purpose: nothing else reads this, and that event makes
+     * MainActivity re-init and redraw — which picking an update channel has no business doing.
+     */
+    var isUpdateCheckIncludingPrerelease: Boolean
+        set(value) {
+            config.edit().putBoolean("update_check_prerelease", value).apply()
+        }
+        get() = config.getBoolean("update_check_prerelease", false)
+
     private fun notifySettingsChanged() {
         EventBus
             .instance
