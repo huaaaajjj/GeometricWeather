@@ -25,14 +25,21 @@ import wangdaye.com.geometricweather.weather.apis.ApihzApi;
 import wangdaye.com.geometricweather.weather.apis.AtmoAuraIqaApi;
 import wangdaye.com.geometricweather.weather.apis.CaiYunApi;
 import wangdaye.com.geometricweather.weather.apis.CmaApi;
+import wangdaye.com.geometricweather.weather.apis.MetNoApi;
 import wangdaye.com.geometricweather.weather.apis.MfWeatherApi;
 import wangdaye.com.geometricweather.weather.apis.OpenMeteoApi;
 import wangdaye.com.geometricweather.weather.apis.OwmApi;
 import wangdaye.com.geometricweather.weather.apis.WeatherApiApi;
+import wangdaye.com.geometricweather.weather.apis.XiaomiApi;
 
 @InstallIn(SingletonComponent.class)
 @Module
 public class ApiModule {
+
+    // api.met.no requires a UA that identifies the application and offers a way to reach its
+    // author; a generic or absent one gets the client blocked.
+    private static final String MET_NO_USER_AGENT = "GeometricWeather/" + BuildConfig.VERSION_NAME
+            + " (github.com/WuZhengyang2024/GeometricWeather)";
 
     @Provides
     public AccuWeatherApi provideAccuWeatherApi(OkHttpClient client,
@@ -154,6 +161,38 @@ public class ApiModule {
                 .addConverterFactory(converterFactory)
                 .build()
                 .create((ApihzApi.class));
+    }
+
+    @Provides
+    public MetNoApi provideMetNoApi(OkHttpClient client,
+                                    GsonConverterFactory converterFactory) {
+        // api.met.no's terms of service require an identifying User-Agent on every request and
+        // block clients that send none, so this provider needs its own client. Only the header
+        // differs; newBuilder() keeps the shared timeouts, connection pool and interceptors.
+        OkHttpClient metNoClient = client.newBuilder()
+                .addInterceptor(chain -> chain.proceed(
+                        chain.request()
+                                .newBuilder()
+                                .header("User-Agent", MET_NO_USER_AGENT)
+                                .build()))
+                .build();
+        return new Retrofit.Builder()
+                .baseUrl(BuildConfig.METNO_BASE_URL)
+                .client(metNoClient)
+                .addConverterFactory(converterFactory)
+                .build()
+                .create((MetNoApi.class));
+    }
+
+    @Provides
+    public XiaomiApi provideXiaomiApi(OkHttpClient client,
+                                      GsonConverterFactory converterFactory) {
+        return new Retrofit.Builder()
+                .baseUrl(BuildConfig.XIAOMI_BASE_URL)
+                .client(client)
+                .addConverterFactory(converterFactory)
+                .build()
+                .create((XiaomiApi.class));
     }
 
 }

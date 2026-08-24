@@ -39,6 +39,8 @@ The default is **WeatherAPI**; for the most complete data pick **Multi-source**.
 | **Multi-source** | bundled | worldwide (most complete inside China) | 16 days · 384 hours · AQI · alerts | ✅ recommended |
 | Open-Meteo | free, no key | worldwide | 16 days · 384 hours (no AQI / alerts) | ✅ |
 | WeatherAPI | bundled | worldwide | 3 days · 72 hours · AQI · alerts | ✅ default |
+| MET Norway | free, no key | worldwide | ~11 days · ~90 points (no feels-like / sunrise) | ✅ |
+| Xiaomi Weather | free, no key | worldwide (richest inside China) | China 15 days · 23 hours · AQI · alerts · minutely; abroad 5 days | ✅ |
 | CaiYun | bundled (trial token) | China only | 3 days · 48 hours · AQI · UV | ✅ |
 | China Weather (APIHZ) | bundled | China only | 7 days · 56 hours (3-hour steps) | ✅ |
 | CMA (China Meteorological Administration) | no key | China only | 7 days · hourly (scraped from the web page) | ✅ |
@@ -70,7 +72,7 @@ Each card's title credits the provider behind it. A provider that fails or times
 **Providers**
 
 - Dropped the dead ones (QWeather, Visual Crossing)
-- Added China Weather, CMA, WeatherAPI, Open-Meteo and the multi-source mode
+- Added China Weather, CMA, WeatherAPI, Open-Meteo, MET Norway, Xiaomi Weather and the multi-source mode
 - Repaired CaiYun (removed a needless signature check, fixed AQI parsing), OpenWeather and Météo France
 
 **Fixes and polish**

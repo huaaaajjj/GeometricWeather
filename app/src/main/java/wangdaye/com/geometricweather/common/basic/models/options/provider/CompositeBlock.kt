@@ -16,7 +16,7 @@ import wangdaye.com.geometricweather.common.basic.models.Location
  * the block, the merge falls through to whoever does, and the label still names the preference.
  */
 enum class CompositeBlock(val source: WeatherSource) {
-    HOURLY(WeatherSource.OPEN_METEO),
+    HOURLY(WeatherSource.XIAOMI),
     DAILY(WeatherSource.APIHZ),
     CURRENT(WeatherSource.CAIYUN),
     AIR_QUALITY(WeatherSource.CAIYUN);

@@ -67,10 +67,14 @@ private val COLUMNS = listOf(
 )
 
 // Display order = by availability (matches the source-picker order). France flag -> test with Paris.
+// Nordic flag -> test with Oslo: MET Norway's air quality is Norway-only and its nowcast Nordics-only,
+// so a Beijing probe cannot tell "geographically out of range" from "broken".
 private val SOURCES = listOf(
     Src(WeatherSource.COMPOSITE, "综合"),
     Src(WeatherSource.WEATHERAPI, "WeatherAPI"),
     Src(WeatherSource.OPEN_METEO, "Open-Meteo"),
+    Src(WeatherSource.METNO, "挪威气象局", nordic = true),
+    Src(WeatherSource.XIAOMI, "小米天气"),
     Src(WeatherSource.CAIYUN, "彩云天气"),
     Src(WeatherSource.APIHZ, "中国天气网"),
     Src(WeatherSource.CMA, "中国气象局"),
@@ -79,7 +83,12 @@ private val SOURCES = listOf(
     Src(WeatherSource.ACCU, "AccuWeather"),
 )
 
-private data class Src(val source: WeatherSource, val name: String, val france: Boolean = false)
+private data class Src(
+    val source: WeatherSource,
+    val name: String,
+    val france: Boolean = false,
+    val nordic: Boolean = false,
+)
 
 private data class LiveData(
     val daily: Int, val hourly: Int,
@@ -166,7 +175,7 @@ fun WeatherSourceStatusScreen(context: Context) {
                     )
                 } else if (stamp != null) {
                     Text(
-                        text = "实测于 $stamp（北京坐标 · MF用巴黎）",
+                        text = "实测于 $stamp（北京坐标 · MF用巴黎 · 挪威气象局用奥斯陆）",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -225,6 +234,9 @@ private fun testLocation(src: Src): Location {
     return if (src.france) {
         Location("", 48.8566f, 2.3522f, TimeZone.getTimeZone("Europe/Paris"),
             "France", "Île-de-France", "Paris", "", null, src.source, false, false, false)
+    } else if (src.nordic) {
+        Location("", 59.9139f, 10.7522f, TimeZone.getTimeZone("Europe/Oslo"),
+            "Norge", "Oslo", "Oslo", "", null, src.source, false, false, false)
     } else {
         Location("", 39.9042f, 116.4074f, TimeZone.getTimeZone("Asia/Shanghai"),
             "中国", "北京市", "北京市", "", null, src.source, false, false, true)

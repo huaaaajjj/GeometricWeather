@@ -22,13 +22,17 @@ import kotlin.coroutines.resume
  * single one leads everything either — each block is assigned to whoever is best at it. The
  * assignment itself lives in [CompositeBlock], shared with the cards that print it:
  *
- * - **hourly** → Open-Meteo: the longest series by far (384 hours) and hour-by-hour rather than the
- *   3-hour steps the Chinese sources give.
+ * - **hourly** → 小米天气: its ~23 hours carry a temperature, a condition text *and* a real wind
+ *   vector measured together, which is what the hourly card draws; Open-Meteo's hours are appended
+ *   after them, so the series still runs the full 384. 小米's hourly entries carry no chance of rain
+ *   and no amount, and those two are grafted in from whoever does have them ([WeatherMerger]).
  * - **daily overview** → 中国天气网 (APIHZ): a domestic forecast for a domestic place; it reaches
  *   7 days, and Open-Meteo's days 8..16 are appended after it so the range is not lost.
  * - **air quality** and the **"now" reading with its detail scalars** → 彩云: measured Chinese AQI
  *   (Open-Meteo carries none at all) plus feels-like, humidity, pressure and visibility.
  * - **warnings** → the union of everyone; WeatherAPI is the one that reliably has them.
+ * - **minute-by-minute rain** → the first member that has any, which inside China is 小米天气: none
+ *   of the other four carries a minutely block (彩云 would, but only on a paid token).
  *
  * [WeatherMerger] does the folding — see it for what may and may not be mixed. The order is a
  * preference, not a binding: a provider that fails, answers with nothing for its block, or never
@@ -43,18 +47,25 @@ class CompositeWeatherService @Inject constructor(
     private val openMeteo: OpenMeteoWeatherService,
     private val apihz: ApihzWeatherService,
     private val caiyun: CaiYunWeatherService,
-    private val weatherApi: WeatherApiWeatherService
+    private val weatherApi: WeatherApiWeatherService,
+    private val xiaomi: XiaomiWeatherService
 ) : WeatherService() {
 
     /**
      * The members, keyed by the source they are, so [CompositeBlock] can hand out the same
      * assignment the cards print. Iteration order is the fallback order for anything unassigned.
+     *
+     * 小米天气 sits last on purpose. It leads the hourly block by assignment, and putting it there
+     * too would have changed what fills everything *un*assigned — the days appended past 中国天气网's
+     * seventh would come from its 15-day list instead of Open-Meteo's 16-day one, which is not what
+     * this change was about.
      */
     private val members = linkedMapOf<WeatherSource, WeatherService>(
         WeatherSource.OPEN_METEO to openMeteo,
         WeatherSource.APIHZ to apihz,
         WeatherSource.CAIYUN to caiyun,
-        WeatherSource.WEATHERAPI to weatherApi
+        WeatherSource.WEATHERAPI to weatherApi,
+        WeatherSource.XIAOMI to xiaomi
     )
 
     private val sources = members.values.toList()

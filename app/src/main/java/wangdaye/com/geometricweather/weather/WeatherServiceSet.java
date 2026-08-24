@@ -10,12 +10,14 @@ import wangdaye.com.geometricweather.weather.services.ApihzWeatherService;
 import wangdaye.com.geometricweather.weather.services.CaiYunWeatherService;
 import wangdaye.com.geometricweather.weather.services.CmaWeatherService;
 import wangdaye.com.geometricweather.weather.services.CompositeWeatherService;
+import wangdaye.com.geometricweather.weather.services.MetNoWeatherService;
 import wangdaye.com.geometricweather.weather.services.MfWeatherService;
 import wangdaye.com.geometricweather.weather.services.OpenMeteoWeatherService;
 import wangdaye.com.geometricweather.weather.services.OwmWeatherService;
 
 import wangdaye.com.geometricweather.weather.services.WeatherApiWeatherService;
 import wangdaye.com.geometricweather.weather.services.WeatherService;
+import wangdaye.com.geometricweather.weather.services.XiaomiWeatherService;
 
 public class WeatherServiceSet {
 
@@ -30,7 +32,9 @@ public class WeatherServiceSet {
                              WeatherApiWeatherService weatherApiWeatherService,
                              CmaWeatherService cmaWeatherService,
                              ApihzWeatherService apihzWeatherService,
-                             CompositeWeatherService compositeWeatherService) {
+                             CompositeWeatherService compositeWeatherService,
+                             MetNoWeatherService metNoWeatherService,
+                             XiaomiWeatherService xiaomiWeatherService) {
         mWeatherServices = new WeatherService[] {
                 accuWeatherService,
                 caiYunWeatherService,
@@ -40,7 +44,9 @@ public class WeatherServiceSet {
                 weatherApiWeatherService,
                 cmaWeatherService,
                 apihzWeatherService,
-                compositeWeatherService
+                compositeWeatherService,
+                metNoWeatherService,
+                xiaomiWeatherService
         };
     }
 
@@ -70,6 +76,12 @@ public class WeatherServiceSet {
 
             case COMPOSITE:
                 return mWeatherServices[8];
+
+            case METNO:
+                return mWeatherServices[9];
+
+            case XIAOMI:
+                return mWeatherServices[10];
 
             default: // ACCU.
                 return mWeatherServices[0];

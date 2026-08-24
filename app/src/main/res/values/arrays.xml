@@ -10,6 +10,8 @@
         <item>Multi-source</item>
         <item>WeatherAPI</item>
         <item>Open-Meteo</item>
+        <item>MET Norway</item>
+        <item>Xiaomi Weather</item>
         <item>caiyunapp.com (Only For China)</item>
         <item>China Weather (apihz.cn)</item>
         <item>China Meteorological Administration</item>
@@ -21,6 +23,8 @@
         <item>Multi-source</item>
         <item>Weather API</item>
         <item>Open Meteo</item>
+        <item>Met Norway</item>
+        <item>Xiaomi Weather</item>
         <item>CaiYun App.com</item>
         <item>China Weather</item>
         <item>China Meteorological Administration</item>
@@ -32,6 +36,8 @@
         <item>composite</item>
         <item>weatherapi</item>
         <item>open_meteo</item>
+        <item>metno</item>
+        <item>xiaomi</item>
         <item>caiyun</item>
         <item>apihz</item>
         <item>cma</item>

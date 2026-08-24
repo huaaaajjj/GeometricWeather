@@ -22,7 +22,9 @@ enum class WeatherSource(
     APIHZ("apihz", 0xFF2E9E5B.toInt(), "apihz.cn"),
 
     // Appended, never inserted: Location parcels this enum by ordinal.
-    COMPOSITE("composite", 0xFF6B4FBB.toInt(), "open-meteo.com + apihz.cn + caiyunapp.com");
+    COMPOSITE("composite", 0xFF6B4FBB.toInt(), "xiaomi.com + apihz.cn + caiyunapp.com + open-meteo.com"),
+    METNO("metno", 0xFF00A6D6.toInt(), "api.met.no"),
+    XIAOMI("xiaomi", 0xFFFF6900.toInt(), "weatherapi.market.xiaomi.com");
 
     companion object {
 
@@ -54,6 +56,12 @@ enum class WeatherSource(
             }
             if (value.lowercase().contains("apihz")) {
                 return APIHZ
+            }
+            if (value.lowercase().contains("metno")) {
+                return METNO
+            }
+            if (value.lowercase().contains("xiaomi")) {
+                return XIAOMI
             }
             return ACCU
         }

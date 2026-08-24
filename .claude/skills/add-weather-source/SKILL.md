@@ -1,11 +1,11 @@
 ---
 name: add-weather-source
-description: 新增或修复一个天气数据源（provider）。涉及 4 层流水线（json DTO / apis / converters / services）和 6 处注册点。当用户说「加个天气源」「接入 XX 天气」「新增 provider」「某某源不出数据」时使用。
+description: 新增或修复一个天气数据源（provider）。涉及 4 层流水线（json DTO / apis / converters / services）和 7 处注册点。当用户说「加个天气源」「接入 XX 天气」「新增 provider」「某某源不出数据」时使用。
 ---
 
 # 新增天气源
 
-4 层流水线 + 6 处注册点，**少一处就是「源出现在列表里但没数据」或「切过去直接崩」**。
+4 层流水线 + 7 处注册点，**少一处就是「源出现在列表里但没数据」或「切过去直接崩」**。
 
 ## 先做：抓真实响应
 
@@ -27,7 +27,7 @@ curl -s "<endpoint>" | python -m json.tool | head -60
 服务里并行多路请求用 `CountDownLatch` + `AtomicReference`（照抄 `AccuWeatherService`）。
 **取消用的 Call 必须是 `List<Call>` 字段，不能是单个字段** —— 单字段会被并发请求互相覆盖。
 
-## 二、注册 6 处（漏一个就不生效）
+## 二、注册 7 处（漏一个就不生效）
 
 1. **`common/basic/models/options/provider/WeatherSource.kt`**
    - 枚举加 `SRC("src", 0xFFxxxxxx.toInt(), "host.com")`
@@ -52,7 +52,7 @@ curl -s "<endpoint>" | python -m json.tool | head -60
 
 > 漏了 locale 数组不会崩（`Utils.getName/getVoice` 有 `?: id` 兜底），但界面会显示原始 id。
 
-可选：`settings/compose/WeatherSourceStatusScreen.kt` 加进「天气源可用性」实测页。
+7. **`settings/compose/WeatherSourceStatusScreen.kt`** —— `SOURCES` 列表加 `Src(WeatherSource.SRC, "中文名")`。**这不是可选项**：不加，新源在「设置 → 数据提供商 → 天气源可用性」自检页里是隐形的，而那正是验收新源要用的页面。测试坐标只有巴黎（`france = true`）、奥斯陆（`nordic = true`）、北京（默认）三个（`testLocation`）—— 源有地域限制时挑对应的标志，否则会把「超出覆盖范围」误报成「不可用」。
 
 ## 三、转换器必做的空安全
 

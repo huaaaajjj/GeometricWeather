@@ -18,6 +18,7 @@ import wangdaye.com.geometricweather.common.basic.models.Location
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource
 import wangdaye.com.geometricweather.common.basic.models.weather.Daily
 import wangdaye.com.geometricweather.common.basic.models.weather.HalfDay
+import wangdaye.com.geometricweather.common.basic.models.weather.Hourly
 import wangdaye.com.geometricweather.common.basic.models.weather.Precipitation
 import wangdaye.com.geometricweather.common.basic.models.weather.PrecipitationProbability
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather
@@ -287,6 +288,70 @@ class WeatherMergerTest {
         )
     }
 
+    /**
+     * 小米天气 leads the hourly series and its entries carry no chance of rain and no amount, so
+     * without grafting the temperature tab would lose its probability bars and the precipitation tab
+     * would go flat over the ~23 hours it covers — while the hours appended past it, whole Open-Meteo
+     * entries, drew both. What must *not* move is the hour's own temperature, condition text and
+     * wind: those three are the reason that provider was put in charge of this block.
+     */
+    @Test
+    fun theChanceOfRainAndAmountAreGraftedIntoHoursThatLackThem() {
+        val leader = stripHourlyRain(weatherApi)
+        assertTrue(
+            "fixture drifted: Open-Meteo is supposed to carry hourly rain",
+            openMeteo.hourlyForecast.any {
+                it.precipitationProbability.isValid && it.precipitation.isValid
+            }
+        )
+
+        val merged = merge(leader, openMeteo)!!
+
+        var checked = 0
+        leader.hourlyForecast.forEach { leaderHour ->
+            val bucket = leaderHour.time / HOUR_MS
+            val donor = hourAt(openMeteo, bucket) ?: return@forEach
+            val actual = hourAt(merged, bucket)!!
+            if (donor.precipitationProbability.isValid) {
+                assertEquals(
+                    donor.precipitationProbability.total,
+                    actual.precipitationProbability.total
+                )
+            }
+            if (donor.precipitation.isValid) {
+                assertEquals(donor.precipitation.total, actual.precipitation.total)
+            }
+            // The readings that make the hour that forecast stay the leader's.
+            assertEquals(leaderHour.temperature.temperature, actual.temperature.temperature)
+            assertEquals(leaderHour.weatherText, actual.weatherText)
+            assertEquals(leaderHour.wind.speed, actual.wind.speed)
+            assertEquals(leaderHour.wind.direction, actual.wind.direction)
+            checked++
+        }
+        assertTrue("no hour was checked — the test proves nothing", checked > 0)
+    }
+
+    /** An hour whose leader measured its own rain keeps it; the donor's is not allowed to win. */
+    @Test
+    fun theRainAnHourAlreadyHasIsLeftAlone() {
+        val own = openMeteo.hourlyForecast.first {
+            it.precipitationProbability.isValid && hourAt(weatherApi, it.time / HOUR_MS) != null
+        }
+        val donor = hourAt(weatherApi, own.time / HOUR_MS)!!
+        assertNotEquals(
+            "the fixtures agree on that hour — this would prove nothing",
+            own.precipitationProbability.total,
+            donor.precipitationProbability.total
+        )
+
+        val merged = merge(openMeteo, weatherApi)!!
+
+        assertEquals(
+            own.precipitationProbability.total,
+            hourAt(merged, own.time / HOUR_MS)!!.precipitationProbability.total
+        )
+    }
+
     // ---- harness ----
 
     /**
@@ -410,6 +475,25 @@ class WeatherMergerTest {
                 half.cloudCover
             )
         }
+
+    /** 小米天气's hourly shape: a real temperature and wind, but no chance of rain and no amount. */
+    private fun stripHourlyRain(weather: Weather) = Weather(
+        weather.base,
+        weather.current,
+        weather.yesterday,
+        weather.dailyForecast,
+        weather.hourlyForecast.map { hour ->
+            Hourly(
+                hour.date, hour.time, hour.isDaylight, hour.weatherText, hour.weatherCode,
+                hour.temperature,
+                Precipitation(null, null, null, null, null),
+                PrecipitationProbability(null, null, null, null, null),
+                hour.wind, hour.uv
+            )
+        },
+        weather.minutelyForecast,
+        weather.alertList
+    )
 
     private fun mapDailyHalves(weather: Weather, transform: (HalfDay) -> HalfDay) = Weather(
         weather.base,

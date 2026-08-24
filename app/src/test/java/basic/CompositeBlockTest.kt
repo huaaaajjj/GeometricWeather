@@ -39,7 +39,7 @@ class CompositeBlockTest {
 
     @Test
     fun eachBlockNamesItsAssignedProvider() {
-        assertEquals(WeatherSource.OPEN_METEO, CompositeBlock.HOURLY.source)
+        assertEquals(WeatherSource.XIAOMI, CompositeBlock.HOURLY.source)
         assertEquals(WeatherSource.APIHZ, CompositeBlock.DAILY.source)
         assertEquals(WeatherSource.CAIYUN, CompositeBlock.CURRENT.source)
         assertEquals(WeatherSource.CAIYUN, CompositeBlock.AIR_QUALITY.source)

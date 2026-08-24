@@ -30,10 +30,10 @@ import java.util.TimeZone
  *
  * Within a block, only readings that are *independent* of the forecast narrative are taken from the
  * others, and only where the leader left them empty: air quality, UV, pollen, sunrise/sunset, moon
- * phase, hours of sun, and — inside a half day — the chance of rain, the amount and the wind (see
- * [fillHalfDay], which is where this rule is deliberately bent and why). Days and hours the leader
- * does not cover at all are appended whole, so a series runs as long as the longest provider rather
- * than as long as its leader.
+ * phase, hours of sun, and — inside a half day or an hour — the chance of rain and the amount, plus
+ * a half day's wind (see [fillHalfDay] and [mergeHourly], which is where this rule is deliberately
+ * bent and why). Days and hours the leader does not cover at all are appended whole, so a series
+ * runs as long as the longest provider rather than as long as its leader.
  *
  * Alignment is by calendar day (in [timeZone]) and by absolute hour. Both hold as long as every
  * provider dates its entries the same way — today they all parse into the device time zone, so a
@@ -197,6 +197,13 @@ object WeatherMerger {
     /**
      * Hours are bucketed by absolute time, not by wall clock: providers all report on the hour, so
      * the same instant lands in the same bucket whatever offset the place is at.
+     *
+     * The chance of rain and the amount are grafted the same way [fillHalfDay] grafts them into a
+     * half day, and for the same reason: 小米天气 leads this block and its hourly entries carry
+     * neither (`PrecipitationProbability(null, …)` and `Precipitation(null, …)`), so without this the
+     * temperature tab would lose its probability bars and the precipitation tab would go flat for the
+     * ~23 hours it covers, while the appended hours beyond it — whole entries from Open-Meteo — drew
+     * both. The temperature, the condition text and the wind still come from the leader alone.
      */
     private fun mergeHourly(results: List<Weather>): List<Hourly> {
         val others = results.drop(1).map { weather ->
@@ -214,8 +221,13 @@ object WeatherMerger {
                 hour.weatherText,
                 hour.weatherCode,
                 hour.temperature,
-                hour.precipitation,
-                hour.precipitationProbability,
+                pick(listOf(hour.precipitation) + alternatives.map { it.precipitation },
+                    Precipitation::isValid) ?: hour.precipitation,
+                pick(
+                    listOf(hour.precipitationProbability) +
+                        alternatives.map { it.precipitationProbability },
+                    PrecipitationProbability::isValid
+                ) ?: hour.precipitationProbability,
                 hour.wind,
                 pick(listOf(hour.uv) + alternatives.map { it.uv }, UV::isValid)
             )

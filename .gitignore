@@ -13,6 +13,7 @@
 *.pdf
 build_output.txt
 hs_err_pid*.log
+replay_pid*.log
 error_log.txt
 # AGP 输出目录（历史上被误提交过 3.102 的产物）
 /release/
@@ -25,3 +26,5 @@ output-metadata.json
 /opencode.json
 # Claude Code 的临时 worktree（.claude/skills 仍然跟踪）
 /.claude/worktrees/
+# 外部参考代码克隆（breezy-weather 等），只读参考，不进版本库
+/_ref/
