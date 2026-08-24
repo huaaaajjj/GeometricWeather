@@ -11,6 +11,8 @@
 
 阶段 1、2 的落地细节与全部接口怪癖记在 `AI_CONTEXT.md` 变更日志；本文档以下内容保留原样，作为背景记录。
 
+**非数据源的借鉴项（2026-08-24 调研，全部「记录待定」，未动代码）见文末[「阶段 5+」](#阶段-5非数据源的借鉴项2026-08-24-调研待定)一节。**
+
 **阶段 3/4 的裁决理由**（读过 `_ref` 实现与本仓库现状后，用户决定两项都不做）：
 
 - **阶段 3（FPAS）成本远高于方案估计**：bbox 那个 GET 只返回 UUID 列表，每条预警还要再取一次 **CAP XML** 详情（N+1 次往返）；XML 要引一整套新栈（breezy 用 `xmlutil` + kotlinx-serialization，本项目只有 Gson，`CapAlert` 是 297 行 DTO）；多边形过滤依赖本项目没有的 maps-utils；breezy 自己标它 beta。收益侧则**对中国基本零覆盖**（FPAS 聚合各国公开 CAP 源，CMA 不发），而境内预警已有 APIHZ / 小米 / CMA / WeatherAPI 四路。它还是四项里唯一要改既有代码的（`WeatherMerger.merge` 在 `results.size == 1` 时直接返回，需加守卫），而那条路径测试最密。**若将来真要补境外预警**，更省的路是把已接好的 METNO metalerts（挪威）与 MF `/v3/warning/full`（法国）挂进 COMPOSITE —— `mergeAlerts` 本就取并集，零新依赖。
@@ -255,3 +257,81 @@ WMO Severe Weather 的端点/过滤方式我这轮**没核实**（子代理任�
 curl -s "https://api.met.no/weatherapi/locationforecast/2.0/complete.json?lat=59.91&lon=10.75" \
   -H "User-Agent: GeometricWeather/3.5.13 github.com/WuZhengyang2024" | python -m json.tool | head -80
 ```
+
+---
+
+## 阶段 5+：非数据源的借鉴项（2026-08-24 调研，待定）
+
+前四个阶段只看「多接哪个源」。这一节是读 breezy 的 README / `docs/SOURCES.md` 后，对着本仓库现状挑出的**架构与功能方向**，按「收益÷成本」排。**全部只是记录，未动代码，未排期。**
+
+| # | 借鉴什么 | 成本 | 动 schema |
+|---|---|---|---|
+| A | **分要素选源做成用户可配**（breezy 的核心架构） | 小 | 否 |
+| B | **Open-Meteo 空气质量/花粉端点** —— 复活整套已存在的花粉 UI | 小 | 否 |
+| C | **每个地区各自选源**（breezy 是 per-location，本仓库是全局） | 中 | 否 |
+| D | **源能力/覆盖范围静态声明表** | 小 | 否 |
+| E | Gadgetbridge 广播对外共享天气 | 小 | 否 |
+| F | per-source 参数缓存（breezy 的 `location.parameters`） | 极小 | 否（走 prefs） |
+| G | README 里公开「不做清单」 | 零 | — |
+| J | IzzyOnDroid + Obtainium 收录 | 极小 | — |
+| H | Normals（气候平均值） | 大 | **是** → 跳过 |
+| I | 单位格式走 CLDR/ICU | 中 | 否（minSdk 21 挡） |
+
+### A. 分要素选源：`CompositeBlock` 已经是那张表，只差让用户改
+
+breezy 整个架构就是这件事 —— 一个地区的 forecast / air quality / pollen / nowcasting / alerts / normals / address 各自选源（`docs/SOURCES.md` 里「香港 HKO 预报 + EPD 空气」「法国 MF + Atmo 花粉」就是它的产物）。
+
+本仓库 3.5.9 的 `CompositeBlock` **已经是同一个东西**，只是四个块的指派硬编码在枚举里。把它从常量改成读 `SharedPreferences` + 设置页几个下拉，就得到 breezy 那套能力的九成，且**不碰 schema**（全局偏好，不是 per-location）。`CompositeBlock` 兼任卡片署名来源那一层不用动，改的只是数据来源。顺带解决一个死角：现在指派写死，境外用户的「每日→中国天气网」必然落空、靠兜底链救。
+
+### B. Open-Meteo 的空气质量端点（已实测，最省的一件真功能）
+
+`https://air-quality-api.open-meteo.com/v1/air-quality`，免 key。2026-08-24 拿巴黎（48.85, 2.35）实测 `current=`：
+
+```
+pm10 13.5  pm2_5 8.3  carbon_monoxide 251  nitrogen_dioxide 15.6  sulphur_dioxide 1.5  ozone 52   (μg/m³，全球)
+alder 0  birch 0  grass 1.7  mugwort 1.8  olive 0  ragweed 0.2                                    (grains/m³，仅欧洲)
+```
+
+两个收益：
+
+1. **花粉链路当前对所有用户都是死的。** 仓库里有整套 7 个文件（`common/basic/models/weather/Pollen.java`、`common/ui/activities/AllergenActivity.kt`、`main/adapters/main/holder/AllergenViewHolder.java`、`main/adapters/HomePollenAdapter.kt`、`daily/adapter/holder/PollenHolder.java`、`daily/adapter/model/DailyPollen.java`、`common/basic/models/options/unit/PollenUnit.kt`），唯一供数方是 `AccuResultConverter` —— 而 Accu 的 key 已过期，所以这套 UI 谁都看不到。接上后 `tree = max(alder, birch, olive)`、`grass`、`ragweed` 三个槽能填（`mold` 无对应字段、`mugwort` 无槽），**零新 UI、零 schema**（`DailyEntityGenerator` 本来就存 pollen 列）。限欧洲，如实标注。
+2. **Open-Meteo 从此有 AQI。** 它现在完全没有 AQI，正是 COMPOSITE 必须拉彩云/WeatherAPI 的原因。该端点给的是**浓度**，直接喂已有的 `CommonConverter.getAqiIndexFromConcentration`，符合「AQI 一律用中国标准、档位号不得原样写入」那条约束 —— 它的 `european_aqi`/`us_aqi` 恰恰是不能用的那类，**弃用**。
+
+成本：一个新 Retrofit 端点 + DTO + 转换器填两块。`OpenMeteoWeatherService` 本来就是 `RequestScope` 多路并行，加一路即可，失败自动降级为 null。
+
+### C. 每个地区各自选源
+
+breezy 是 per-location 选源。本仓库 `LocationEntity.weatherSource` **本来就是强类型列**，per-location 存得下；3.4.4 修「只有定位地区能换天气源」时选的是「全局重设所有地区」，代价明确记着「放弃同城用不同源各存一个」。breezy 的做法是把选源放在**地区管理页的每个地区上**，而不是设置页的全局开关。要处理的仍是那个老问题：`formattedId` 去重防同城多源塌缩。属方向而非顺手。
+
+### D. 源能力/覆盖范围声明表
+
+breezy 用 `SourceFeature` + 一组接口声明每个源能供哪些要素；本仓库对应物是自检页手维护的 `SOURCES` 列表 + 真联网探测。一张静态表（源 → 能供的块 + 覆盖区域）一次买到三样：
+
+- COMPOSITE 现在每次刷新问全部 5 个成员，其中一批是**注定失败**的调用 —— METNO 的 airquality 境外 HTTP 400、nowcast 境外 422、小米境外 `{"status": -2}`、APIHZ/彩云海外查不到。有表就能不问。
+- 自检页能区分「超出覆盖范围」与「坏了」。这个苦已经吃过：给 `Src` 加 `nordic` 标志就是为了别拿北京去探 METNO 的北欧端点。
+- A 项那几个下拉只列得出有效源。
+
+### E / F / G / J（小件）
+
+- **E**：breezy 有 `nodomain.freeyourgadget.gadgetbridge.ACTION_GENERIC_WEATHER` 广播（以及 v6.1 起实验性的 ContentProvider）给智能手表供数。约 50 行 + 一个设置开关，无 schema。
+- **F**：breezy 的 `location.parameters` 是 per-source KV 缓存。schema 锁着加不了列，但按 `formattedId + source` 存 SharedPreferences 就行 —— 直接受益的是小米的 `locationKey`，现在每次刷新都要重解析一遍（阶段 2 选方案 A 就是因为「无处缓存」）。
+- **G**：breezy README 有一节明确写拒绝什么（不做低于 30 分钟的刷新间隔、不做打开即刷新/点 widget 即刷新、圆形天空不会回来、不接受捐赠）。这种「不做清单」是维护工具。本仓库同类决定散在 `AI_CONTEXT.md`（不改 schema、不重绘 UI、不接 FPAS、不做自动更新），搬进 README 即可。
+- **J**：`fastlane/metadata/` 目录结构已在（changelogs 停在 30013）。补上就能被 IzzyOnDroid 自动收录；Obtainium 认 GitHub Releases 本来就能用。
+
+### 不做（连同理由记下，免得反复讨论）
+
+- **Material 3 Expressive 全量重绘 / 24 小时详图**：与「保持原 UI 风格」硬冲突。详情卡那次改造是在原风格里做增量，方向对。
+- **多模块 Gradle 拆分 + kotlinx-serialization 换 Gson**：现有 DTO、`proguard-rules.pro:20` 的 `weather.json.**` keep 规则、Hilt 图全绑在单模块 + Gson 上，换栈是纯支出。
+- **Normals（气候平均值）**：要新表，schema 锁在 v63。
+- **FPAS / CAP XML、Natural Earth**：见本文档阶段 3/4 的裁决。
+- **雷达**：breezy 自己还在可行性研究阶段。
+- **「移除崩溃上报」那部分隐私姿态**：breezy 无 tracker 是因为它只做 FOSS 分发；本仓库 fdroid flavor 本来就没有 Bugly，pub flavor 留着有用。
+
+### 一条该抄进 README 的提醒
+
+`docs/SOURCES.md` 明写：**7 天以外的预报都不可靠，别按天数选源。** 而本仓库的源对照表把「16 天 / 384 时」当卖点。
+
+### 建议动手顺序
+
+**B**（一个端点换回一整套已存在的 UI + 给 Open-Meteo 补上 AQI）→ **A**（`CompositeBlock` 从常量改成偏好）→ D → C。E/F/G/J 任何时候顺手都能做。
+
