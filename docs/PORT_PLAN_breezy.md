@@ -264,7 +264,7 @@ curl -s "https://api.met.no/weatherapi/locationforecast/2.0/complete.json?lat=59
 
 前四个阶段只看「多接哪个源」。这一节是读 breezy 的 README / `docs/SOURCES.md` 后，对着本仓库现状挑出的**架构与功能方向**，按「收益÷成本」排。**全部只是记录，未动代码，未排期。**
 
-**更新（2026-08-28）：B 已落地** —— Open-Meteo 空气质量/花粉端点已接入，见 `AI_CONTEXT.md` 变更日志；其余仍待定。
+**更新（2026-08-28/29）：B 已落地并发于 v3.6.2；A（分块指派用户可配）实现并真机验证后按用户要求撤销（提交 93f1f26，可经 reflog 找回）；F（per-source 参数缓存）已落地 —— 小米 locationKey 按坐标网格缓存进独立 prefs。其余仍待定。**
 
 | # | 借鉴什么 | 成本 | 动 schema |
 |---|---|---|---|
