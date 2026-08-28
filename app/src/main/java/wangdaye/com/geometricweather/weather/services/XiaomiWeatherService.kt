@@ -1,10 +1,14 @@
 package wangdaye.com.geometricweather.weather.services
 
 import android.content.Context
+import kotlin.math.roundToInt
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.isActive
 import wangdaye.com.geometricweather.BuildConfig
 import wangdaye.com.geometricweather.common.basic.models.Location
+import wangdaye.com.geometricweather.common.basic.models.weather.Weather
+import wangdaye.com.geometricweather.settings.ConfigStore
 import wangdaye.com.geometricweather.weather.apis.XiaomiApi
 import wangdaye.com.geometricweather.weather.converters.XiaomiResultConverter
 import javax.inject.Inject
@@ -18,9 +22,12 @@ import javax.inject.Inject
  * quality, which makes this a usable global fallback too.
  *
  * **A refresh is two steps.** `weather/all` needs a `locationKey` that only `location/city/geo` can
- * produce, and there is nowhere to cache it — the Room schema is frozen at v63 and `Location` has no
- * per-source parameter map, so reusing `cityId` for it would poison the weather cache key (the
- * 3.4.13/3.4.14 bug). Resolving every time costs one small request and keeps the source stateless.
+ * produce. The Room schema is frozen at v63 and `Location` has no per-source parameter map, so
+ * reusing `cityId` for it would poison the weather cache key (the 3.4.13/3.4.14 bug) — but a
+ * private SharedPreferences file is a perfectly good home for it. The key is cached per ~1 km grid
+ * of the request coordinates: a refresh at the same spot skips the resolve entirely, a moved
+ * location misses the cache naturally, and a stale cached key (the data calls came back useless) is
+ * dropped and the full resolve runs again before the refresh is allowed to fail.
  *
  * There is no place search: [requestLocation] echoes the location back, since the resolve step does
  * the geocoding itself from the coordinates.
@@ -40,47 +47,31 @@ class XiaomiWeatherService @Inject constructor(
         val lon = location.longitude.toDouble()
 
         requests.launch {
-            // Step 1: coordinates -> locationKey. Its prefix also decides which backend answers.
-            val locationKey = requests.execute(api.getLocation(lat, lon, LOCALE))
-                ?.firstOrNull { it?.status == 0 && !it.locationKey.isNullOrEmpty() }
-                ?.locationKey
+            val grid = gridKey(lat, lon)
+            val cache = ConfigStore.getInstance(context, CACHE_STORE)
 
-            if (locationKey == null) {
-                if (isActive) {
-                    callback.requestWeatherFailed(location)
+            val cached = cache.getString(grid, null)
+            var weather = cached?.let { fetch(context, location, lat, lon, it) }
+            if (weather == null && cached != null) {
+                // The key no longer answers — drop it so the resolve below runs for real.
+                cache.edit().remove(grid).apply()
+            }
+
+            if (weather == null) {
+                // Step 1: coordinates -> locationKey. Its prefix also decides which backend answers.
+                val locationKey = requests.execute(api.getLocation(lat, lon, LOCALE))
+                    ?.firstOrNull { it?.status == 0 && !it.locationKey.isNullOrEmpty() }
+                    ?.locationKey
+                weather = locationKey?.let { fetch(context, location, lat, lon, it) }
+                if (weather != null && locationKey != null) {
+                    cache.edit().putString(grid, locationKey).apply()
                 }
-                return@launch
             }
-            // isGlobal has to agree with the key's prefix or the forecast comes back empty.
-            val global = !locationKey.startsWith(CHINA_KEY_PREFIX)
-
-            // Step 2: both data calls in parallel — verified to work concurrently on 2026-08-24.
-            val forecast = async {
-                requests.execute(
-                    api.getForecast(
-                        lat, lon, location.isCurrentPosition, locationKey, FORECAST_DAYS,
-                        BuildConfig.XIAOMI_APP_KEY, BuildConfig.XIAOMI_SIGN, global, LOCALE
-                    )
-                )
-            }
-            val minutely = async {
-                requests.execute(
-                    api.getMinutely(
-                        lat, lon, LOCALE, global,
-                        BuildConfig.XIAOMI_APP_KEY, locationKey, BuildConfig.XIAOMI_SIGN
-                    )
-                )
-            }
-            val forecastResult = forecast.await()
-            val minutelyResult = minutely.await()
 
             // Nothing below this point may reach the caller once cancel() has been called.
             if (!isActive) {
                 return@launch
             }
-            val weather = XiaomiResultConverter.convert(
-                context, location, forecastResult, minutelyResult
-            )
             if (weather != null) {
                 callback.requestWeatherSuccess(Location.copy(location, weather))
             } else {
@@ -88,6 +79,42 @@ class XiaomiWeatherService @Inject constructor(
             }
         }
     }
+
+    /**
+     * Step 2: both data calls in parallel — verified to work concurrently on 2026-08-24.
+     * Returns null when the forecast is unusable; [locationKey] decides the backend.
+     */
+    private suspend fun CoroutineScope.fetch(
+        context: Context,
+        location: Location,
+        lat: Double,
+        lon: Double,
+        locationKey: String
+    ): Weather? {
+        // isGlobal has to agree with the key's prefix or the forecast comes back empty.
+        val global = !locationKey.startsWith(CHINA_KEY_PREFIX)
+        val forecast = async {
+            requests.execute(
+                api.getForecast(
+                    lat, lon, location.isCurrentPosition, locationKey, FORECAST_DAYS,
+                    BuildConfig.XIAOMI_APP_KEY, BuildConfig.XIAOMI_SIGN, global, LOCALE
+                )
+            )
+        }
+        val minutely = async {
+            requests.execute(
+                api.getMinutely(
+                    lat, lon, LOCALE, global,
+                    BuildConfig.XIAOMI_APP_KEY, locationKey, BuildConfig.XIAOMI_SIGN
+                )
+            )
+        }
+        return XiaomiResultConverter.convert(context, location, forecast.await(), minutely.await())
+    }
+
+    /** ~1 km grid: the same spot reuses its key, a moved location misses the cache naturally. */
+    private fun gridKey(lat: Double, lon: Double): String =
+        "key_" + (lat * 100).roundToInt() + "_" + (lon * 100).roundToInt()
 
     override fun requestLocation(context: Context, query: String): List<Location> = emptyList()
 
@@ -114,5 +141,8 @@ class XiaomiWeatherService @Inject constructor(
          * text either way.
          */
         private const val LOCALE = "zh_cn"
+
+        /** Own prefs file: resolved location keys, keyed by the ~1 km coordinate grid. */
+        private const val CACHE_STORE = "xiaomi"
     }
 }

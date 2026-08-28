@@ -214,6 +214,39 @@ public class XiaomiWeatherServiceTest {
         assertNull(weather.getCurrent().getHourlyForecast());
     }
 
+    /**
+     * The point of the cache: the second refresh at the same spot must skip the resolve entirely
+     * (geo answered once, the data calls twice). Fresh Robolectric prefs per test keep this from
+     * leaking between cases.
+     */
+    @Test
+    public void aCachedKeySkipsTheResolveOnTheNextRefresh() throws InterruptedException {
+        request(mBeijing).awaitWeather();
+        Weather again = request(mBeijing).awaitWeather();
+
+        assertNotNull(again);
+        assertEquals(2, mServer.requestCount(FORECAST));
+        assertEquals("the resolve must run once, not once per refresh", 1, mServer.requestCount(GEO));
+    }
+
+    /**
+     * A cached key that stops answering must not brick the source: the data call fails with it, the
+     * cache entry is dropped, the full resolve runs again, and the third data call succeeds.
+     */
+    @Test
+    public void aStaleCachedKeyIsDroppedAndTheSourceRecovers() throws InterruptedException {
+        mServer.route(FORECAST,
+                mServer.payload("all_beijing.json"), mServer.status(503),
+                mServer.payload("all_beijing.json"));
+
+        request(mBeijing).awaitWeather();  // healthy: key resolved and cached
+        Weather weather = request(mBeijing).awaitWeather();  // cached key gets the 503
+
+        assertNotNull("the stale key must not sink the refresh", weather);
+        assertEquals("the stale-key path re-resolved", 2, mServer.requestCount(GEO));
+        assertEquals("cached attempt + one retry after resolving", 3, mServer.requestCount(FORECAST));
+    }
+
     /** Gson throws from inside the IO coroutine, where nothing above the service would catch it. */
     @Test
     public void aMalformedForecastDegradesToFailure() throws InterruptedException {
