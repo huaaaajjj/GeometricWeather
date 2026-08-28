@@ -141,6 +141,11 @@
     <string name="mold">Mold</string>
     <string name="ragweed">Ragweed</string>
     <string name="tree">Tree</string>
+    <string name="pollen_level_none">None</string>
+    <string name="pollen_level_low">Low</string>
+    <string name="pollen_level_moderate">Moderate</string>
+    <string name="pollen_level_high">High</string>
+    <string name="pollen_level_very_high">Very high</string>
 
     <string name="daily_overview">Daily forecast</string>
     <string name="hourly_overview">Hourly forecast</string>

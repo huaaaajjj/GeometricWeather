@@ -5,6 +5,8 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.roundToInt
+import wangdaye.com.geometricweather.R
 import wangdaye.com.geometricweather.common.basic.models.Location
 import wangdaye.com.geometricweather.common.basic.models.weather.AirQuality
 import wangdaye.com.geometricweather.common.basic.models.weather.Alert
@@ -15,6 +17,7 @@ import wangdaye.com.geometricweather.common.basic.models.weather.Daily
 import wangdaye.com.geometricweather.common.basic.models.weather.HalfDay
 import wangdaye.com.geometricweather.common.basic.models.weather.Hourly
 import wangdaye.com.geometricweather.common.basic.models.weather.Minutely
+import wangdaye.com.geometricweather.common.basic.models.weather.Pollen
 import wangdaye.com.geometricweather.common.basic.models.weather.Precipitation
 import wangdaye.com.geometricweather.common.basic.models.weather.PrecipitationDuration
 import wangdaye.com.geometricweather.common.basic.models.weather.PrecipitationProbability
@@ -24,12 +27,19 @@ import wangdaye.com.geometricweather.common.basic.models.weather.Weather
 import wangdaye.com.geometricweather.common.basic.models.weather.WeatherCode
 import wangdaye.com.geometricweather.common.basic.models.weather.Wind
 import wangdaye.com.geometricweather.common.basic.models.weather.WindDegree
+import wangdaye.com.geometricweather.weather.json.openmeteo.OpenMeteoAirQualityResult
 import wangdaye.com.geometricweather.weather.json.openmeteo.OpenMeteoResult
 
 object OpenMeteoResultConverter {
 
     @JvmStatic
-    fun convert(context: Context, location: Location, result: OpenMeteoResult?): Weather? {
+    @JvmOverloads
+    fun convert(
+        context: Context,
+        location: Location,
+        result: OpenMeteoResult?,
+        airQualityResult: OpenMeteoAirQualityResult? = null
+    ): Weather? {
         if (result == null) {
             return null
         }
@@ -37,9 +47,9 @@ object OpenMeteoResultConverter {
             val now = System.currentTimeMillis()
             Weather(
                 Base(location.cityId, now, Date(), now, Date(), now),
-                convertCurrent(context, result),
+                convertCurrent(context, result, airQualityResult),
                 null,
-                convertDailyList(context, result),
+                convertDailyList(context, result, convertPollenMap(context, airQualityResult)),
                 convertHourlyList(context, result),
                 ArrayList<Minutely>(),
                 ArrayList<Alert>()
@@ -49,7 +59,11 @@ object OpenMeteoResultConverter {
         }
     }
 
-    private fun convertCurrent(context: Context, result: OpenMeteoResult): Current {
+    private fun convertCurrent(
+        context: Context,
+        result: OpenMeteoResult,
+        airQualityResult: OpenMeteoAirQualityResult?
+    ): Current {
         val current = checkNotNull(result.current)
         val temperature = current.temperature?.toInt() ?: 0
         val feelsLike = current.apparentTemperature?.toInt()
@@ -59,6 +73,24 @@ object OpenMeteoResultConverter {
         val humidity = current.humidity?.toFloat()
         val pressure = current.pressure?.toFloat()
         val cloudCover = current.cloudCover?.toInt()
+
+        // The AQI comes from concentrations, never from the endpoint's european_aqi/us_aqi grade
+        // numbers — the whole app reads aqiIndex as a 0-500 China AQI.
+        val air = airQualityResult?.current
+        val pm25 = air?.pm25?.toFloat()
+        val pm10 = air?.pm10?.toFloat()
+        val aqiIndex = CommonConverter.getAqiIndexFromConcentration(pm25, pm10)
+        val airQuality = AirQuality(
+            CommonConverter.getAqiQuality(context, aqiIndex),
+            aqiIndex,
+            pm25,
+            pm10,
+            air?.sulphurDioxide?.toFloat(),
+            air?.nitrogenDioxide?.toFloat(),
+            air?.ozone?.toFloat(),
+            // The API reports CO in μg/m³, the model's default CO unit is mg/m³.
+            air?.carbonMonoxide?.toFloat()?.div(1000f)
+        )
 
         return Current(
             getWeatherText(current.weatherCode),
@@ -73,7 +105,7 @@ object OpenMeteoResultConverter {
                 CommonConverter.getWindLevel(context, windSpeed.toDouble())
             ),
             UV(null, null, null),
-            AirQuality(null, null, null, null, null, null, null, null),
+            airQuality,
             humidity,
             pressure,
             null,
@@ -85,7 +117,11 @@ object OpenMeteoResultConverter {
         )
     }
 
-    private fun convertDailyList(context: Context, result: OpenMeteoResult): List<Daily> {
+    private fun convertDailyList(
+        context: Context,
+        result: OpenMeteoResult,
+        pollenMap: Map<String, Pollen>
+    ): List<Daily> {
         val daily = result.daily ?: return emptyList()
         val times = daily.time ?: return emptyList()
         val list = ArrayList<Daily>()
@@ -118,7 +154,8 @@ object OpenMeteoResultConverter {
 
             list.add(
                 Daily(
-                    date, date.time, day, night, sun, null, null, null, null,
+                    date, date.time, day, night, sun, null, null, null,
+                    pollenMap[times[i]],
                     UV(uvIndex, null, null), 0f
                 )
             )
@@ -151,6 +188,88 @@ object OpenMeteoResultConverter {
         ),
         null
     )
+
+    // ---- pollen (the air quality host's hourly grains/m³ columns) ----
+
+    // Daily-max grains/m³ -> level 0..4. Thresholds from Atmo France, the same table
+    // breezy-weather uses for its pollen index.
+    private val ALDER_LIMITS = intArrayOf(0, 10, 60, 100, 500)
+    private val BIRCH_LIMITS = intArrayOf(0, 10, 60, 100, 500)
+    private val OLIVE_LIMITS = intArrayOf(0, 20, 100, 200, 500)
+    private val GRASS_LIMITS = intArrayOf(0, 3, 30, 50, 250)
+    private val RAGWEED_LIMITS = intArrayOf(0, 3, 30, 50, 250)
+
+    /**
+     * Folds the hourly pollen columns into one [Pollen] per day, keyed by the date part of the
+     * hourly timestamp. Both endpoints are asked for the same timezone, so that key matches
+     * daily.time exactly and no date parsing is involved.
+     */
+    private fun convertPollenMap(
+        context: Context,
+        airQualityResult: OpenMeteoAirQualityResult?
+    ): Map<String, Pollen> {
+        val hourly = airQualityResult?.hourly ?: return emptyMap()
+        val times = hourly.time ?: return emptyMap()
+
+        val alder = HashMap<String, Float?>()
+        val birch = HashMap<String, Float?>()
+        val olive = HashMap<String, Float?>()
+        val grass = HashMap<String, Float?>()
+        val ragweed = HashMap<String, Float?>()
+        for (i in times.indices) {
+            val day = times[i]?.substringBefore('T') ?: continue
+            alder[day] = maxSoFar(alder[day], hourly.alderPollen, i)
+            birch[day] = maxSoFar(birch[day], hourly.birchPollen, i)
+            olive[day] = maxSoFar(olive[day], hourly.olivePollen, i)
+            grass[day] = maxSoFar(grass[day], hourly.grassPollen, i)
+            ragweed[day] = maxSoFar(ragweed[day], hourly.ragweedPollen, i)
+        }
+
+        val pollenMap = HashMap<String, Pollen>()
+        for (day in alder.keys) {
+            val tree = treeSlot(alder[day], birch[day], olive[day])
+            val grassMax = grass[day]
+            val grassLevel = grassMax?.let { pollenLevel(it, GRASS_LIMITS) }
+            val ragweedMax = ragweed[day]
+            val ragweedLevel = ragweedMax?.let { pollenLevel(it, RAGWEED_LIMITS) }
+            pollenMap[day] = Pollen(
+                // The model stores the index as an integer (Accu's concentrations are whole
+                // numbers too), so fractional grains/m³ round at this boundary.
+                grassMax?.roundToInt(), grassLevel, pollenDescription(context, grassLevel),
+                null, null, null,
+                ragweedMax?.roundToInt(), ragweedLevel, pollenDescription(context, ragweedLevel),
+                tree?.first?.roundToInt(), tree?.second, pollenDescription(context, tree?.second)
+            )
+        }
+        return pollenMap
+    }
+
+    /** The model has one tree slot, the API three species: the day is rated by whichever
+     * species reaches the highest level, and that species' peak concentration goes with it. */
+    private fun treeSlot(alder: Float?, birch: Float?, olive: Float?): Pair<Float, Int>? {
+        val candidates = ArrayList<Pair<Float, Int>>()
+        alder?.let { candidates.add(it to pollenLevel(it, ALDER_LIMITS)) }
+        birch?.let { candidates.add(it to pollenLevel(it, BIRCH_LIMITS)) }
+        olive?.let { candidates.add(it to pollenLevel(it, OLIVE_LIMITS)) }
+        return candidates.maxByOrNull { it.second }
+    }
+
+    private fun pollenLevel(concentration: Float, limits: IntArray): Int =
+        limits.indexOfLast { concentration >= it }.coerceAtLeast(0)
+
+    private fun pollenDescription(context: Context, level: Int?): String? = when (level) {
+        null -> null
+        0 -> context.getString(R.string.pollen_level_none)
+        1 -> context.getString(R.string.pollen_level_low)
+        2 -> context.getString(R.string.pollen_level_moderate)
+        3 -> context.getString(R.string.pollen_level_high)
+        else -> context.getString(R.string.pollen_level_very_high)
+    }
+
+    private fun maxSoFar(current: Float?, values: List<Double>?, index: Int): Float? {
+        val value = values?.getOrNull(index)?.toFloat() ?: return current
+        return if (current == null || value > current) value else current
+    }
 
     private fun convertHourlyList(context: Context, result: OpenMeteoResult): List<Hourly> {
         val hourly = result.hourly ?: return emptyList()

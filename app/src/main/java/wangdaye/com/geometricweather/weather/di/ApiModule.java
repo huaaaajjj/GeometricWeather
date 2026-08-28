@@ -27,6 +27,7 @@ import wangdaye.com.geometricweather.weather.apis.CaiYunApi;
 import wangdaye.com.geometricweather.weather.apis.CmaApi;
 import wangdaye.com.geometricweather.weather.apis.MetNoApi;
 import wangdaye.com.geometricweather.weather.apis.MfWeatherApi;
+import wangdaye.com.geometricweather.weather.apis.OpenMeteoAirQualityApi;
 import wangdaye.com.geometricweather.weather.apis.OpenMeteoApi;
 import wangdaye.com.geometricweather.weather.apis.OwmApi;
 import wangdaye.com.geometricweather.weather.apis.WeatherApiApi;
@@ -128,6 +129,17 @@ public class ApiModule {
                 .addConverterFactory(converterFactory)
                 .build()
                 .create((OpenMeteoApi.class));
+    }
+
+    @Provides
+    public OpenMeteoAirQualityApi provideOpenMeteoAirQualityApi(OkHttpClient client,
+                                                                GsonConverterFactory converterFactory) {
+        return new Retrofit.Builder()
+                .baseUrl(BuildConfig.OPEN_METEO_AIR_QUALITY_BASE_URL)
+                .client(client)
+                .addConverterFactory(converterFactory)
+                .build()
+                .create((OpenMeteoAirQualityApi.class));
     }
 
     @Provides

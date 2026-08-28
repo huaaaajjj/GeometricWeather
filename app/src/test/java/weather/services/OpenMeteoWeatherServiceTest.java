@@ -1,6 +1,7 @@
 package weather.services;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -21,6 +22,7 @@ import java.util.TimeZone;
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource;
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
+import wangdaye.com.geometricweather.weather.apis.OpenMeteoAirQualityApi;
 import wangdaye.com.geometricweather.weather.apis.OpenMeteoApi;
 import wangdaye.com.geometricweather.weather.services.OpenMeteoWeatherService;
 
@@ -35,6 +37,7 @@ import wangdaye.com.geometricweather.weather.services.OpenMeteoWeatherService;
 public class OpenMeteoWeatherServiceTest {
 
     private static final String FORECAST = "/v1/forecast";
+    private static final String AIR_QUALITY = "/v1/air-quality";
 
     private ProviderServer mServer;
     private Context mContext;
@@ -56,7 +59,9 @@ public class OpenMeteoWeatherServiceTest {
                 WeatherSource.OPEN_METEO,
                 false, false, true
         );
-        mServer = new ProviderServer("openmeteo").serving(FORECAST, "forecast.json");
+        mServer = new ProviderServer("openmeteo")
+                .serving(FORECAST, "forecast.json")
+                .serving(AIR_QUALITY, "air_beijing.json");
     }
 
     @After
@@ -66,7 +71,9 @@ public class OpenMeteoWeatherServiceTest {
     }
 
     private OpenMeteoWeatherService service() {
-        return new OpenMeteoWeatherService(mServer.api(OpenMeteoApi.class));
+        return new OpenMeteoWeatherService(
+                mServer.api(OpenMeteoApi.class),
+                mServer.api(OpenMeteoAirQualityApi.class));
     }
 
     private ProviderServer.WeatherOutcome request() {
@@ -83,7 +90,31 @@ public class OpenMeteoWeatherServiceTest {
         assertEquals(mLocation.getCityId(), weather.getBase().getCityId());
         assertEquals(3, weather.getDailyForecast().size());
         assertEquals(3 * 24, weather.getHourlyForecast().size());
-        assertEquals("one call answers everything", 1, mServer.requestCount());
+        // pm2.5 120.1 μg/m³ from the air quality fixture, through the service and converter.
+        assertEquals(157, weather.getCurrent().getAirQuality().getAqiIndex().intValue());
+        assertEquals("forecast and air quality answer in parallel", 2, mServer.requestCount());
+    }
+
+    /** The air quality API rejects forecast_days > 7 outright instead of clamping. */
+    @Test
+    public void theAirQualityHorizonStaysWithinWhatTheEndpointAccepts() throws InterruptedException {
+        request().awaitWeather();
+
+        String path = mServer.requestedPath(AIR_QUALITY);
+        assertNotNull(path);
+        assertTrue("air quality horizon rejected above 7: " + path,
+                path.contains("forecast_days=7"));
+    }
+
+    /** Air quality is the optional call: its outage must not sink the refresh. */
+    @Test
+    public void anAirQualityOutageDoesNotSinkTheRefresh() throws InterruptedException {
+        mServer.failing(AIR_QUALITY, 503);
+
+        Weather weather = request().awaitWeather();
+
+        assertNotNull(weather);
+        assertFalse(weather.getCurrent().getAirQuality().isValidIndex());
     }
 
     /**

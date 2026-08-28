@@ -26,13 +26,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import wangdaye.com.geometricweather.R;
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource;
 import wangdaye.com.geometricweather.common.basic.models.weather.Daily;
 import wangdaye.com.geometricweather.common.basic.models.weather.Hourly;
+import wangdaye.com.geometricweather.common.basic.models.weather.Pollen;
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
 import wangdaye.com.geometricweather.common.basic.models.weather.WeatherCode;
 import wangdaye.com.geometricweather.weather.converters.OpenMeteoResultConverter;
+import wangdaye.com.geometricweather.weather.json.openmeteo.OpenMeteoAirQualityResult;
 import wangdaye.com.geometricweather.weather.json.openmeteo.OpenMeteoResult;
 
 /**
@@ -84,6 +87,14 @@ public class OpenMeteoResultConverterTest {
         assertNotNull("fixture missing: " + name, in);
         return new Gson().fromJson(
                 new InputStreamReader(in, StandardCharsets.UTF_8), OpenMeteoResult.class);
+    }
+
+    private OpenMeteoAirQualityResult loadAir(String name) {
+        InputStream in = getClass().getClassLoader().getResourceAsStream("openmeteo/" + name);
+        assertNotNull("fixture missing: " + name, in);
+        return new Gson().fromJson(
+                new InputStreamReader(in, StandardCharsets.UTF_8),
+                OpenMeteoAirQualityResult.class);
     }
 
     /**
@@ -171,6 +182,75 @@ public class OpenMeteoResultConverterTest {
     @Test
     public void nullResultIsRejected() {
         assertNull(OpenMeteoResultConverter.convert(mContext, mLocation, null));
+    }
+
+    /**
+     * The AQI must be derived from concentrations via the HJ 633-2012 formula — the air quality
+     * endpoint ships no 0-500 index of its own, only european_aqi/us_aqi grade numbers that must
+     * never be filed as one. Beijing's pm2.5 of 120.1 μg/m³ is IAQI 157 (against 87 for pm10).
+     */
+    @Test
+    public void currentAirQualityIsDerivedFromConcentrations() {
+        Weather weather = OpenMeteoResultConverter.convert(
+                mContext, mLocation, load("forecast.json"), loadAir("air_beijing.json"));
+
+        assertNotNull(weather);
+        assertEquals(157, weather.getCurrent().getAirQuality().getAqiIndex().intValue());
+        assertEquals(mContext.getString(R.string.aqi_4),
+                weather.getCurrent().getAirQuality().getAqiText());
+        // The API reports CO in μg/m³; the model's default CO unit is mg/m³.
+        assertEquals(2.692f, weather.getCurrent().getAirQuality().getCO(), 0.001f);
+        assertEquals(94.5f, weather.getCurrent().getAirQuality().getNO2(), 0.01f);
+    }
+
+    /**
+     * Pollen folds onto the daily list by the date stamped in the requested timezone. The Paris
+     * fixture was captured in August with real grass and ragweed concentrations while the three
+     * tree species read a flat zero. Only its date labels were shifted to align with
+     * forecast.json; the values are the captured ones.
+     */
+    @Test
+    public void dailyPollenIsAggregatedFromTheHourlyMaxima() {
+        Weather weather = OpenMeteoResultConverter.convert(
+                mContext, mLocation, load("forecast.json"), loadAir("air_paris.json"));
+
+        assertNotNull(weather);
+        Pollen first = weather.getDailyForecast().get(0).getPollen();
+        // The model stores the index as an integer, so the captured 1.4 grains/m³ rounds to 1.
+        assertEquals(1, first.getGrassIndex().intValue());
+        // 1.4 grains/m³ sits below grass's first Atmo France threshold of 3, so level 0.
+        assertEquals(0, first.getGrassLevel().intValue());
+        assertEquals(mContext.getString(R.string.pollen_level_none), first.getGrassDescription());
+        assertEquals(5, first.getRagweedIndex().intValue());
+        assertEquals(1, first.getRagweedLevel().intValue());
+        assertEquals(mContext.getString(R.string.pollen_level_low), first.getRagweedDescription());
+        // All three tree species at zero concentration: the slot keeps the zero rather than
+        // pretending there is no reading, and the card-level isValid() ignores it.
+        assertEquals(0, first.getTreeIndex().intValue());
+        assertEquals(mContext.getString(R.string.pollen_level_none), first.getTreeDescription());
+
+        assertEquals(6, weather.getDailyForecast().get(1).getPollen().getRagweedIndex().intValue());
+    }
+
+    /** Beijing is outside the pollen coverage: the API answers 200 with null columns, which
+     * must fold into a pollen object no card considers valid — not a crash, not a half-fill. */
+    @Test
+    public void outOfCoveragePollenLeavesTheCardInvalid() {
+        Weather weather = OpenMeteoResultConverter.convert(
+                mContext, mLocation, load("forecast.json"), loadAir("air_beijing.json"));
+
+        assertNotNull(weather);
+        assertFalse(weather.getDailyForecast().get(0).getPollen().isValid());
+    }
+
+    /** The air quality call is optional: a forecast without it converts exactly as before. */
+    @Test
+    public void missingAirQualityLeavesTheWeatherUntouched() {
+        Weather weather = OpenMeteoResultConverter.convert(mContext, mLocation, load("forecast.json"));
+
+        assertNotNull(weather);
+        assertNull(weather.getCurrent().getAirQuality().getAqiIndex());
+        assertFalse(weather.getDailyForecast().get(0).getPollen().isValid());
     }
 
     private String format(java.util.Date date) {

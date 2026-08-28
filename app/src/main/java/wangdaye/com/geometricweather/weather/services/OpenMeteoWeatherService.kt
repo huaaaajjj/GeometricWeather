@@ -1,8 +1,10 @@
 package wangdaye.com.geometricweather.weather.services
 
 import android.content.Context
+import kotlinx.coroutines.async
 import kotlinx.coroutines.isActive
 import wangdaye.com.geometricweather.common.basic.models.Location
+import wangdaye.com.geometricweather.weather.apis.OpenMeteoAirQualityApi
 import wangdaye.com.geometricweather.weather.apis.OpenMeteoApi
 import wangdaye.com.geometricweather.weather.converters.OpenMeteoResultConverter
 import java.util.TimeZone
@@ -11,11 +13,16 @@ import javax.inject.Inject
 /**
  * Open-Meteo service. Free and key-less, and it answers current, hourly and daily in one call.
  *
+ * Air quality (including the European pollen columns) lives on a separate host and is the only
+ * optional call: its failure must not sink the refresh, coverage outside Europe simply comes
+ * back with null columns.
+ *
  * There is no place search: the API is coordinate-only, so [requestLocation] echoes the location
  * back and the caller keeps whatever name it already had.
  */
 class OpenMeteoWeatherService @Inject constructor(
-    private val api: OpenMeteoApi
+    private val api: OpenMeteoApi,
+    private val airQualityApi: OpenMeteoAirQualityApi
 ) : WeatherService() {
 
     private val requests = RequestScope()
@@ -25,25 +32,48 @@ class OpenMeteoWeatherService @Inject constructor(
         location: Location,
         callback: RequestWeatherCallback
     ) {
+        val lat = location.latitude.toDouble()
+        val lon = location.longitude.toDouble()
+        val timezone = TimeZone.getDefault().id
+
         requests.launch {
-            val result = requests.execute(
-                api.getForecast(
-                    location.latitude.toDouble(),
-                    location.longitude.toDouble(),
-                    CURRENT_FIELDS,
-                    HOURLY_FIELDS,
-                    DAILY_FIELDS,
-                    TimeZone.getDefault().id,
-                    FORECAST_DAYS,
-                    PAST_DAYS
+            val forecast = async {
+                requests.execute(
+                    api.getForecast(
+                        lat,
+                        lon,
+                        CURRENT_FIELDS,
+                        HOURLY_FIELDS,
+                        DAILY_FIELDS,
+                        timezone,
+                        FORECAST_DAYS,
+                        PAST_DAYS
+                    )
                 )
-            )
-            val weather = result?.let { OpenMeteoResultConverter.convert(context, location, it) }
+            }
+            val airQuality = async {
+                requests.execute(
+                    airQualityApi.getAirQuality(
+                        lat,
+                        lon,
+                        AIR_QUALITY_CURRENT_FIELDS,
+                        AIR_QUALITY_HOURLY_FIELDS,
+                        timezone,
+                        AIR_QUALITY_FORECAST_DAYS
+                    )
+                )
+            }
+            val forecastResult = forecast.await()
+            val airQualityResult = airQuality.await()
 
             // Nothing below this point may reach the caller once cancel() has been called.
             if (!isActive) {
                 return@launch
             }
+            val weather = forecastResult?.let {
+                OpenMeteoResultConverter.convert(context, location, it, airQualityResult)
+            }
+
             if (weather != null) {
                 callback.requestWeatherSuccess(Location.copy(location, weather))
             } else {
@@ -80,6 +110,17 @@ class OpenMeteoWeatherService @Inject constructor(
                 "wind_gusts_10m_max,wind_direction_10m_dominant,uv_index_max,sunshine_duration"
 
         private const val FORECAST_DAYS = 16
+
+        private const val AIR_QUALITY_CURRENT_FIELDS =
+                "pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone"
+
+        // Pollen only: the hourly pm columns are consumed by nothing, and the aqi endpoint's
+        // own european_aqi/us_aqi are grade numbers that must never be filed as a 0-500 index.
+        private const val AIR_QUALITY_HOURLY_FIELDS =
+                "alder_pollen,birch_pollen,grass_pollen,olive_pollen,ragweed_pollen"
+
+        // The air quality API rejects forecast_days > 7 outright instead of clamping.
+        private const val AIR_QUALITY_FORECAST_DAYS = 7
 
         // Never ask for past days. The day-over-day comparison this once claimed to serve is fed by
         // the history table (DatabaseHelper.readWeather), not by the response — and the converter
