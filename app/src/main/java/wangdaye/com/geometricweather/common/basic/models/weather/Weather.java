@@ -94,6 +94,29 @@ public class Weather
     }
 
     /**
+     * The same weather with the hours from {@code time} on dropped — a 16-day source answers 384
+     * hourly points, and past day three an hourly view is scroll length, not information. The hour
+     * starting exactly at {@code time} goes: it is already the far side of the horizon.
+     *
+     * Same two escapes as {@link #withHoursFrom(long)}: unchanged when nothing would go, and
+     * unchanged when everything would.
+     */
+    @NonNull
+    public Weather withHoursUntil(long time) {
+        List<Hourly> upcoming = new ArrayList<>();
+        for (Hourly hourly : hourlyForecast) {
+            if (hourly.getTime() < time) {
+                upcoming.add(hourly);
+            }
+        }
+        if (upcoming.isEmpty() || upcoming.size() == hourlyForecast.size()) {
+            return this;
+        }
+        return new Weather(
+                base, current, yesterday, dailyForecast, upcoming, minutelyForecast, alertList);
+    }
+
+    /**
      * The same weather with the days that are already over dropped, so {@code dailyForecast[0]} is
      * today. Providers lag: a domestic source can still be serving yesterday as its first day for
      * hours after midnight, and the whole app — header, widgets, notifications — reads index 0 as

@@ -41,6 +41,9 @@ import wangdaye.com.geometricweather.theme.weatherView.WeatherViewController;
 
 public class HourlyViewHolder extends AbstractMainCardViewHolder {
 
+    /** The card never shows hours past day three — see the trim in {@link #onBindView}. */
+    private static final long HOURLY_HORIZON_MILLIS = 3 * 24 * 60 * 60 * 1000L;
+
     private final TextView mTitle;
     private final TextView mSubtitle;
     private final RecyclerView mTagView;
@@ -97,8 +100,13 @@ public class HourlyViewHolder extends AbstractMainCardViewHolder {
         // evening. This card is a forecast, not a log: start it at the hour it is now. The trend
         // adapters read the hourly list off the location they are handed, so trimming it here is
         // enough for the whole card — tags included.
+        //
+        // Three days is the whole useful horizon: the sources that answer far beyond it (Open-Meteo
+        // alone serves 384 points) are chart filler by day four.
+        long now = System.currentTimeMillis();
         Location hourlyLocation = Location.copy(
-                location, weather.withHoursFrom(System.currentTimeMillis()));
+                location,
+                weather.withHoursFrom(now).withHoursUntil(now + HOURLY_HORIZON_MILLIS));
         Weather hourlyWeather = hourlyLocation.getWeather();
         assert hourlyWeather != null;
 

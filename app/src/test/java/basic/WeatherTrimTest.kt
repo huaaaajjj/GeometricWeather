@@ -22,13 +22,15 @@ import java.nio.charset.StandardCharsets
 import java.util.TimeZone
 
 /**
- * Two trims, one reason: what a provider sends is not what is still ahead of you.
+ * Three trims, one reason: what a provider sends is not what is still ahead of you.
  *
  * Providers answer in whole days, so an hourly series still opens at 00:00 at 11 pm and the card
  * reads as a log of hours nobody can act on — [Weather.withHoursFrom] is what the hourly card uses
- * to open at the hour it is now. And a provider can lag a whole day: a domestic source serves
- * yesterday as its first day for hours after midnight, which matters far more, since the header,
- * the widgets and the notifications all read day 0 as today — [Weather.withDaysFrom] drops it.
+ * to open at the hour it is now. And a 16-day source answers 384 of those hours, which past day
+ * three is scroll length, not information — [Weather.withHoursUntil] caps the tail. A provider can
+ * also lag a whole day: a domestic source serves yesterday as its first day for hours after
+ * midnight, which matters far more, since the header, the widgets and the notifications all read
+ * day 0 as today — [Weather.withDaysFrom] drops it.
  */
 @RunWith(RobolectricTestRunner::class)
 // Robolectric 4.12.2 ships no SDK 35 sandbox; targetSdk is 35, so pin the runtime to 34.
@@ -92,6 +94,30 @@ class WeatherTrimTest {
         assertSame(weather, weather.withHoursFrom(first.time))
         // A cache stale enough that every hour has passed is still worth showing.
         assertSame(weather, weather.withHoursFrom(last.time + 2 * 60 * 60 * 1000L))
+    }
+
+    @Test
+    fun theHourAtTheHorizonGoesAndTheOneBeforeItStays() {
+        // The fixture answers exactly three days: index 71 starts 72 h after index 0, which puts
+        // it on the far side of a horizon drawn at its own start.
+        val horizon = weather.hourlyForecast[71]
+        val trimmed = weather.withHoursUntil(horizon.time)
+
+        assertEquals(weather.hourlyForecast.size - 1, trimmed.hourlyForecast.size)
+        assertEquals(weather.hourlyForecast[70].time, trimmed.hourlyForecast.last().time)
+        // The rest of the weather is untouched.
+        assertEquals(weather.dailyForecast.size, trimmed.dailyForecast.size)
+        assertSame(weather.current, trimmed.current)
+    }
+
+    @Test
+    fun aSeriesFullyInsideAndFullyOutsideTheHorizonBothComeBackUnchanged() {
+        val first = weather.hourlyForecast[0]
+        val last = weather.hourlyForecast.last()
+
+        assertSame(weather, weather.withHoursUntil(last.time + 60 * 60 * 1000L))
+        // An entirely over-horizon cache would be emptied by the cap — still not worth an empty card.
+        assertSame(weather, weather.withHoursUntil(first.time))
     }
 
     @Test
