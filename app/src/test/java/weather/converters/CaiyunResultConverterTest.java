@@ -116,6 +116,9 @@ public class CaiyunResultConverterTest {
         // percent and hPa, so 0.76 -> 76 and 100430.02 Pa -> 1004.3 hPa.
         assertEquals(76f, weather.getCurrent().getRelativeHumidity(), 0.5f);
         assertEquals(1004.3f, weather.getCurrent().getPressure(), 0.1f);
+        // cloud_rate 0.5 -> the detail gauge reads percent; without the mapping the multi-source
+        // merge fills this from another provider while the card still credits this one.
+        assertEquals(50, weather.getCurrent().getCloudCover().intValue());
         assertEquals("多云", weather.getCurrent().getWeatherText());
         assertEquals(WeatherCode.PARTLY_CLOUDY, weather.getCurrent().getWeatherCode());
         // direction 135.18 deg -> SE on the 16-point compass.
@@ -238,11 +241,15 @@ public class CaiyunResultConverterTest {
         result.result.daily = null;
         result.result.hourly = null;
         result.result.realtime.air_quality = null;
+        result.result.realtime.cloudrate = null;
 
         Weather weather = convert(result);
 
         assertNotNull("a response with only realtime should still convert", weather);
         assertEquals(31, weather.getCurrent().getTemperature().getTemperature());
+        // The field is boxed precisely so an absent cloud_rate reads as null (no gauge),
+        // never as a fabricated 0%.
+        assertNull(weather.getCurrent().getCloudCover());
         assertTrue(weather.getDailyForecast().isEmpty());
         assertTrue(weather.getHourlyForecast().isEmpty());
     }

@@ -7,6 +7,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import kotlin.math.roundToInt
 import wangdaye.com.geometricweather.common.basic.models.Location
 import wangdaye.com.geometricweather.common.basic.models.weather.AirQuality
 import wangdaye.com.geometricweather.common.basic.models.weather.Alert
@@ -104,7 +105,11 @@ object CaiyunResultConverter {
                     (r.humidity * 100).toFloat(),
                     (r.pressure / 100).toFloat(),
                     r.visibility.toFloat(),
-                    null, null, null, null,
+                    null,
+                    // 0..1 fraction -> percent for the detail gauge. Without this the multi-source
+                    // merge fills the gap from another provider while the card still credits this one.
+                    r.cloudrate?.times(100)?.roundToInt(),
+                    null, null,
                     result.result.forecast_keypoint
                 ),
                 null,

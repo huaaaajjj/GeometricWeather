@@ -39,7 +39,8 @@ public class CaiYunWeatherResult {
         public String status;
         public double temperature;
         public double humidity;
-        public double cloudrate;
+        // Boxed: an absent cloud_rate must stay null rather than read as a fabricated 0%.
+        public Double cloudrate;
         public String skycon;
         public double visibility;
         public double dswrf;
