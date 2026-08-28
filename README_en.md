@@ -20,7 +20,7 @@ The app's own interface is fully translated; this README and the maintenance log
 | --- | --- |
 | ![Details](docs/screenshots/04-details.png) | ![Weather providers](docs/screenshots/05-sources.png) |
 
-Taken on 3.5.13, in Chinese. Note the provider credited in each card's title — that is the multi-source mode telling you who supplied that particular block.
+Taken on 3.5.13 (the hourly block has since been re-assigned to Xiaomi Weather). Note the provider credited in each card's title — that is the multi-source mode telling you who supplied that particular block.
 
 ## Download
 
@@ -37,7 +37,7 @@ The default is **WeatherAPI**; for the most complete data pick **Multi-source**.
 | Provider | Key | Coverage | Data | Status |
 | --- | --- | --- | --- | --- |
 | **Multi-source** | bundled | worldwide (most complete inside China) | 16 days · 384 hours · AQI · alerts | ✅ recommended |
-| Open-Meteo | free, no key | worldwide | 16 days · 384 hours (no AQI / alerts) | ✅ |
+| Open-Meteo | free, no key | worldwide | 16 days · 384 hours · AQI · pollen (pollen Europe only; no alerts) | ✅ |
 | WeatherAPI | bundled | worldwide | 3 days · 72 hours · AQI · alerts | ✅ default |
 | MET Norway | free, no key | worldwide | ~11 days · ~90 points (no feels-like / sunrise) | ✅ |
 | Xiaomi Weather | free, no key | worldwide (richest inside China) | China 15 days · 23 hours · AQI · alerts · minutely; abroad 5 days | ✅ |
@@ -54,9 +54,9 @@ AccuWeather used to be the richest source (15 days / hourly / UV / AQI / minutel
 
 It asks several providers at once and takes each block from whoever is best at it, rather than falling back to one provider wholesale:
 
-- **Hourly** → Open-Meteo: 384 hours, hour by hour, finer than the 3-hour steps the Chinese sources give
+- **Hourly** → Xiaomi Weather: ~23 hours, hour by hour (finer than the 3-hour steps the Chinese sources give), then appended from Open-Meteo up to 384 hours; the in-app hourly card shows only the last 3 days
 - **Daily** → China Weather: a domestic forecast for a domestic place, reaching 7 days; days 8..16 are appended from Open-Meteo so the range is not lost, and the chance of rain, its amount and the wind — which that source omits — are grafted in from the others
-- **Air quality and the "now" reading** → CaiYun: measured Chinese AQI (Open-Meteo carries none at all), plus feels-like, humidity, pressure and visibility
+- **Air quality and the "now" reading** → CaiYun: measured Chinese AQI, plus feels-like, humidity, pressure and visibility (abroad, where CaiYun has nothing, the block falls to WeatherAPI / Open-Meteo)
 - **Alerts** → the union of everyone; WeatherAPI is the one that reliably has them
 
 Each card's title credits the provider behind it. A provider that fails or times out simply drops through to the next one, and the refresh succeeds on whoever is left — so a place outside China, where the Chinese sources have nothing to say, still gets a full forecast from Open-Meteo and WeatherAPI. The cost is a few more requests per refresh.
@@ -111,11 +111,20 @@ Provider keys are base64-encoded in `app/build.gradle`. To use your own, set the
 - [`CLAUDE.md`](CLAUDE.md) — project layout, build commands, release process
 - [`AI_CONTEXT.md`](AI_CONTEXT.md) — current state, per-version changelog, known issues and TODOs
 
+## Non-goals
+
+- No UI redesign — the upstream 3.3.6 look is kept on purpose
+- No in-app self-updating — APK distribution; downloading and installing stays with the user
+- No database schema migrations (pinned at v63)
+- No FOSS Public Alert Server / radar / climate normals — cost outweighs the benefit or needs a new table; the reasoning lives in [`docs/PORT_PLAN_breezy.md`](docs/PORT_PLAN_breezy.md)
+- No serialization-stack swap (kotlinx-serialization / multi-module split) — the existing Gson DTOs, the proguard keep rules and the Hilt graph are all welded to the current setup
+
 ## Known limitations
 
 - **AccuWeather's bundled key has expired**, so that provider is unusable (your own key restores it)
 - CaiYun runs on a trial token: daily forecast only reaches 3 days, and there is no minutely precipitation
 - WeatherAPI's free tier only returns 3 days
+- Forecasts past day 7 are of limited reliability from anyone — pick a source by quality, not by range; the in-app hourly card therefore shows only the last 3 days
 - CMA sits behind a WAF that can refuse a development machine (real devices are fine)
 - The database schema is pinned at v63; no migrations
 - minSdk is still 21
