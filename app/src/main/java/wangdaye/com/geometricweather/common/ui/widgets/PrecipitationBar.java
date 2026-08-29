@@ -178,7 +178,7 @@ public class PrecipitationBar extends View {
 
     /** Width of the right-hand gutter that holds the 大/中/小 labels, outside the frame. */
     private float axisGutter() {
-        return mAxisTextPaint.measureText(mLabelHeavy) + mAxisTextPaint.getTextSize();
+        return mAxisTextPaint.measureText(mLabelHeavy) + mAxisTextPaint.getTextSize() / 4f;
     }
 
     public void setMinutelyList(@Nullable List<Minutely> minutelyList) {

@@ -63,8 +63,8 @@
                 android:layout_height="80dp"
                 android:layout_marginTop="@dimen/little_margin"
                 android:layout_marginBottom="@dimen/little_margin"
-                android:layout_marginStart="@dimen/normal_margin"
-                android:layout_marginEnd="@dimen/normal_margin"
+                android:layout_marginStart="@dimen/little_margin"
+                android:layout_marginEnd="@dimen/little_margin"
                 tools:background="?attr/colorOutline" />
 
             <RelativeLayout
