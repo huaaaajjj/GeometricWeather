@@ -20,10 +20,17 @@ public class Minutely implements Serializable {
     private final int minuteInterval;
     @Nullable private final Integer dbz;
     @Nullable private final Integer cloudCover;
+    /**
+     * Rain intensity in mm/min, when the provider reports one (Xiaomi does, Accu does not).
+     * Not persisted: MinutelyEntity has no such column, so a read from cache comes back null
+     * and the precipitation bar falls back to uniform heights.
+     */
+    @Nullable private final Float intensity;
 
     public Minutely(Date date, long time, boolean daylight,
                     String weatherText, WeatherCode weatherCode,
-                    int minuteInterval, @Nullable Integer dbz, @Nullable Integer cloudCover) {
+                    int minuteInterval, @Nullable Integer dbz, @Nullable Integer cloudCover,
+                    @Nullable Float intensity) {
         this.date = date;
         this.time = time;
         this.daylight = daylight;
@@ -32,6 +39,7 @@ public class Minutely implements Serializable {
         this.minuteInterval = minuteInterval;
         this.dbz = dbz;
         this.cloudCover = cloudCover;
+        this.intensity = intensity;
     }
 
     public Date getDate() {
@@ -66,6 +74,11 @@ public class Minutely implements Serializable {
     @Nullable
     public Integer getCloudCover() {
         return cloudCover;
+    }
+
+    @Nullable
+    public Float getIntensity() {
+        return intensity;
     }
 
     public boolean isPrecipitation() {

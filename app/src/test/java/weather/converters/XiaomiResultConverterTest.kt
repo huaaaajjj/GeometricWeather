@@ -233,6 +233,11 @@ class XiaomiResultConverterTest {
         assertTrue(minutely[40].isPrecipitation)
         assertTrue(minutely[41].isPrecipitation)
         assertFalse(minutely[42].isPrecipitation)
+        // The injected mm/min values ride along, which is what the precipitation bar's
+        // column heights scale against. Xiaomi's array spells "dry" as a literal 0.
+        assertEquals(0f, minutely[39].intensity!!, 0.001f)
+        assertEquals(0.5f, minutely[40].intensity!!, 0.001f)
+        assertEquals(0.2f, minutely[41].intensity!!, 0.001f)
     }
 
     @Test

@@ -379,7 +379,10 @@ object MetNoResultConverter {
                     weatherCodeOf(point.symbol),
                     ((point.date.time - start) / 60000L).toInt(),
                     null,
-                    null
+                    null,
+                    // nowcast reports mm/h; the bar's scale is relative, but keep the field's
+                    // documented mm/min unit anyway.
+                    point.instant?.precipitationRate?.toFloat()?.div(60f)
                 )
             )
         }

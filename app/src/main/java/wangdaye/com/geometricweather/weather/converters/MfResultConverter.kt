@@ -619,7 +619,9 @@ object MfResultConverter {
                     },
                     (minute - minuteZero).toInt(),
                     null,
-                    null
+                    null,
+                    // rain_intensity is mm/h with 1 = "no rain"; only rain steps carry a column.
+                    rainForecast.rainIntensity?.toFloat()?.div(60f)
                 )
             )
         }

@@ -41,7 +41,9 @@ public class MinutelyEntityGenerator {
         return new Minutely(
                 entity.date, entity.time, entity.daylight,
                 entity.weatherText, entity.weatherCode,
-                entity.minuteInterval, entity.dbz, entity.cloudCover
+                entity.minuteInterval, entity.dbz, entity.cloudCover,
+                // Intensity is not persisted; the bar falls back to uniform heights for cache.
+                null
         );
     }
 

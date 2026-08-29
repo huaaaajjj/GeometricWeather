@@ -286,7 +286,9 @@ object XiaomiResultConverter {
                     if (wet) WeatherCode.RAIN else WeatherCode.CLEAR,
                     i,
                     null,
-                    null
+                    null,
+                    // mm/min — the precipitation bar scales its columns by this.
+                    values[i]?.toFloat()
                 )
             )
         }

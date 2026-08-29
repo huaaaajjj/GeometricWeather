@@ -435,7 +435,8 @@ public class AccuResultConverter {
                             getWeatherCode(interval.IconCode),
                             interval.Minute,
                             toInt(interval.Dbz),
-                            interval.CloudCover
+                            interval.CloudCover,
+                            null // no intensity in our DTO; the bar falls back to uniform heights
                     )
             );
         }
