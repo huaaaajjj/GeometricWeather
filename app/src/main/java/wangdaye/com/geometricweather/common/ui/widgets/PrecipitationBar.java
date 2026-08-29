@@ -111,7 +111,9 @@ public class PrecipitationBar extends View {
             return;
         }
 
-        float width = getMeasuredWidth();
+        // The 大/中/小 labels live in their own gutter outside the plot: bars and guide lines
+        // stop at the plot edge instead of running under the text.
+        float width = getMeasuredWidth() - axisGutter();
         float height = getMeasuredHeight();
         float itemWidth = width / mMinutelyList.size();
         float barWidth = itemWidth * BAR_WIDTH_FRACTION;
@@ -155,26 +157,27 @@ public class PrecipitationBar extends View {
         canvas.drawLine(0, y, width, y, mAxisLinePaint);
     }
 
+    /** Width of the right-hand strip that holds the 大/中/小 labels, outside the plot. */
+    private float axisGutter() {
+        return mAxisTextPaint.measureText(mLabelHeavy) + mAxisTextPaint.getTextSize();
+    }
+
     /** 大/中/小 right-aligned at their threshold heights, nudged to sit on the line. */
     private void drawAxisLabels(Canvas canvas, float width) {
         mAxisTextPaint.setColor(mAxisColor);
-        float padding = mAxisTextPaint.getTextSize() / 4f;
+        float right = getMeasuredWidth() - mAxisTextPaint.getTextSize() / 4f;
         float textSize = mAxisTextPaint.getTextSize();
-        drawLabel(canvas, mLabelHeavy, width - padding, pxOf(THRESHOLD_HEAVY) + textSize / 2f);
-        drawLabel(canvas, mLabelModerate, width - padding, pxOf(THRESHOLD_MODERATE) + textSize / 2f);
-        drawLabel(canvas, mLabelLight, width - padding, pxOf(THRESHOLD_LIGHT) + textSize / 2f);
+        drawLabel(canvas, mLabelHeavy, right, pxOf(THRESHOLD_HEAVY) + textSize / 2f);
+        drawLabel(canvas, mLabelModerate, right, pxOf(THRESHOLD_MODERATE) + textSize / 2f);
+        drawLabel(canvas, mLabelLight, right, pxOf(THRESHOLD_LIGHT) + textSize / 2f);
     }
 
     private void drawLabel(Canvas canvas, String text, float right, float baselineY) {
-        float left = right - mAxisTextPaint.measureText(text) - padding();
+        float left = right - mAxisTextPaint.measureText(text);
         mAxisStrokePaint.setStrokeWidth(mAxisTextPaint.getTextSize() / 5f);
         mAxisStrokePaint.setColor(mBackgroundColor);
         canvas.drawText(text, left, baselineY, mAxisStrokePaint);
         canvas.drawText(text, left, baselineY, mAxisTextPaint);
-    }
-
-    private float padding() {
-        return mAxisTextPaint.getTextSize() / 4f;
     }
 
     /** Top of a column for one minute, on the absolute scale. */
