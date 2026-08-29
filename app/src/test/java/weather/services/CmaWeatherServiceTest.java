@@ -18,6 +18,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.io.IOException;
+import java.util.List;
 import java.lang.reflect.Field;
 import java.util.TimeZone;
 
@@ -104,6 +105,31 @@ public class CmaWeatherServiceTest {
         new CmaWeatherService(mServer.api(CmaApi.class))
                 .requestWeather(mContext, location, outcome);
         return outcome;
+    }
+
+    /**
+     * The autocomplete entry carries only the station id — the old code left the coordinates at
+     * the (0, 0) placeholder, and the location later switched to a coordinate-based provider
+     * (Open-Meteo, Xiaomi, OWM...) fetched its weather from the Gulf of Guinea while the CMA
+     * readout for the same place looked perfectly correct. The search result must be re-anchored
+     * on the station's own weather/view coordinates.
+     */
+    @org.junit.Test
+    public void aSearchResultCarriesTheStationsRealCoordinates() throws Exception {
+        mServer.replying("/api/autocomplete",
+                "{\"msg\":\"success\",\"code\":0,\"data\":[\"57687|长沙市|Changshashi|中国\"]}")
+                .serving(VIEW, "weather.json");
+
+        List<Location> results = new CmaWeatherService(mServer.api(CmaApi.class))
+                .requestLocation(mContext, "changsha");
+
+        assertEquals(1, results.size());
+        // The view fixture is station 54517 (39.08, 117.22): the re-anchor replaces the
+        // autocomplete's identity wholesale, exactly as it would for the real 长沙 entry.
+        Location anchored = results.get(0);
+        assertEquals("54517", anchored.getCityId());
+        assertEquals(39.08f, anchored.getLatitude(), 0.001f);
+        assertEquals(117.22f, anchored.getLongitude(), 0.001f);
     }
 
     /** A cityId that is already a CMA station needs no resolution and no station list. */

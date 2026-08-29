@@ -72,7 +72,18 @@ class CmaWeatherService @Inject constructor(
             return emptyList()
         }
         val result = requests.execute(api.getLocation(pinyin, SEARCH_RESULTS))
-        return result?.data.orEmpty().mapNotNull { parseSearchEntry(it) }
+        return result?.data.orEmpty().mapNotNull { entry ->
+            // The autocomplete entry carries only the station id, so the placeholder coordinates
+            // are (0, 0) — and any coordinate-based provider the location is later switched to
+            // (Open-Meteo, Xiaomi, OWM...) would quietly fetch weather for the Gulf of Guinea
+            // while the CMA readout for the same place looked perfectly correct. The station's
+            // own weather/view answers with real coordinates, so every search result is
+            // re-anchored before it is offered; one small call per result on a low-frequency
+            // screen, and a failed view keeps the placeholder rather than dropping the result.
+            parseSearchEntry(entry)?.let { location ->
+                getWeather(location.cityId)?.data?.location?.let { buildLocationFromView(it) } ?: location
+            }
+        }
     }
 
     override fun requestLocation(
