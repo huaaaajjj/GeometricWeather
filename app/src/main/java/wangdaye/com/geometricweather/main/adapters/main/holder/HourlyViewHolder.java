@@ -215,6 +215,8 @@ public class HourlyViewHolder extends AbstractMainCardViewHolder {
 
         mMinutelyStartText.setTextColor(MainThemeColorProvider.getColor(location, R.attr.colorCaptionText));
         mMinutelyEndText.setTextColor(MainThemeColorProvider.getColor(location, R.attr.colorCaptionText));
+        // The 大/中/小 axis reads like a caption, so it takes the caption colour.
+        mPrecipitationBar.setAxisColor(MainThemeColorProvider.getColor(location, R.attr.colorCaptionText));
     }
 
     private static boolean needToShowMinutelyForecast(List<Minutely> minutelyList) {

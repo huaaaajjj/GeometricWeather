@@ -146,6 +146,9 @@
     <string name="pollen_level_moderate">Moderate</string>
     <string name="pollen_level_high">High</string>
     <string name="pollen_level_very_high">Very high</string>
+    <string name="precipitation_level_heavy">Heavy</string>
+    <string name="precipitation_level_moderate">Moderate</string>
+    <string name="precipitation_level_light">Light</string>
 
     <string name="daily_overview">Daily forecast</string>
     <string name="hourly_overview">Hourly forecast</string>

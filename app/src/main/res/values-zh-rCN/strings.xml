@@ -141,6 +141,9 @@
     <string name="pollen_level_moderate">中等</string>
     <string name="pollen_level_high">高</string>
     <string name="pollen_level_very_high">很高</string>
+    <string name="precipitation_level_heavy">大雨</string>
+    <string name="precipitation_level_moderate">中雨</string>
+    <string name="precipitation_level_light">小雨</string>
 
     <string name="daily_overview">每日概览</string>
     <string name="hourly_overview">小时概览</string>

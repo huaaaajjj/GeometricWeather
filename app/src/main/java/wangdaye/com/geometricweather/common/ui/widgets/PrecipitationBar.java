@@ -2,6 +2,7 @@ package wangdaye.com.geometricweather.common.ui.widgets;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.DashPathEffect;
 import android.graphics.Outline;
 import android.graphics.Paint;
 import android.os.Build;
@@ -14,23 +15,45 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
+import wangdaye.com.geometricweather.R;
 import wangdaye.com.geometricweather.common.basic.models.weather.Minutely;
 
 /**
- * The two-hour minute-by-minute precipitation window as a bar chart: one thin column per minute,
- * its height proportional to the reported intensity (mm/min). Wet minutes without an intensity
- * (a cache read — intensity is not persisted) fall back to a uniform full height, which is what
- * the pre-chart version drew for every wet minute.
+ * The two-hour minute-by-minute precipitation window as a bar chart against an absolute scale:
+ * one thin column per minute, its height the reported intensity (mm/min) against the 暴雨-grade
+ * ceiling, with 大/中/小 guide lines and labels on the right edge. Thresholds are the common
+ * hourly-rain grades (小 below 2.5, 中 2.5-8, 大 8-16, 暴雨 at or above 16 mm/h) converted per
+ * minute, so the axis means the same thing in every window.
+ *
+ * Wet minutes without an intensity (a cache read — intensity is not persisted) draw at half
+ * height: on an absolute axis no fallback height is honest, and half reads as "unknown" rather
+ * than as a fabricated 大.
  */
 public class PrecipitationBar extends View {
 
     /** Column width as a fraction of its slot, so adjacent bars stay visually separate. */
     private static final float BAR_WIDTH_FRACTION = 0.7f;
 
+    /** Hourly-rain grades converted to mm/min: the 小/中/大 boundaries and the chart ceiling. */
+    private static final float THRESHOLD_LIGHT = 2.5f / 60f;
+    private static final float THRESHOLD_MODERATE = 8f / 60f;
+    private static final float THRESHOLD_HEAVY = 16f / 60f;
+    private static final float SCALE_MAX = 24f / 60f;
+
+    /** Fallback height for wet minutes whose intensity never reached us (a cache read). */
+    private static final float UNKNOWN_COLUMN_FRACTION = 0.5f;
+
     @Nullable private List<Minutely> mMinutelyList;
-    private final Paint mPaint;
+    private final Paint mBarPaint;
+    private final Paint mAxisLinePaint;
+    private final Paint mAxisTextPaint;
+    private final Paint mAxisStrokePaint;
+    private final String mLabelHeavy;
+    private final String mLabelModerate;
+    private final String mLabelLight;
     @ColorInt private int mPrecipitationColor;
     @ColorInt private int mBackgroundColor;
+    @ColorInt private int mAxisColor;
 
     public PrecipitationBar(Context context) {
         this(context, null);
@@ -42,7 +65,23 @@ public class PrecipitationBar extends View {
 
     public PrecipitationBar(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mPaint = new Paint();
+        mBarPaint = new Paint();
+        mAxisLinePaint = new Paint();
+        mAxisLinePaint.setStyle(Paint.Style.STROKE);
+        mAxisLinePaint.setStrokeWidth(getResources().getDisplayMetrics().density);
+        mAxisLinePaint.setPathEffect(new DashPathEffect(new float[]{4f, 4f}, 0f));
+        mAxisTextPaint = new Paint();
+        mAxisTextPaint.setAntiAlias(true);
+        mAxisTextPaint.setTextSize(getResources().getDisplayMetrics().scaledDensity * 10f);
+        // The labels sit on top of the columns, so each one gets a background-coloured stroke
+        // first — grey on a full-height heavy-rain column would otherwise disappear.
+        mAxisStrokePaint = new Paint(mAxisTextPaint);
+        mAxisStrokePaint.setStyle(Paint.Style.STROKE);
+        // Cached once: onDraw runs per frame during animations and must not touch resources.
+        mLabelHeavy = context.getString(R.string.precipitation_level_heavy);
+        mLabelModerate = context.getString(R.string.precipitation_level_moderate);
+        mLabelLight = context.getString(R.string.precipitation_level_light);
+        mAxisColor = mPrecipitationColor;
     }
 
     @Override
@@ -72,35 +111,28 @@ public class PrecipitationBar extends View {
             return;
         }
 
-        // Bars scale against the heaviest minute in the window: light rain still shows shape
-        // instead of flat-lining against an absolute mm/min scale.
-        float maxIntensity = 0f;
-        boolean anyIntensity = false;
-        for (Minutely m : mMinutelyList) {
-            if (m.getIntensity() != null) {
-                anyIntensity = true;
-                maxIntensity = Math.max(maxIntensity, m.getIntensity());
-            }
-        }
-        if (maxIntensity <= 0) {
-            maxIntensity = 1f;
-        }
-
-        float itemWidth = 1.f * getMeasuredWidth() / mMinutelyList.size();
+        float width = getMeasuredWidth();
+        float height = getMeasuredHeight();
+        float itemWidth = width / mMinutelyList.size();
         float barWidth = itemWidth * BAR_WIDTH_FRACTION;
         float barMargin = (itemWidth - barWidth) / 2f;
-        float height = getMeasuredHeight();
 
         canvas.drawColor(mBackgroundColor);
-        mPaint.setColor(mPrecipitationColor);
 
+        // Guide lines first, so columns with real data draw over them.
+        mAxisLinePaint.setColor(mAxisColor);
+        drawThresholdLine(canvas, width, THRESHOLD_HEAVY);
+        drawThresholdLine(canvas, width, THRESHOLD_MODERATE);
+        drawThresholdLine(canvas, width, THRESHOLD_LIGHT);
+
+        mBarPaint.setColor(mPrecipitationColor);
         if (getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
-            float right = getMeasuredWidth();
+            float right = width;
             for (Minutely m : mMinutelyList) {
                 float left = right - itemWidth;
                 if (m.isPrecipitation()) {
-                    float top = height * columnFraction(m, anyIntensity, maxIntensity);
-                    canvas.drawRect(left + barMargin, top, right - barMargin, height, mPaint);
+                    float top = columnTop(m);
+                    canvas.drawRect(left + barMargin, top, right - barMargin, height, mBarPaint);
                 }
                 right = left;
             }
@@ -108,24 +140,54 @@ public class PrecipitationBar extends View {
             float x = 0;
             for (Minutely m : mMinutelyList) {
                 if (m.isPrecipitation()) {
-                    float top = height * columnFraction(m, anyIntensity, maxIntensity);
-                    canvas.drawRect(x + barMargin, top, x + barMargin + barWidth, height, mPaint);
+                    float top = columnTop(m);
+                    canvas.drawRect(x + barMargin, top, x + barMargin + barWidth, height, mBarPaint);
                 }
                 x += itemWidth;
             }
         }
+
+        drawAxisLabels(canvas, width);
     }
 
-    /**
-     * Top of the column as a fraction of the view height: intensity relative to the window's
-     * heaviest minute; a wet minute without an intensity (cache read) keeps the full height the
-     * old flat bar drew.
-     */
-    private float columnFraction(Minutely m, boolean anyIntensity, float maxIntensity) {
-        if (!anyIntensity || m.getIntensity() == null) {
-            return 0f;
-        }
-        return 1f - (m.getIntensity() / maxIntensity);
+    private void drawThresholdLine(Canvas canvas, float width, float threshold) {
+        float y = pxOf(threshold);
+        canvas.drawLine(0, y, width, y, mAxisLinePaint);
+    }
+
+    /** 大/中/小 right-aligned at their threshold heights, nudged to sit on the line. */
+    private void drawAxisLabels(Canvas canvas, float width) {
+        mAxisTextPaint.setColor(mAxisColor);
+        float padding = mAxisTextPaint.getTextSize() / 4f;
+        float textSize = mAxisTextPaint.getTextSize();
+        drawLabel(canvas, mLabelHeavy, width - padding, pxOf(THRESHOLD_HEAVY) + textSize / 2f);
+        drawLabel(canvas, mLabelModerate, width - padding, pxOf(THRESHOLD_MODERATE) + textSize / 2f);
+        drawLabel(canvas, mLabelLight, width - padding, pxOf(THRESHOLD_LIGHT) + textSize / 2f);
+    }
+
+    private void drawLabel(Canvas canvas, String text, float right, float baselineY) {
+        float left = right - mAxisTextPaint.measureText(text) - padding();
+        mAxisStrokePaint.setStrokeWidth(mAxisTextPaint.getTextSize() / 5f);
+        mAxisStrokePaint.setColor(mBackgroundColor);
+        canvas.drawText(text, left, baselineY, mAxisStrokePaint);
+        canvas.drawText(text, left, baselineY, mAxisTextPaint);
+    }
+
+    private float padding() {
+        return mAxisTextPaint.getTextSize() / 4f;
+    }
+
+    /** Top of a column for one minute, on the absolute scale. */
+    private float columnTop(Minutely m) {
+        Float intensity = m.getIntensity();
+        float t = intensity == null ? SCALE_MAX * UNKNOWN_COLUMN_FRACTION
+                : Math.min(intensity, SCALE_MAX);
+        return getMeasuredHeight() * (1f - t / SCALE_MAX);
+    }
+
+    /** Height of a threshold line from the bottom, in px. */
+    private float pxOf(float t) {
+        return getMeasuredHeight() * Math.min(t, SCALE_MAX) / SCALE_MAX;
     }
 
     public void setMinutelyList(@Nullable List<Minutely> minutelyList) {
@@ -135,6 +197,11 @@ public class PrecipitationBar extends View {
 
     public void setPrecipitationColor(@ColorInt int precipitationColor) {
         mPrecipitationColor = precipitationColor;
+        invalidate();
+    }
+
+    public void setAxisColor(@ColorInt int axisColor) {
+        mAxisColor = axisColor;
         invalidate();
     }
 
