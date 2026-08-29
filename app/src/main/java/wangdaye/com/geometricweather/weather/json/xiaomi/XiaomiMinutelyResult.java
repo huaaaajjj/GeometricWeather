@@ -8,9 +8,12 @@ import java.util.List;
  * Xiaomi Weather {@code weather/xm/forecast/minutely} result — 120 one-minute precipitation steps,
  * i.e. the next two hours.
  *
- * Coverage is per-city, not nationwide: a request for a county seat answers {@code {"status": -1}}
- * with no {@code precipitation} block at all (verified 2026-08-24: Beijing yes, 舒城 no). Failure is
- * a valid HTTP 200, so the converter checks for the block rather than the transport.
+ * Coverage was believed per-city on 2026-08-24 (Beijing yes, 舒城 answered {@code {"status": -1}}),
+ * but by 2026-08-29 舒城 answers {@code status: 0} with the full 120-value window, so the endpoint
+ * covers that county seat too — treat a missing block as "unknown", not as a permanent verdict.
+ * A dry window still carries all 120 values (all zero) plus {@code isShow: false} and a
+ * {@code description} that may point at a rain band tens of kilometres away; the converter reads
+ * only the values, and the card hides itself when every minute is dry.
  */
 public class XiaomiMinutelyResult {
 

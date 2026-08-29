@@ -213,6 +213,29 @@ class XiaomiResultConverterTest {
     }
 
     @Test
+    fun convert_rainInTheWindowMarksThoseMinutesWet() {
+        // The captured fixture is dry throughout, so the rain is injected onto the real response:
+        // 0.5/0.2 mm/min in minutes 40..41. The app reads wet-or-dry, not intensity — a wet minute
+        // is what makes the main screen's minutely bar visible at all (needToShowMinutelyForecast).
+        val rain = read<XiaomiMinutelyResult>("minutely_beijing.json").apply {
+            precipitation.isRainOrSnow = 1
+            precipitation.value[40] = 0.5
+            precipitation.value[41] = 0.2
+        }
+        val minutely = requireNotNull(
+            XiaomiResultConverter.convert(
+                context, beijing, read<XiaomiForecastResult>("all_beijing.json"), rain
+            )
+        ).minutelyForecast
+
+        assertEquals(120, minutely.size)
+        assertFalse(minutely[39].isPrecipitation)
+        assertTrue(minutely[40].isPrecipitation)
+        assertTrue(minutely[41].isPrecipitation)
+        assertFalse(minutely[42].isPrecipitation)
+    }
+
+    @Test
     fun convert_marksWetMinutesAsPrecipitation() {
         // Built by hand rather than from a fixture: rain has to be falling at capture time to get a
         // non-zero array, and the wet branch is the half that makes the bar appear at all.
