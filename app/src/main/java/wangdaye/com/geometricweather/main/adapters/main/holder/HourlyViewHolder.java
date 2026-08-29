@@ -201,7 +201,7 @@ public class HourlyViewHolder extends AbstractMainCardViewHolder {
 
         mMinutelyTitle.setTextColor(MainThemeColorProvider.getColor(location, R.attr.colorBodyText));
 
-        mPrecipitationBar.setBackgroundColor(MainThemeColorProvider.getColor(location, R.attr.colorOutline));
+        mPrecipitationBar.setFrameColor(MainThemeColorProvider.getColor(location, R.attr.colorOutline));
         mPrecipitationBar.setPrecipitationColor(
                 ThemeManager
                         .getInstance(context)

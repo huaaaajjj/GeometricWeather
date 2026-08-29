@@ -3,12 +3,11 @@ package wangdaye.com.geometricweather.common.ui.widgets;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.DashPathEffect;
-import android.graphics.Outline;
 import android.graphics.Paint;
-import android.os.Build;
+import android.graphics.Path;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewOutlineProvider;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
@@ -21,9 +20,11 @@ import wangdaye.com.geometricweather.common.basic.models.weather.Minutely;
 /**
  * The two-hour minute-by-minute precipitation window as a bar chart against an absolute scale:
  * one thin column per minute, its height the reported intensity (mm/min) against the 暴雨-grade
- * ceiling, with 大/中/小 guide lines and labels on the right edge. Thresholds are the common
- * hourly-rain grades (小 below 2.5, 中 2.5-8, 大 8-16, 暴雨 at or above 16 mm/h) converted per
- * minute, so the axis means the same thing in every window.
+ * ceiling, with 大/中/小 guide lines inside the light frame and their labels OUTSIDE it, in a
+ * gutter on the right. The frame sits centered — the same gutter width is inset on the left, so
+ * the chart keeps to the middle of the card instead of hugging the label side. Thresholds are the
+ * common hourly-rain grades (小 below 2.5, 中 2.5-8, 大 8-16, 暴雨 at or above 16 mm/h) converted
+ * per minute, so the axis means the same thing in every window.
  *
  * Wet minutes without an intensity (a cache read — intensity is not persisted) draw at half
  * height: on an absolute axis no fallback height is honest, and half reads as "unknown" rather
@@ -45,14 +46,15 @@ public class PrecipitationBar extends View {
 
     @Nullable private List<Minutely> mMinutelyList;
     private final Paint mBarPaint;
+    private final Paint mFramePaint;
     private final Paint mAxisLinePaint;
     private final Paint mAxisTextPaint;
-    private final Paint mAxisStrokePaint;
     private final String mLabelHeavy;
     private final String mLabelModerate;
     private final String mLabelLight;
+    private final float mCornerRadius;
     @ColorInt private int mPrecipitationColor;
-    @ColorInt private int mBackgroundColor;
+    @ColorInt private int mFrameColor;
     @ColorInt private int mAxisColor;
 
     public PrecipitationBar(Context context) {
@@ -66,6 +68,7 @@ public class PrecipitationBar extends View {
     public PrecipitationBar(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mBarPaint = new Paint();
+        mFramePaint = new Paint();
         mAxisLinePaint = new Paint();
         mAxisLinePaint.setStyle(Paint.Style.STROKE);
         mAxisLinePaint.setStrokeWidth(getResources().getDisplayMetrics().density);
@@ -73,35 +76,12 @@ public class PrecipitationBar extends View {
         mAxisTextPaint = new Paint();
         mAxisTextPaint.setAntiAlias(true);
         mAxisTextPaint.setTextSize(getResources().getDisplayMetrics().scaledDensity * 10f);
-        // The labels sit on top of the columns, so each one gets a background-coloured stroke
-        // first — grey on a full-height heavy-rain column would otherwise disappear.
-        mAxisStrokePaint = new Paint(mAxisTextPaint);
-        mAxisStrokePaint.setStyle(Paint.Style.STROKE);
         // Cached once: onDraw runs per frame during animations and must not touch resources.
         mLabelHeavy = context.getString(R.string.precipitation_level_heavy);
         mLabelModerate = context.getString(R.string.precipitation_level_moderate);
         mLabelLight = context.getString(R.string.precipitation_level_light);
+        mCornerRadius = getResources().getDisplayMetrics().density * 6f;
         mAxisColor = mPrecipitationColor;
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setClipToOutline(true);
-            setOutlineProvider(new ViewOutlineProvider() {
-                @Override
-                public void getOutline(View view, Outline outline) {
-                    outline.setRoundRect(
-                            0,
-                            0,
-                            view.getMeasuredWidth(),
-                            view.getMeasuredHeight(),
-                            view.getMeasuredHeight() / 12f
-                    );
-                }
-            });
-        }
     }
 
     @Override
@@ -111,25 +91,34 @@ public class PrecipitationBar extends View {
             return;
         }
 
-        // The 大/中/小 labels live in their own gutter outside the plot: bars and guide lines
-        // stop at the plot edge instead of running under the text.
-        float width = getMeasuredWidth() - axisGutter();
+        // The 大/中/小 labels live in a gutter OUTSIDE the light frame; the same width is inset
+        // on the left so the frame stays centered on the card.
+        float gutter = axisGutter();
+        float width = getMeasuredWidth();
         float height = getMeasuredHeight();
-        float itemWidth = width / mMinutelyList.size();
-        float barWidth = itemWidth * BAR_WIDTH_FRACTION;
-        float barMargin = (itemWidth - barWidth) / 2f;
+        float plotLeft = gutter;
+        float plotWidth = width - gutter * 2;
 
-        canvas.drawColor(mBackgroundColor);
+        // The light frame, then the guide lines and columns clipped inside it.
+        RectF frame = new RectF(plotLeft, 0, plotLeft + plotWidth, height);
+        Path clip = new Path();
+        clip.addRoundRect(frame, mCornerRadius, mCornerRadius, Path.Direction.CW);
+        mFramePaint.setColor(mFrameColor);
+        canvas.drawRoundRect(frame, mCornerRadius, mCornerRadius, mFramePaint);
 
-        // Guide lines first, so columns with real data draw over them.
+        canvas.save();
+        canvas.clipPath(clip);
         mAxisLinePaint.setColor(mAxisColor);
-        drawThresholdLine(canvas, width, THRESHOLD_HEAVY);
-        drawThresholdLine(canvas, width, THRESHOLD_MODERATE);
-        drawThresholdLine(canvas, width, THRESHOLD_LIGHT);
+        drawThresholdLine(canvas, plotLeft, plotWidth, THRESHOLD_HEAVY);
+        drawThresholdLine(canvas, plotLeft, plotWidth, THRESHOLD_MODERATE);
+        drawThresholdLine(canvas, plotLeft, plotWidth, THRESHOLD_LIGHT);
 
         mBarPaint.setColor(mPrecipitationColor);
+        float itemWidth = plotWidth / mMinutelyList.size();
+        float barWidth = itemWidth * BAR_WIDTH_FRACTION;
+        float barMargin = (itemWidth - barWidth) / 2f;
         if (getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
-            float right = width;
+            float right = plotLeft + plotWidth;
             for (Minutely m : mMinutelyList) {
                 float left = right - itemWidth;
                 if (m.isPrecipitation()) {
@@ -139,7 +128,7 @@ public class PrecipitationBar extends View {
                 right = left;
             }
         } else {
-            float x = 0;
+            float x = plotLeft;
             for (Minutely m : mMinutelyList) {
                 if (m.isPrecipitation()) {
                     float top = columnTop(m);
@@ -148,24 +137,21 @@ public class PrecipitationBar extends View {
                 x += itemWidth;
             }
         }
+        canvas.restore();
 
         drawAxisLabels(canvas, width);
     }
 
-    private void drawThresholdLine(Canvas canvas, float width, float threshold) {
+    private void drawThresholdLine(Canvas canvas, float plotLeft, float plotWidth,
+                                   float threshold) {
         float y = pxOf(threshold);
-        canvas.drawLine(0, y, width, y, mAxisLinePaint);
+        canvas.drawLine(plotLeft, y, plotLeft + plotWidth, y, mAxisLinePaint);
     }
 
-    /** Width of the right-hand strip that holds the 大/中/小 labels, outside the plot. */
-    private float axisGutter() {
-        return mAxisTextPaint.measureText(mLabelHeavy) + mAxisTextPaint.getTextSize();
-    }
-
-    /** 大/中/小 right-aligned at their threshold heights, nudged to sit on the line. */
+    /** 大/中/小 right-aligned inside the right-hand gutter, at their threshold heights. */
     private void drawAxisLabels(Canvas canvas, float width) {
         mAxisTextPaint.setColor(mAxisColor);
-        float right = getMeasuredWidth() - mAxisTextPaint.getTextSize() / 4f;
+        float right = width - mAxisTextPaint.getTextSize() / 4f;
         float textSize = mAxisTextPaint.getTextSize();
         drawLabel(canvas, mLabelHeavy, right, pxOf(THRESHOLD_HEAVY) + textSize / 2f);
         drawLabel(canvas, mLabelModerate, right, pxOf(THRESHOLD_MODERATE) + textSize / 2f);
@@ -174,9 +160,6 @@ public class PrecipitationBar extends View {
 
     private void drawLabel(Canvas canvas, String text, float right, float baselineY) {
         float left = right - mAxisTextPaint.measureText(text);
-        mAxisStrokePaint.setStrokeWidth(mAxisTextPaint.getTextSize() / 5f);
-        mAxisStrokePaint.setColor(mBackgroundColor);
-        canvas.drawText(text, left, baselineY, mAxisStrokePaint);
         canvas.drawText(text, left, baselineY, mAxisTextPaint);
     }
 
@@ -193,6 +176,11 @@ public class PrecipitationBar extends View {
         return getMeasuredHeight() * (1f - Math.min(t, SCALE_MAX) / SCALE_MAX);
     }
 
+    /** Width of the right-hand gutter that holds the 大/中/小 labels, outside the frame. */
+    private float axisGutter() {
+        return mAxisTextPaint.measureText(mLabelHeavy) + mAxisTextPaint.getTextSize();
+    }
+
     public void setMinutelyList(@Nullable List<Minutely> minutelyList) {
         mMinutelyList = minutelyList;
         invalidate();
@@ -203,14 +191,14 @@ public class PrecipitationBar extends View {
         invalidate();
     }
 
-    public void setAxisColor(@ColorInt int axisColor) {
-        mAxisColor = axisColor;
+    /** Fill of the rounded frame the columns live in. */
+    public void setFrameColor(@ColorInt int frameColor) {
+        mFrameColor = frameColor;
         invalidate();
     }
 
-    @Override
-    public void setBackgroundColor(@ColorInt int backgroundColor) {
-        mBackgroundColor = backgroundColor;
+    public void setAxisColor(@ColorInt int axisColor) {
+        mAxisColor = axisColor;
         invalidate();
     }
 }
