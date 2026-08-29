@@ -60,7 +60,7 @@
             <wangdaye.com.geometricweather.common.ui.widgets.PrecipitationBar
                 android:id="@+id/container_main_hourly_trend_card_minutelyBar"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="60dp"
                 android:layout_marginTop="@dimen/little_margin"
                 android:layout_marginBottom="@dimen/little_margin"
                 android:layout_marginStart="@dimen/normal_margin"
