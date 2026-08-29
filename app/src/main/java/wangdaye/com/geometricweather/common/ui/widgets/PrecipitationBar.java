@@ -185,9 +185,9 @@ public class PrecipitationBar extends View {
         return getMeasuredHeight() * (1f - t / SCALE_MAX);
     }
 
-    /** Height of a threshold line from the bottom, in px. */
+    /** Height of a threshold line above the bottom, in px — intensity grows upward, like the columns. */
     private float pxOf(float t) {
-        return getMeasuredHeight() * Math.min(t, SCALE_MAX) / SCALE_MAX;
+        return getMeasuredHeight() * (1f - Math.min(t, SCALE_MAX) / SCALE_MAX);
     }
 
     public void setMinutelyList(@Nullable List<Minutely> minutelyList) {
