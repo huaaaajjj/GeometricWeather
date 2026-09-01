@@ -14,7 +14,7 @@
 
 ## 实现状态
 
-- 当前发布版本：**3.6.5**（versionCode 30605，正式版）。上一发布版 3.6.4（30604，正式版）。**3.6.6（30606）已本地构建 + 真机验证，尚未发版**（见变更日志末条）。主分支 `master`（基于 v3.3.6 重建线）。
+- 当前发布版本：**3.6.6**（versionCode 30606，正式版）。上一发布版 3.6.5（30605，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
 - 10 个天气源：WEATHERAPI（默认）、OPEN_METEO、METNO（挪威气象局，免 key 全球）、XIAOMI（小米天气，免 key，中国区最全 + 海外走 Accu 后端）、CAIYUN、APIHZ（中国天气网）、CMA（中国气象局）、MF（仅法国）、OWM 可用；**ACCU 的内置 Key 已过期，当前不可用**（见「已知问题」）。加上 COMPOSITE（多源聚合）共 11 项可选。
 - 工具链已现代化（见版本矩阵）；RxJava 已全部迁移到 Coroutines；GreenDAO 已迁移到 Room。
 
@@ -313,6 +313,7 @@
     **测试**：+4 例（227 → **231 例/变体**，六变体合计 1386，全绿）：`WeatherTrimTest` 「同一瞬间在上海还是当天、在东京已是次日」；`OwmResultConverterTest` 「同样 10 个步长在 +08 是 2 天、在 +09 是 3 天，且每天都起于当地 0 点」（固件第二步正好是 23:00 CST / 00:00 JST，天然的边界）；`ApihzWeatherServiceTest` 与 `CmaWeatherServiceTest` 各一例「境外地点一个请求都不发、直接失败」。**变异检验三处**：`Calendar.getInstance(zone)` 改回无参 → 时区那例 FAILED；去掉 `isChina` 守卫 → APIHZ 那例 FAILED；`localDay` 改用设备偏移 → OWM 那例 FAILED。
     **真机验收（MI 9 / Android 14，3.6.6 签名 release + R8，原地升级 3.6.5 保留数据）**：临时加回「東京」→ 日出日落 **05:13 / 18:09**（JST 实际约 05:12/18:10，之前是 06:44/19:37），页面当地时间 19:53 而设备 18:53；27° 多云、AQI 优、详情数据由彩云供给、5 天预报正常；北京（当前位置）仍由中国天气网领每日、5 天齐全；`logcat -b crash` 全程空。**验收后已把「東京」删掉**，地点列表恢复成验收前的五条（当前位置/舒城/南开/歙县/镜湖），南开的常驻标记未变。
     **顺带记两件未做**：① 卡片上的「· 来源」标注写的仍是**指派**，境外地点会出现「每日概览 · 中国天气网」而数据实际来自 Open-Meteo（这条 3.5.9 就记过，代价是要把逐块来源随 Weather 落库，schema 锁 v63）；② **展示侧仍按设备时区格式化** —— `Daily.getWeek/getShortDate`、`Hourly.getHour`、`WidgetHelper.getDailyWeek` 里的「今日」判断都用 `Calendar.getInstance()`，所以境外地点的星期与小时标签会偏（東京 +1 小时）。`Astro.getRiseTime/getSetTime` 已经收 `TimeZone`、是对的，这也是为什么日出日落这次能直接验证。要修得把地点时区送到各 ViewHolder 与远程视图，属另一件事。
+    **发版（2026-09-01）**：`git push` 依旧不通（github.com:443 连接被重置），走 REST API 重建推送，`master` 与 `v3.6.6` 的 SHA 与本地逐一校验一致；Action 自建的 release 是正式版，资产已换成本地真机验过的 APK，`sha256` 对过一致（`6178c076…7089`）。mapping 已备份到仓库外。
 
 ## 已知问题 / 约束
 
