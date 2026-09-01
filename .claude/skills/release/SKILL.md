@@ -76,6 +76,17 @@ gh release upload v3.5.8 app/build/outputs/apk/pub/release/GeometricWeather-v3.5
 
 换完用 sha256 对一下线上资产和本地 APK 是同一份 —— 发出去的必须是真机验过的那个。
 
+## 推不上去时（本机常见）
+
+`github.com:443` 时常不通而 `api.github.com` 正常（`curl -I https://github.com` 超时、`gh api` 秒回）。此时 `git push` 用不了，但可以用 REST API 把提交原样重建上去 —— git 对象是内容寻址的，只要 blob 内容、tree、message 字节、author/committer 与时间戳一致，API 建出来的 SHA 就和本地**完全相同**：
+
+1. `POST git/blobs`（base64，内容取 `git cat-file blob`，**别读工作区文件**，CRLF 会让 SHA 变）
+2. `POST git/trees`（`base_tree` 用父提交的 tree，只列改动的路径）
+3. `POST git/commits`（message 取 `git cat-file commit` 里空行之后的原始字节 —— `%B` 会多补一个换行，差一字节就是另一个 SHA）
+4. `PATCH git/refs/heads/master`、`POST git/refs` 建 tag
+
+每步都把 API 返回的 SHA 和本地的断言比对，不一致就停，别把和本地不同的历史发出去。
+
 ## 注意
 
 - 签名密钥库和口令是明文写在 `app/build.gradle` 里、且 `.jks` 在仓库中。这个仓库是 public 的 —— 任何人都能签出一个 Android 认为是"同一个 app 的更新"的包。自用无妨，要对外分发就得换 key 并从历史里清掉。

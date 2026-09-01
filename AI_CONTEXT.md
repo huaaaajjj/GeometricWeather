@@ -352,4 +352,5 @@
 - `weather/apis/CmaApi.java` line 27 起 —— 三个接口的浏览器 `@Headers("User-Agent: …")`（绕 WAF 403）
 - `weather/converters/*ResultConverter.java` —— null 防御集中地（崩溃高发区）
 - `common/utils/helpers/AsyncHelper.kt` —— IO/UI 线程封装；Emitter 回调 post 回主线程
+- `D:\Documents\geoweather-release-mappings\v<版本>-pubRelease-mapping.txt.gz` —— **已发版 APK 的 R8 mapping 备份**（仓库外）。`app/build` 一清理，`app/build/outputs/mapping/pubRelease/mapping.txt` 就没了，线上崩溃栈再也反混淆不回来；发版后先备份再清理。解压后配 cmdline-tools 的 `retrace` 用（见 `/crash-triage`）
 - `location/services/LocationService.kt` —— 定位服务（按 flavor 分实现），IP 兜底 `BaiduIPLocationService`
