@@ -14,7 +14,7 @@
 
 ## 实现状态
 
-- 当前发布版本：**3.6.3**（versionCode 30603，正式版）。上一发布版 3.6.2（30602，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
+- 当前发布版本：**3.6.4**（versionCode 30604，正式版）。上一发布版 3.6.3（30603，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
 - 10 个天气源：WEATHERAPI（默认）、OPEN_METEO、METNO（挪威气象局，免 key 全球）、XIAOMI（小米天气，免 key，中国区最全 + 海外走 Accu 后端）、CAIYUN、APIHZ（中国天气网）、CMA（中国气象局）、MF（仅法国）、OWM 可用；**ACCU 的内置 Key 已过期，当前不可用**（见「已知问题」）。加上 COMPOSITE（多源聚合）共 11 项可选。
 - 工具链已现代化（见版本矩阵）；RxJava 已全部迁移到 Coroutines；GreenDAO 已迁移到 Room。
 
@@ -300,6 +300,8 @@
     **设备状态备注**：验收时新加了「東京」这个地点，未删除。
 
 - **修「搜索结果只有一条时必崩」**（真机验收当场抓到，`IndexOutOfBoundsException: Index -1 out of bounds for length 1`）。搜 `舒城` 返回单条结果后 App 直接闪退回城市管理页。栈：`MaterialScrollBar.onLayout` → `CustomIndicator` → `LocationAdapter.getCustomStringForElement(-1)` → `getItem(-1)`。**根因**：该方法只判了 `getItemCount() == 0`，没判**下标越界**；而拖动滚动条在 `onLayout` 里传的是布局管理器的 `findFirstVisibleItemPosition()`，**尚未布局时它是 -1**。同一个类里的 `getItemSourceColor` 早就做了 `0 <= position && position < getItemCount()` 的范围检查，**这一个漏了** —— 是既有缺陷，但本次改动让它天天能碰到：本地城市表对 `舒城` 只返回一条，而以前多源并集通常有好几条。**改法**：两处 `getCustomStringForElement` 一起补范围检查（`search/ui/adapter/location/LocationAdapter` 与 `main/adapters/location/LocationAdapter` —— 后者目前没有滚动条指向它、够不到，但两者实现同一个接口且崩的是 `onLayout`，一起修）。新增 `search/LocationAdapterTest`（1 例：-1 与越界都返回空串、正常下标仍返回源 URL）。**变异检验**：改回 `getItemCount() == 0` → FAILED。**真机复验**：同一句 `舒城` 搜索正常显示单条结果、0 崩溃。
+
+- **3.6.4**：**正式版**（`assemblePubRelease` 已签名 + R8 minify/shrinkResources）。汇总自 3.6.3 以来的两件事：① **搜索城市不再需要勾选天气源** —— 那个勾选框本来就是绕过：11 个源里有 5 个（含**多源聚合**与新装默认的 **WeatherAPI**）根本不能搜，默认状态下搜什么都是「没有搜索到任何地点」，只能手动勾一个能搜的源，而勾了谁地点就存成谁。现在搜索只回答「这个地名在哪」，结果一律按设置里的全局源落库；中文走本地城市表（离线、区县级、精确坐标），其余走新接的 Open-Meteo 地理编码（免 key，带真实 IANA 时区）。删掉 FAB/勾选面板/多源扇出/`material-sheet-fab` 依赖等，净 −377 行。② **修「搜索结果只有一条时必崩」** —— `getCustomStringForElement` 缺下标范围检查，拖动滚动条在 `onLayout` 里传 -1 直接掀掉 App；是既有缺陷，但本地城市表对「舒城」只返回一条，改动后天天能碰到。用例数 219 → **223 例/变体**（六变体合计 1338）。真机验收与发版冒烟见上面两条与本条末。
 
 ## 已知问题 / 约束
 
