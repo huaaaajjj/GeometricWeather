@@ -112,6 +112,25 @@
   - 子实体 weatherSource 用 String（写入时 source.getId()）；LocationEntity 用 WeatherSource/TimeZone 强类型（RoomTypeConverters）
   - 本地 Microsoft JDK 17 kapt 的 InvocationTargetException → 加 `kapt.useWorkerApi=false` 解决
 
+## 接手须知（2026-09-02 交接）
+
+**当前状态**
+
+- `master` 本地**领先远端两个提交**（3.6.7 那次改动 + 本节），**未推**；远端 `master` = `39d71fc`，最新 release 是 **v3.6.6**（正式版，已发）。
+- **3.6.7（30607）已构建 + 真机验证，未发版**。签名包在 `app/build/outputs/apk/pub/release/GeometricWeather-v3.6.7_pub.apk`（`app/build` 一清就没了，要发得重新构建）；它的 R8 mapping 已备份到仓库外。手机上装的就是 3.6.7。
+- 要发 3.6.7：走 `/release`，唯一的坑是 **`git push` 在这台机器上不通**（github.com:443 连接被重置，api.github.com 正常），按 `/release` skill 的「推不上去时」用 REST API 重建推送，每步校验 SHA。
+- 用例数 **236/变体**（六变体 1416），`./gradlew test` 全绿。
+
+**这次没做、下次可以直接开工的**（按性价比）
+
+1. **OWM 的日出日落「抓了不用」**（两行）：`OwmCurrentResult.SysBean.sunrise/sunset` 已在 DTO 里，转换器只读了 `sys.pod`。不修的代价见「已知问题」那条 —— `isDaylight()` 退到写死的 06:00–18:00，喂配色/背景/全部 widget/通知，高纬度每天错几小时。METNO/CMA 要靠给 `CommonConverter` 加 NOAA 太阳计算（极昼极夜必须返回 null）。
+2. **让 `git push` 恢复可用**：SSH 到 github.com 的 22 和 443 都能连上，只是本机 `~/.ssh` 里的 key 没挂到账号（`Permission denied (publickey)`）。`gh ssh-key add` + remote 换 SSH 即可，**属于改用户账号设置，要先征得同意**。
+3. **纯删除的清理**：搜索解耦留下的 `SEARCH_CONFIG` prefs、10 个语种里的死文案、Accu/OWM/MF/APIHZ/彩云 五个源已无生产调用方的 `requestLocation(Context, String)`；以及固定天数假设的两处残留（`ForecastNotificationIMP.get(1)`、`NotificationHelper.isShortTermLiquid` 的 hourly `i < 4`）。
+4. **卡片「· 来源」标注写的是指派而非实际供数方**（境外会显示「每日概览 · 中国天气网」而数据来自 Open-Meteo）。要做对得把逐块来源随 Weather 落库，schema 锁 v63，代价大于收益 —— 除非只在内存里传一次、缓存读回时退回指派。
+5. **ACCU 内置 Key 已过期**，要不要换 Key 属用户决定；它同时卡着最后一个未迁 Kotlin 的服务（`AccuWeatherService`，`cancel()` 仍是空操作，因抓不到固件没测试）。
+
+**一条已复核掉的旧约束**：「CI 不可靠（jitpack 403）」在 2026-09-01 的三次 tag 构建里全部 success（各 6~7 分钟）。本地构建 + 真机验证仍不能省（那是发版门槛，见 `/release`），但「CI 一定失败」这个前提不成立了；推不上去是本机网络问题，与 CI 无关。
+
 ## 变更日志（按版本）
 
 ### 3.3.6 回退线（分支 rollback/3.3.6，HEAD=v3.3.6）
@@ -357,7 +376,11 @@
 - [x] 升级 AGP 8.x
 - [x] 升级 Kotlin 1.9+
 - [x] RxJava → Coroutines
-- [ ] Java → Kotlin 逐步迁移
+- [ ] Java → Kotlin 逐步迁移（`weather/services` 只剩 `AccuWeatherService`，卡在 Key 过期抓不到固件）
+- [ ] 发 3.6.7（已构建 + 真机验证，见「接手须知」）
+- [ ] OWM 读现成的 `sys.sunrise/sunset`；之后考虑给 `CommonConverter` 加 NOAA 太阳计算（收益归 CMA/METNO）
+- [ ] 清理：`SEARCH_CONFIG` 孤儿 prefs、10 个语种的死文案、五个源无调用方的 `requestLocation(Context, String)`
+- [ ] 补齐固定天数假设的两处残留：`ForecastNotificationIMP.get(1)`、`NotificationHelper` 的 hourly `i < 4`
 
 ## 重要文件引用
 
