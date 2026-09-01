@@ -175,10 +175,12 @@ public class WidgetHelper {
             return daily.getWeek(context);
         }
 
-        Calendar today = Calendar.getInstance();
+        // The place's own calendar: for a location a few hours off, the device's would call the
+        // wrong day "today". Every day carries its zone (WeatherHelper / DatabaseHelper fill it in).
+        Calendar today = Calendar.getInstance(daily.getTimeZone());
         today.setTime(new Date());
 
-        Calendar publish = Calendar.getInstance();
+        Calendar publish = Calendar.getInstance(daily.getTimeZone());
         publish.setTime(weather.getDailyForecast().get(0).getDate());
 
         boolean sameYear = today.get(Calendar.YEAR) == publish.get(Calendar.YEAR);

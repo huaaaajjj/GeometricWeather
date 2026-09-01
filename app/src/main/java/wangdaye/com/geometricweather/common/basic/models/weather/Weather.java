@@ -74,6 +74,22 @@ public class Weather
         return index >= 0 && index < dailyForecast.size() ? dailyForecast.get(index) : null;
     }
 
+    /**
+     * Hands every day and hour the zone of the place they describe, so their weekday names, dates
+     * and hour labels read as they do there rather than on the phone. Called at the two points every
+     * weather passes through — {@code WeatherHelper} for a fresh answer, {@code DatabaseHelper} for
+     * a cached one — because a converter only sees its own provider's payload, and a dozen view
+     * holders, widgets and notifications format these without ever holding the location.
+     */
+    public void setTimeZone(@NonNull TimeZone zone) {
+        for (Daily daily : dailyForecast) {
+            daily.setTimeZone(zone);
+        }
+        for (Hourly hourly : hourlyForecast) {
+            hourly.setTimeZone(zone);
+        }
+    }
+
     @NonNull
     public List<Hourly> getHourlyForecast() {
         return hourlyForecast;

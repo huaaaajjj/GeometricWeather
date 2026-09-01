@@ -32,6 +32,14 @@ public class Daily implements Serializable {
     private final UV uv;
     private final float hoursOfSun;
 
+    /**
+     * The zone of the place this day belongs to, so a weekday name and a date read as they do
+     * <em>there</em>. Filled in at the two points every weather passes through (WeatherHelper for a
+     * fresh answer, DatabaseHelper for a cached one); null means nobody did, and the formatters then
+     * fall back to the device's zone — which is what they always used.
+     */
+    private TimeZone timeZone;
+
     public Daily(Date date, long time,
                  HalfDay day, HalfDay night, Astro sun, Astro moon,
                  MoonPhase moonPhase, AirQuality airQuality, Pollen pollen, UV uv,
@@ -98,6 +106,15 @@ public class Daily implements Serializable {
         return hoursOfSun;
     }
 
+    public void setTimeZone(TimeZone timeZone) {
+        this.timeZone = timeZone;
+    }
+
+    /** The place's zone, or the device's when it was never filled in. */
+    public TimeZone getTimeZone() {
+        return timeZone != null ? timeZone : TimeZone.getDefault();
+    }
+
     public String getLongDate(Context context) {
         return getDate(context.getString(R.string.date_format_long));
     }
@@ -108,11 +125,13 @@ public class Daily implements Serializable {
 
     @SuppressLint("SimpleDateFormat")
     public String getDate(String format) {
-        return new SimpleDateFormat(format).format(date);
+        SimpleDateFormat df = new SimpleDateFormat(format);
+        df.setTimeZone(getTimeZone());
+        return df.format(date);
     }
 
     public String getWeek(Context context) {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance(getTimeZone());
         calendar.setTime(date);
 
         int day = calendar.get(Calendar.DAY_OF_WEEK);
@@ -138,15 +157,11 @@ public class Daily implements Serializable {
     }
 
     public boolean isToday(TimeZone timeZone) {
-        long millis = System.currentTimeMillis();
+        // Both calendars have to read the same clock: comparing "now there" against a date broken
+        // down in the device's zone puts the boundary in the wrong place for a place a few hours off.
+        Calendar current = Calendar.getInstance(timeZone);
 
-        Calendar current = Calendar.getInstance();
-        current.add(
-                Calendar.MILLISECOND,
-                timeZone.getOffset(millis) - TimeZone.getDefault().getOffset(millis)
-        );
-
-        Calendar thisDay = Calendar.getInstance();
+        Calendar thisDay = Calendar.getInstance(timeZone);
         thisDay.setTime(date);
 
         return current.get(Calendar.YEAR) == thisDay.get(Calendar.YEAR)

@@ -183,6 +183,38 @@ public class WeatherHelperTest {
         assertEquals(3, listener.result.getWeather().getDailyForecast().size());
     }
 
+    /**
+     * The third promise this funnel carries: every day and hour comes back knowing which zone it
+     * belongs to. Widgets, notifications and a dozen view holders format weekday names and hour
+     * labels off these models without ever holding the location, so a Tokyo forecast on a +08:00
+     * phone was labelled an hour early everywhere until it was filled in here.
+     */
+    @Test
+    public void daysAndHoursComeBackCarryingThePlacesZone() {
+        Location tokyo = new Location(
+                "tokyo",
+                35.6895f, 139.6917f,
+                TimeZone.getTimeZone("Asia/Tokyo"),
+                "日本", "東京都", "東京", "",
+                null,
+                WeatherSource.OPEN_METEO,
+                false, false, false
+        );
+        mService.weatherToReturn = fixtureWeather();
+
+        RecordingListener listener = new RecordingListener();
+        mHelper.requestWeather(mContext, tokyo, listener);
+        awaitOnMainLooper(() -> listener.done, 20_000);
+
+        assertTrue(listener.succeeded);
+        Weather weather = listener.result.getWeather();
+        assertNotNull(weather);
+        assertEquals(TimeZone.getTimeZone("Asia/Tokyo"),
+                weather.getDailyForecast().get(0).getTimeZone());
+        assertEquals(TimeZone.getTimeZone("Asia/Tokyo"),
+                weather.getHourlyForecast().get(0).getTimeZone());
+    }
+
     // ---- the threading promise ----
 
     /**

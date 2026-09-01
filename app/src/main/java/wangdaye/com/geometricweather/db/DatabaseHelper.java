@@ -179,8 +179,12 @@ public class DatabaseHelper {
         List<MinutelyEntity> minutelyList = mDao.selectMinutelyListByCityIdAndSource(cityId, sourceId);
         List<AlertEntity> alertList = mDao.selectAlertListByCityIdAndSource(cityId, sourceId);
 
-        return WeatherEntityGenerator.generate(weatherEntity, historyEntity,
+        Weather weather = WeatherEntityGenerator.generate(weatherEntity, historyEntity,
                 dailyList, hourlyList, minutelyList, alertList);
+        // Widgets and notifications read a cached weather without ever holding the location, and
+        // they format weekday names and hour labels off it — hand it the place's zone here.
+        weather.setTimeZone(location.getTimeZone());
+        return weather;
     }
 
     public void deleteWeather(@NonNull Location location) {

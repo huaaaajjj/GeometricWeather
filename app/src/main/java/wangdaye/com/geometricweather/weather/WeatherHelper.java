@@ -43,6 +43,9 @@ public class WeatherHelper {
                 // and notifications read getDailyForecast().get(0) unguarded. Treating it as a
                 // failure here keeps the previously cached weather instead of crashing downstream.
                 if (weather != null && !weather.getDailyForecast().isEmpty()) {
+                    // Days and hours are formatted by consumers that never see the location, so
+                    // hand them the place's zone here, where both are still together.
+                    weather.setTimeZone(requestLocation.getTimeZone());
                     AsyncHelper.runOnIO(() -> {
                         DatabaseHelper.getInstance(c).writeWeather(requestLocation, weather);
                         if (weather.getYesterday() == null) {

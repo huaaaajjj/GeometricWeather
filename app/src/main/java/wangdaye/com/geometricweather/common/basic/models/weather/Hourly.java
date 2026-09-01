@@ -33,6 +33,13 @@ public class Hourly implements Serializable {
     private final Wind wind;
     private final UV uv;
 
+    /**
+     * The zone of the place this hour belongs to, so "15时" is 15:00 there rather than on the phone.
+     * Filled in at the two points every weather passes through (WeatherHelper for a fresh answer,
+     * DatabaseHelper for a cached one); null falls back to the device's zone, as before.
+     */
+    private TimeZone timeZone;
+
     public Hourly(Date date, long time, boolean daylight,
                   String weatherText, WeatherCode weatherCode,
                   Temperature temperature,
@@ -90,8 +97,17 @@ public class Hourly implements Serializable {
         return uv;
     }
 
+    public void setTimeZone(TimeZone timeZone) {
+        this.timeZone = timeZone;
+    }
+
+    /** The place's zone, or the device's when it was never filled in. */
+    public TimeZone getTimeZone() {
+        return timeZone != null ? timeZone : TimeZone.getDefault();
+    }
+
     public int getHourIn24Format() {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance(getTimeZone());
         calendar.setTime(date);
         return calendar.get(Calendar.HOUR_OF_DAY);
     }
@@ -102,7 +118,7 @@ public class Hourly implements Serializable {
 
     @SuppressLint("DefaultLocale")
     private String getHour(Context context, boolean twelveHour, boolean rtl) {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance(getTimeZone());
         calendar.setTime(date);
 
         int hour;
@@ -133,11 +149,13 @@ public class Hourly implements Serializable {
 
     @SuppressLint("SimpleDateFormat")
     public String getDate(String format) {
-        return new SimpleDateFormat(format).format(date);
+        SimpleDateFormat df = new SimpleDateFormat(format);
+        df.setTimeZone(getTimeZone());
+        return df.format(date);
     }
 
     public String getWeek(Context context) {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance(getTimeZone());
         calendar.setTime(date);
 
         int day = calendar.get(Calendar.DAY_OF_WEEK);
@@ -159,15 +177,10 @@ public class Hourly implements Serializable {
     }
 
     public boolean isToday(TimeZone timeZone) {
-        long millis = System.currentTimeMillis();
+        // Both calendars have to read the same clock — see Daily.isToday.
+        Calendar current = Calendar.getInstance(timeZone);
 
-        Calendar current = Calendar.getInstance();
-        current.add(
-                Calendar.MILLISECOND,
-                timeZone.getOffset(millis) - TimeZone.getDefault().getOffset(millis)
-        );
-
-        Calendar thisDay = Calendar.getInstance();
+        Calendar thisDay = Calendar.getInstance(timeZone);
         thisDay.setTime(date);
 
         return current.get(Calendar.YEAR) == thisDay.get(Calendar.YEAR)

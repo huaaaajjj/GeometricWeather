@@ -96,6 +96,37 @@ public class DatabaseHelperTest {
      * The regression: writing a weather with no daily entries used to index into an empty list and
      * kill the process. It must simply store no history row.
      */
+    /**
+     * A cached read is the other funnel that has to hand the place's zone to the days and hours it
+     * rebuilds: widgets and notifications draw from here, and none of them holds the location when
+     * they format a weekday name or an hour label.
+     */
+    @Test
+    public void aCachedReadCarriesThePlacesZone() {
+        Location tokyo = new Location(
+                "tokyo",
+                35.6895f, 139.6917f,
+                TimeZone.getTimeZone("Asia/Tokyo"),
+                "日本", "東京都", "東京", "",
+                null,
+                WeatherSource.OPEN_METEO,
+                false, false, false
+        );
+        Weather weather = fixtureWeather(tokyo);
+
+        Weather[] stored = new Weather[1];
+        offMainThread(() -> {
+            DatabaseHelper.getInstance(mContext).writeWeather(tokyo, weather);
+            stored[0] = DatabaseHelper.getInstance(mContext).readWeather(tokyo);
+        });
+
+        assertNotNull(stored[0]);
+        assertEquals(TimeZone.getTimeZone("Asia/Tokyo"),
+                stored[0].getDailyForecast().get(0).getTimeZone());
+        assertEquals(TimeZone.getTimeZone("Asia/Tokyo"),
+                stored[0].getHourlyForecast().get(0).getTimeZone());
+    }
+
     @Test
     public void aWeatherWithoutDailyEntriesStoresWithoutCrashing() {
         Weather weather = withoutDailyForecast(fixtureWeather());
@@ -176,12 +207,17 @@ public class DatabaseHelperTest {
     }
 
     private Weather fixtureWeather() {
+        return fixtureWeather(mLocation);
+    }
+
+    /** The rows are keyed by the weather's own cityId, so it has to be built for that location. */
+    private Weather fixtureWeather(Location location) {
         InputStream in = getClass().getClassLoader()
                 .getResourceAsStream("openmeteo/forecast.json");
         assertNotNull("fixture missing: openmeteo/forecast.json", in);
         OpenMeteoResult result = new Gson().fromJson(
                 new InputStreamReader(in, StandardCharsets.UTF_8), OpenMeteoResult.class);
-        Weather weather = OpenMeteoResultConverter.convert(mContext, mLocation, result);
+        Weather weather = OpenMeteoResultConverter.convert(mContext, location, result);
         assertNotNull(weather);
         return weather;
     }

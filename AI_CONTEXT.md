@@ -14,7 +14,7 @@
 
 ## 实现状态
 
-- 当前发布版本：**3.6.6**（versionCode 30606，正式版）。上一发布版 3.6.5（30605，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
+- 当前发布版本：**3.6.6**（versionCode 30606，正式版）。**3.6.7（30607）已本地构建 + 真机验证，尚未发版**（见变更日志末条）。上一发布版 3.6.5（30605，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
 - 10 个天气源：WEATHERAPI（默认）、OPEN_METEO、METNO（挪威气象局，免 key 全球）、XIAOMI（小米天气，免 key，中国区最全 + 海外走 Accu 后端）、CAIYUN、APIHZ（中国天气网）、CMA（中国气象局）、MF（仅法国）、OWM 可用；**ACCU 的内置 Key 已过期，当前不可用**（见「已知问题」）。加上 COMPOSITE（多源聚合）共 11 项可选。
 - 工具链已现代化（见版本矩阵）；RxJava 已全部迁移到 Coroutines；GreenDAO 已迁移到 Room。
 
@@ -315,10 +315,15 @@
     **顺带记两件未做**：① 卡片上的「· 来源」标注写的仍是**指派**，境外地点会出现「每日概览 · 中国天气网」而数据实际来自 Open-Meteo（这条 3.5.9 就记过，代价是要把逐块来源随 Weather 落库，schema 锁 v63）；② **展示侧仍按设备时区格式化** —— `Daily.getWeek/getShortDate`、`Hourly.getHour`、`WidgetHelper.getDailyWeek` 里的「今日」判断都用 `Calendar.getInstance()`，所以境外地点的星期与小时标签会偏（東京 +1 小时）。`Astro.getRiseTime/getSetTime` 已经收 `TimeZone`、是对的，这也是为什么日出日落这次能直接验证。要修得把地点时区送到各 ViewHolder 与远程视图，属另一件事。
     **发版（2026-09-01）**：`git push` 依旧不通（github.com:443 连接被重置），走 REST API 重建推送，`master` 与 `v3.6.6` 的 SHA 与本地逐一校验一致；Action 自建的 release 是正式版，资产已换成本地真机验过的 APK，`sha256` 对过一致（`6178c076…7089`）。mapping 已备份到仓库外。
 
+- **日期与时刻改按地点时区渲染**（3.6.7，接着 3.6.6 的另一半）。3.6.6 把「数据属于哪一天」按当地时间算对了，但**标签仍按手机时区格式化**：`Daily.getWeek/getShortDate/getDate`、`Hourly.getHour/getHourIn24Format`、`Daily.isToday`、`WidgetHelper` 里的「今日」判断全都是裸 `Calendar.getInstance()`。東京 在 +08:00 手机上每个小时标签都早一小时，跨午夜时星期名还会差一天。
+    **改法（关键是没有改 49 个调用点）**：给 `Daily` 与 `Hourly` 各加一个可空 `TimeZone` 字段（模型类不是 Room 实体，不碰锁死的 v63 schema；`TimeZone` 本身可序列化，所以**不能标 transient**，否则跨 Intent 传递会丢），格式化方法一律取它、为空退回 `TimeZone.getDefault()`（老缓存与新构造路径都不会变差）。填值放在**两个既有汇聚点**：`WeatherHelper.requestWeatherSuccess`（网络）与 `DatabaseHelper.readWeather`（缓存，widget/通知都从这里取数），各一行 `weather.setTimeZone(location.getTimeZone())`；`Weather.setTimeZone` 遍历 daily+hourly。`Weather.withHoursFrom/withDaysFrom` 复用同一批对象，时区自然带过去。顺手修掉 `Daily.isToday`/`Hourly.isToday` 里那个「拿设备日历加偏移量差」的写法 —— 两个日历现在都用传入的时区。**故意没动三处**：`Base.getTime`（「更新于」是本机刷新时刻）、`Daily.getLunar`（农历）、`WidgetHelper.getWeek`（widget 自己的星期几）。
+    **测试**：+5 例（231 → **236 例/变体**，六变体合计 1416，全绿）：新增 `basic/LocalTimeLabelsTest`（3 例 —— 同一瞬间在东京是 7 点、在洛杉矶是 15 点；同一天在东京是 09-02 周三、在洛杉矶是 09-01 周二；没填时区则退回设备时区），`WeatherHelperTest` 与 `DatabaseHelperTest` 各 1 例钉住两个汇聚点真的填了值（后者顺带把 `fixtureWeather` 改成可传 location —— 缓存行按 weather 自己的 cityId 落库，不这样写读不回来）。**变异检验三处**：模型改回裸 `Calendar.getInstance()` → 星期/日期那例 FAILED；两个汇聚点各去掉填值 → 对应那例 FAILED。
+    **真机验收（MI 9 / Android 14，3.6.7 签名 release + R8，原地升级 3.6.6 保留数据）**：设备 00:25（9-2 CST）时打开東京 —— 页面当地时间 01:25、日期 9月2日 星期三、小时概览首格 **1时 / 9-2**（修复前会是 0时）、每日概览 今日 9-2 → 周四 9-3 → 周五 9-4 全部按东京日历；25° 多云、AQI 20 优（彩云）、`logcat -b crash` 全程空。验收用的「東京」已删除，地点列表恢复原样（用户在此期间自己新增的 台江/晋安 未动，南开的常驻标记未变）。
+
 ## 已知问题 / 约束
 
 - **中国专属源对境外地点一律报失败**（2026-09-01，3.6.6）：`ApihzWeatherService` 与 `CmaWeatherService` 在 `requestWeather` 入口就拦 `!location.isChina`，一个请求都不发。**不要把它改回去** —— 这两家不会答「没有」：APIHZ 退到 IP 端点会答请求来源地（北京），CMA 按坐标会匹配到最近的中国站点，看起来都是合法数据，而多源聚合把每日块（含日出日落）交给答话的那家，境外地点因此显示别处的天气。境外由 Open-Meteo/WeatherAPI/小米 供数。
-- **数据侧的日界已按地点时区算，展示侧还没有**（2026-09-01，3.6.6）：`Weather.withDaysFrom(time, zone)`、多源聚合的日键、OWM 的分桶都用地点时区/响应偏移了；但 `Daily.getWeek/getShortDate`、`Hourly.getHour`、`WidgetHelper.getDailyWeek` 的「今日」判断仍走 `Calendar.getInstance()`（设备时区），所以境外地点的星期名与小时标签会偏（東京 +1 小时）。`Astro.getRiseTime/getSetTime` 已收 `TimeZone`、是对的。要修得把地点时区送进各 ViewHolder 与 RemoteViews，属另一件事。
+- **日期与时刻一律按地点时区渲染，三处例外是故意的**（2026-09-01，3.6.7）：`Daily`/`Hourly` 各带一个 `TimeZone` 字段，在 `WeatherHelper`（网络）与 `DatabaseHelper.readWeather`（缓存）两个汇聚点填入，`getWeek/getShortDate/getDate/getHour/getHourIn24Format/isToday` 全部按它算，为空退回设备时区。**新增构造 Weather 的路径要么走这两个汇聚点，要么自己调 `weather.setTimeZone()`**，否则那条数据的标签会回到设备时区。故意没改的三处：`Base.getTime`（「更新于」说的是**你**什么时候刷的，设备时区才对）、`Daily.getLunar`（农历按设备时区算）、`WidgetHelper.getWeek`（widget 自己的今天星期几，与地点无关）。
 - **搜索地点已与天气源解耦**（2026-08-31，见变更日志末条）：搜索页不再有天气源勾选框，结果一律按设置里的全局源落库。新增地点的坐标来自 本地城市表 / Open-Meteo 地理编码，**不再来自某个天气源的搜索接口**。一处残留：各源的 `WeatherService.requestLocation(Context, String)` 实现（Accu/OWM/MF/APIHZ/彩云）**已无生产调用方**，唯一还在用的是 CMA 内部按地名解析站点（`CmaWeatherService.kt:140`）——删它们要连带拆掉各自的接口方法、转换器与测试，属另一次清理，本次未做。搜索结果列表的滚动条仍按源着色、指示气泡仍显示源 URL（现在每行都一样），按「保持原 UI 风格」未动 —— 但它的越界崩溃已修，见变更日志。
 - **Open-Meteo 地理编码对中文输入很差**（2026-08-31 实测）：`舒城` **0 条**、`长沙` 头三条是重庆/贵州/广东的同名村（湖南长沙市排不进前三）、`东京` 全是中国的村、`纽约` 0 条；换英文 `Changsha`/`Tokyo`/`Paris` 则第一条就对。所以中文查询**必须**先走本地 `chinese_city` 表，不要为了「少一个分支」把这一级去掉。另：`language` 参数只认**两位**语言码，`zh-CN`/`zh_CN`/乱码一律**不报错**、静默返回未本地化的名字，故传的是 `code.substringBefore('-')`。
 
