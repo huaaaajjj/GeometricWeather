@@ -14,7 +14,7 @@
 
 ## 实现状态
 
-- 当前发布版本：**3.6.6**（versionCode 30606，正式版）。**3.6.7（30607）已本地构建 + 真机验证，尚未发版**（见变更日志末条）。上一发布版 3.6.5（30605，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
+- 当前发布版本：**3.6.7**（versionCode 30607，正式版，2026-09-02 发）。上一发布版 3.6.6（30606，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
 - 10 个天气源：WEATHERAPI（默认）、OPEN_METEO、METNO（挪威气象局，免 key 全球）、XIAOMI（小米天气，免 key，中国区最全 + 海外走 Accu 后端）、CAIYUN、APIHZ（中国天气网）、CMA（中国气象局）、MF（仅法国）、OWM 可用；**ACCU 的内置 Key 已过期，当前不可用**（见「已知问题」）。加上 COMPOSITE（多源聚合）共 11 项可选。
 - 工具链已现代化（见版本矩阵）；RxJava 已全部迁移到 Coroutines；GreenDAO 已迁移到 Room。
 
@@ -112,22 +112,23 @@
   - 子实体 weatherSource 用 String（写入时 source.getId()）；LocationEntity 用 WeatherSource/TimeZone 强类型（RoomTypeConverters）
   - 本地 Microsoft JDK 17 kapt 的 InvocationTargetException → 加 `kapt.useWorkerApi=false` 解决
 
-## 接手须知（2026-09-02 交接）
+## 接手须知（2026-09-02 交接，3.6.7 发版后更新）
 
 **当前状态**
 
-- `master` 本地**领先远端两个提交**（3.6.7 那次改动 + 本节），**未推**；远端 `master` = `39d71fc`，最新 release 是 **v3.6.6**（正式版，已发）。
-- **3.6.7（30607）已构建 + 真机验证，未发版**。签名包在 `app/build/outputs/apk/pub/release/GeometricWeather-v3.6.7_pub.apk`（`app/build` 一清就没了，要发得重新构建）；它的 R8 mapping 已备份到仓库外。手机上装的就是 3.6.7。
-- 要发 3.6.7：走 `/release`，唯一的坑是 **`git push` 在这台机器上不通**（github.com:443 连接被重置，api.github.com 正常），按 `/release` skill 的「推不上去时」用 REST API 重建推送，每步校验 SHA。
-- 用例数 **236/变体**（六变体 1416），`./gradlew test` 全绿。
+- `master` 与远端同步（560a267…），最新 release 是 **v3.6.7**（正式版，已发；资产是本地真机验证过的 APK，sha256 `034dadff…553ff`，CI 自建 release 的资产已换掉）。手机上装的就是 3.6.7。
+- 用例数 **237/变体**（六变体 1422），`./gradlew test` 全绿。
+- **`git push` 在这台机器上依旧不通**（github.com:443 连接被重置，api.github.com 正常），推送走 REST API 重建：blob/tree/commit 逐级 POST 并每步校验 SHA。**两个坑**：① GitHub 建 commit 会**剥掉消息末尾的换行**，普通 `git commit` 的 SHA 永远对不上——本地先按同样规范用 `git commit-tree` 重建（消息 rstrip 掉尾换行、作者/时间戳原样），远端本地即逐字节一致；② 分支 API 返回的是 `commit.sha` 而非 refs API 的 `object.sha`。一次性脚本在 `C:\Users\HUAJI\AppData\Local\Temp\rebuild_and_push.py`（思路如上，随时可重写）。
+- 修复 push 的正道仍是把本机 SSH key 挂到账号（`gh ssh-key add` + remote 换 SSH），**属改用户账号设置，要先征得同意**。
+- CI 持续可靠：v3.6.6 三次 + v3.6.7 tag 构建（7m30s）全部 success；本地构建 + 真机验证仍是发版门槛。
+- 3.6.7 的 R8 mapping 已备份到 `D:\Documents\geoweather-release-mappings\v3.6.7-pubRelease-mapping.txt.gz`（覆盖了此前未发版的同名 3.6.7 旧 mapping——那个构建已被本次取代）。
 
 **这次没做、下次可以直接开工的**（按性价比）
 
-1. **OWM 的日出日落「抓了不用」**（两行）：`OwmCurrentResult.SysBean.sunrise/sunset` 已在 DTO 里，转换器只读了 `sys.pod`。不修的代价见「已知问题」那条 —— `isDaylight()` 退到写死的 06:00–18:00，喂配色/背景/全部 widget/通知，高纬度每天错几小时。METNO/CMA 要靠给 `CommonConverter` 加 NOAA 太阳计算（极昼极夜必须返回 null）。
-2. **让 `git push` 恢复可用**：SSH 到 github.com 的 22 和 443 都能连上，只是本机 `~/.ssh` 里的 key 没挂到账号（`Permission denied (publickey)`）。`gh ssh-key add` + remote 换 SSH 即可，**属于改用户账号设置，要先征得同意**。
-3. **纯删除的清理**：搜索解耦留下的 `SEARCH_CONFIG` prefs、10 个语种里的死文案、Accu/OWM/MF/APIHZ/彩云 五个源已无生产调用方的 `requestLocation(Context, String)`；以及固定天数假设的两处残留（`ForecastNotificationIMP.get(1)`、`NotificationHelper.isShortTermLiquid` 的 hourly `i < 4`）。
-4. **卡片「· 来源」标注写的是指派而非实际供数方**（境外会显示「每日概览 · 中国天气网」而数据来自 Open-Meteo）。要做对得把逐块来源随 Weather 落库，schema 锁 v63，代价大于收益 —— 除非只在内存里传一次、缓存读回时退回指派。
-5. **ACCU 内置 Key 已过期**，要不要换 Key 属用户决定；它同时卡着最后一个未迁 Kotlin 的服务（`AccuWeatherService`，`cancel()` 仍是空操作，因抓不到固件没测试）。
+1. **给 `CommonConverter` 加 NOAA 太阳计算**：METNO（整个 API 无 astro）与 CMA（上游未核实）的日出日落依旧缺失，`isDaylight()` 在这两个源仍退写死的 06:00–18:00，高纬度每天错几小时。OWM 已于 3.6.7 接上现成字段，就剩这条；极昼极夜必须返回 null 而非硬凑。
+2. **纯删除的清理**：搜索解耦留下的 `SEARCH_CONFIG` prefs、10 个语种里的死文案、Accu/OWM/MF/APIHZ/彩云 五个源已无生产调用方的 `requestLocation(Context, String)`；以及固定天数假设的两处残留（`ForecastNotificationIMP.get(1)`、`NotificationHelper.isShortTermLiquid` 的 hourly `i < 4`）。
+3. **卡片「· 来源」标注写的是指派而非实际供数方**（境外会显示「每日概览 · 中国天气网」而数据来自 Open-Meteo）。要做对得把逐块来源随 Weather 落库，schema 锁 v63，代价大于收益 —— 除非只在内存里传一次、缓存读回时退回指派。
+4. **ACCU 内置 Key 已过期**，要不要换 Key 属用户决定；它同时卡着最后一个未迁 Kotlin 的服务（`AccuWeatherService`，`cancel()` 仍是空操作，因抓不到固件没测试）。
 
 **一条已复核掉的旧约束**：「CI 不可靠（jitpack 403）」在 2026-09-01 的三次 tag 构建里全部 success（各 6~7 分钟）。本地构建 + 真机验证仍不能省（那是发版门槛，见 `/release`），但「CI 一定失败」这个前提不成立了；推不上去是本机网络问题，与 CI 无关。
 
@@ -341,6 +342,8 @@
 
 - **OWM 日出日落「抓了不用」接上：`sys.sunrise/sunset` 填进当天 astro**（3.6.7，已知问题清单里性价比最高的遗留项）。`OwmCurrentResult.SysBean.sunrise/sunset` 自 DTO 建立起就没被转换器读过（只用了 forecast 每步的 `sys.pod`），OWM 因此整天 astro 为空 → `Weather.isDaylight()` 退到写死的 06:00–18:00，喂主界面配色/动态背景/全部 widget/通知，高纬度每天错几小时。改法：current 响应的 `sys.sunrise/sunset`（任一为 0 则不构造，避免 epoch）构造 `Astro`，在 `getDailyList` 里按 `localDay(sunrise)` 挂到**它所属的那一天**的桶上 —— 不是无脑挂 daily[0]：免费档预报的首次步长常在本地 21 点后才跨过午夜，那时的 daily[0] 是明天，把今天的日出挂上去就是错数据；挂不上（当天不在预报覆盖内）就整段丢弃，退回原行为。其余天仍无 astro（免费 forecast 不带）、moon 保持空。测试 +1 例（237 例/变体，六变体 1422，全绿）：day0 的 rise/set 必须是固件里的真实时刻（+08 本地 06:20/19:13）、day1 仍空、`sunrise=0` 降级为空 astro 而非 1970；**变异检验**：构造处改传 null → 仅该例 FAILED。真机验证（MI 9 / Android 14，3.6.7 签名 release + R8，原地升级保留数据）：冷启动 0 崩溃；「天气源可用性」实测刷新 **OpenWeather 日出 ✗→✓**（可用 5天/40时，其余列不变）；挪威气象局/中国气象局仍 ✗ 属实（整个 API 无 astro / 上游未核实），留给 NOAA 太阳计算那条 TODO；彩云当轮「不可用」与本改动无关（链路零改动，试用 Token 历来抖动）。
 
+- **发版（2026-09-02）**：v3.6.7 正式版（含上两条：时区渲染 + OWM 日出日落）。`git push` 依旧不通，走 REST API 重建推送——blob/tree/commit 逐级 POST 并校验 SHA；坑：**GitHub 建 commit 会剥掉消息末尾换行**，本地提交先用 `git commit-tree` 按 API 规范重建（消息去尾换行、作者/时间戳不变）后远端与本地逐字节一致（`master` = `560a267`）。CI 自建的 release 换上真机验证过的 APK（资产 sha256 `034dadff…553ff` 与本地一致），tag 构建本身 success（7m30s）。mapping 已备份到仓库外（覆盖了未发版时的同名旧文件）。
+
 ## 已知问题 / 约束
 
 - **中国专属源对境外地点一律报失败**（2026-09-01，3.6.6）：`ApihzWeatherService` 与 `CmaWeatherService` 在 `requestWeather` 入口就拦 `!location.isChina`，一个请求都不发。**不要把它改回去** —— 这两家不会答「没有」：APIHZ 退到 IP 端点会答请求来源地（北京），CMA 按坐标会匹配到最近的中国站点，看起来都是合法数据，而多源聚合把每日块（含日出日落）交给答话的那家，境外地点因此显示别处的天气。境外由 Open-Meteo/WeatherAPI/小米 供数。
@@ -379,7 +382,7 @@
 - [x] 升级 Kotlin 1.9+
 - [x] RxJava → Coroutines
 - [ ] Java → Kotlin 逐步迁移（`weather/services` 只剩 `AccuWeatherService`，卡在 Key 过期抓不到固件）
-- [ ] 发 3.6.7（已构建 + 真机验证，见「接手须知」）
+- [x] 发 3.6.7（2026-09-02，正式版）
 - [x] OWM 读现成的 `sys.sunrise/sunset`（3.6.7）
 - [ ] 给 `CommonConverter` 加 NOAA 太阳计算（收益归 CMA/METNO，极昼极夜返回 null）
 - [ ] 清理：`SEARCH_CONFIG` 孤儿 prefs、10 个语种的死文案、五个源无调用方的 `requestLocation(Context, String)`
