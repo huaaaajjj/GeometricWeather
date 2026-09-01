@@ -81,7 +81,7 @@ public class DailyTrendWidgetIMP extends AbstractRemoteViewsPresenter {
 
         ResourceProvider provider = ResourcesProviderFactory.getNewInstance();
 
-        int itemCount = 5;
+        int itemCount = Math.min(5, weather.getDailyForecast().size());
         float[] daytimeTemperatures;
         float[] nighttimeTemperatures;
         int highestTemperature;
@@ -152,7 +152,11 @@ public class DailyTrendWidgetIMP extends AbstractRemoteViewsPresenter {
                         WeatherViewController.getWeatherKind(weather),
                         location.isDaylight()
                 );
-        for (int i = 0; i < items.length; i ++) {
+        for (int i = itemCount; i < items.length; i ++) {
+            // Fewer days than slots (WeatherAPI's free tier gives 3) — drop the surplus columns.
+            items[i].setVisibility(View.GONE);
+        }
+        for (int i = 0; i < itemCount; i ++) {
             Daily daily = weather.getDailyForecast().get(i);
 
             if (daily.getDate().equals(new Date())) {

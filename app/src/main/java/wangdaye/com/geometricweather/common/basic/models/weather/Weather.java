@@ -63,6 +63,17 @@ public class Weather
         return dailyForecast;
     }
 
+    /**
+     * The day at {@code index}, or null when the source answered with fewer days than the caller
+     * wants. Widgets and notifications lay out a fixed 5 days, but the shortest source gives 3
+     * (WeatherAPI's free tier), so a fixed index is an out-of-bounds crash waiting for a source
+     * switch. Only "daily has at least one entry" is guaranteed (by WeatherHelper / DatabaseHelper).
+     */
+    @Nullable
+    public Daily getDaily(int index) {
+        return index >= 0 && index < dailyForecast.size() ? dailyForecast.get(index) : null;
+    }
+
     @NonNull
     public List<Hourly> getHourlyForecast() {
         return hourlyForecast;

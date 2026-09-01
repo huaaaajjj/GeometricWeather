@@ -10,6 +10,7 @@ import java.util.List;
 import wangdaye.com.geometricweather.R;
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.options.unit.TemperatureUnit;
+import wangdaye.com.geometricweather.common.basic.models.weather.Daily;
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
 import wangdaye.com.geometricweather.remoteviews.presenters.MaterialYouCurrentWidgetIMP;
 import wangdaye.com.geometricweather.remoteviews.presenters.MaterialYouForecastWidgetIMP;
@@ -165,12 +166,14 @@ public class WidgetHelper {
     }
 
     public static String getDailyWeek(Context context, Weather weather, int index) {
-        if (index > 1) {
-            return weather.getDailyForecast().get(index).getWeek(context);
+        Daily daily = weather.getDaily(index);
+        if (daily == null) {
+            // The source gave fewer days than the widget has slots (WeatherAPI: 3). Leave it blank.
+            return "";
         }
-
-        String firstDay;
-        String secondDay;
+        if (index > 1) {
+            return daily.getWeek(context);
+        }
 
         Calendar today = Calendar.getInstance();
         today.setTime(new Date());
@@ -178,24 +181,23 @@ public class WidgetHelper {
         Calendar publish = Calendar.getInstance();
         publish.setTime(weather.getDailyForecast().get(0).getDate());
 
-        if (today.get(Calendar.YEAR) == publish.get(Calendar.YEAR)
-                && today.get(Calendar.DAY_OF_YEAR) == publish.get(Calendar.DAY_OF_YEAR)) {
-            firstDay = context.getString(R.string.today);
-            secondDay = weather.getDailyForecast().get(1).getWeek(context);
-        } else if (today.get(Calendar.YEAR) == publish.get(Calendar.YEAR)
-                && today.get(Calendar.DAY_OF_YEAR) == publish.get(Calendar.DAY_OF_YEAR) + 1) {
-            firstDay = context.getString(R.string.yesterday);
-            secondDay = context.getString(R.string.today);
-        } else {
-            firstDay = weather.getDailyForecast().get(0).getWeek(context);
-            secondDay = weather.getDailyForecast().get(1).getWeek(context);
-        }
+        boolean sameYear = today.get(Calendar.YEAR) == publish.get(Calendar.YEAR);
+        boolean publishedToday = sameYear
+                && today.get(Calendar.DAY_OF_YEAR) == publish.get(Calendar.DAY_OF_YEAR);
+        boolean publishedYesterday = sameYear
+                && today.get(Calendar.DAY_OF_YEAR) == publish.get(Calendar.DAY_OF_YEAR) + 1;
 
         if (index == 0) {
-            return firstDay;
-        } else {
-            return secondDay;
+            if (publishedToday) {
+                return context.getString(R.string.today);
+            }
+            if (publishedYesterday) {
+                return context.getString(R.string.yesterday);
+            }
+            return daily.getWeek(context);
         }
+        // index == 1.
+        return publishedYesterday ? context.getString(R.string.today) : daily.getWeek(context);
     }
 
     public static float getNonNullValue(Float value, float defaultValue) {

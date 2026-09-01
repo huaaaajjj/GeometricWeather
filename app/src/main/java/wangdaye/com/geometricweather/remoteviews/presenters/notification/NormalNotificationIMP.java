@@ -21,11 +21,13 @@ import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.options.NotificationStyle;
 import wangdaye.com.geometricweather.common.basic.models.options.NotificationTextColor;
 import wangdaye.com.geometricweather.common.basic.models.options.unit.TemperatureUnit;
+import wangdaye.com.geometricweather.common.basic.models.weather.Daily;
 import wangdaye.com.geometricweather.common.basic.models.weather.Hourly;
 import wangdaye.com.geometricweather.common.basic.models.weather.Temperature;
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
 import wangdaye.com.geometricweather.common.utils.LanguageUtils;
 import wangdaye.com.geometricweather.common.utils.helpers.LunarHelper;
+import wangdaye.com.geometricweather.remoteviews.WidgetHelper;
 import wangdaye.com.geometricweather.remoteviews.presenters.AbstractRemoteViewsPresenter;
 import wangdaye.com.geometricweather.theme.resource.ResourceHelper;
 import wangdaye.com.geometricweather.theme.resource.ResourcesProviderFactory;
@@ -271,136 +273,55 @@ public class NormalNotificationIMP extends AbstractRemoteViewsPresenter {
                     SettingsManager.getInstance(context).getWidgetWeekIconMode(),
                     dayTime
             );
-            // 1
-            views.setTextViewText( // set week 1.
-                    R.id.notification_big_week_1,
-                    context.getString(R.string.today)
-            );
-            views.setTextViewText( // set temps 1.
-                    R.id.notification_big_temp_1,
-                    Temperature.getTrendTemperature(
-                            context,
-                            weather.getDailyForecast().get(0).night().getTemperature().getTemperature(),
-                            weather.getDailyForecast().get(0).day().getTemperature().getTemperature(),
-                            temperatureUnit
-                    )
-            );
-            views.setImageViewUri( // set icon 1.
-                    R.id.notification_big_icon_1,
-                    ResourceHelper.getWidgetNotificationIconUri(
-                            provider,
-                            weekIconDaytime
-                                    ? weather.getDailyForecast().get(0).day().getWeatherCode()
-                                    : weather.getDailyForecast().get(0).night().getWeatherCode(),
-                            weekIconDaytime,
-                            false,
-                            NotificationTextColor.GREY
-                    )
-            );
-            // 2
-            views.setTextViewText( // set week 2.
-                    R.id.notification_big_week_2,
-                    weather.getDailyForecast().get(1).getWeek(context)
-            );
-            views.setTextViewText( // set temps 2.
-                    R.id.notification_big_temp_2,
-                    Temperature.getTrendTemperature(
-                            context,
-                            weather.getDailyForecast().get(1).night().getTemperature().getTemperature(),
-                            weather.getDailyForecast().get(1).day().getTemperature().getTemperature(),
-                            temperatureUnit
-                    )
-            );
-            views.setImageViewUri( // set icon 2.
-                    R.id.notification_big_icon_2,
-                    ResourceHelper.getWidgetNotificationIconUri( // get icon 2 resource id.
-                            provider,
-                            weekIconDaytime
-                                    ? weather.getDailyForecast().get(1).day().getWeatherCode()
-                                    : weather.getDailyForecast().get(1).night().getWeatherCode(),
-                            weekIconDaytime,
-                            false,
-                            NotificationTextColor.GREY
-                    )
-            );
-            // 3
-            views.setTextViewText( // set week 3.
-                    R.id.notification_big_week_3,
-                    weather.getDailyForecast().get(2).getWeek(context)
-            );
-            views.setTextViewText( // set temps 3.
-                    R.id.notification_big_temp_3,
-                    Temperature.getTrendTemperature(
-                            context,
-                            weather.getDailyForecast().get(2).night().getTemperature().getTemperature(),
-                            weather.getDailyForecast().get(2).day().getTemperature().getTemperature(),
-                            temperatureUnit
-                    )
-            );
-            views.setImageViewUri( // set icon 3.
-                    R.id.notification_big_icon_3,
-                    ResourceHelper.getWidgetNotificationIconUri( // get icon 3 resource id.
-                            provider,
-                            weekIconDaytime
-                                    ? weather.getDailyForecast().get(2).day().getWeatherCode()
-                                    : weather.getDailyForecast().get(2).night().getWeatherCode(),
-                            weekIconDaytime,
-                            false,
-                            NotificationTextColor.GREY
-                    )
-            );
-            // 4
-            views.setTextViewText( // set week 4.
-                    R.id.notification_big_week_4,
-                    weather.getDailyForecast().get(3).getWeek(context)
-            );
-            views.setTextViewText( // set temps 4.
-                    R.id.notification_big_temp_4,
-                    Temperature.getTrendTemperature(
-                            context,
-                            weather.getDailyForecast().get(3).night().getTemperature().getTemperature(),
-                            weather.getDailyForecast().get(3).day().getTemperature().getTemperature(),
-                            temperatureUnit
-                    )
-            );
-            views.setImageViewUri( // set icon 4.
-                    R.id.notification_big_icon_4,
-                    ResourceHelper.getWidgetNotificationIconUri( // get icon 4 resource id.
-                            provider,
-                            weekIconDaytime
-                                    ? weather.getDailyForecast().get(3).day().getWeatherCode()
-                                    : weather.getDailyForecast().get(3).night().getWeatherCode(),
-                            weekIconDaytime,
-                            false,
-                            NotificationTextColor.GREY
-                    )
-            );
-            // 5
-            views.setTextViewText( // set week 5.
-                    R.id.notification_big_week_5,
-                    weather.getDailyForecast().get(4).getWeek(context)
-            );
-            views.setTextViewText( // set temps 5.
-                    R.id.notification_big_temp_5,
-                    Temperature.getTrendTemperature(
-                            context,
-                            weather.getDailyForecast().get(4).night().getTemperature().getTemperature(),
-                            weather.getDailyForecast().get(4).day().getTemperature().getTemperature(),
-                            temperatureUnit
-                    )
-            );
-            views.setImageViewUri( // set icon 5.
-                    R.id.notification_big_icon_5,
-                    ResourceHelper.getWidgetNotificationIconUri( // get icon 5 resource id.
-                            provider,
-                            weekIconDaytime
-                                    ? weather.getDailyForecast().get(4).day().getWeatherCode()
-                                    : weather.getDailyForecast().get(4).night().getWeatherCode(),
-                            weekIconDaytime,
-                            false,
-                            NotificationTextColor.GREY
-                    )
-            );
+            int[] weekIds = new int[] {
+                    R.id.notification_big_week_1, R.id.notification_big_week_2,
+                    R.id.notification_big_week_3, R.id.notification_big_week_4,
+                    R.id.notification_big_week_5
+            };
+            int[] tempIds = new int[] {
+                    R.id.notification_big_temp_1, R.id.notification_big_temp_2,
+                    R.id.notification_big_temp_3, R.id.notification_big_temp_4,
+                    R.id.notification_big_temp_5
+            };
+            int[] iconIds = new int[] {
+                    R.id.notification_big_icon_1, R.id.notification_big_icon_2,
+                    R.id.notification_big_icon_3, R.id.notification_big_icon_4,
+                    R.id.notification_big_icon_5
+            };
+            for (int i = 0; i < weekIds.length; i ++) {
+                // A source can answer with fewer days than there are slots (WeatherAPI's free tier
+                // gives 3) — leave those blank instead of indexing off the end of the list.
+                Daily day = weather.getDaily(i);
+                views.setTextViewText(
+                        weekIds[i],
+                        WidgetHelper.getDailyWeek(context, weather, i)
+                );
+                views.setTextViewText(
+                        tempIds[i],
+                        day == null
+                                ? ""
+                                : Temperature.getTrendTemperature(
+                                        context,
+                                        day.night().getTemperature().getTemperature(),
+                                        day.day().getTemperature().getTemperature(),
+                                        temperatureUnit
+                                )
+                );
+                views.setImageViewUri(
+                        iconIds[i],
+                        day == null
+                                ? null
+                                : ResourceHelper.getWidgetNotificationIconUri(
+                                        provider,
+                                        weekIconDaytime
+                                                ? day.day().getWeatherCode()
+                                                : day.night().getWeatherCode(),
+                                        weekIconDaytime,
+                                        false,
+                                        NotificationTextColor.GREY
+                                )
+                );
+            }
         } else {
             // 1
             Hourly hourly = weather.getHourlyForecast().get(0);

@@ -14,7 +14,7 @@
 
 ## 实现状态
 
-- 当前发布版本：**3.6.4**（versionCode 30604，正式版）。上一发布版 3.6.3（30603，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
+- 当前发布版本：**3.6.4**（versionCode 30604，正式版）。**3.6.5（30605）已本地构建 + 真机验证，尚未发版**（见变更日志末条）。上一发布版 3.6.3（30603，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
 - 10 个天气源：WEATHERAPI（默认）、OPEN_METEO、METNO（挪威气象局，免 key 全球）、XIAOMI（小米天气，免 key，中国区最全 + 海外走 Accu 后端）、CAIYUN、APIHZ（中国天气网）、CMA（中国气象局）、MF（仅法国）、OWM 可用；**ACCU 的内置 Key 已过期，当前不可用**（见「已知问题」）。加上 COMPOSITE（多源聚合）共 11 项可选。
 - 工具链已现代化（见版本矩阵）；RxJava 已全部迁移到 Coroutines；GreenDAO 已迁移到 Room。
 
@@ -303,6 +303,11 @@
 
 - **3.6.4**：**正式版**（`assemblePubRelease` 已签名 + R8 minify/shrinkResources）。汇总自 3.6.3 以来的两件事：① **搜索城市不再需要勾选天气源** —— 那个勾选框本来就是绕过：11 个源里有 5 个（含**多源聚合**与新装默认的 **WeatherAPI**）根本不能搜，默认状态下搜什么都是「没有搜索到任何地点」，只能手动勾一个能搜的源，而勾了谁地点就存成谁。现在搜索只回答「这个地名在哪」，结果一律按设置里的全局源落库；中文走本地城市表（离线、区县级、精确坐标），其余走新接的 Open-Meteo 地理编码（免 key，带真实 IANA 时区）。删掉 FAB/勾选面板/多源扇出/`material-sheet-fab` 依赖等，净 −377 行。② **修「搜索结果只有一条时必崩」** —— `getCustomStringForElement` 缺下标范围检查，拖动滚动条在 `onLayout` 里传 -1 直接掀掉 App；是既有缺陷，但本地城市表对「舒城」只返回一条，改动后天天能碰到。用例数 219 → **223 例/变体**（六变体合计 1338）。真机验收与发版冒烟见上面两条与本条末。**发版（2026-09-01）**：`v3.6.4` tag 已推，Action 自动建的 release 正是**正式版**（`prerelease: false`），但附的是 CI 自己构建的 APK —— 已用 `gh release upload --clobber` 换成本地真机验过的那份并改写正文，`sha256` 对过一致（`8dfb736a…5ee2`）。
 
+- **修「切到 WeatherAPI 后一开 App 就闪退」**（3.6.5）。真机 release 包用 `retrace` + `mapping.txt` 反混淆得到真实栈：`IndexOutOfBoundsException: Index 3 out of bounds for length 3` → `WidgetHelper.getDailyWeek:169` ← `ClockDayWeekWidgetIMP.getRemoteViews:115` ← `updateWidgetView` ← `WidgetHelper.updateWidgetIfNecessary:47` ← `MainActivity.refreshBackgroundViews$lambda$9`（`MainActivity.kt:512`）← `AsyncHelper.delayRunOnIO`。**根因**：周视图 widget 与展开通知**硬编码 5 天**（第 4/5 格是固定下标），而 **WeatherAPI 免费档只给 3 天**；崩在刷新远程视图的 IO 线程上，未捕获异常直接掀掉进程，所以表现是「一开就闪退」而不是「widget 不刷新」。是既有缺陷（3.5.2 起默认源就是 WeatherAPI），只有摆了周视图 widget 或开了常驻通知的用户会踩到。同类假设全仓库共 4 处，一并修：三个周 widget（Clock+Day+Week / Day+Week / Week 的 `getTemp`/`getIconDrawableUri`）、`WidgetHelper.getDailyWeek`、`DailyTrendWidgetIMP` 的 `itemCount = 5`、`NormalNotificationIMP` 展开视图的 `get(1)`..`get(4)`。
+    **改法**：`Weather` 新增 `@Nullable getDaily(int)`（越界返回 null；唯一仍成立的保证是「daily 至少一条」，由 `WeatherHelper`/`DatabaseHelper` 两个汇聚点把关）。`getDailyWeek` 越界返回 `""`，并把原来「先算 firstDay+secondDay 再选一个」改成只算被问的那一格 —— 原写法在 `size == 1` 时也会崩。三个周 widget 缺天时温度返回 `""`、图标返回 null（`setImageViewUri(null)` 只清图，不抛）。`DailyTrendWidgetIMP` 的 `itemCount` 改成 `min(5, size)`，多余列 `GONE`。`NormalNotificationIMP` 把 5 段几乎逐字重复的展开代码折成一次循环（-130/+47 行）并复用 `getDailyWeek`。
+    **测试**：新增 `remoteviews/ShortDailyForecastTest`（4 例）—— 越界读为 null；widget 周标签越界为空、已有的日子仍照旧；以及把出事的那个 widget **端到端 `RemoteViews.apply` 出来**，断言前 3 格有温度、后 2 格为空、null 图标能过 `apply`。**变异检验**：`getDaily` 改回 `dailyForecast.get(index)` → 3 例中 2 例 FAILED。223 → **226 例/变体**（六变体合计 1356），六变体全绿。
+    **真机复验（MI 9 / Android 14，3.6.5 签名 release + R8，原地升级保留数据）**：冷启动不崩、`logcat -b crash` 全程空、南开区 28° Sunny 正常出数（「每日概览」正好 3 天，印证 WeatherAPI 免费档）、桌面 ClockDayWeek widget 更新为 今日/周三/周四 + 后两格留空。**顺带发现一处非本次引入的问题**：该 widget 在桌面上的摆放高度只够显示一行周标签，图标与温度行被裁掉（单测证明值确实写进了 RemoteViews，属摆放尺寸而非数据问题），未动。
+
 ## 已知问题 / 约束
 
 - **搜索地点已与天气源解耦**（2026-08-31，见变更日志末条）：搜索页不再有天气源勾选框，结果一律按设置里的全局源落库。新增地点的坐标来自 本地城市表 / Open-Meteo 地理编码，**不再来自某个天气源的搜索接口**。一处残留：各源的 `WeatherService.requestLocation(Context, String)` 实现（Accu/OWM/MF/APIHZ/彩云）**已无生产调用方**，唯一还在用的是 CMA 内部按地名解析站点（`CmaWeatherService.kt:140`）——删它们要连带拆掉各自的接口方法、转换器与测试，属另一次清理，本次未做。搜索结果列表的滚动条仍按源着色、指示气泡仍显示源 URL（现在每行都一样），按「保持原 UI 风格」未动 —— 但它的越界崩溃已修，见变更日志。
@@ -326,7 +331,7 @@
 - **METNO（api.met.no）**：① **每个请求必须带能识别应用的 User-Agent**，这是 ToS 硬要求，不带会被封 —— 已在 `ApiModule.provideMetNoApi` 用拦截器给它单独一个 OkHttp 实例，**不要把它的调用挪回共享 client**；② 四个端点里**只有 locationforecast 是全球的**，airqualityforecast 仅挪威（境外 HTTP 400）、nowcast 仅北欧（境外 422）、metalerts 境外返回空列表 —— 三者失败都由 `RequestScope.execute` 降级为 null，属预期而非故障；③ **无日出日落**（整个 API 零 astro 字段），`Daily.sun()` 留空，自检页「日出」列为空是已知降级；逐小时昼夜读 `symbol_code` 的 `_day`/`_night` 后缀；④ **无 daily 块**，日预报由 `MetNoResultConverter` 按本地日历日折叠（昼 06–18），**不要改成 yr.no 的 18:00→次日 06:00 夜段**，那会让凌晨刷新时 `dailyForecast[0]` 变成昨天；⑤ 无体感温度、无能见度。
 - **XIAOMI（weatherapi.market.xiaomi.com/wtr-v3/）**：① **一次刷新必须两步** —— `location/city/geo` 拿 `locationKey`，再 `weather/all` + 逐分钟；key 现已缓存进**独立 prefs 文件**（`xiaomi`，按 ~1km 坐标网格键控，见 2026-08-29 条）——但**仍不要塞进 `cityId`**（Room schema 锁 v63，会重演 3.4.13/3.4.14 的缓存键漂移）。② **`isGlobal` 必须与 key 前缀一致**（`weathercn:`→false、`accu:`→true），**传错返回 200 + 空预报而不是错误**，是静默失败路径，已有服务测试钉住。③ **数字全是字符串、缺值是 `""`**，解析必须先判空串（直接 `toFloat` 会把缺值变成 0）。④ **预报数组无逐条时间戳**，日期取 `sunRiseSet[i].from`；**境外该数组从昨天开始**，转换器会丢掉已过去的日子 —— 不要改成按 `pubTime + i 天` 计数。⑤ `precipitationProbability` 比其余日数组短（15 天只给 5 天），平行下标读取要容忍越界。⑥ 风速本来就是 km/h（**不要再 ×3.6**），AQI 是真的 0–500 中国指数、`co` 是 mg/m³，均直接采用。⑦ locale 固定 `zh_cn`（market 主机的英文文案是错的）。⑧ 境外无 AQI、无分钟级、无预警，`aqi` 块以 `{"status": -2}` 形式出现而非缺失。
 - **OWM**：国内到 `api.openweathermap.org` 的 **TLS 握手不稳**（`connectTls`→`doHandshake` 偶发 30s 超时，三路并行冷启动随机某路中招），非代码缺陷。Key 有效。天气源可用性页的检测预算已由 25s 提到 35s，否则会把它误报成"不可用"。
-- **空 daily 列表是全局隐含前提**：全仓库 **76 处** `getDailyForecast().get(0)` 不做保护（UI/widget/通知）。已在 `WeatherHelper.requestWeatherSuccess` 与 `DatabaseHelper.readWeather` 两个汇聚点拦截，新增消费点仍应假定「daily 至少一条」由这两处保证；**绕过这两处直接构造 Weather 的新代码必须自己判空**。
+- **空 daily 列表是全局隐含前提**：全仓库 **76 处** `getDailyForecast().get(0)` 不做保护（UI/widget/通知）。**「daily 至少 N 天」不是前提** —— 各源 3~16 天，固定下标 ≥1 的地方必须自己判越界，`Weather.getDaily(int)` 是现成的（越界返回 null）；remoteviews 下的固定 5 天假设已于 3.6.5 全部补齐，剩 `ForecastNotificationIMP` 的 `get(1)`（源只给 1 天才会踩，现无源如此）与 `NotificationHelper.isShortTermLiquid` 的 hourly `i < 4`（最少的源也有 23 点）。已在 `WeatherHelper.requestWeatherSuccess` 与 `DatabaseHelper.readWeather` 两个汇聚点拦截，新增消费点仍应假定「daily 至少一条」由这两处保证；**绕过这两处直接构造 Weather 的新代码必须自己判空**。
 - minSdk 实际为 21（目标 24，暂不升级）。
 
 ## 待完成（TODO）

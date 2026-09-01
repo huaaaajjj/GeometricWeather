@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.util.TypedValue;
 import android.widget.RemoteViews;
 
+import androidx.annotation.Nullable;
+
 import wangdaye.com.geometricweather.GeometricWeather;
 import wangdaye.com.geometricweather.R;
 import wangdaye.com.geometricweather.common.basic.models.Location;
@@ -17,6 +19,7 @@ import wangdaye.com.geometricweather.common.basic.models.options.NotificationTex
 import wangdaye.com.geometricweather.common.basic.models.options.WidgetWeekIconMode;
 import wangdaye.com.geometricweather.common.basic.models.options.unit.TemperatureUnit;
 import wangdaye.com.geometricweather.common.basic.models.weather.Temperature;
+import wangdaye.com.geometricweather.common.basic.models.weather.Daily;
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
 import wangdaye.com.geometricweather.remoteviews.WidgetHelper;
 import wangdaye.com.geometricweather.theme.resource.ResourceHelper;
@@ -216,22 +219,31 @@ public class WeekWidgetIMP extends AbstractRemoteViewsPresenter {
     }
 
     private static String getTemp(Context context, Weather weather, int index, TemperatureUnit unit) {
+        Daily daily = weather.getDaily(index);
+        if (daily == null) {
+            return "";
+        }
         return Temperature.getTrendTemperature(
                 context,
-                weather.getDailyForecast().get(index).night().getTemperature().getTemperature(),
-                weather.getDailyForecast().get(index).day().getTemperature().getTemperature(),
+                daily.night().getTemperature().getTemperature(),
+                daily.day().getTemperature().getTemperature(),
                 unit
         );
     }
 
+    @Nullable
     private static Uri getIconDrawableUri(ResourceProvider helper, Weather weather,
                                           boolean dayTime, boolean minimalIcon, NotificationTextColor color,
                                           int index) {
+        Daily daily = weather.getDaily(index);
+        if (daily == null) {
+            return null;
+        }
         return ResourceHelper.getWidgetNotificationIconUri(
                 helper,
                 dayTime
-                        ? weather.getDailyForecast().get(index).day().getWeatherCode()
-                        : weather.getDailyForecast().get(index).night().getWeatherCode(),
+                        ? daily.day().getWeatherCode()
+                        : daily.night().getWeatherCode(),
                 dayTime, minimalIcon, color
         );
     }
