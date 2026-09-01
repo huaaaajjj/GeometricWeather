@@ -11,7 +11,6 @@ import wangdaye.com.geometricweather.common.basic.models.options.provider.Compos
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather
 import wangdaye.com.geometricweather.weather.converters.WeatherMerger
-import java.util.TimeZone
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
@@ -89,11 +88,13 @@ class CompositeWeatherService @Inject constructor(
                 (listOfNotNull(members[block.source]) + sources).distinct().mapNotNull { answers[it] }
             }
 
-            // Device time zone, not the location's: that is the one every converter currently
-            // parses its dates into, so it is the one the day keys have to line up in.
+            // The location's own zone, not the device's: the day keys below decide which providers'
+            // days are the same day, and for a place a few hours away the device's calendar splits
+            // one local day across two keys (and folds two into one at the other end).
+            val zone = location.timeZone
             val weather = WeatherMerger.merge(
                 results = sources.mapNotNull { answers[it] },
-                timeZone = TimeZone.getDefault(),
+                timeZone = zone,
                 daily = preferring(CompositeBlock.DAILY),
                 hourly = preferring(CompositeBlock.HOURLY),
                 current = preferring(CompositeBlock.CURRENT),
@@ -101,7 +102,7 @@ class CompositeWeatherService @Inject constructor(
             )
                 // The daily leader can lag: a domestic source still serves yesterday as its first
                 // day for hours after midnight, and everything downstream reads day 0 as today.
-                ?.withDaysFrom(System.currentTimeMillis())
+                ?.withDaysFrom(System.currentTimeMillis(), zone)
 
             // Nothing below this point may reach the caller once cancel() has been called.
             if (!isActive) {

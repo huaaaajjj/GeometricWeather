@@ -2,6 +2,7 @@ package weather.converters;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -24,6 +25,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -59,8 +61,8 @@ public class OwmResultConverterTest {
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
-        // The converter buckets entries into days with a default-zone Calendar, so the JVM default
-        // decides where one day ends. Pin it to the fixture's own zone.
+        // The converter buckets by the response's own offset now, but the display-side formatting
+        // these tests read (getWeek, getShortDate) still goes through the JVM default. Pin it.
         mDefaultTimeZone = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Shanghai"));
 
@@ -93,6 +95,42 @@ public class OwmResultConverterTest {
                 load("forecast.json", OwmForecastResult.class),
                 load("air_pollution.json", OwmAirPollutionResult.class));
         return wrapper.getResult();
+    }
+
+    /**
+     * Days are bucketed by the *response's* offset, not the device's. The two used to be the same
+     * line of code — a default-zone Calendar — so every foreign place had its days cut at the
+     * phone's midnight and dated an hour or more off.
+     */
+    @Test
+    public void daysAreBucketedByTheResponseOffsetNotTheDeviceZone() {
+        List<Daily> atPlusEight = dailyForOffset(8 * 3600);
+        List<Daily> atPlusNine = dailyForOffset(9 * 3600);
+
+        // The fixture's second step is 23:00 on the 11th at +08:00 and 00:00 on the 12th at +09:00,
+        // so the same ten steps are two days in one zone and three in the other.
+        assertEquals(2, atPlusEight.size());
+        assertEquals("the 23:00 step is already the next day one zone east", 3, atPlusNine.size());
+        for (Daily daily : atPlusEight) {
+            assertEquals("a day must start at midnight where the place is (+08:00)",
+                    0, (daily.getTime() / 1000 + 8 * 3600) % 86400);
+        }
+        for (Daily daily : atPlusNine) {
+            assertEquals("a day must start at midnight where the place is (+09:00)",
+                    0, (daily.getTime() / 1000 + 9 * 3600) % 86400);
+        }
+        // Midnight one zone east is an hour earlier in absolute terms, so the boundary has to move.
+        assertNotEquals(atPlusEight.get(0).getTime(), atPlusNine.get(0).getTime());
+    }
+
+    private List<Daily> dailyForOffset(int offsetSeconds) {
+        OwmCurrentResult current = load("current.json", OwmCurrentResult.class);
+        current.timezone = offsetSeconds;
+        Weather weather = OwmResultConverter.convert(
+                mContext, mLocation, current,
+                load("forecast.json", OwmForecastResult.class), null).getResult();
+        assertNotNull(weather);
+        return weather.getDailyForecast();
     }
 
     @Test

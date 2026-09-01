@@ -218,6 +218,31 @@ public class CmaWeatherServiceTest {
         assertTrue(weather.getHourlyForecast().isEmpty());
     }
 
+    /**
+     * A place abroad gets no request at all. Asked anyway, this source does not answer "nothing":
+     * the coordinate fallback picks the nearest *Chinese* station — a thousand kilometres away — and
+     * presents its weather as that place's, sun times included.
+     */
+    @Test
+    public void aPlaceOutsideChinaIsRefusedWithoutAsking() throws InterruptedException {
+        mServer.serving(VIEW, "weather.json").serving(HOURLY_HTML, "hourly.html")
+                .serving(NATIONAL_MAP, "national.json");
+        Location tokyo = new Location(
+                "tokyo",
+                35.6895f, 139.6917f,
+                TimeZone.getTimeZone("Asia/Tokyo"),
+                "日本", "東京都", "東京", "",
+                null,
+                WeatherSource.CMA,
+                false, false, false
+        );
+
+        request(tokyo).awaitFailure();
+
+        assertEquals("a China-only source must not answer for a place abroad",
+                0, mServer.requestCount());
+    }
+
     /** With no station resolvable at all there is nothing to show — report failure, not empty. */
     @Test
     public void anUnresolvableLocationReportsFailure() throws InterruptedException {

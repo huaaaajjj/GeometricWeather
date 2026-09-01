@@ -123,10 +123,37 @@ public class ApihzWeatherServiceTest {
 
         Weather weather = request().awaitWeather();
 
-        assertNotNull("the by-IP endpoint is what keeps this source usable abroad", weather);
+        assertNotNull("the by-IP endpoint is what keeps an unrecognised place usable", weather);
         assertEquals("district and city, each with and without the province",
                 4, mServer.requestCount(BY_PLACE));
         assertNotNull(mServer.requestedPath(BY_IP));
+    }
+
+    /**
+     * A place outside China gets no request at all. Neither lookup would answer "nothing" for one:
+     * 东京 is also the name of a Chinese village, and the by-IP endpoint answers where the request
+     * came from (Beijing, for a foreign IP). A wrong-place answer is worse than none — the composite
+     * source hands the whole daily block, sunrise and sunset included, to whoever answered, which is
+     * how a Tokyo forecast came to show Beijing's sun times.
+     */
+    @Test
+    public void aPlaceOutsideChinaIsRefusedWithoutAsking() throws InterruptedException {
+        mServer.serving(BY_PLACE, "tqyb_full.json");
+        mServer.serving(BY_IP, "tqyb_full.json");
+        mLocation = new Location(
+                "tokyo",
+                35.6895f, 139.6917f,
+                TimeZone.getTimeZone("Asia/Tokyo"),
+                "日本", "東京都", "東京", "",
+                null,
+                WeatherSource.APIHZ,
+                false, false, false
+        );
+
+        request().awaitFailure();
+
+        assertEquals("a China-only source must not answer for a place abroad",
+                0, mServer.requestCount());
     }
 
     /** When even the IP fallback is rejected there is nothing to show — report failure, not empty. */

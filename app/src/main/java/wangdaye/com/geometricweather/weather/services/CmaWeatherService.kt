@@ -34,6 +34,12 @@ class CmaWeatherService @Inject constructor(
         location: Location,
         callback: RequestWeatherCallback
     ) {
+        // China-only, and for a place abroad it fails the same way APIHZ does — not with nothing,
+        // but with the nearest *Chinese* station's weather presented as that place's.
+        if (!location.isChina) {
+            callback.requestWeatherFailed(location)
+            return
+        }
         requests.launch {
             var result = getWeather(location.cityId)
 

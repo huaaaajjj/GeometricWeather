@@ -2,10 +2,7 @@ package wangdaye.com.geometricweather.weather.converters
 
 import android.content.Context
 import android.text.TextUtils
-import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 import java.util.TimeZone
 import wangdaye.com.geometricweather.common.basic.models.Location
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource
@@ -131,20 +128,20 @@ object OwmResultConverter {
             return dailyList
         }
 
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        var currentDate = ""
+        // Group by the *location's* calendar day, the same local clock the day/night split below
+        // uses: grouping in the device's zone puts a foreign place's evening on the wrong day and
+        // dates every day of the forecast an hour or more off.
+        var currentDay = Long.MIN_VALUE
         val dayEntries = ArrayList<OwmForecastResult.ListBean>()
 
         for (entry in entries) {
-            val calendar = Calendar.getInstance()
-            calendar.timeInMillis = entry.dt * 1000
-            val dateStr = dateFormat.format(calendar.time)
+            val day = localDay(entry.dt, timezoneOffset)
 
-            if (dateStr != currentDate) {
+            if (day != currentDay) {
                 if (dayEntries.isNotEmpty()) {
                     buildDaily(context, dayEntries, timezoneOffset)?.let { dailyList.add(it) }
                 }
-                currentDate = dateStr
+                currentDay = day
                 dayEntries.clear()
             }
             dayEntries.add(entry)
@@ -212,12 +209,7 @@ object OwmResultConverter {
         val avgWindSpeed = msToKph(windSpeed / windCount)
         val avgWindDeg = (windDeg / windCount).toFloat()
 
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = entries[0].dt * 1000
-        calendar.set(Calendar.HOUR_OF_DAY, 0)
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
-        calendar.set(Calendar.MILLISECOND, 0)
+        val startOfDay = (localDay(entries[0].dt, timezoneOffset) * 86400 - timezoneOffset) * 1000L
 
         // A partial day can hold no daytime (or no night-time) sample at all; fall back to the
         // day's midpoint instead of dividing by zero.
@@ -225,8 +217,8 @@ object OwmResultConverter {
         val avgNightTemp = if (nightCount > 0) nightTemp / nightCount else (tempMax + tempMin) / 2
 
         return Daily(
-            calendar.time,
-            calendar.timeInMillis,
+            Date(startOfDay),
+            startOfDay,
             buildHalfDay(context, weatherId, avgDayTemp, avgPop, avgWindSpeed, avgWindDeg),
             buildHalfDay(context, nightWeatherId, avgNightTemp, avgPop, avgWindSpeed, avgWindDeg),
             null, null, null, null, null,
@@ -269,16 +261,15 @@ object OwmResultConverter {
 
         for (entry in entries) {
             val weatherId = if (!entry.weather.isNullOrEmpty()) entry.weather[0].id else 800
-            val calendar = Calendar.getInstance()
-            calendar.timeInMillis = entry.dt * 1000
+            val time = entry.dt * 1000
 
             val windKph = msToKph(entry.wind.speed)
             val windDeg = entry.wind.deg.toFloat()
 
             hourlyList.add(
                 Hourly(
-                    calendar.time,
-                    calendar.timeInMillis,
+                    Date(time),
+                    time,
                     isDaylight(entry, timezoneOffset),
                     getWeatherText(weatherId),
                     getWeatherCode(weatherId),
@@ -421,4 +412,12 @@ object OwmResultConverter {
         val index = Math.round(degree / 22.5).toInt() % 16
         return WIND_DIRECTIONS[if (index < 0) 0 else index]
     }
+
+    /**
+     * Which local calendar day an epoch second falls on, counted from the epoch. `timezoneOffset`
+     * is the location's offset in seconds, straight from the response — the same shift the day/night
+     * split uses, so both agree on where a day starts.
+     */
+    private fun localDay(epochSeconds: Long, timezoneOffset: Int): Long =
+        (epochSeconds + timezoneOffset).floorDiv(86400L)
 }

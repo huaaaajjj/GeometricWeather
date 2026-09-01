@@ -35,6 +35,15 @@ class ApihzWeatherService @Inject constructor(
         location: Location,
         callback: RequestWeatherCallback
     ) {
+        // A domestic-only source has nothing to say about a place abroad, and its two lookups both
+        // answer the wrong place rather than nothing: a Chinese village shares the name 东京 with
+        // Tokyo, and the IP endpoint answers "where this request came from" (Beijing for a foreign
+        // IP). An answer that looks valid is worse than none — the composite hands the daily block,
+        // sunrise and sunset included, to whoever answered.
+        if (!location.isChina) {
+            callback.requestWeatherFailed(location)
+            return
+        }
         requests.launch {
             val result = fetchForLocation(location)
             val weather = if (result.usable()) {

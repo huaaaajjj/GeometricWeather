@@ -133,12 +133,15 @@ public class Weather
      * hours after midnight, and the whole app — header, widgets, notifications — reads index 0 as
      * "today", so a stale leading day is not a cosmetic problem.
      *
+     * "Today" is the location's day, not the device's: for a place a few hours ahead the device's
+     * midnight lands mid-afternoon there, and cutting on it would drop a day that has not happened.
+     *
      * Same two escapes as {@link #withHoursFrom(long)}: unchanged when nothing would go, and
      * unchanged when everything would.
      */
     @NonNull
-    public Weather withDaysFrom(long time) {
-        Calendar calendar = Calendar.getInstance();
+    public Weather withDaysFrom(long time, @NonNull TimeZone zone) {
+        Calendar calendar = Calendar.getInstance(zone);
         calendar.setTimeInMillis(time);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);

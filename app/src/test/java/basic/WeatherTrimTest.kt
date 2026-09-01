@@ -38,6 +38,7 @@ import java.util.TimeZone
 class WeatherTrimTest {
 
     private lateinit var weather: Weather
+    private val zone: TimeZone = TimeZone.getTimeZone("Asia/Shanghai")
 
     @Before
     fun setUp() {
@@ -124,7 +125,7 @@ class WeatherTrimTest {
     fun theDayListStartsToday() {
         val second = weather.dailyForecast[1]
         // Mid-afternoon on the second day: the first one is over, this one is not.
-        val trimmed = weather.withDaysFrom(second.time + 15 * 60 * 60 * 1000L)
+        val trimmed = weather.withDaysFrom(second.time + 15 * 60 * 60 * 1000L, zone)
 
         assertEquals(weather.dailyForecast.size - 1, trimmed.dailyForecast.size)
         assertEquals(second.time, trimmed.dailyForecast[0].time)
@@ -132,12 +133,30 @@ class WeatherTrimTest {
         assertEquals(weather.hourlyForecast.size, trimmed.hourlyForecast.size)
     }
 
+    /**
+     * The cut is the *location's* midnight, not the device's — the same instant is 23:30 of one day
+     * in Shanghai and 00:30 of the next in Tokyo, so a day is over in one and not in the other. This
+     * is the offset that showed up in production: the phone sits at +8 and the saved place at +9.
+     */
+    @Test
+    fun theCutIsTheLocationsMidnightNotTheDevices() {
+        val second = weather.dailyForecast[1]
+        val instant = second.time - 30 * 60 * 1000L
+
+        // 23:30 of day one where the days are anchored: day one is still running.
+        assertSame(weather, weather.withDaysFrom(instant, zone))
+        // 00:30 of day two an hour east: day one is over there.
+        val tokyo = weather.withDaysFrom(instant, TimeZone.getTimeZone("Asia/Tokyo"))
+        assertEquals(weather.dailyForecast.size - 1, tokyo.dailyForecast.size)
+        assertEquals(second.time, tokyo.dailyForecast[0].time)
+    }
+
     @Test
     fun aDayListWithNothingOverAndOneEntirelyOverBothComeBackUnchanged() {
         val first = weather.dailyForecast[0]
         val last = weather.dailyForecast.last()
 
-        assertSame(weather, weather.withDaysFrom(first.time + 60 * 1000L))
-        assertSame(weather, weather.withDaysFrom(last.time + 48 * 60 * 60 * 1000L))
+        assertSame(weather, weather.withDaysFrom(first.time + 60 * 1000L, zone))
+        assertSame(weather, weather.withDaysFrom(last.time + 48 * 60 * 60 * 1000L, zone))
     }
 }
