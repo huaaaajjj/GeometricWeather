@@ -114,7 +114,11 @@ public class LocationAdapter extends SyncListAdapter<LocationModel, LocationHold
 
     @Override
     public String getCustomStringForElement(int element) {
-        if (getItemCount() == 0) {
+        // The scroll bar asks during onLayout, and it passes the layout manager's first visible
+        // position — which is -1 whenever nothing is laid out yet. An unguarded get() then throws
+        // from onLayout, i.e. fatally. getItemSourceColor, asked from the same view, already
+        // range-checks; this one only checked for an empty list.
+        if (element < 0 || element >= getItemCount()) {
             return "";
         }
         return getItem(element).weatherSource.getSourceUrl();

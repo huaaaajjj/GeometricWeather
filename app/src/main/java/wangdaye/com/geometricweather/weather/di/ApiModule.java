@@ -29,6 +29,7 @@ import wangdaye.com.geometricweather.weather.apis.MetNoApi;
 import wangdaye.com.geometricweather.weather.apis.MfWeatherApi;
 import wangdaye.com.geometricweather.weather.apis.OpenMeteoAirQualityApi;
 import wangdaye.com.geometricweather.weather.apis.OpenMeteoApi;
+import wangdaye.com.geometricweather.weather.apis.OpenMeteoGeocodingApi;
 import wangdaye.com.geometricweather.weather.apis.OwmApi;
 import wangdaye.com.geometricweather.weather.apis.WeatherApiApi;
 import wangdaye.com.geometricweather.weather.apis.XiaomiApi;
@@ -140,6 +141,17 @@ public class ApiModule {
                 .addConverterFactory(converterFactory)
                 .build()
                 .create((OpenMeteoAirQualityApi.class));
+    }
+
+    @Provides
+    public OpenMeteoGeocodingApi provideOpenMeteoGeocodingApi(OkHttpClient client,
+                                                              GsonConverterFactory converterFactory) {
+        return new Retrofit.Builder()
+                .baseUrl(BuildConfig.OPEN_METEO_GEOCODING_BASE_URL)
+                .client(client)
+                .addConverterFactory(converterFactory)
+                .build()
+                .create((OpenMeteoGeocodingApi.class));
     }
 
     @Provides

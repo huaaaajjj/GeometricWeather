@@ -110,6 +110,7 @@ android {
         it.buildConfigField "String", "IQA_ATMO_SUD_URL", localProperties.getProperty("IQA_ATMO_SUD_URL", IQA_ATMO_SUD_URL)
         it.buildConfigField "String", "OPEN_METEO_BASE_URL", localProperties.getProperty("OPEN_METEO_BASE_URL", "\"https://api.open-meteo.com/\"")
         it.buildConfigField "String", "OPEN_METEO_AIR_QUALITY_BASE_URL", localProperties.getProperty("OPEN_METEO_AIR_QUALITY_BASE_URL", "\"https://air-quality-api.open-meteo.com/\"")
+        it.buildConfigField "String", "OPEN_METEO_GEOCODING_BASE_URL", localProperties.getProperty("OPEN_METEO_GEOCODING_BASE_URL", "\"https://geocoding-api.open-meteo.com/\"")
         it.buildConfigField "String", "WEATHERAPI_BASE_URL", localProperties.getProperty("WEATHERAPI_BASE_URL", "\"https://api.weatherapi.com/\"")
         it.buildConfigField "String", "WEATHERAPI_KEY", localProperties.getProperty("WEATHERAPI_KEY", "\"$EMBEDDED_WEATHERAPI_KEY\"")
         it.buildConfigField "String", "CMA_BASE_URL", localProperties.getProperty("CMA_BASE_URL", "\"https://weather.cma.cn/\"")
@@ -289,7 +290,6 @@ dependencies {
     implementation "com.github.rahatarmanahmed:circularprogressview:2.5.0"
     implementation "me.jfenn:AdaptiveIconView:0.0.1"
     implementation "com.github.turing-tech:MaterialScrollBar:13.3.2"
-    implementation "com.gordonwong:material-sheet-fab:1.2.1"
 
     // utils.
     implementation "com.github.XhinLiang:LunarCalendar:3.0.0"

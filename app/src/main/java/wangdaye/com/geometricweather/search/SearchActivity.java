@@ -27,9 +27,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gordonwong.materialsheetfab.MaterialSheetFab;
-import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener;
-
 import wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper;
 import com.turingtechnologies.materialscrollbar.CustomIndicator;
 
@@ -45,10 +42,7 @@ import wangdaye.com.geometricweather.common.utils.DisplayUtils;
 import wangdaye.com.geometricweather.common.utils.helpers.SnackbarHelper;
 import wangdaye.com.geometricweather.databinding.ActivitySearchBinding;
 import wangdaye.com.geometricweather.db.DatabaseHelper;
-import wangdaye.com.geometricweather.search.ui.FabView;
 import wangdaye.com.geometricweather.search.ui.adapter.location.LocationAdapter;
-import wangdaye.com.geometricweather.search.ui.adapter.source.WeatherSourceAdapter;
-import wangdaye.com.geometricweather.theme.ThemeManager;
 
 @AndroidEntryPoint
 public class SearchActivity extends GeoActivity
@@ -59,9 +53,6 @@ public class SearchActivity extends GeoActivity
 
     private LocationAdapter mAdapter;
     private List<Location> mCurrentList;
-
-    private MaterialSheetFab<FabView> mMaterialSheetFab;
-    private @Nullable WeatherSourceAdapter mSourceAdapter;
 
     private @Nullable LoadableLocationList.Status mStatus;
 
@@ -146,11 +137,7 @@ public class SearchActivity extends GeoActivity
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                if (mMaterialSheetFab.isSheetVisible()) {
-                    mMaterialSheetFab.hideSheet();
-                } else {
-                    finishSelf(null);
-                }
+                finishSelf(null);
             }
         });
     }
@@ -162,14 +149,6 @@ public class SearchActivity extends GeoActivity
     }
 
     private void initView() {
-        int[] colors = ThemeManager.getInstance(this).getThemeColors(
-                this, new int[]{
-                        R.attr.colorOutline,
-                        R.attr.colorSurfaceVariant,
-                        R.attr.colorPrimary,
-                }
-        );
-
         mBinding.backBtn.setOnClickListener(v -> finishSelf(null));
 
         mBinding.editText.setOnEditorActionListener(this);
@@ -245,47 +224,11 @@ public class SearchActivity extends GeoActivity
             }
         });
 
-        mMaterialSheetFab = new MaterialSheetFab<>(
-                mBinding.fab,
-                mBinding.fabSheet,
-                mBinding.overlay,
-                Color.TRANSPARENT,
-                colors[2]
-        );
-        mMaterialSheetFab.setEventListener(new MaterialSheetFabEventListener() {
-            @Override
-            public void onShowSheet() {
-                mBinding.sourceList.setAdapter(
-                        mSourceAdapter = new WeatherSourceAdapter(
-                                mViewModel.getEnabledSourcesValue()
-                        )
-                );
-            }
-        });
-
-        mBinding.sourceList.setLayoutManager(new LinearLayoutManager(this));
-        mBinding.sourceEnter.setOnClickListener(v -> {
-            if (mMaterialSheetFab.isSheetVisible()) {
-                mMaterialSheetFab.hideSheet();
-            }
-            if (mSourceAdapter != null) {
-                mViewModel.setEnabledSources(mSourceAdapter.getValidWeatherSources());
-            }
-            if (!TextUtils.isEmpty(mViewModel.getQueryValue())) {
-                mViewModel.requestLocationList();
-            }
-        });
-
         mViewModel.getListResource().observe(this, loadableLocationList -> {
             setStatus(loadableLocationList.getStatus());
-            mBinding.sourceEnter.setEnabled(
-                    loadableLocationList.getStatus() != LoadableLocationList.Status.LOADING);
-            mBinding.sourceEnter.setAlpha(mBinding.sourceEnter.isEnabled() ? 1 : 0.5f);
             mAdapter.update(loadableLocationList.getDataList());
         });
 
-        mViewModel.getEnabledSources().observe(this, enabled -> {
-        });
         mViewModel.getQuery().observe(this, query -> {
             mBinding.editText.setText(query);
             mBinding.editText.setSelection(query.length());

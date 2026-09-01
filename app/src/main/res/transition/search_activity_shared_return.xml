@@ -25,14 +25,4 @@
         </targets>
     </transition>
 
-    <transition
-        class="wangdaye.com.geometricweather.common.ui.transitions.ScaleTransition"
-        android:interpolator="@android:interpolator/decelerate_quad"
-        android:duration="350"
-        app:scale_type="hide">
-        <targets>
-            <target android:targetId="@id/fab" />
-        </targets>
-    </transition>
-
 </transitionSet>

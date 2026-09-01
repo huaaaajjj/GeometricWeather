@@ -25,15 +25,4 @@
         </targets>
     </transition>
 
-    <transition
-        class="wangdaye.com.geometricweather.common.ui.transitions.ScaleTransition"
-        android:interpolator="@android:interpolator/overshoot"
-        android:duration="450"
-        android:startDelay="300"
-        app:scale_type="show">
-        <targets>
-            <target android:targetId="@id/fab" />
-        </targets>
-    </transition>
-
 </transitionSet>

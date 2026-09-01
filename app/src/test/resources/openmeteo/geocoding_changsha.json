@@ -1,0 +1,56 @@
+{
+  "results": [
+    {
+      "id": 1815577,
+      "name": "长沙市",
+      "latitude": 28.19874,
+      "longitude": 112.97087,
+      "elevation": 67.0,
+      "feature_code": "PPLA",
+      "country_code": "CN",
+      "admin1_id": 1806691,
+      "admin2_id": 1815551,
+      "timezone": "Asia/Shanghai",
+      "population": 3093980,
+      "country_id": 1814991,
+      "country": "中国",
+      "admin1": "湖南",
+      "admin2": "长沙市"
+    },
+    {
+      "id": 1796989,
+      "name": "开平",
+      "latitude": 22.38124,
+      "longitude": 112.68492,
+      "elevation": 6.0,
+      "feature_code": "PPLA3",
+      "country_code": "CN",
+      "admin1_id": 1809935,
+      "admin2_id": 1806297,
+      "timezone": "Asia/Shanghai",
+      "population": 688242,
+      "country_id": 1814991,
+      "country": "中国",
+      "admin1": "广东",
+      "admin2": "江门市"
+    },
+    {
+      "id": 8400146,
+      "name": "长沙",
+      "latitude": 30.99997,
+      "longitude": 108.30463,
+      "elevation": 190.0,
+      "feature_code": "PPLA4",
+      "country_code": "CN",
+      "admin1_id": 1814905,
+      "admin2_id": 8739734,
+      "timezone": "Asia/Shanghai",
+      "population": 47170,
+      "country_id": 1814991,
+      "country": "中国",
+      "admin1": "重庆市",
+      "admin2": "重庆市"
+    }
+  ],
+  "generationtime_ms": 0.9214878
+}

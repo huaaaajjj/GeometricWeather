@@ -146,7 +146,11 @@ public class LocationAdapter extends SyncListAdapter<LocationModel, LocationHold
 
     @Override
     public String getCustomStringForElement(int element) {
-        if (getItemCount() == 0) {
+        // Same range check as the search screen's adapter: the scroll bar asks with the first
+        // visible position, which is -1 before anything is laid out. No MaterialScrollBar points
+        // at this list today, so it is unreachable here — but the two implement one interface and
+        // the crash it causes happens inside onLayout.
+        if (element < 0 || element >= getItemCount()) {
             return "";
         }
         return getItem(element).weatherSource.getSourceUrl();

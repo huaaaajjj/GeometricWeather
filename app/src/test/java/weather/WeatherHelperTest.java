@@ -202,57 +202,11 @@ public class WeatherHelperTest {
         assertTrue("failure must be delivered on the main thread", failure.onMainThread);
     }
 
-    // ---- multi-source search ----
-
-    /** A city search fans out over every enabled source and hands back the union of the hits. */
-    @Test
-    public void searchGathersResultsFromEverySource() {
-        mService.searchResults = Arrays.asList(cityNamed("shanghai"), cityNamed("shenzhen"));
-
-        RecordingSearchListener listener = search(
-                Arrays.asList(WeatherSource.OPEN_METEO, WeatherSource.WEATHERAPI));
-
-        assertTrue(listener.succeeded);
-        assertTrue("both sources contribute", listener.results.size() >= 2);
-        assertTrue("results must be delivered on the main thread", listener.onMainThread);
-    }
-
-    /** One source blowing up must not cost the results the others already found. */
-    @Test
-    public void oneSourceThrowingDoesNotLoseTheOthers() {
-        mService.searchResults = new ArrayList<>();
-        mService.throwOnSearch = true;
-
-        RecordingSearchListener listener = search(
-                java.util.Collections.singletonList(WeatherSource.OPEN_METEO));
-
-        // Nothing was found, so this reads as a failed search rather than an empty success.
-        assertTrue("a search that found nothing is a failure, not an empty success",
-                listener.failed);
-        assertTrue(listener.onMainThread);
-    }
-
-    /** With no sources enabled there is nothing to ask; fail without touching the network. */
-    @Test
-    public void searchWithNoEnabledSourcesFails() {
-        RecordingSearchListener listener = search(new ArrayList<>());
-
-        assertTrue(listener.failed);
-        assertTrue(listener.onMainThread);
-    }
-
     // ---- harness ----
 
     private RecordingListener request() {
         RecordingListener listener = new RecordingListener();
         mHelper.requestWeather(mContext, mLocation, listener);
-        awaitOnMainLooper(() -> listener.done, 20_000);
-        return listener;
-    }
-
-    private RecordingSearchListener search(List<WeatherSource> sources) {
-        RecordingSearchListener listener = new RecordingSearchListener();
-        mHelper.requestLocation(mContext, "shanghai", sources, listener);
         awaitOnMainLooper(() -> listener.done, 20_000);
         return listener;
     }
@@ -302,25 +256,11 @@ public class WeatherHelperTest {
         );
     }
 
-    private Location cityNamed(String name) {
-        return new Location(
-                name,
-                31.23f, 121.47f,
-                TimeZone.getTimeZone("Asia/Shanghai"),
-                "中国", "上海市", name, "",
-                null,
-                WeatherSource.OPEN_METEO,
-                false, false, true
-        );
-    }
-
     /** Stands in for any provider: answers from an IO thread, exactly as the real services do. */
     private static final class FakeService extends WeatherService {
 
         volatile Weather weatherToReturn;
         volatile boolean fail;
-        volatile List<Location> searchResults = new ArrayList<>();
-        volatile boolean throwOnSearch;
 
         @Override
         public void requestWeather(Context context, Location location,
@@ -337,20 +277,13 @@ public class WeatherHelperTest {
         @NonNull
         @Override
         public List<Location> requestLocation(Context context, String query) {
-            if (throwOnSearch) {
-                throw new IllegalStateException("provider is down");
-            }
-            return searchResults;
+            return new ArrayList<>();
         }
 
         @Override
         public void requestLocation(Context context, Location location,
                                     @NonNull RequestLocationCallback callback) {
-            callback.requestLocationSuccess(query(location), searchResults);
-        }
-
-        private static String query(Location location) {
-            return location.getCityId();
+            callback.requestLocationSuccess(location.getCityId(), new ArrayList<>());
         }
 
         @Override
@@ -378,31 +311,6 @@ public class WeatherHelperTest {
         public void requestWeatherFailed(@NonNull Location requestLocation) {
             onMainThread = Looper.myLooper() == Looper.getMainLooper();
             result = requestLocation;
-            failed = true;
-            done = true;
-        }
-    }
-
-    private static final class RecordingSearchListener
-            implements WeatherHelper.OnRequestLocationListener {
-
-        volatile boolean succeeded;
-        volatile boolean failed;
-        volatile boolean onMainThread;
-        volatile boolean done;
-        volatile List<Location> results = new ArrayList<>();
-
-        @Override
-        public void requestLocationSuccess(String query, List<Location> locationList) {
-            onMainThread = Looper.myLooper() == Looper.getMainLooper();
-            results = locationList;
-            succeeded = true;
-            done = true;
-        }
-
-        @Override
-        public void requestLocationFailed(String query) {
-            onMainThread = Looper.myLooper() == Looper.getMainLooper();
             failed = true;
             done = true;
         }

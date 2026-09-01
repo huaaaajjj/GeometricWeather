@@ -14,14 +14,12 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import wangdaye.com.geometricweather.common.basic.GeoViewModel;
 import wangdaye.com.geometricweather.common.basic.models.Location;
-import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource;
 
 @HiltViewModel
 public class SearchActivityViewModel extends GeoViewModel {
 
     private final MutableLiveData<LoadableLocationList> mListResource;
     private final MutableLiveData<String> mQuery;
-    private final MutableLiveData<List<WeatherSource>> mEnabledSources;
     private final SearchActivityRepository mRepository;
 
     @Inject
@@ -42,9 +40,6 @@ public class SearchActivityViewModel extends GeoViewModel {
         mQuery = new MutableLiveData<>();
         mQuery.setValue("");
 
-        mEnabledSources = new MutableLiveData<>();
-        mEnabledSources.setValue(repository.getValidWeatherSources(getApplication()));
-
         mRepository = repository;
     }
 
@@ -52,7 +47,7 @@ public class SearchActivityViewModel extends GeoViewModel {
         List<Location> oldList = innerGetLocationList();
 
         mRepository.cancel();
-        mRepository.searchLocationList(getApplication(), query, getEnabledSourcesValue(), (locationList, done) -> {
+        mRepository.searchLocationList(getApplication(), query, (locationList, done) -> {
             if (locationList != null) {
                 mListResource.setValue(
                         new LoadableLocationList(locationList, LoadableLocationList.Status.SUCCESS));
@@ -65,15 +60,6 @@ public class SearchActivityViewModel extends GeoViewModel {
         mListResource.setValue(
                 new LoadableLocationList(oldList, LoadableLocationList.Status.LOADING));
         mQuery.setValue(query);
-    }
-
-    public void requestLocationList() {
-        requestLocationList(getQueryValue());
-    }
-
-    public void setEnabledSources(List<WeatherSource> enabledSources) {
-        mRepository.setValidWeatherSources(enabledSources);
-        mEnabledSources.setValue(enabledSources);
     }
 
     @Override
@@ -111,17 +97,5 @@ public class SearchActivityViewModel extends GeoViewModel {
             return "";
         }
         return mQuery.getValue();
-    }
-
-    public MutableLiveData<List<WeatherSource>> getEnabledSources() {
-        return mEnabledSources;
-    }
-
-    public List<WeatherSource> getEnabledSourcesValue() {
-        if (mEnabledSources.getValue() == null) {
-            return new ArrayList<>();
-        } else {
-            return mEnabledSources.getValue();
-        }
     }
 }
