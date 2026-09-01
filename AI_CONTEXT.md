@@ -339,6 +339,8 @@
     **测试**：+5 例（231 → **236 例/变体**，六变体合计 1416，全绿）：新增 `basic/LocalTimeLabelsTest`（3 例 —— 同一瞬间在东京是 7 点、在洛杉矶是 15 点；同一天在东京是 09-02 周三、在洛杉矶是 09-01 周二；没填时区则退回设备时区），`WeatherHelperTest` 与 `DatabaseHelperTest` 各 1 例钉住两个汇聚点真的填了值（后者顺带把 `fixtureWeather` 改成可传 location —— 缓存行按 weather 自己的 cityId 落库，不这样写读不回来）。**变异检验三处**：模型改回裸 `Calendar.getInstance()` → 星期/日期那例 FAILED；两个汇聚点各去掉填值 → 对应那例 FAILED。
     **真机验收（MI 9 / Android 14，3.6.7 签名 release + R8，原地升级 3.6.6 保留数据）**：设备 00:25（9-2 CST）时打开東京 —— 页面当地时间 01:25、日期 9月2日 星期三、小时概览首格 **1时 / 9-2**（修复前会是 0时）、每日概览 今日 9-2 → 周四 9-3 → 周五 9-4 全部按东京日历；25° 多云、AQI 20 优（彩云）、`logcat -b crash` 全程空。验收用的「東京」已删除，地点列表恢复原样（用户在此期间自己新增的 台江/晋安 未动，南开的常驻标记未变）。
 
+- **OWM 日出日落「抓了不用」接上：`sys.sunrise/sunset` 填进当天 astro**（3.6.7，已知问题清单里性价比最高的遗留项）。`OwmCurrentResult.SysBean.sunrise/sunset` 自 DTO 建立起就没被转换器读过（只用了 forecast 每步的 `sys.pod`），OWM 因此整天 astro 为空 → `Weather.isDaylight()` 退到写死的 06:00–18:00，喂主界面配色/动态背景/全部 widget/通知，高纬度每天错几小时。改法：current 响应的 `sys.sunrise/sunset`（任一为 0 则不构造，避免 epoch）构造 `Astro`，在 `getDailyList` 里按 `localDay(sunrise)` 挂到**它所属的那一天**的桶上 —— 不是无脑挂 daily[0]：免费档预报的首次步长常在本地 21 点后才跨过午夜，那时的 daily[0] 是明天，把今天的日出挂上去就是错数据；挂不上（当天不在预报覆盖内）就整段丢弃，退回原行为。其余天仍无 astro（免费 forecast 不带）、moon 保持空。测试 +1 例（237 例/变体，六变体 1422，全绿）：day0 的 rise/set 必须是固件里的真实时刻（+08 本地 06:20/19:13）、day1 仍空、`sunrise=0` 降级为空 astro 而非 1970；**变异检验**：构造处改传 null → 仅该例 FAILED。真机验证（MI 9 / Android 14，3.6.7 签名 release + R8，原地升级保留数据）：冷启动 0 崩溃；「天气源可用性」实测刷新 **OpenWeather 日出 ✗→✓**（可用 5天/40时，其余列不变）；挪威气象局/中国气象局仍 ✗ 属实（整个 API 无 astro / 上游未核实），留给 NOAA 太阳计算那条 TODO；彩云当轮「不可用」与本改动无关（链路零改动，试用 Token 历来抖动）。
+
 ## 已知问题 / 约束
 
 - **中国专属源对境外地点一律报失败**（2026-09-01，3.6.6）：`ApihzWeatherService` 与 `CmaWeatherService` 在 `requestWeather` 入口就拦 `!location.isChina`，一个请求都不发。**不要把它改回去** —— 这两家不会答「没有」：APIHZ 退到 IP 端点会答请求来源地（北京），CMA 按坐标会匹配到最近的中国站点，看起来都是合法数据，而多源聚合把每日块（含日出日落）交给答话的那家，境外地点因此显示别处的天气。境外由 Open-Meteo/WeatherAPI/小米 供数。
@@ -346,7 +348,7 @@
 - **搜索地点已与天气源解耦**（2026-08-31，见变更日志末条）：搜索页不再有天气源勾选框，结果一律按设置里的全局源落库。新增地点的坐标来自 本地城市表 / Open-Meteo 地理编码，**不再来自某个天气源的搜索接口**。一处残留：各源的 `WeatherService.requestLocation(Context, String)` 实现（Accu/OWM/MF/APIHZ/彩云）**已无生产调用方**，唯一还在用的是 CMA 内部按地名解析站点（`CmaWeatherService.kt:140`）——删它们要连带拆掉各自的接口方法、转换器与测试，属另一次清理，本次未做。搜索结果列表的滚动条仍按源着色、指示气泡仍显示源 URL（现在每行都一样），按「保持原 UI 风格」未动 —— 但它的越界崩溃已修，见变更日志。
 - **Open-Meteo 地理编码对中文输入很差**（2026-08-31 实测）：`舒城` **0 条**、`长沙` 头三条是重庆/贵州/广东的同名村（湖南长沙市排不进前三）、`东京` 全是中国的村、`纽约` 0 条；换英文 `Changsha`/`Tokyo`/`Paris` 则第一条就对。所以中文查询**必须**先走本地 `chinese_city` 表，不要为了「少一个分支」把这一级去掉。另：`language` 参数只认**两位**语言码，`zh-CN`/`zh_CN`/乱码一律**不报错**、静默返回未本地化的名字，故传的是 `code.substringBefore('-')`。
 
-- **三个源没有日出日落，退到写死的 06:00–18:00**（2026-08-24 查明，**已决定暂不修**）：`METNO`（整个 API 无 astro 字段）、`CMA`（DTO/转换器里 `sun` 零匹配；上游响应里有没有**未能核实** —— WAF 掐本机 TLS 握手）、`OWM`（**接口其实给了却没读** —— `OwmCurrentResult.SysBean.sunrise/sunset` 已在 DTO 里，转换器只读了 `sys.pod`；`/data/2.5/forecast` 的 `city.sunrise/sunset` 连 DTO 都没声明。属「抓了不用」，同 `air_pollution`/Open-Meteo `sunrise` 那一类）。后果不只是「日月升落」卡被 `MainAdapter.java:88` 整块跳过：`Weather.isDaylight()` 在 `sun()` 为 null 时退到 `DisplayUtils.isDaylight(timeZone)`，那是**写死的 06:00–18:00**（`DisplayUtils.java:210-217`），而它喂主界面配色、动态背景、全部 widget、通知、磁贴、快捷方式、AQI/城市卡明暗（`location.isDaylight` 十余处消费点）。**中低纬度看不出来**（北京/舒城误差半小时内），**高纬度每天错几小时** —— 奥斯陆 12 月 09:18–15:12、6 月 03:54–22:54，而 METNO 正是北欧源。要修的顺序：先读 OWM 那个现成字段（两行），再考虑给 `CommonConverter` 加 NOAA 太阳计算（收益归 CMA/METNO 与将来的新源，极昼极夜必须返回 null 而非硬凑）。COMPOSITE 不受影响 —— `WeatherMerger.fillDaily` 会从别的成员补一个有效 `Astro`。
+- **两个源没有日出日落，退到写死的 06:00–18:00**（2026-08-24 查明；**OWM 已于 3.6.7 修掉**，剩 METNO/CMA 暂不修）：`METNO`（整个 API 无 astro 字段）、`CMA`（DTO/转换器里 `sun` 零匹配；上游响应里有没有**未能核实** —— WAF 掐本机 TLS 握手）。OWM 原属此列（`sys.sunrise/sunset` 在 DTO 里但转换器只读 `sys.pod`），已于 3.6.7 填进当天 astro，见变更日志。后果不只是「日月升落」卡被 `MainAdapter.java:88` 整块跳过：`Weather.isDaylight()` 在 astro 为空时退到 `DisplayUtils.isDaylight(timeZone)`，那是**写死的 06:00–18:00**（`DisplayUtils.java:210-217`），而它喂主界面配色、动态背景、全部 widget、通知、磁贴、快捷方式、AQI/城市卡明暗（`location.isDaylight` 十余处消费点）。**中低纬度看不出来**（北京/舒城误差半小时内），**高纬度每天错几小时** —— 奥斯陆 12 月 09:18–15:12、6 月 03:54–22:54，而 METNO 正是北欧源。下一步给 `CommonConverter` 加 NOAA 太阳计算（收益归 CMA/METNO 与将来的新源，极昼极夜必须返回 null 而非硬凑）。COMPOSITE 不受影响 —— `WeatherMerger.fillDaily` 会从别的成员补一个有效 `Astro`。
 - **FPAS（FOSS Public Alert Server）已决定不接**（2026-08-24）：理由与更省的替代路径记在 `docs/PORT_PLAN_breezy.md` 阶段 3/4 的裁决一节。
 - **`AccuWeatherService` 的 `cancel()` 仍是空操作**：其余 7 个服务已迁 Kotlin 并通过 `RequestScope` 真正实现取消（取消在途 `Call` + 回调前查 `isActive`），只有 Accu 还是旧的 `AsyncHelper.Controller` 写法 —— `Job.cancel()` 打不断阻塞的 `execute()`，回调照常送达。因 Key 过期抓不到固件、无法写服务测试，按「无测试不迁」保留。它同时是 `weather/services/` 最后一个 Java 文件（`WeatherService` 基类除外）。（其 `requestLocation(Context, String, RequestLocationCallback)` 三参死重载已于 README 之后那次清理中删除，见变更日志末条。）
 
@@ -378,7 +380,8 @@
 - [x] RxJava → Coroutines
 - [ ] Java → Kotlin 逐步迁移（`weather/services` 只剩 `AccuWeatherService`，卡在 Key 过期抓不到固件）
 - [ ] 发 3.6.7（已构建 + 真机验证，见「接手须知」）
-- [ ] OWM 读现成的 `sys.sunrise/sunset`；之后考虑给 `CommonConverter` 加 NOAA 太阳计算（收益归 CMA/METNO）
+- [x] OWM 读现成的 `sys.sunrise/sunset`（3.6.7）
+- [ ] 给 `CommonConverter` 加 NOAA 太阳计算（收益归 CMA/METNO，极昼极夜返回 null）
 - [ ] 清理：`SEARCH_CONFIG` 孤儿 prefs、10 个语种的死文案、五个源无调用方的 `requestLocation(Context, String)`
 - [ ] 补齐固定天数假设的两处残留：`ForecastNotificationIMP.get(1)`、`NotificationHelper` 的 hourly `i < 4`
 

@@ -31,6 +31,7 @@ import java.util.TimeZone;
 
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource;
+import wangdaye.com.geometricweather.common.basic.models.weather.Astro;
 import wangdaye.com.geometricweather.common.basic.models.weather.Daily;
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
 import wangdaye.com.geometricweather.common.basic.models.weather.WeatherCode;
@@ -288,6 +289,34 @@ public class OwmResultConverterTest {
         OwmCurrentResult current = load("current.json", OwmCurrentResult.class);
         current.weather.clear();
         assertNull(OwmResultConverter.convert(mContext, mLocation, current, forecast, null).getResult());
+    }
+
+    /**
+     * The observation's sys.sunrise/sunset used to be dropped on the floor: with every astro
+     * empty, isDaylight() fell back to a hardcoded 06:00–18:00 and mispainted the theme, widgets
+     * and notifications at high latitudes. They belong to the location's *current* day — 06:20 /
+     * 19:13 +08:00 in the fixture — so they must land on that day's bucket (not on whichever day
+     * comes first) and the later days stay empty, the free forecast carrying no astro at all.
+     */
+    @Test
+    public void currentDayCarriesTheSunTimesFromTheCurrentEndpoint() {
+        Weather weather = convertFixture();
+        assertNotNull(weather);
+
+        Astro firstSun = weather.getDailyForecast().get(0).sun();
+        assertEquals(1786396828000L, firstSun.getRiseDate().getTime());
+        assertEquals(1786446782000L, firstSun.getSetDate().getTime());
+
+        assertNull(weather.getDailyForecast().get(1).sun().getRiseDate());
+
+        // A zero timestamp is no timestamp: degrade to the empty astro, never to the epoch.
+        OwmCurrentResult current = load("current.json", OwmCurrentResult.class);
+        current.sys.sunrise = 0;
+        Weather withoutSun = OwmResultConverter.convert(
+                mContext, mLocation, current,
+                load("forecast.json", OwmForecastResult.class), null).getResult();
+        assertNotNull(withoutSun);
+        assertNull(withoutSun.getDailyForecast().get(0).sun().getRiseDate());
     }
 
     private String format(Date date, String pattern) {

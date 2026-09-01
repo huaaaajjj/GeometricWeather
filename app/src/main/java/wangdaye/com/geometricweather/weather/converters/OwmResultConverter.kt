@@ -8,6 +8,7 @@ import wangdaye.com.geometricweather.common.basic.models.Location
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource
 import wangdaye.com.geometricweather.common.basic.models.weather.AirQuality
 import wangdaye.com.geometricweather.common.basic.models.weather.Alert
+import wangdaye.com.geometricweather.common.basic.models.weather.Astro
 import wangdaye.com.geometricweather.common.basic.models.weather.Base
 import wangdaye.com.geometricweather.common.basic.models.weather.Current
 import wangdaye.com.geometricweather.common.basic.models.weather.Daily
@@ -36,8 +37,10 @@ import wangdaye.com.geometricweather.weather.services.WeatherService
  * - OWM's metric units are m/s and metres; the model works in km/h and km.
  * - The free tier has no daily endpoint: [getDailyList] buckets the 3-hour steps into local days
  *   itself, so an empty forecast yields an empty daily list rather than a failure.
- * - `Daily` coerces a null sun/moon/moonPhase/airQuality/pollen to empty instances itself, so those
- *   are passed as null here (identical objects, fewer imports) — same as the Open-Meteo converter.
+ * - `Daily` coerces a null sun/moon/moonPhase/airQuality/pollen to empty instances itself, so
+ *   moon/moonPhase/airQuality/pollen are passed as null here (identical objects, fewer imports) —
+ *   same as the Open-Meteo converter. The sun is filled only for the current day, from the
+ *   observation's own sys.sunrise/sunset; the free forecast carries no astro at all.
  * - Fields off the Owm* results are Java platform types: Kotlin will not force a null check on
  *   them, so the explicit guards below carry their weight and must stay.
  */
@@ -70,6 +73,18 @@ object OwmResultConverter {
             val weatherId = currentResult.weather[0].id
             val windSpeed = msToKph(currentResult.wind.speed)
             val windDeg = currentResult.wind.deg.toFloat()
+
+            // The observation's sys.sunrise/sunset are the only sun times the free tier hands
+            // over, and they were being dropped: with every astro empty, isDaylight() fell back
+            // to a hardcoded 06:00–18:00 and mispainted the theme, widgets and notifications at
+            // high latitudes. They describe the location's *current* day, so they attach to that
+            // day's bucket rather than to whichever day comes first.
+            val sys = currentResult.sys
+            val sun = if (sys != null && sys.sunrise != 0L && sys.sunset != 0L) {
+                Astro(Date(sys.sunrise * 1000), Date(sys.sunset * 1000))
+            } else {
+                null
+            }
 
             val weather = Weather(
                 Base(
@@ -105,7 +120,7 @@ object OwmResultConverter {
                     null, null, null, null, null
                 ),
                 null,
-                getDailyList(context, forecastResult, timezoneOffset),
+                getDailyList(context, forecastResult, timezoneOffset, sun),
                 getHourlyList(context, forecastResult, timezoneOffset),
                 ArrayList<Minutely>(),
                 ArrayList<Alert>()
@@ -120,13 +135,17 @@ object OwmResultConverter {
     private fun getDailyList(
         context: Context,
         forecast: OwmForecastResult?,
-        timezoneOffset: Int
+        timezoneOffset: Int,
+        sun: Astro?
     ): List<Daily> {
         val dailyList = ArrayList<Daily>()
         val entries = forecast?.list
         if (entries.isNullOrEmpty()) {
             return dailyList
         }
+
+        val sunDay = sun?.riseDate?.let { localDay(it.time / 1000, timezoneOffset) }
+            ?: Long.MIN_VALUE
 
         // Group by the *location's* calendar day, the same local clock the day/night split below
         // uses: grouping in the device's zone puts a foreign place's evening on the wrong day and
@@ -139,7 +158,8 @@ object OwmResultConverter {
 
             if (day != currentDay) {
                 if (dayEntries.isNotEmpty()) {
-                    buildDaily(context, dayEntries, timezoneOffset)?.let { dailyList.add(it) }
+                    buildDaily(context, dayEntries, timezoneOffset,
+                        if (currentDay == sunDay) sun else null)?.let { dailyList.add(it) }
                 }
                 currentDay = day
                 dayEntries.clear()
@@ -147,7 +167,8 @@ object OwmResultConverter {
             dayEntries.add(entry)
         }
         if (dayEntries.isNotEmpty()) {
-            buildDaily(context, dayEntries, timezoneOffset)?.let { dailyList.add(it) }
+            buildDaily(context, dayEntries, timezoneOffset,
+                if (currentDay == sunDay) sun else null)?.let { dailyList.add(it) }
         }
 
         return dailyList
@@ -156,7 +177,8 @@ object OwmResultConverter {
     private fun buildDaily(
         context: Context,
         entries: List<OwmForecastResult.ListBean>,
-        timezoneOffset: Int
+        timezoneOffset: Int,
+        sun: Astro?
     ): Daily? {
         if (entries.isEmpty()) {
             return null
@@ -221,7 +243,7 @@ object OwmResultConverter {
             startOfDay,
             buildHalfDay(context, weatherId, avgDayTemp, avgPop, avgWindSpeed, avgWindDeg),
             buildHalfDay(context, nightWeatherId, avgNightTemp, avgPop, avgWindSpeed, avgWindDeg),
-            null, null, null, null, null,
+            sun, null, null, null, null,
             UV(null, null, null),
             0f
         )
