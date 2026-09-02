@@ -14,7 +14,7 @@
 
 ## 实现状态
 
-- 当前发布版本：**3.6.7**（versionCode 30607，正式版，2026-09-02 发）。上一发布版 3.6.6（30606，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
+- 当前发布版本：**3.6.8**（versionCode 30608，正式版，2026-09-02 发）。上一发布版 3.6.7（30607，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
 - 10 个天气源：WEATHERAPI（默认）、OPEN_METEO、METNO（挪威气象局，免 key 全球）、XIAOMI（小米天气，免 key，中国区最全 + 海外走 Accu 后端）、CAIYUN、APIHZ（中国天气网）、CMA（中国气象局）、MF（仅法国）、OWM 可用；**ACCU 的内置 Key 已过期，当前不可用**（见「已知问题」）。加上 COMPOSITE（多源聚合）共 11 项可选。
 - 工具链已现代化（见版本矩阵）；RxJava 已全部迁移到 Coroutines；GreenDAO 已迁移到 Room。
 
@@ -384,6 +384,7 @@
 - [x] RxJava → Coroutines
 - [ ] Java → Kotlin 逐步迁移（`weather/services` 只剩 `AccuWeatherService`，卡在 Key 过期抓不到固件）
 - [x] 发 3.6.7（2026-09-02，正式版）
+- [x] 发 3.6.8（2026-09-02，正式版）
 - [x] OWM 读现成的 `sys.sunrise/sunset`（3.6.7）
 - [x] NOAA 太阳计算（3.6.8，`SolarCalculator.kt`——METNO/CMA 日出日落补齐，极昼极夜返回 null）
 - [ ] 清理：`SEARCH_CONFIG` 孤儿 prefs、10 个语种的死文案、五个源无调用方的 `requestLocation(Context, String)`
