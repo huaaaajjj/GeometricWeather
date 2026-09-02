@@ -28,3 +28,5 @@ output-metadata.json
 /.claude/worktrees/
 # 外部参考代码克隆（breezy-weather 等），只读参考，不进版本库
 /_ref/
+# 真机验证时的 adb 截图暂存（用完即删）
+/.tmpshots/

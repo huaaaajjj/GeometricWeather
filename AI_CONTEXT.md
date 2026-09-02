@@ -117,7 +117,7 @@
 **当前状态**
 
 - `master` 与远端同步（提交级一致性由 REST API 重建推送保证，见下），最新 release 是 **v3.6.8**（正式版；资产是本地真机验证过的 APK，CI 自建 release 的资产已换掉）。手机上装的就是 3.6.8。
-- 用例数 **242/变体**（六变体 1452），`./gradlew test` 全绿。
+- 用例数 **244/变体**（六变体 1464），`./gradlew test` 全绿。
 - **`git push` 在这台机器上依旧不通**（github.com:443 连接被重置，api.github.com 正常），推送走 REST API 重建：blob/tree/commit 逐级 POST 并每步校验 SHA。**两个坑**：① GitHub 建 commit 会**剥掉消息末尾的换行**，普通 `git commit` 的 SHA 永远对不上——本地先按同样规范用 `git commit-tree` 重建（消息 rstrip 掉尾换行、作者/时间戳原样），远端本地即逐字节一致；② 分支 API 返回的是 `commit.sha` 而非 refs API 的 `object.sha`。一次性脚本在 `C:\Users\HUAJI\AppData\Local\Temp\rebuild_and_push.py`（思路如上，随时可重写）。
 - 修复 push 的正道仍是把本机 SSH key 挂到账号（`gh ssh-key add` + remote 换 SSH），**属改用户账号设置，要先征得同意**。
 - CI 持续可靠：v3.6.6/v3.6.7/v3.6.8 的 tag 构建全部 success；本地构建 + 真机验证仍是发版门槛。
@@ -125,8 +125,10 @@
 
 **这次没做、下次可以直接开工的**（按性价比）
 
-1. **卡片「· 来源」标注写的是指派而非实际供数方**（境外会显示「每日概览 · 中国天气网」而数据来自 Open-Meteo）。要做对得把逐块来源随 Weather 落库，schema 锁 v63，代价大于收益 —— 除非只在内存里传一次、缓存读回时退回指派。
+1. **过敏原卡的「霉菌」一行显示 `0 /米³ - null`**（2026-09-02 奥斯陆实测）—— CAMS 没有霉菌字段，档位文案为空时 null 被拼进了字符串，应整行不显示或写「无数据」。一行的事。
 2. **ACCU 内置 Key 已过期**，要不要换 Key 属用户决定；它同时卡着最后一个未迁 Kotlin 的服务（`AccuWeatherService`，`cancel()` 仍是空操作，因抓不到固件没测试）。
+
+**设备状态备注**：验收多源聚合标注时加的「東京」**仍在地点列表里**（列表末位），要不要删由用户定；本轮为验空气质量修复临时加的「奥斯陆」已删除，南开的常驻标记未变。手机上装的是本轮重建的 3.6.8 签名 release（版本号未变，含今天这两处改动）。
 
 **一条已复核掉的旧约束**：「CI 不可靠（jitpack 403）」在 2026-09-01 的三次 tag 构建里全部 success（各 6~7 分钟）。本地构建 + 真机验证仍不能省（那是发版门槛，见 `/release`），但「CI 一定失败」这个前提不成立了；推不上去是本机网络问题，与 CI 无关。
 
@@ -350,8 +352,22 @@
   ③ **固定天数假设两处残留补齐**：`ForecastNotificationIMP` 的「明日」通知在 `dailyForecast.size() < 2` 时直接不构建（此前 `get(1)` 无保护，源只给 1 天即崩）；`NotificationHelper.isShortTermLiquid` 的小时窗口改为 `i < 4 && i < size()`。
   **验证**：`./gradlew test` 六变体全绿 242 例、`assemblePubDebug`/`assemblePubRelease` 通过；3.6.8 release 包原地重装真机冒烟——冷启动 0 崩溃、后台自动刷新正常、白天主题/主界面正常。
 
+- **多源聚合的卡片标注改成写实际供数方**（3.6.8 之后，未发版；接手须知里排第一的那条）。五张卡的「· 来源」此前写的是 `CompositeBlock` 里的**指派**，而指派天天落空：境外地点 APIHZ 与 CMA 在入口就报失败（3.6.6 的守卫），每日块顺位交给 Open-Meteo，卡片却仍写「每日概览 · 中国天气网」。**标注错的来源比不标更糟**是 `CompositeBlock` 类注释开头就写着的判据，当时按「逐块来源得随 Weather 落库、schema 锁 v63」估成代价大于收益，这次按当初括号里留的那条路做：**只在内存里传一次**。
+  **改法**：`Weather` 加 `@Nullable Map<CompositeBlock, WeatherSource> blockSources`（不入库、不碰 schema）；`WeatherMerger.merge` 多收一个 `providers: Map<Weather, WeatherSource>`（`CompositeWeatherService` 现成的 `answers` 反转即得），合并完由新的 `credit()` 记下每块**实际**领衔者；`CompositeBlock.title` 先读它、读不到才退回指派 —— 缓存读回的 Weather 没有这张表（数据库没有这一列），于是退回旧行为。**两处要点**：① `credit()` 复用的是 merge 自己的判据（daily/hourly 取第一个该块非空的、current 取第一个、AQI 取新抽出的 `airLeader`），不另写一份 —— 两份判据会漂，而漂了就又是「标注错的来源」；顺带把 `mergeCurrent` 里那段 AQI 挑选收进 `airLeader`（行为不变，`pick` 的兜底本来就是 air 的第一个）。② `Weather.withHoursFrom/withHoursUntil/withDaysFrom` 三处 `new Weather(...)` 收进一个私有 `with(days, hours)` 并带上 credits —— 否则「小时概览」卡在入口一裁（3.5.9/3.6.2 那两处裁剪）就把标注丢了，界面上表现为只有这张卡退回指派。
+  **测试**：`WeatherMergerTest` +1 例 `theCreditNamesWhoLedTheBlockRatherThanWhoWasAssigned` —— 造一个「答了但该块为空」的 leader，断言 daily 与 AQI 两个方向的落空各自把标注交给真正供数的那家、指派成立的两块保持不变、裁剪后标注不丢，并一路断到 `CompositeBlock.title` 打印出来的字符串上；`CompositeBlockTest` 只补注释说明它测的是「location 不带 weather = 缓存」那条退路。**变异检验两轮**：`credit` 的 daily 判据去掉「该块非空」→ `expected:<OPEN_METEO> but was:<APIHZ>`（正是要修的症状）；`Weather.with` 不带 credits → `expected:<OPEN_METEO> but was:<null>`。`./gradlew test` 六变体全绿 **243 例/变体**（原 242，六变体合计 1458），`assemblePubRelease` 已出签名 R8 包。
+  **真机验证（MI 9 / Android 14，3.6.8 签名 release + R8，原地升级保留数据）**：南开区（国内、指派成立）「每日概览 · 中国天气网」照旧；临时加「東京」→ **「每日概览 · Open-Meteo」与「日月升落 · Open-Meteo」**（修复前这两张都写「中国天气网」，而 APIHZ 对境外一个请求都不发），小时仍「· 小米天气」（走 accu: 后端确实答了）、当前与详情当轮仍「· 彩云天气」；`logcat -b crash` 全程空。**11:37 那次刷新更直接**：彩云当轮没答上，当前文案变成英文「Mainly clear」（Open-Meteo 的）、每日的空气质量标签页随之消失 —— 正是标注必须跟着变的那种落空。
+  **顺带看出一处既有缺陷**：東京 的空气质量卡是 0 / 优、六项浓度全 0，而标注「· 彩云天气」是**诚实的** —— 那串 0 真是彩云给的，**已在下一条修掉**。顺带 `.gitignore` 加 `/.tmpshots/`（真机验证的 adb 截图暂存目录）。
+
+- **修「彩云把『缺数据』报成 AQI 0 = 优」**（紧接上一条 —— 正是上一条的标注功能把它照出来的）。**先纠一处推断**：一开始记的是「彩云对境外一律返回全 0」，直连实测后更准确 —— 覆盖范围外确实回一整块 0（`aqi.chn` 0、六项浓度全 0、`description.chn` 是「**缺数据**」，New York / Oslo / Sydney 三点逐一实测皆如此），但**東京 现在是有数据的**（pm25 14 / pm10 18 / aqi.chn 20），11:01 那次刷新恰好落在它没数据的时段。所以这不是「境外恒错」而是「**缺数据时必错**」，任何地点都可能撞上。
+  **根因在转换器而不在合并器**：`CaiyunResultConverter` 把那块 0 原样映射进 `AirQuality`，`aqiIndex = 0` 经 `getAqiQuality()` 就成了「优」——单选彩云的用户看到的是「0 / 优」这个**假读数**；多源聚合里更糟，`AirQuality.isValid()` 判「任一字段非 null」，0 是非空值，于是这份假读数**压过** Open-Meteo 的真实浓度（3.6.2 起它有 AQI）。**改在源头**：加 `AirQualityBean.isMissing()`（index 0 且六项浓度全 0）→ 返回空 `AirQuality`；日粒度同款（`avg.chn` 0 且没有 PM2.5 → 空）。于是单选彩云时 `MainAdapter` 按既有的 `isValid()` 判定**自动不显示**这张卡，多源聚合自然落到下一家，**合并器一行没改**。顺带把该文件 4 处 `AirQuality(null × 8)` 收成 `emptyAirQuality()`（与同文件既有的 `emptyWind()` 同一写法）。
+  **为什么不在合并器加判据**：另外三家逐个核过 —— 小米境外 `aqi` 是 `{"status": -2}`、字段全空串 → 解析成全 null（诚实）；WeatherAPI 与 Open-Meteo 缺 `air_quality` 块时也是全 null（诚实）。只有彩云拿 0 当「没有」，那就在它自己那儿修，不给合并器加一条防所有人的判据。
+  **测试**：`CaiyunResultConverterTest` +1 例 `anAllZeroAirQualityIsNoReadingRatherThanPristineAir`（按实测形状把固件的 realtime 与 daily 空气块置成那串 0 + 「缺数据」，断言当前与首日的 AQI 都 `isValid() == false`、index/text 为 null，并反向断言未改动的固件仍有 25 / 9 µg 的真实读数）。**变异检验两轮**：去掉 realtime 的 `isMissing()` 守卫 → FAILED；日粒度守卫短路成 `false` → FAILED。`./gradlew test` 六变体全绿 **244 例/变体**（原 243，六变体合计 1464）。
+  **真机验证（MI 9 / Android 14，3.6.8 签名 release + R8，原地重装）**：临时加「奥斯陆」（彩云对它给的正是那串 0，直连已确认）→ 空气质量卡显示 **「空气质量 · Open-Meteo」AQI 13 / 优、PM2.5 8.8 / PM10 12 / SO₂ 1 / NO₂ 21.6 / O₃ 35 / CO 0.2 毫克/米³**，与同时直连 Open-Meteo 空气端点的读数逐项一致（pm2_5 8.8、pm10 12.0、so2 1.0、no2 21.6、o3 35.0、co 205 µg/m³ ÷1000 = 0.2），AQI 13 也与按 HJ 633-2012 预先算出的值相同 —— **修复前这张卡是彩云那串 0（0 / 优、六项全 0）且标注「· 彩云天气」**。同页另外四张卡：每日概览 · Open-Meteo、小时概览 · 小米天气、日月升落 · Open-Meteo（06:17 / 20:15，奥斯陆真实时刻）、详情数据 · 彩云天气（彩云确实答了天气，只是没有空气质量）；页面当地时间 06:26（设备 12:26，+2 时区正确）。**过敏原卡在这台机上第一次拿到真实数据**（豚草花粉 3/米³「低」、草地/树木 0「无」）—— 3.6.2 接的 Open-Meteo 花粉此前只验到「境外正确不显示」，这次补上了欧洲坐标的正路径。`logcat -b crash` 全程空。验证后**已删除「奥斯陆」**（列表恢复为 当前位置/舒城/南开/歙县/镜湖/台江/晋安/東京，南开的常驻标记未变）。
+  **顺带看到一处小显示缺陷（未修，已记进「下次可以直接开工的」）**：过敏原卡的「霉菌」一行显示 `0 /米³ - null` —— CAMS 没有霉菌字段，档位文案为空时那个 null 被直接拼进了字符串（具体代码位置未查）。
+
 ## 已知问题 / 约束
 
+- **多源聚合的卡片标注取「实际供数方」，缓存读回才退回指派**（2026-09-02）：`WeatherMerger` 合并时把每块的实际领衔者记进 `Weather.blockSources`（**只在内存**，Room 没有这一列、schema 锁 v63），`CompositeBlock.title` 优先读它。两条约束：① 绕过 `CompositeWeatherService` 自己合并多源 Weather 的新代码，要把 `providers` 传给 `merge`，否则标注退回指派；② 新增「复制一份 Weather」的方法必须走 `Weather.with(days, hours)`（或自己搬 credits），否则那条路径上的卡片标注会丢。标注说的是**块的领衔者** —— 块内的独立读数（日出日落、UV、花粉、半日的降水与风）仍可能来自别家，那是 3.5.9 起「按块不按字段」的既定取舍。
 - **中国专属源对境外地点一律报失败**（2026-09-01，3.6.6）：`ApihzWeatherService` 与 `CmaWeatherService` 在 `requestWeather` 入口就拦 `!location.isChina`，一个请求都不发。**不要把它改回去** —— 这两家不会答「没有」：APIHZ 退到 IP 端点会答请求来源地（北京），CMA 按坐标会匹配到最近的中国站点，看起来都是合法数据，而多源聚合把每日块（含日出日落）交给答话的那家，境外地点因此显示别处的天气。境外由 Open-Meteo/WeatherAPI/小米 供数。
 - **日期与时刻一律按地点时区渲染，三处例外是故意的**（2026-09-01，3.6.7）：`Daily`/`Hourly` 各带一个 `TimeZone` 字段，在 `WeatherHelper`（网络）与 `DatabaseHelper.readWeather`（缓存）两个汇聚点填入，`getWeek/getShortDate/getDate/getHour/getHourIn24Format/isToday` 全部按它算，为空退回设备时区。**新增构造 Weather 的路径要么走这两个汇聚点，要么自己调 `weather.setTimeZone()`**，否则那条数据的标签会回到设备时区。故意没改的三处：`Base.getTime`（「更新于」说的是**你**什么时候刷的，设备时区才对）、`Daily.getLunar`（农历按设备时区算）、`WidgetHelper.getWeek`（widget 自己的今天星期几，与地点无关）。
 - **搜索地点已与天气源解耦**（2026-08-31，见变更日志末条）：搜索页不再有天气源勾选框，结果一律按设置里的全局源落库。新增地点的坐标来自 本地城市表 / Open-Meteo 地理编码，**不再来自某个天气源的搜索接口**。残留已清（2026-09-02，见变更日志）：各源的 `WeatherService.requestLocation(Context, String)` 整链删除，仅 CMA 内部保留为 `searchStation`。搜索结果列表的滚动条仍按源着色、指示气泡仍显示源 URL（现在每行都一样），按「保持原 UI 风格」未动 —— 但它的越界崩溃已修，见变更日志。
@@ -369,7 +385,7 @@
 - **CMA**：weather.cma.cn WAF 拦截默认 okhttp UA（已加浏览器 UA，仅限 CMA）；其无坐标→站点接口，靠全国站点图找最近站点。**开发机上抓不到固件** —— WAF 对非浏览器的 TLS 指纹直接掐握手（curl `schannel: failed to receive handshake` / python `SSL: UNEXPECTED_EOF`，HTTP 也是 empty reply），手机上正常，故 CMA 与 ACCU（Key 过期）目前没有转换器测试。
 - **APIHZ（中国天气网）**：主走 `tqyb.php`（`sheng`+`place`）按城市取数，`tqybip.php` 仅作 IP 兜底。接口名怪癖：`place` 去尾「区」、直辖市 `sheng` 去尾「市」；区级覆盖不全，按 区→市→IP 依次兜底（见 3.4.9）。海外地名查不到 → 退 IP（国外 IP 接口默认返回北京）。
 - **ACCU 的 Key 已过期**（2026-06-28 实测：geoposition/currentconditions 均返回 403 `"This API Key has expired"`）→ AccuWeather 源在**内置 Key 下**完全不可用，需在 `build.gradle:30-32` 换新 Key（三个：`EMBEDDED_ACCU_WEATHER_KEY`/`EMBEDDED_ACCU_CURRENT_KEY`/`EMBEDDED_ACCU_AQI_KEY`，base64 编码；也可在 `local.properties` 覆盖，优先级更高）。本是功能最全的源（15天/24时/UV/AQI/分钟级/预警）。**3.5.2 起默认源已改为 WEATHERAPI**，避免新装用户落到死源；**天气源选择页已标注「不可用 —— 内置密钥已失效」**（仅在 `customAccuWeatherKey` 为空时显示）。**「高级 → 设置服务商 API KEY」入口已于本次移除**（见变更记录），自填 Key 的路径只剩 `local.properties` / `build.gradle`；`SettingsManager.customAccu*Key` 等读取逻辑保留，老用户此前存过的 Key 仍然生效。
-- **CAIYUN 为试用 Token**（`HYMo2dWkbB73N7rt`）：daily 上限仅 **3 天**、无 minutely 分钟级降水块；realtime/daily 字段齐全（体感/UV(life_index)/AQI/能见度）。如需 15 天+分钟级须换正式 Token。预警 DTO/转换器已接通，但真机实测该试用 Token 即使带 `?alert=true` 仍返回 `result.alert=null`；代码按空列表正常降级、0 崩溃，真实预警需正式 Token 才能端到端验证。
+- **CAIYUN 为试用 Token**（`HYMo2dWkbB73N7rt`）：daily 上限仅 **3 天**、无 minutely 分钟级降水块；realtime/daily 字段齐全（体感/UV(life_index)/AQI/能见度）。如需 15 天+分钟级须换正式 Token。预警 DTO/转换器已接通，但真机实测该试用 Token 即使带 `?alert=true` 仍返回 `result.alert=null`；代码按空列表正常降级、0 崩溃，真实预警需正式 Token 才能端到端验证。**另：覆盖范围外它把「缺数据」报成一整块 0**（`aqi.chn` 0 + 六项浓度全 0 + `description.chn`「缺数据」，New York/Oslo/Sydney 实测），转换器自 2026-09-02 起判为「无读数」（`AirQualityBean.isMissing()`，日粒度同款）——**不要把这条守卫去掉**，否则又会出现「0 / 优」的假读数，并在多源聚合里压过别家的真实浓度（0 是非空值，`AirQuality.isValid()` 认它）。
 - **各源数据丰富度实测**（COMPOSITE/OPEN_METEO/WEATHERAPI 一行为 2026-08-18 舒城县/北京实测，其余为 2026-06-28，MF用巴黎，METNO 为 2026-08-23 奥斯陆抓取的原始响应实测）：COMPOSITE 16天·384时·含AQI+预警(当时的指派：Open-Meteo 骨架 + WeatherAPI 补 AQI/预警；现行指派见变更日志末条 —— 逐时小米、日 APIHZ、现况/AQI 彩云，逐时/日超出部分由 Open-Meteo 追加)；OPEN_METEO 16天·384时·全字段+AQI(浓度换算，2026-08-28 起)+花粉(仅欧洲；无预警)；WEATHERAPI **3天·72时**·含AQI+预警(免费档只给 3 天，2026-06-28 记的 14天·336时 已失效)；METNO 约11天·约90点(前 2.5 天逐时、之后逐 6 小时，最后一点无预报块)·含UV/露点/气压/湿度/降水概率·**无体感、无日出日落**；AQI 与预警仅挪威、分钟级(5 分钟步长)仅北欧；XIAOMI（2026-08-24 北京/巴黎抓取的原始响应实测）中国 **15天·23时**·含真实浓度AQI+预警+**2小时逐分钟降水**·有体感/UV/气压/湿度（能见度常为空）、境外 5天·23时·无AQI/无分钟级/无预警；CAIYUN 3天·48时·含AQI/UV；APIHZ 7天·56时(逐3h)·无UV/AQI/能见度；CMA 7天·逐时(网页抓取)·无UV/AQI；OWM 5天/40点(3h步长)·有AQI·2.5无UV；MF(法)15天·73时。
 
 - **METNO（api.met.no）**：① **每个请求必须带能识别应用的 User-Agent**，这是 ToS 硬要求，不带会被封 —— 已在 `ApiModule.provideMetNoApi` 用拦截器给它单独一个 OkHttp 实例，**不要把它的调用挪回共享 client**；② 四个端点里**只有 locationforecast 是全球的**，airqualityforecast 仅挪威（境外 HTTP 400）、nowcast 仅北欧（境外 422）、metalerts 境外返回空列表 —— 三者失败都由 `RequestScope.execute` 降级为 null，属预期而非故障；③ **无日出日落**（整个 API 零 astro 字段），`Daily.sun()` 留空，自检页「日出」列为空是已知降级；逐小时昼夜读 `symbol_code` 的 `_day`/`_night` 后缀；④ **无 daily 块**，日预报由 `MetNoResultConverter` 按本地日历日折叠（昼 06–18），**不要改成 yr.no 的 18:00→次日 06:00 夜段**，那会让凌晨刷新时 `dailyForecast[0]` 变成昨天；⑤ 无体感温度、无能见度。

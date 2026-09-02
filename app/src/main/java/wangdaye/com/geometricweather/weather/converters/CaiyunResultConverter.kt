@@ -129,8 +129,8 @@ object CaiyunResultConverter {
         context: Context,
         aq: CaiYunWeatherResult.AirQualityBean?
     ): AirQuality {
-        if (aq == null) {
-            return AirQuality(null, null, null, null, null, null, null, null)
+        if (aq == null || aq.isMissing()) {
+            return emptyAirQuality()
         }
         // aqi.chn, not aqi.usa: the whole app reads aqiIndex as a 0..500 China AQI.
         val index = aq.aqi?.chn
@@ -150,6 +150,20 @@ object CaiyunResultConverter {
             aq.co.toFloat()
         )
     }
+
+    /**
+     * Outside its coverage 彩云 answers with a whole block of zeros instead of with missing fields:
+     * `aqi.chn` 0, all six concentrations 0, `description.chn` 缺数据 — New York, Oslo and Sydney all
+     * read like this. Passing that through would claim an AQI of 0, which the app renders as 优, and
+     * in the multi-source merge a zero is a non-null field, so the fake reading beats another
+     * provider's real one (that is how 東京 came to show 0 / 优 while Open-Meteo had real numbers).
+     * No reading is the honest answer; the card then hides itself and the merge falls through.
+     */
+    private fun CaiYunWeatherResult.AirQualityBean.isMissing() =
+        (aqi?.chn ?: 0) == 0 &&
+            pm25 == 0 && pm10 == 0 && o3 == 0 && so2 == 0 && no2 == 0 && co == 0.0
+
+    private fun emptyAirQuality() = AirQuality(null, null, null, null, null, null, null, null)
 
     private fun getDailyList(
         context: Context,
@@ -289,6 +303,11 @@ object CaiyunResultConverter {
                 if (!pm25List.isNullOrEmpty()) {
                     pm25 = pm25List[minOf(i, pm25List.size - 1)].avg
                 }
+                // Same shape as realtime (see AirQualityBean.isMissing): a day whose average AQI is
+                // 0 with no PM2.5 behind it is an absent reading, not spotless air.
+                if (aqiValue == 0 && (pm25 ?: 0) == 0) {
+                    return emptyAirQuality()
+                }
                 return AirQuality(
                     CommonConverter.getAqiQuality(context, aqiValue),
                     aqiValue,
@@ -298,7 +317,7 @@ object CaiyunResultConverter {
             }
         } catch (ignored: Exception) {
         }
-        return AirQuality(null, null, null, null, null, null, null, null)
+        return emptyAirQuality()
     }
 
     private fun getHourlyList(

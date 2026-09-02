@@ -255,6 +255,48 @@ public class CaiyunResultConverterTest {
     }
 
     /**
+     * Outside its coverage CaiYun answers with a whole block of zeros instead of with missing fields
+     * — aqi.chn 0, all six concentrations 0, description.chn 缺数据. New York, Oslo and Sydney all
+     * read exactly like this, and 東京 did on the day this was found. An AQI of 0 renders as 优, so
+     * the absent reading was shown as pristine air; worse, in the multi-source merge a zero is a
+     * non-null field, so it beat Open-Meteo's real concentrations for that place. Both the "now"
+     * reading and the per-day one have to degrade to no reading at all.
+     */
+    @Test
+    public void anAllZeroAirQualityIsNoReadingRatherThanPristineAir() {
+        CaiYunWeatherResult result = load();
+        CaiYunWeatherResult.AirQualityBean now = result.result.realtime.air_quality;
+        now.aqi.chn = 0;
+        now.aqi.usa = 0;
+        now.pm25 = 0;
+        now.pm10 = 0;
+        now.o3 = 0;
+        now.so2 = 0;
+        now.no2 = 0;
+        now.co = 0;
+        now.description.chn = "缺数据";
+        for (CaiYunWeatherResult.AqiDailyBean day : result.result.daily.air_quality.aqi) {
+            day.avg.chn = 0;
+        }
+        for (CaiYunWeatherResult.Pm25DailyBean day : result.result.daily.air_quality.pm25) {
+            day.avg = 0;
+        }
+
+        Weather weather = convert(result);
+        assertNotNull(weather);
+
+        // Nothing rather than "0 / 优" — MainAdapter hides the card on !isValid(), and the merge
+        // falls through to whichever provider does have a reading.
+        assertFalse(weather.getCurrent().getAirQuality().isValid());
+        assertNull(weather.getCurrent().getAirQuality().getAqiIndex());
+        assertNull(weather.getCurrent().getAirQuality().getAqiText());
+        assertFalse(weather.getDailyForecast().get(0).getAirQuality().isValid());
+
+        // A real reading still is one: the untouched fixture keeps its 25 / 9 µg for the same point.
+        assertTrue(convert(load()).getCurrent().getAirQuality().isValid());
+    }
+
+    /**
      * A malformed wind entry must degrade to the direction-less placeholder, not to a Wind built
      * from nulls — three of Wind's four slots are @NonNull, and null-filled Winds are exactly what
      * crashed the v2.6 migration. Only the affected day degrades; its neighbours keep their data.
