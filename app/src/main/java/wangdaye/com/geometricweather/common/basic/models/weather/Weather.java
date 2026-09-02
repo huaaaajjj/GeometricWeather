@@ -8,8 +8,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
+import wangdaye.com.geometricweather.common.basic.models.options.provider.CompositeBlock;
+import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource;
 import wangdaye.com.geometricweather.common.utils.DisplayUtils;
 
 public class Weather
@@ -24,6 +27,7 @@ public class Weather
     @NonNull private final List<Hourly> hourlyForecast;
     @NonNull private final List<Minutely> minutelyForecast;
     @NonNull private final List<Alert> alertList;
+    @Nullable private Map<CompositeBlock, WeatherSource> blockSources;
 
     public Weather(@NonNull Base base, @NonNull Current current, @Nullable History yesterday,
                    @NonNull List<Daily> dailyForecast,
@@ -42,6 +46,22 @@ public class Weather
     @NonNull
     public Base getBase() {
         return base;
+    }
+
+    /**
+     * Which provider a block's data actually came from, or null when nobody recorded it — only the
+     * multi-source merge does, and only for the answer it has just built. A weather read back from
+     * the cache carries none, and the card falls back to naming the provider that block is assigned
+     * to ({@link CompositeBlock}); recording it there too would mean a schema change, and the schema
+     * is locked at v63.
+     */
+    @Nullable
+    public WeatherSource getBlockSource(@NonNull CompositeBlock block) {
+        return blockSources == null ? null : blockSources.get(block);
+    }
+
+    public void setBlockSources(@NonNull Map<CompositeBlock, WeatherSource> blockSources) {
+        this.blockSources = blockSources;
     }
 
     @NonNull
@@ -116,8 +136,7 @@ public class Weather
         if (upcoming.isEmpty() || upcoming.size() == hourlyForecast.size()) {
             return this;
         }
-        return new Weather(
-                base, current, yesterday, dailyForecast, upcoming, minutelyForecast, alertList);
+        return with(dailyForecast, upcoming);
     }
 
     /**
@@ -139,8 +158,7 @@ public class Weather
         if (upcoming.isEmpty() || upcoming.size() == hourlyForecast.size()) {
             return this;
         }
-        return new Weather(
-                base, current, yesterday, dailyForecast, upcoming, minutelyForecast, alertList);
+        return with(dailyForecast, upcoming);
     }
 
     /**
@@ -174,8 +192,20 @@ public class Weather
         if (upcoming.isEmpty() || upcoming.size() == dailyForecast.size()) {
             return this;
         }
-        return new Weather(
-                base, current, yesterday, upcoming, hourlyForecast, minutelyForecast, alertList);
+        return with(upcoming, hourlyForecast);
+    }
+
+    /**
+     * A copy with one of the two series swapped out. The trimming above all goes through here so a
+     * trimmed weather keeps everything that is not a day or an hour — the block credits especially,
+     * which are set once by the merge and would otherwise be dropped by the first card that trims.
+     */
+    @NonNull
+    private Weather with(@NonNull List<Daily> days, @NonNull List<Hourly> hours) {
+        Weather weather = new Weather(
+                base, current, yesterday, days, hours, minutelyForecast, alertList);
+        weather.blockSources = blockSources;
+        return weather;
     }
 
     @NonNull

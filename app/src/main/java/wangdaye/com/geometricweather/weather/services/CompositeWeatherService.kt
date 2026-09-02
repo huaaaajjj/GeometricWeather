@@ -77,15 +77,16 @@ class CompositeWeatherService @Inject constructor(
         callback: RequestWeatherCallback
     ) {
         requests.launch {
-            val answers = sources
-                .map { service -> async { service to request(context, location, service) } }
+            val answers = members
+                .map { (source, service) -> async { source to request(context, location, service) } }
                 .awaitAll()
-                .mapNotNull { (service, weather) -> weather?.let { service to it } }
+                .mapNotNull { (source, weather) -> weather?.let { source to it } }
                 .toMap()
 
             // The block's own provider first, then everyone else as fallback.
+            val order = members.keys.toList()
             val preferring = { block: CompositeBlock ->
-                (listOfNotNull(members[block.source]) + sources).distinct().mapNotNull { answers[it] }
+                (listOf(block.source) + order).distinct().mapNotNull { answers[it] }
             }
 
             // The location's own zone, not the device's: the day keys below decide which providers'
@@ -93,12 +94,16 @@ class CompositeWeatherService @Inject constructor(
             // one local day across two keys (and folds two into one at the other end).
             val zone = location.timeZone
             val weather = WeatherMerger.merge(
-                results = sources.mapNotNull { answers[it] },
+                results = order.mapNotNull { answers[it] },
                 timeZone = zone,
                 daily = preferring(CompositeBlock.DAILY),
                 hourly = preferring(CompositeBlock.HOURLY),
                 current = preferring(CompositeBlock.CURRENT),
-                airQuality = preferring(CompositeBlock.AIR_QUALITY)
+                airQuality = preferring(CompositeBlock.AIR_QUALITY),
+                // So each card can name the provider its numbers really came from, which is not the
+                // assignment whenever one fell through — outside China, for instance, where two of
+                // the five decline to answer at all.
+                providers = answers.entries.associate { (source, weather) -> weather to source }
             )
                 // The daily leader can lag: a domestic source still serves yesterday as its first
                 // day for hours after midnight, and everything downstream reads day 0 as today.

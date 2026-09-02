@@ -19,6 +19,10 @@ import java.util.TimeZone
  * off the same table the request plan is built from, so what is locked here is that the table says
  * what the multi-source option actually does — and that a single-provider location gets no label at
  * all, since the credit line in the footer already names it.
+ *
+ * The locations here carry no weather, which is the cached case: nothing recorded who really led,
+ * so the label falls back to the assignment. That the label follows the *actual* provider when the
+ * merge did record one is locked in `WeatherMergerTest`, where real merged weathers exist.
  */
 @RunWith(RobolectricTestRunner::class)
 // Robolectric 4.12.2 ships no SDK 35 sandbox; targetSdk is 35, so pin the runtime to 34.

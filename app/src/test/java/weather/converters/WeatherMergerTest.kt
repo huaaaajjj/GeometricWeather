@@ -14,7 +14,9 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import androidx.test.core.app.ApplicationProvider
 import android.content.Context
+import wangdaye.com.geometricweather.R
 import wangdaye.com.geometricweather.common.basic.models.Location
+import wangdaye.com.geometricweather.common.basic.models.options.provider.CompositeBlock
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource
 import wangdaye.com.geometricweather.common.basic.models.weather.Daily
 import wangdaye.com.geometricweather.common.basic.models.weather.HalfDay
@@ -190,11 +192,62 @@ class WeatherMergerTest {
         assertTrue(merged.hourlyForecast.zipWithNext().all { (a, b) -> a.time < b.time })
     }
 
-    /** Degenerate inputs: one provider answered, or none did. */
+    /**
+     * Degenerate inputs: one provider answered, or none did.
+     */
     @Test
     fun aSingleAnswerIsPassedStraightThroughAndNoneIsNull() {
         assertEquals(openMeteo, merge(openMeteo))
         assertNull(merge())
+    }
+
+    /**
+     * The card labels name the provider a block's numbers actually came from, not the one the block
+     * is assigned to. Assignments fall through all the time — outside China two of the five members
+     * decline to answer at all — and a label still naming the assigned one is a lie printed on the
+     * card, which is worse than no label.
+     */
+    @Test
+    fun theCreditNamesWhoLedTheBlockRatherThanWhoWasAssigned() {
+        // A stand-in for 中国天气网: it answered, but with nothing for the block it leads.
+        val silent = truncateDaily(weatherApi, 0)
+        assertTrue(silent.dailyForecast.isEmpty())
+        assertFalse(
+            "fixture drifted: Open-Meteo is supposed to have no air quality",
+            openMeteo.current.airQuality.isValid
+        )
+        assertTrue(silent.current.airQuality.isValid)
+
+        val merged = WeatherMerger.merge(
+            results = listOf(silent, openMeteo),
+            timeZone = TimeZone.getDefault(),
+            daily = listOf(silent, openMeteo),
+            hourly = listOf(openMeteo, silent),
+            current = listOf(silent, openMeteo),
+            airQuality = listOf(openMeteo, silent),
+            providers = mapOf(silent to WeatherSource.APIHZ, openMeteo to WeatherSource.OPEN_METEO)
+        )!!
+
+        // Assigned the daily overview, has no days: the credit follows the data.
+        assertEquals(WeatherSource.OPEN_METEO, merged.getBlockSource(CompositeBlock.DAILY))
+        // Assigned the air quality, has none: same fall-through, the other way round.
+        assertEquals(WeatherSource.APIHZ, merged.getBlockSource(CompositeBlock.AIR_QUALITY))
+        // And the two whose assignment did hold keep it.
+        assertEquals(WeatherSource.OPEN_METEO, merged.getBlockSource(CompositeBlock.HOURLY))
+        assertEquals(WeatherSource.APIHZ, merged.getBlockSource(CompositeBlock.CURRENT))
+
+        // Trimming a card's copy must not drop the credit with the hours it drops.
+        assertEquals(
+            WeatherSource.OPEN_METEO,
+            merged.withHoursFrom(merged.hourlyForecast[1].time).getBlockSource(CompositeBlock.HOURLY)
+        )
+
+        // …and that is what the card actually prints.
+        val title = CompositeBlock.title(
+            context, location.copy(weather = merged), CompositeBlock.DAILY, R.string.daily_overview
+        )
+        assertTrue(title, title.contains(WeatherSource.OPEN_METEO.getVoice(context)))
+        assertFalse(title, title.contains(WeatherSource.APIHZ.getVoice(context)))
     }
 
     /**

@@ -13,7 +13,10 @@ import wangdaye.com.geometricweather.common.basic.models.Location
  * had drifted from where the data actually comes from would be worse than no label at all.
  *
  * It states the *preference*, not a guarantee — when the assigned provider fails or has nothing for
- * the block, the merge falls through to whoever does, and the label still names the preference.
+ * the block, the merge falls through to whoever does. The merge records who actually led each block
+ * on the weather it builds, so [title] names that one and only falls back to the preference here
+ * when nothing recorded it: a weather read back from the cache, whose credits the database has no
+ * column for (schema locked at v63).
  */
 enum class CompositeBlock(val source: WeatherSource) {
     HOURLY(WeatherSource.XIAOMI),
@@ -39,8 +42,9 @@ enum class CompositeBlock(val source: WeatherSource) {
             if (location.weatherSource != WeatherSource.COMPOSITE) {
                 return title
             }
+            val from = location.weather?.getBlockSource(block) ?: block.source
             return context.getString(
-                R.string.composite_block_credit, title, block.source.getVoice(context)
+                R.string.composite_block_credit, title, from.getVoice(context)
             )
         }
     }

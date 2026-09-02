@@ -1,5 +1,7 @@
 package wangdaye.com.geometricweather.weather.converters
 
+import wangdaye.com.geometricweather.common.basic.models.options.provider.CompositeBlock
+import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource
 import wangdaye.com.geometricweather.common.basic.models.weather.AirQuality
 import wangdaye.com.geometricweather.common.basic.models.weather.Alert
 import wangdaye.com.geometricweather.common.basic.models.weather.Astro
@@ -50,6 +52,8 @@ object WeatherMerger {
      *   [airQuality]. Preference, not binding — a provider that failed to answer, or that carries
      *   nothing for the block, falls through to the next one, so a block still fills if anyone has
      *   it. Omitting a list means "same order as [results]".
+     * @param providers which provider each weather came from, so the merge can record who actually
+     *   led each block — see [credit]. Omitting it records nothing and the cards name the assignment.
      */
     @JvmStatic
     @JvmOverloads
@@ -59,13 +63,14 @@ object WeatherMerger {
         daily: List<Weather> = results,
         hourly: List<Weather> = results,
         current: List<Weather> = results,
-        airQuality: List<Weather> = results
+        airQuality: List<Weather> = results,
+        providers: Map<Weather, WeatherSource> = emptyMap()
     ): Weather? {
         if (results.isEmpty()) {
             return null
         }
         if (results.size == 1) {
-            return results[0]
+            return results[0].also { credit(it, providers, results, results, results, results) }
         }
         // A caller that hands over an empty preference list means "no preference", not "no data".
         val dailyOrder = daily.ifEmpty { results }
@@ -80,7 +85,39 @@ object WeatherMerger {
             mergeHourly(hourlyOrder),
             results.firstOrNull { it.minutelyForecast.isNotEmpty() }?.minutelyForecast ?: emptyList(),
             mergeAlerts(results)
-        )
+        ).also { credit(it, providers, dailyOrder, hourlyOrder, currentOrder, airOrder) }
+    }
+
+    /**
+     * Records which provider each block's data actually came from, which is not always the one it
+     * was assigned to: an assignment falls through when that provider fails, is outside the region
+     * it serves, or simply carries nothing for the block. A card labelled with the assignment would
+     * then name a provider the numbers on it never came from — worse than no label at all.
+     *
+     * The predicates here are the ones the merge above uses, on purpose: they must not be able to
+     * drift apart. Days and hours appended past the leader's own range are not attributed — the
+     * label names whoever leads the block, not every provider that contributed a tail entry.
+     */
+    private fun credit(
+        weather: Weather,
+        providers: Map<Weather, WeatherSource>,
+        daily: List<Weather>,
+        hourly: List<Weather>,
+        current: List<Weather>,
+        air: List<Weather>
+    ) {
+        if (providers.isEmpty()) {
+            return
+        }
+        val credits = HashMap<CompositeBlock, WeatherSource>()
+        val from = { block: CompositeBlock, leader: Weather? ->
+            providers[leader]?.let { credits[block] = it }
+        }
+        from(CompositeBlock.DAILY, daily.firstOrNull { it.dailyForecast.isNotEmpty() })
+        from(CompositeBlock.HOURLY, hourly.firstOrNull { it.hourlyForecast.isNotEmpty() })
+        from(CompositeBlock.CURRENT, current.firstOrNull())
+        from(CompositeBlock.AIR_QUALITY, airLeader(air, current))
+        weather.setBlockSources(credits)
     }
 
     /**
@@ -90,7 +127,6 @@ object WeatherMerger {
     private fun mergeCurrent(current: List<Weather>, air: List<Weather>): Current {
         val leader = current[0].current
         val others = current.drop(1).map { it.current }
-        val airCandidates = air.map { it.current.airQuality }
         return Current(
             leader.weatherText,
             leader.weatherCode,
@@ -99,8 +135,7 @@ object WeatherMerger {
             leader.precipitationProbability,
             leader.wind,
             pick(listOf(leader.uv) + others.map { it.uv }, UV::isValid) ?: leader.uv,
-            pick(airCandidates + leader.airQuality + others.map { it.airQuality },
-                AirQuality::isValid) ?: leader.airQuality,
+            airLeader(air, current).current.airQuality,
             firstNonNull(leader.relativeHumidity, others.map { it.relativeHumidity }),
             firstNonNull(leader.pressure, others.map { it.pressure }),
             firstNonNull(leader.visibility, others.map { it.visibility }),
@@ -253,6 +288,15 @@ object WeatherMerger {
     /** The first candidate carrying data, falling back to the leader's own — empty or not. */
     private fun <T : Any> pick(candidates: List<T?>, valid: (T) -> Boolean): T? =
         candidates.firstOrNull { it != null && valid(it) } ?: candidates.firstOrNull()
+
+    /**
+     * Whose air quality the "now" reading takes: its own assignment first, then whoever leads that
+     * reading and the rest behind it, and failing everything the assignment's own empty one.
+     */
+    private fun airLeader(air: List<Weather>, current: List<Weather>): Weather =
+        air.firstOrNull { it.current.airQuality.isValid }
+            ?: current.firstOrNull { it.current.airQuality.isValid }
+            ?: air.first()
 
     private fun <T : Any> firstNonNull(leader: T?, others: List<T?>): T? =
         leader ?: others.firstOrNull { it != null }
