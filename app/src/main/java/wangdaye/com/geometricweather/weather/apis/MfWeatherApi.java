@@ -7,11 +7,6 @@ import wangdaye.com.geometricweather.weather.json.mf.*;
 import java.util.List;
 
 public interface MfWeatherApi {
-    // Place search. Note this is NOT under /v2 — /v2/forecast?q= answers with a single forecast
-    // feature rather than a list of places.
-    @GET("places")
-    Call<List<MfLocationResult>> callWeatherLocation(@Query("q") String q, @Query("lat") double lat, @Query("lon") double lon, @Query("token") String token);
-
     // Serves both weather and location resolution: the response carries insee/timezone/department
     // alongside the forecast.
     @GET("v2/forecast")

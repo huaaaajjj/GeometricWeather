@@ -165,34 +165,6 @@ public class AccuWeatherService extends WeatherService {
     }
 
     @Override
-    @NonNull
-    public List<Location> requestLocation(Context context, String query) {
-        String languageCode = SettingsManager.getInstance(context).getLanguage().getCode();
-        List<AccuLocationResult> resultList = null;
-        try {
-            resultList = mApi.callWeatherLocation(
-                    "Always",
-                    SettingsManager.getInstance(context).getProviderAccuWeatherKey(),
-                    query,
-                    languageCode
-            ).execute().body();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        String zipCode = query.matches("[a-zA-Z0-9]*") ? query : null;
-
-        List<Location> locationList = new ArrayList<>();
-        if (resultList != null && resultList.size() != 0) {
-                for (AccuLocationResult r : resultList) {
-                    Location loc = AccuResultConverter.convert(null, r, zipCode);
-                    if (loc != null) locationList.add(loc);
-                }
-        }
-        return locationList;
-    }
-
-    @Override
     public void requestLocation(Context context, Location location,
                                 @NonNull RequestLocationCallback callback) {
         String languageCode = SettingsManager.getInstance(context).getLanguage().getCode();

@@ -7,17 +7,11 @@
     <!-- keyword. -->
     <string name="current_location">Τρέχουσα τοποθεσία</string>
     <string name="resident_location">Τοποθεσία διαμονής</string>
-    <string name="default_location">προεπιλεγμένη τοποθεσία</string>
-    <string name="live">Ο καιρός τώρα</string>
     <string name="today">Σήμερα</string>
     <string name="refresh_at">Ενημερώθηκε:</string>
-    <string name="local_time">Τοπική ώρα</string>
     <string name="precipitation">Βροχόπτωση</string>
     <string name="precipitation_probability">Πιθανότητα βροχόπτωσης</string>
     <string name="precipitation_duration">Διάρκεια βροχόπτωσης</string>
-    <string name="maxi_temp">την ημέρα</string>
-    <string name="mini_temp">τη νύχτα</string>
-    <string name="time">ώρα</string>
     <string name="day">την ημέρα</string>
     <string name="night">τη νύχτα</string>
     <string name="temperature">Θερμοκρασία</string>
@@ -25,15 +19,12 @@
     <string name="wind_direction">Κατεύθυνση ανέμου</string>
     <string name="wind_speed">Ταχύτητα ανέμου</string>
     <string name="wind_level">Ένταση ανέμου</string>
-    <string name="sensible_temp">Αίσθηση</string>
     <string name="humidity">Υγρασία</string>
     <string name="uv_index">Δείκτης UV</string>
     <string name="hours_of_sun">Ώρες ηλιοφάνειας</string>
     <string name="forecast">Πρόγνωση</string>
-    <string name="briefings">Ανασκόπηση</string>
     <string name="daytime">Ημέρα</string>
     <string name="nighttime">Νύχτα</string>
-    <string name="publish_at">Καταχωρήθηκε:</string>
     <string name="feels_like">Αίσθηση </string>
     <string name="follow_system">Βάση συστήματος</string>
     <string name="background_information">Γενικές πληροφορίες</string>
@@ -43,8 +34,6 @@
     <string name="cloud_cover">Συννεφιά</string>
     <string name="ceiling">Ανώτατο ύψος κάλυψης νεφών</string>
     <string name="get_more">Περισσότερα</string>
-    <string name="get_more_store">Περισσότερα στο App Store</string>
-    <string name="get_more_github">Περισσότερα στο GitHub</string>
     <string name="refresh">Ανανέωση</string>
     <string name="restart">Επανεκκίνηση</string>
     <string name="edit">Επεξεργασία</string>
@@ -89,9 +78,7 @@
     <string name="wind_12">Τυφώνας</string>
 
     <string name="precipitation_light">Ψιλή βροχή</string>
-    <string name="precipitation_middle">Βροχή</string>
     <string name="precipitation_heavy">Δυνατή βροχή</string>
-    <string name="precipitation_rainstorm">Νεροποντή</string>
 
     <string name="aqi_1">Φρέσκος αέρας</string>
     <string name="aqi_2">Καθαρός αέρας</string>
@@ -116,7 +103,6 @@
 
     <string name="daily_overview">Ημερήσια πρόγνωση</string>
     <string name="hourly_overview">Ωριαία πρόγνωση</string>
-    <string name="minutely_overview">Πρόγνωση καταλεπτώς</string>
     <string name="precipitation_overview">Πρόγνωση βροχοπτώσεων</string>
     <string name="air_quality">Ποιότητα αέρα</string>
     <string name="allergen">Αλλεργίες</string>
@@ -133,12 +119,9 @@
     <string name="learn_more">Μάθετε περισσότερα</string>
 
     <string name="about_app">Σχετικά</string>
-    <string name="introduce">Εισαγωγή</string>
     <string name="email">E-mail</string>
     <string name="donate">Δωρεά</string>
-    <string name="gitHub">GitHub</string>
     <string name="translator">Μεταφραστές</string>
-    <string name="thanks">Ευχαριστίες</string>
 
     <string name="alipay">Alipay</string>
     <string name="wechat">Wechat</string>
@@ -156,25 +139,10 @@
     <string name="tag_uv">@string/uv_index</string>
 
     <!-- about. -->
-    <string name="retrofit">Retrofit 2.0</string>
-    <string name="about_retrofit">Έλεγχος ασφαλείας HTTP για Android και Java από Square, Inc.</string>
-    <string name="glide">Glide</string>
-    <string name="about_glide">Φόρτωση εικόνας και βιβλιοθήκης για Android που επικεντρώνεται στην ομαλή κύλιση</string>
-    <string name="gson">Gson</string>
-    <string name="about_gson">Βιβλιοθήκη Java σειριοποίησης/αποεριοποίησης που μπορεί να μετατρέψει τα Java αντικείμενα σε JSON.</string>
-    <string name="greenDAO">GreenDAO</string>
-    <string name="about_greenDAO">Το greenDAO είναι μια ελαφριά και γρήγορη λύση ORM για Android που χαρτογραφεί αντικείμενα σε βάσεις δεδομένων SQLite.</string>
-    <string name="page_indicator">InkPageIndicator</string>
-    <string name="about_page_indicator">Το InkPageIndicator δημιουργήθηκε από @nickbutcher https://github.com/nickbutcher/plaid και υποστηρίχθηκε από τον David Pacioianu για API 14+ (4.0+).</string>
-    <string name="circular_progress_view">CircularProgressView</string>
-    <string name="about_circular_progress_view">Κυκλική γραμμή προόδου υλικού για Android.</string>
 
     <!-- feedback. -->
-    <string name="feedback_request_permission">Δικαιώματα</string>
     <string name="feedback_request_location">Τοποθεσία</string>
     <string name="feedback_request_location_in_background">Εντοπισμός στο παρασκήνιο</string>
-    <string name="feedback_request_location_permission_success">Η αίτηση τοποθεσίας ολοκληρώθηκε με επιτυχία</string>
-    <string name="feedback_request_location_permission_failed">Η αίτηση τοποθεσίας απέτυχε</string>
 
     <string name="feedback_location_failed">Σφάλμα τοποθεσίας</string>
     <string name="feedback_get_weather_failed">Αποτυχία αποστολής μετεωρολογικών δεδομένων</string>
@@ -237,8 +205,6 @@
     <string name="feedback_live_wallpaper_weather_kind">Καιρός</string>
     <string name="feedback_live_wallpaper_day_night_type">Ώρα</string>
 
-    <string name="feedback_click_toggle">Πατήστε στο γράφημα για εναλλαγή δεδομένων</string>
-    <string name="feedback_no_data">Δεν υπάρχουν δεδομένα</string>
 
     <string name="feedback_collect_failed">Αυτή η τοποθεσία υπάρχει ήδη</string>
     <string name="feedback_collect_succeed">Επιτυχής προσθήκη τοποθεσίας</string>
@@ -248,20 +214,13 @@
     <string name="feedback_search_location">Αναζήτηση τοποθεσίας…</string>
     <string name="feedback_not_yet_location">Δεν έχει οριστεί τοποθεσία…</string>
     <string name="feedback_search_nothing">Η τοποθεσία δεν βρέθηκε</string>
-    <string name="feedback_initializing">Προετοιμασία…</string>
 
-    <string name="feedback_refresh_notification_after_back">Οι αλλαγές θα τεθούν σε ισχύ μετά την επιστροφή στην κύρια σελίδα</string>
-    <string name="feedback_refresh_notification_now">Ανανέωση τώρα</string>
-    <string name="feedback_refresh_ui_after_refresh">Οι αλλαγές θα ισχύσουν μετά την ενημέρωση των δεδομένων.</string>
     <string name="feedback_restart">Οι αλλαγές θα τεθούν σε ισχύ μετά την επανεκκίνηση</string>
-    <string name="feedback_readd_location">Παρακαλώ προσθέστε ξανά τοποθεσία</string>
-    <string name="feedback_readd_location_after_changing_source">Παρακαλώ προσθέστε ξανά τοποθεσία μετά την αλλαγή πηγής δεδομένων.</string>
 
     <string name="feedback_running_in_background">Λειτουργία ενημέρωσης στο παρασκήνιο</string>
     <string name="feedback_updating_weather_data">Ενημέρωση δεδομένων καιρού</string>
     <string name="feedback_updated_in_background">Ενημερώθηκε στο παρασκήνιο</string>
 
-    <string name="feedback_interpret_background_notification_content">Σε ορισμένες συσκευές, μετά την απενεργοποίηση της λειτουργίας "Απαγόρευση εργασιών στο παρασκήνιο", μπορεί να υπάρξει ειδοποίηση στον πίνακα ειδοποιήσεων που δεν διαγράφεται.</string>
     <string name="feedback_interpret_notification_group_title">Αποκλεισμός ειδοποιήσεων</string>
     <string name="feedback_interpret_notification_group_content">Αφού τερματίσετε τη λειτουργία "Απαγόρευση εργασιών στο παρασκήνιο", στον πίνακα ειδοποιήσεων θα εμφανιστεί μια ειδοποίηση ότι η υπηρεσία εκτελείται στο παρασκήνιο. Μπορείτε να απενεργοποιήσετε την ειδοποίηση εργασίας στο παρασκήνιο στις ρυθμίσεις ειδοποίησης της εφαρμογής για να αποκρύψετε αυτήν την ειδοποίηση.</string>
 
@@ -270,8 +229,6 @@
 
     <string name="feedback_cannot_start_live_wallpaper_activity">Αδυναμία εκκίνησης προεπισκόπησης ζωντανής ταπετσαρίας</string>
 
-    <string name="feedback_unusable_geocoder">Αυτή η συσκευή δεν διαθέτει τον απαραίτητο geocoder - την υπηρεσία εντοπισμού θέσης. Ο παροχέας τοποθεσίας θα αλλάξει στην τοποθεσία Baidu</string>
-    <string name="feedback_about_geocoder">Το Geocoder μετατρέπει τη μορφή της τοποθεσίας του γεωγραφικού πλάτους και μήκους με τη μορφή \'XX πόλη, YY επαρχία \'. Ελλείψει αυτής της συνιστώσας, μπορείτε να λαμβάνετε δεδομένα καιρού μόνο μέσω του AccuWeather χρησιμοποιώντας το δικό σας API ως φορέα τοποθεσίας.</string>
 
     <string name="feedback_today_precipitation_alert">Μπορεί να υπάρχει βροχόπτωση σήμερα.</string>
     <string name="feedback_short_term_precipitation_alert">Μπορεί να υπάρξει βροχόπτωση τις επόμενες ώρες.</string>
@@ -316,12 +273,10 @@
     <string name="settings_title_weather_source">Πηγή καιρού</string>
     <string name="settings_title_location_service">Υπηρεσία τοποθεσίας</string>
     <string name="settings_title_dark_mode">Σκοτεινή λειτουργία</string>
-    <string name="settings_title_ui_style">Στυλ διεπαφής</string>
     <string name="settings_title_icon_provider">Πακέτο εικονιδίων</string>
     <string name="settings_title_appearance">Εμφάνιση</string>
     <string name="settings_summary_appearance">Στυλ διεπαφής, ταξινόμηση καρτελών, γλώσσα…</string>
     <string name="settings_title_card_display">Εμφανιζόμενες καρτέλες</string>
-    <string name="settings_title_card_order">Ταξινόμηση καρτελών</string>
     <string name="settings_title_gravity_sensor_switch">Ανιχνευτής βαρύτητας</string>
     <string name="settings_title_list_animation_switch">Κίνηση λίστας</string>
     <string name="settings_title_item_animation_switch">Κίνηση στοιχείου</string>
@@ -336,7 +291,6 @@
     <string name="settings_title_refresh_rate">Αυτόματος ρυθμός ανανέωσης</string>
     <string name="settings_title_alert_notification_switch">Ενεργοποίηση ειδοποιήσεων καιρού</string>
     <string name="settings_title_precipitation_notification_switch">Ενεργοποίηση ειδοποίησης βροχόπτωσης</string>
-    <string name="settings_title_permanent_service">Εκτέλεση στο παρασκήνιο</string>
     <string name="settings_category_forecast">Πρόγνωση καιρού</string>
     <string name="settings_title_forecast_today">Ο καιρός σήμερα</string>
     <string name="settings_title_forecast_today_time">Χρόνος πρόβλεψης για σήμερα</string>
@@ -345,27 +299,10 @@
     <string name="settings_category_widget">Γραφικό στοιχείο</string>
     <string name="settings_title_week_icon_mode">Λειτουργία εβδομαδιαίων εικονιδίων</string>
     <string name="settings_title_minimal_icon">Μινιμαλιστικά εικονίδια</string>
-    <string name="settings_title_click_widget_to_refresh">Ανανέωση γραφικού στοιχείου όταν πατηθεί</string>
     <string name="settings_category_notification">Ειδοποιήσεις</string>
     <string name="settings_title_notification">Ειδοποίηση στη γραμμή κατάστασης</string>
     <string name="settings_title_notification_style">Στυλ ειδοποίησης</string>
     <string name="settings_title_notification_temp_icon">Προβολή θερμοκρασίας στη γραμμή κατάστασης</string>
-    <string name="settings_title_notification_color">Χρώμα ειδοποιήσεων</string>
-    <string name="settings_title_notification_custom_color">Προσαρμοσμένο χρώμα</string>
-    <string name="settings_title_notification_text_color">Χρώμα κειμένου</string>
-    <string name="settings_title_notification_background">Χρώμα φόντου</string>
-    <string name="settings_notification_background_off">Βάση συστήματος</string>
     <string name="settings_title_notification_can_be_cleared">Μόνιμη ειδοποίηση στη γραμμή κατάστασης</string>
-    <string name="settings_notification_can_be_cleared_on">Να επιτρέπεται εκκαθάριση</string>
-    <string name="settings_notification_can_be_cleared_off">Να μην επιτρέπεται εκκαθάριση</string>
-    <string name="settings_title_notification_hide_icon">Εικονίδιο ειδοποίησης</string>
-    <string name="settings_notification_hide_icon_on">Απόκρυψη</string>
-    <string name="settings_notification_hide_icon_off">Προβολή</string>
-    <string name="settings_title_notification_hide_in_lockScreen">Οθόνη κλειδώματος</string>
-    <string name="settings_notification_hide_in_lockScreen_on">Απόκρυψη (Πρέπει να ενεργοποιηθεί στις ρυθμίσεις συστήματος)</string>
-    <string name="settings_notification_hide_in_lockScreen_off">Προβολή</string>
-    <string name="settings_title_notification_hide_big_view">Εκτεταμένη προβολή</string>
-    <string name="settings_notification_hide_big_view_on">Απόκρυψη</string>
-    <string name="settings_notification_hide_big_view_off">Προβολή</string>
 
 </resources>

@@ -6,17 +6,11 @@
     <!-- mots-clés -->
     <string name="current_location">Ma position</string>
     <string name="resident_location">Mon domicile</string>
-    <string name="default_location">Emplacement par défaut</string>
-    <string name="live">Maintenant</string>
     <string name="today">Auj.</string>
     <string name="refresh_at">Consulté à</string>
-    <string name="local_time">Heure locale</string>
     <string name="precipitation">Précipitation</string>
     <string name="precipitation_probability">Probabilité de précipitation</string>
     <string name="precipitation_duration">Durée des précipitations</string>
-    <string name="maxi_temp">temp. max</string>
-    <string name="mini_temp">temp. min</string>
-    <string name="time">heure</string>
     <string name="day">journée</string>
     <string name="night">nuit</string>
     <string name="temperature">Température</string>
@@ -24,15 +18,12 @@
     <string name="wind_direction">Direction du vent</string>
     <string name="wind_speed">Vitesse du vent</string>
     <string name="wind_level">Force du vent</string><!-- Selon l’échelle de Beaufort -->
-    <string name="sensible_temp">Temp. ressentie</string>
     <string name="humidity">Humidité</string>
     <string name="uv_index">Indice UV</string>
     <string name="hours_of_sun">Heures d’ensoleillement</string>
     <string name="forecast">Prévisions</string>
-    <string name="briefings">Bulletin</string>
     <string name="daytime">Journée</string>
     <string name="nighttime">Nuit</string>
-    <string name="publish_at">Publié à</string>
     <string name="feels_like">Ressenti</string>
     <string name="follow_system">Par défaut</string><!-- Littéralement "suivre les préférences système" -->
     <string name="background_information">Informations d’arrière-plan</string>
@@ -42,8 +33,6 @@
     <string name="cloud_cover">Couverture nuageuse</string>
     <string name="ceiling">Plafond nuageux</string>
     <string name="get_more">Voir plus</string>
-    <string name="get_more_store">Voir plus dans le magasin d’applications</string>
-    <string name="get_more_github">Voir plus sur GitHub</string>
     <string name="refresh">Actualiser</string>
     <string name="restart">Redémarrer</string>
     <string name="edit">Modifier</string>
@@ -89,9 +78,7 @@
     <string name="wind_12">Ouragan</string>
 
     <string name="precipitation_light">Faible</string>
-    <string name="precipitation_middle">Modérée</string>
     <string name="precipitation_heavy">Forte</string>
-    <string name="precipitation_rainstorm">Torentielle</string>
 
     <string name="aqi_1">Bon</string>
     <string name="aqi_2">Modéré</string>
@@ -116,7 +103,6 @@
 
     <string name="daily_overview">Prévisions quotidiennes</string>
     <string name="hourly_overview">Prévisions heure par heure</string>
-    <string name="minutely_overview">Prévisions minute par minute</string>
     <string name="precipitation_overview">Prévisions de précipitations</string>
     <string name="air_quality">"Qualité de l’air"</string>
     <string name="allergen">Allergènes</string>
@@ -133,12 +119,9 @@
     <string name="learn_more">EN SAVOIR PLUS</string>
 
     <string name="about_app">À propos</string>
-    <string name="introduce">présentation</string>
     <string name="email">Courriel</string>
     <string name="donate">Don</string>
-    <string name="gitHub">GitHub</string>
     <string name="translator">Traducteurs</string>
-    <string name="thanks">Remerciements</string>
 
     <string name="alipay">Alipay</string>
     <string name="wechat">Wechat</string>
@@ -154,11 +137,8 @@
     <string name="date_format_widget_oreo_style">EEEE d MMM│</string>
 
     <!-- feedback. -->
-    <string name="feedback_request_permission">Permissions</string>
     <string name="feedback_request_location">Localisation</string>
     <string name="feedback_request_location_in_background">Localisation en arrière-plan</string>
-    <string name="feedback_request_location_permission_success">Permission de localisation accordée</string>
-    <string name="feedback_request_location_permission_failed">Permission de localisation échouée</string>
 
     <string name="feedback_location_permissions_title">Accéder aux informations de localisation</string>
     <string name="feedback_location_permissions_statement">Geometric Weather a besoin de récupérer vos informations de localisation quand l’application est utilisée ou en arrière-plan pour fournir les données météo de votre position actuelle. Pour cela, nous avons besoin de certaines permissions. Ces informations ne seront utilisées que pour obtenir les données météo de votre position actuelle. Si vous ne souhaitez pas partager vos informations de localisation, vous pouvez toujours refuser et définir manuellement un emplacement depuis la recherche.</string>
@@ -230,8 +210,6 @@
     <string name="feedback_live_wallpaper_weather_kind">Météo</string>
     <string name="feedback_live_wallpaper_day_night_type">Heure</string>
 
-    <string name="feedback_click_toggle">Appuyer sur le graphique pour basculer les données</string>
-    <string name="feedback_no_data">AUCUNE DONNÉE</string>
 
     <string name="feedback_collect_failed">Cette localisation existe déjà</string>
     <string name="feedback_collect_succeed">Localisation ajoutée avec succès</string>
@@ -241,14 +219,8 @@
     <string name="feedback_search_location">Rechercher une localisation…</string>
     <string name="feedback_not_yet_location">Pas encore localisé…</string>
     <string name="feedback_search_nothing">Aucune localisation trouvée</string>
-    <string name="feedback_initializing">Initialisation…</string>
 
-    <string name="feedback_refresh_notification_after_back">Les modifications s’appliqueront après retour à l’écran d’accueil</string>
-    <string name="feedback_refresh_notification_now">Actualisé à l’instant</string>
-    <string name="feedback_refresh_ui_after_refresh">Les modifications seront appliquées à la prochaine actualisation des données</string>
     <string name="feedback_restart">Les modifications seront appliquées après un redémarrage</string>
-    <string name="feedback_readd_location">Merci d’ajouter à nouveau les localisations</string>
-    <string name="feedback_readd_location_after_changing_source">Merci d’ajouter à nouveau les localisations après avoir modifié la source de données</string>
 
     <string name="feedback_running_in_background">Fonctionnement en arrière-plan pour permettre l’actualisation</string>
     <string name="feedback_updating_weather_data">Actualisation des données météo</string>
@@ -257,7 +229,6 @@
     <!-- there should be a "\" before single or double quotes. -->
     <!-- Correct : ... after turning off \'Background free\', ... After turning off \"Free background\" ... -->
     <!-- Wrong   : ... after turning off 'Background free', ... After turning off "Free background" ... -->
-    <string name="feedback_interpret_background_notification_content">Sur certains appareils, après avoir désactivé « Pas de service en arrière-plan », il peut subsister une notification persistante dans la barre de notifications.</string>
     <string name="feedback_interpret_notification_group_title">Bloquer un groupe de notification</string>
     <string name="feedback_interpret_notification_group_content">Après avoir désactivé « Pas de service en arrière-plan », une notification indiquant qu’un service fonctionne en arrière-plan apparaîtra dans la barre de notifications. Vous pouvez désactiver le canal Informations d’arrière-plan dans la page d’informations de l’application pour bloquer cette notification.</string>
 
@@ -266,8 +237,6 @@
 
     <string name="feedback_cannot_start_live_wallpaper_activity">Impossible de démarrer la prévisualisation du fond d’écran animé</string>
 
-    <string name="feedback_unusable_geocoder">Cet appareil ne contient pas un géocodeur valide. Le fournisseur de localisation a été modifié pour Baidu.</string>
-    <string name="feedback_about_geocoder">Un géocodeur est un composant qui convertit un résultat de localisation du format lat-lon à un format du style \'ville XXy, province YY \'. En l’absence du composant, vous ne pouvez avoir des données météo que via AccuWeather lorsque l’API native est utilisée comme fournisseur de localisation.</string>
 
     <string name="feedback_today_precipitation_alert">Des précipitations peuvent avoir lieu aujourd’hui.</string>
     <string name="feedback_short_term_precipitation_alert">Précipitations possibles dans les heures à venir.</string>
@@ -288,7 +257,6 @@
     <string name="content_des_no2">Dioxyde d’azote</string>
     <string name="content_des_o3">Ozone</string>
     <string name="content_des_co">Monoxyde de carbone</string>
-    <string name="content_des_m3">Monoxyde de carbone</string>
     <string name="content_des_sunrise">Lever de soleil à $</string> <!-- $ = time. -->
     <string name="content_des_sunset">Coucher de soleil à $</string> <!-- $ = time. -->
     <string name="content_des_moonrise">Lever de lune à $</string> <!-- $ = time. -->
@@ -300,8 +268,6 @@
     <string name="content_des_delete_flag">Supprimer cet élément</string>
     <string name="content_des_swipe_left_to_delete">Vous pouvez glisser vers la gauche pour supprimer cet élément</string>
     <string name="content_des_swipe_right_to_delete">Vous pouvez glisser vers la droite pour supprimer cet élément</string>
-    <string name="content_desc_search_filter_on">N’afficher que les emplacements de la source météo par défaut</string>
-    <string name="content_desc_search_filter_off">Afficher les emplacements de toutes les sources météo</string>
     <string name="content_desc_powered_by">Fourni par $</string> <!-- $ = weather source. -->
     <string name="content_desc_wechat_payment_code">QR code de paiement par WeChat</string>
     <string name="content_desc_weather_icon">Icône météo</string>
@@ -342,12 +308,9 @@
     <string name="settings_summary_live_wallpaper">Définir une animation météo Material en tant que fond d’écran animé</string>
     <string name="settings_title_service_provider">Fournisseur de service</string>
     <string name="settings_summary_service_provider">Sélectionnez un fournisseur de service de données météo et de localisation</string>
-    <string name="settings_title_service_provider_advanced">Options avancées des fournisseurs de service</string>
-    <string name="settings_summary_service_provider_advanced">À modifier avec prudence</string>
     <string name="settings_title_weather_source">Source des données météo</string>
     <string name="settings_title_location_service">Service de localisation</string>
     <string name="settings_title_dark_mode">Mode sombre</string>
-    <string name="settings_title_ui_style">Apparence de l’interface</string>
     <string name="settings_title_icon_provider">Pack d’icônes</string>
     <string name="settings_title_appearance">Apparence</string>
     <string name="settings_summary_appearance">Thème de l’interface, ordre des cartes, langue…</string>
@@ -356,7 +319,6 @@
     <string name="settings_title_hourly_trend_display">Tendances par heure affichées</string>
     <string name="settings_title_trend_horizontal_line_switch">Lignes horizontales dans les tendances</string>
     <string name="settings_title_exchange_day_night_temp_switch">Inverser les températures jour et nuit</string>
-    <string name="settings_title_card_order">Ordre des cartes</string>
     <string name="settings_title_gravity_sensor_switch">Accéléromètre</string>
     <string name="settings_title_list_animation_switch">Animation de liste</string>
     <string name="settings_title_item_animation_switch">Animation d’élément</string>
@@ -371,7 +333,6 @@
     <string name="settings_title_refresh_rate">Intervalle de mise à jour</string>
     <string name="settings_title_alert_notification_switch">Notifier des vigilances</string>
     <string name="settings_title_precipitation_notification_switch">Notifier des précipitations</string>
-    <string name="settings_title_permanent_service">Maintenir activé</string>
     <string name="settings_category_forecast">Prévisions</string>
     <string name="settings_title_forecast_today">Prévisions du jour</string>
     <string name="settings_title_forecast_today_time">Heure de notification</string>
@@ -380,28 +341,10 @@
     <string name="settings_category_widget">Widget</string>
     <string name="settings_title_week_icon_mode">Mode des icônes hebdomadaires</string>
     <string name="settings_title_minimal_icon">Icônes minimales</string>
-    <string name="settings_title_click_widget_to_refresh">Appuyer pour actualiser</string>
-    <string name="settings_title_widget_config">Configuration du widget</string>
     <string name="settings_category_notification">Notifications</string>
     <string name="settings_title_notification">Activer les notifications</string>
     <string name="settings_title_notification_style">Style des notifications</string>
     <string name="settings_title_notification_temp_icon">Température dans la barre de statut</string>
-    <string name="settings_title_notification_color">Couleur de la notification</string>
-    <string name="settings_title_notification_custom_color">Couleur de notification personnalisée</string>
-    <string name="settings_title_notification_text_color">Couleur du texte</string>
-    <string name="settings_title_notification_background">Couleur d’arrière-plan</string>
-    <string name="settings_notification_background_off">Par défaut</string><!-- Littéralement "suivre les préférences système" -->
+<!-- Littéralement "suivre les préférences système" -->
     <string name="settings_title_notification_can_be_cleared">Notification persistante</string>
-    <string name="settings_notification_can_be_cleared_on">Non</string>
-    <string name="settings_notification_can_be_cleared_off">Oui</string>
-    <string name="settings_title_notification_hide_icon">Masquer l’icône de notification</string>
-    <string name="settings_notification_hide_icon_on">Masquer</string>
-    <string name="settings_notification_hide_icon_off">Afficher</string>
-    <string name="settings_title_notification_hide_in_lockScreen">Masquer sur l’écran de verrouillage</string>
-    <string name="settings_notification_hide_in_lockScreen_on">Masquer (à ouvrir depuis les paramètres)</string>
-    <string name="settings_notification_hide_in_lockScreen_off">Afficher</string>
-    <string name="settings_title_notification_hide_big_view">Vue large</string>
-    <string name="settings_notification_hide_big_view_on">Masquer</string>
-    <string name="settings_notification_hide_big_view_off">Afficher</string>
-    <string name="settings_provider_default_value">Par défaut (inchangé)</string>
 </resources>

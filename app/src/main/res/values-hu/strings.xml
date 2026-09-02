@@ -4,16 +4,11 @@
 
     <!-- keyword. -->
     <string name="current_location">Jelenlegi hely</string>
-    <string name="default_location">Alapértelmezett Hely</string>
-    <string name="live">Élő</string>
     <string name="today">Ma</string>
     <string name="refresh_at">Frissítése ekkor</string>
     <string name="precipitation">Csapadék</string>
     <string name="precipitation_probability">Csapadék esélye</string>
     <string name="precipitation_duration">Csapadék időtartama</string>
-    <string name="maxi_temp">Nappal</string>
-    <string name="mini_temp">Este</string>
-    <string name="time">Idő</string>
     <string name="day">Nap</string>
     <string name="night">Este</string>
     <string name="temperature">Hőmérséklet</string>
@@ -21,15 +16,12 @@
     <string name="wind_direction">Szélirány</string>
     <string name="wind_speed">Szélsebesség</string>
     <string name="wind_level">Szélerősség</string>
-    <string name="sensible_temp">Érezhető Hőmérséklet</string>
     <string name="humidity">Páratartalom</string>
     <string name="uv_index">UV Szint</string>
     <string name="hours_of_sun">Óra napsütés</string>
     <string name="forecast">Előrejelzés</string>
-    <string name="briefings">Tájékoztatások</string>
     <string name="daytime">Nappal</string>
     <string name="nighttime">Este</string>
-    <string name="publish_at">Közzététel ekkor:</string>
     <string name="feels_like">Érezhető</string>
     <string name="follow_system">Rendszerbeállítás Használata</string>
     <string name="background_information">Háttérinformáció</string>
@@ -39,8 +31,6 @@
     <string name="cloud_cover">Felhőtakaró</string>
     <string name="ceiling">Felhőalap</string>
     <string name="get_more">Szerezzen többet</string>
-    <string name="get_more_store">Szerezzen többet az app áruházból</string>
-    <string name="get_more_github">Szerezzen többet a GitHub-ról</string>
     <string name="refresh">Frissítés</string>
     <string name="restart">Újraindítás</string>
     <string name="edit">Szerkesztés</string>
@@ -85,9 +75,7 @@
     <string name="wind_12">Forgószél</string>
 
     <string name="precipitation_light">Szitálás</string>
-    <string name="precipitation_middle">Eső</string>
     <string name="precipitation_heavy">Zápor</string>
-    <string name="precipitation_rainstorm">Felhőszakadás</string>
 
     <string name="aqi_1">Friss levegő</string>
     <string name="aqi_2">Tiszta levegő</string>
@@ -112,7 +100,6 @@
 
     <string name="daily_overview">Napi előrejelzés</string>
     <string name="hourly_overview">Óránkénti előrejelzés</string>
-    <string name="minutely_overview">Percenkénti előrejelzés</string>
     <string name="precipitation_overview">Csapadékelőrejelzés</string>
     <string name="air_quality">Levegő Minősége</string>
     <string name="allergen">Allergén</string>
@@ -129,12 +116,9 @@
     <string name="learn_more">TUDJON MEG TÖBBET</string>
 
     <string name="about_app">App Névjegye</string>
-    <string name="introduce">Bemutatkozás</string>
     <string name="email">E-mail</string>
     <string name="donate">Adományozás</string>
-    <string name="gitHub">GitHub</string>
     <string name="translator">Fordítók</string>
-    <string name="thanks">Köszönet</string>
 
     <string name="alipay">Alipay</string>
     <string name="wechat">Wechat</string>
@@ -146,11 +130,8 @@
     <string name="date_format_widget_oreo_style">EEEE, MMM d │ </string>
 
     <!-- feedback. -->
-    <string name="feedback_request_permission">Engedélyek</string>
     <string name="feedback_request_location">Helymeghatározás</string>
     <string name="feedback_request_location_in_background">Háttérben futó helymeghatározás.</string>
-    <string name="feedback_request_location_permission_success">Helymeghátározás jog kérése sikeres.</string>
-    <string name="feedback_request_location_permission_failed">Helymeghátározás jog kérése sikertelen.</string>
 
     <string name="feedback_location_failed">Helymeghatározás sikertelen.</string>
     <string name="feedback_get_weather_failed">Időjárásadatok lekérése sikertelen.</string>
@@ -212,8 +193,6 @@
     <string name="feedback_live_wallpaper_weather_kind">Időjárás</string>
     <string name="feedback_live_wallpaper_day_night_type">Idő</string>
 
-    <string name="feedback_click_toggle">Kattintson a diagramra az adatok váltásához.</string>
-    <string name="feedback_no_data">NINCS ADAT</string>
 
     <string name="feedback_collect_failed">Ez a terület már létezik.</string>
     <string name="feedback_collect_succeed">Sikeres terület hozzáadás.</string>
@@ -223,27 +202,18 @@
     <string name="feedback_search_location">Keressen egy területre…</string>
     <string name="feedback_not_yet_location">Még nincs meghatározva a hely…</string>
     <string name="feedback_search_nothing">Nem találhatóm semmi…</string>
-    <string name="feedback_initializing">Betöltés…</string>
 
-    <string name="feedback_refresh_notification_after_back">Akkor lép életbe, amikor visszalép a kezdőlapra.</string>
-    <string name="feedback_refresh_notification_now">Frissítés most.</string>
-    <string name="feedback_refresh_ui_after_refresh">Akkor lép életbe, amikor frissíti az adatokat.</string>
     <string name="feedback_restart">Akkor lép életbe, amikor újraindítja az appot.</string>
-    <string name="feedback_readd_location">Kérjük adja hozzá újra a területeket.</string>
-    <string name="feedback_readd_location_after_changing_source">Kérjük adja hozzá az adatokat miután megváltoztatja a forrást.</string>
 
     <string name="feedback_running_in_background">A háttérben fut az adatok frissítésének folytatásához.</string>
     <string name="feedback_updating_weather_data">Adatok frissítése.</string>
     <string name="feedback_updated_in_background">Frissítve a háttérben</string>
 
-    <string name="feedback_interpret_background_notification_content">Pár készüléken a háttérmentes mód kikapcsolása után megjelenhet egy értesítés, amit nem lehet törölni az értesítési menüből.</string>
     <string name="feedback_interpret_notification_group_title">Értesítési Csoport Letiltása</string>
     <string name="feedback_interpret_notification_group_content">A háttérmentes mód kikapcsolása után egy értesítés meg fog jelenni, amely jelzi a háttérfolyamat futását az értesítési menüben. Ki kapcsolhatja a háttérinformációs csatornát az alkalmazás információ oldalán az értesítés letiltásához.</string>
 
     <string name="feedback_cannot_start_live_wallpaper_activity">Sikertelen volt az élő háttérkép előnézet aktivitás indítása</string>
 
-    <string name="feedback_unusable_geocoder">Ez az eszköz nem tartalmaz egy érvényes geokódolót. A helyszolgáltató át lett állítva Baidu Location-ra.</string>
-    <string name="feedback_about_geocoder">A geokódoló egy olyan komponens, amely átalakítja a helymeghatározás eredményét a szélesség-magasság formátumból, \'XX város, YY megye\' formátummá. A komponens hiányában egyedül AccuWeather-en keresztül lehet időjárásadatokat lekérni a natív API-val helyszolgáltatóként.</string>
 
     <string name="feedback_today_precipitation_alert">Lehetséges csapadék a mai napon.</string>
     <string name="feedback_short_term_precipitation_alert">Lehetséges csapadék a következő néhány órában.</string>
@@ -289,7 +259,6 @@
     <string name="settings_title_weather_source">Időjárás forrás</string>
     <string name="settings_title_location_service">Helymeghatározó szolgáltatás</string>
     <string name="settings_title_dark_mode">Sötét Mód</string>
-    <string name="settings_title_ui_style">Felület Stílus</string>
     <string name="settings_title_icon_provider">Ikonkészlet</string>
     <string name="settings_title_appearance">Kinézet</string>
     <string name="settings_summary_appearance">UI stílus, Kártya sorrend, Nyelv…</string>
@@ -297,7 +266,6 @@
     <string name="settings_title_daily_trend_display">Napi trend megjelenítése</string>
     <string name="settings_title_trend_horizontal_line_switch">Horizontális vonalak a trendben</string>
     <string name="settings_title_exchange_day_night_temp_switch">Nappali és éjszakai hőmérséklet felcserélése</string>
-    <string name="settings_title_card_order">Kártya Sorrend</string>
     <string name="settings_title_gravity_sensor_switch">Gravitációs Érzékelő Használata</string>
     <string name="settings_title_list_animation_switch">Listaanimáció</string>
     <string name="settings_title_item_animation_switch">Eszközanimáció</string>
@@ -312,7 +280,6 @@
     <string name="settings_title_refresh_rate">Automatikus Frissítés Ideje</string>
     <string name="settings_title_alert_notification_switch">Riasztási Értesítések Küldése</string>
     <string name="settings_title_precipitation_notification_switch">Küldjön Csapadékelőrejelzést</string>
-    <string name="settings_title_permanent_service">Állandó Szolgáltatás</string>
     <string name="settings_category_forecast">Előrejelzés</string>
     <string name="settings_title_forecast_today">Mai Előrejelzés</string>
     <string name="settings_title_forecast_today_time">Idő A Mai Előrejelzéshez</string>
@@ -321,28 +288,10 @@
     <string name="settings_category_widget">Widget</string>
     <string name="settings_title_week_icon_mode">Heti ikonváltó mód</string>
     <string name="settings_title_minimal_icon">Minimalista Ikonok</string>
-    <string name="settings_title_click_widget_to_refresh">Widget Frissítése Kattintásra</string>
-    <string name="settings_title_widget_config">Widget beállítások</string>
     <string name="settings_category_notification">Értesítés</string>
     <string name="settings_title_notification">Értesítés Küldése</string>
     <string name="settings_title_notification_style">Értesítés Stílusa</string>
     <string name="settings_title_notification_temp_icon">Hőmérséklet Mutatása Az Ikonon</string>
-    <string name="settings_title_notification_color">Értesítés Színe</string>
-    <string name="settings_title_notification_custom_color">Egyedi Értesítési Szín</string>
-    <string name="settings_title_notification_text_color">Szövegszín</string>
-    <string name="settings_title_notification_background">Háttérszín</string>
-    <string name="settings_notification_background_off">Rendszerbeállítás Használata</string>
     <string name="settings_title_notification_can_be_cleared">Törölhető</string>
-    <string name="settings_notification_can_be_cleared_on">Legyen Törölhető</string>
-    <string name="settings_notification_can_be_cleared_off">Ne Legyen Törölhető</string>
-    <string name="settings_title_notification_hide_icon">Értesítési Ikon Elrejtése</string>
-    <string name="settings_notification_hide_icon_on">Elrejtés</string>
-    <string name="settings_notification_hide_icon_off">Megjelenítés</string>
-    <string name="settings_title_notification_hide_in_lockScreen">Elrejtés Zárolt Képernyőn</string>
-    <string name="settings_notification_hide_in_lockScreen_on">Elrejtés</string>
-    <string name="settings_notification_hide_in_lockScreen_off">Megjelenítés</string>
-    <string name="settings_title_notification_hide_big_view">Bővített Méret</string>
-    <string name="settings_notification_hide_big_view_on">Elrejtés</string>
-    <string name="settings_notification_hide_big_view_off">Mutatás</string>
 
 </resources>

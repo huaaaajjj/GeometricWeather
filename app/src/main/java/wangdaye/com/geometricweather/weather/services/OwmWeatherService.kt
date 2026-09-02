@@ -67,13 +67,6 @@ class OwmWeatherService @Inject constructor(
         }
     }
 
-    override fun requestLocation(context: Context, query: String): List<Location> {
-        val key = SettingsManager.getInstance(context).providerOwmKey
-        val results = requests.execute(api.callWeatherLocation(key, query, SEARCH_RESULTS))
-            ?: return emptyList()
-        return results.mapNotNull { OwmResultConverter.convert(it) }
-    }
-
     override fun requestLocation(
         context: Context,
         location: Location,
@@ -107,6 +100,5 @@ class OwmWeatherService @Inject constructor(
 
         // The free forecast endpoint serves 3-hour steps; 40 of them is its five-day maximum.
         private const val FORECAST_STEPS = 40
-        private const val SEARCH_RESULTS = 5
     }
 }

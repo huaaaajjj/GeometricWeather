@@ -6,15 +6,11 @@
     <!-- keyword. -->
     <string name="current_location">當前位置</string>
     <string name="resident_location">常駐位置</string>
-    <string name="default_location">默認位置</string>
-    <string name="live">實時</string>
     <string name="today">今日</string>
     <string name="refresh_at">更新於</string>
-    <string name="local_time">當地時間</string>
     <string name="precipitation">降水量</string>
     <string name="precipitation_probability">降水概率</string>
     <string name="precipitation_duration">降水時長</string>
-    <string name="time">時間</string>
     <string name="day">白天</string>
     <string name="night">夜間</string>
     <string name="temperature">氣溫</string>
@@ -22,15 +18,12 @@
     <string name="wind_direction">風向</string>
     <string name="wind_speed">風速</string>
     <string name="wind_level">風力</string>
-    <string name="sensible_temp">體感溫度</string>
     <string name="humidity">相對濕度</string>
     <string name="uv_index">紫外綫指數</string>
     <string name="hours_of_sun">日曬時長</string>
     <string name="forecast">預報</string>
-    <string name="briefings">簡報</string>
     <string name="daytime">白天</string>
     <string name="nighttime">夜間</string>
-    <string name="publish_at">發布於</string>
     <string name="feels_like">體感</string>
     <string name="follow_system">跟隨系統</string>
     <string name="background_information">後台信息</string>
@@ -40,8 +33,6 @@
     <string name="cloud_cover">雲量</string>
     <string name="ceiling">雲高</string>
     <string name="get_more">獲取更多</string>
-    <string name="get_more_store">從應用商店獲取更多</string>
-    <string name="get_more_github">從GitHub獲取更多</string>
     <string name="refresh">刷新數據</string>
     <string name="restart">重啟</string>
     <string name="edit">編輯</string>
@@ -86,9 +77,7 @@
     <string name="wind_12">災害級</string>
 
     <string name="precipitation_light">小雨</string>
-    <string name="precipitation_middle">中雨</string>
     <string name="precipitation_heavy">大雨</string>
-    <string name="precipitation_rainstorm">暴雨</string>
 
     <string name="aqi_1">優</string>
     <string name="aqi_2">良</string>
@@ -147,7 +136,6 @@
 
     <string name="daily_overview">每日概覽</string>
     <string name="hourly_overview">小時概覽</string>
-    <string name="minutely_overview">分鐘概覽</string>
     <string name="precipitation_overview">降水概覽</string>
     <string name="air_quality">空氣質量</string>
     <string name="allergen">過敏原</string>
@@ -163,13 +151,10 @@
     <string name="help">幫助</string>
     <string name="learn_more">瞭解更多</string>
 
-    <string name="filter_weather_sources">篩選</string>
 
     <string name="about_app">概覽</string>
-    <string name="introduce">介紹</string>
     <string name="email">E-mail</string>
     <string name="donate">捐贈</string>
-    <string name="gitHub">GitHub</string>
     <!-- 兩個 GitHub 入口：上游原項目，以及構建本包的這個 fork -->
     <string name="github_upstream">GitHub（原作者）</string>
     <string name="github_fork">GitHub（本分支）</string>
@@ -185,7 +170,6 @@
     <string name="action_download">去下載</string>
     <string name="contributor">貢獻者</string>
     <string name="translator">譯者</string>
-    <string name="thanks">鳴謝</string>
 
     <string name="alipay">支付寶</string>
     <string name="wechat">微信</string>
@@ -202,17 +186,10 @@
     <string name="tag_uv">@string/uv_index</string>
 
     <!-- about. -->
-    <string name="retrofit">Retrofit 2.0</string>
-    <string name="about_retrofit">Type-safe HTTP client for Android and Java by Square, Inc.</string>
-    <string name="glide">Glide</string>
-    <string name="about_glide">An image loading and caching library for Android focused on smooth scrolling.</string>
 
     <!-- feedback. -->
-    <string name="feedback_request_permission">授權</string>
     <string name="feedback_request_location">位置信息</string>
     <string name="feedback_request_location_in_background">正在後台進行定位</string>
-    <string name="feedback_request_location_permission_success">獲取位置權限成功</string>
-    <string name="feedback_request_location_permission_failed">獲取位置權限失敗</string>
 
     <string name="feedback_location_permissions_title">獲取位置信息</string>
     <string name="feedback_location_permissions_statement">幾何天氣需要在前臺和後臺訪問您的位置信息以提供您所在位置的天氣數據。爲此，我們需要請求一些權限。您的位置信息將僅被用於獲取天氣數據，若您不希望我們獲取您的位置信息，可以拒絕這些權限請求並手動在管理頁面中鍵入您的位置。</string>
@@ -284,8 +261,6 @@
     <string name="feedback_live_wallpaper_weather_kind">天氣</string>
     <string name="feedback_live_wallpaper_day_night_type">時間</string>
 
-    <string name="feedback_click_toggle">點擊趨勢圖可切換數據</string>
-    <string name="feedback_no_data">暫無數據</string>
 
     <string name="feedback_collect_failed">地址已存在</string>
     <string name="feedback_collect_succeed">收藏成功</string>
@@ -295,20 +270,13 @@
     <string name="feedback_search_location">鍵入一個地址…</string>
     <string name="feedback_not_yet_location">尚未進行定位…</string>
     <string name="feedback_search_nothing">搜索結果為空…</string>
-    <string name="feedback_initializing">初始化中…</string>
 
-    <string name="feedback_refresh_notification_after_back">返回主頁後刷新通知</string>
-    <string name="feedback_refresh_notification_now">立即刷新通知</string>
-    <string name="feedback_refresh_ui_after_refresh">下次刷新後生效</string>
     <string name="feedback_restart">重啟後生效</string>
-    <string name="feedback_readd_location">請重新添加地址</string>
-    <string name="feedback_readd_location_after_changing_source">更換數據源後需重新添加地址</string>
 
     <string name="feedback_running_in_background">正在後台運行以保持更新數據</string>
     <string name="feedback_updating_weather_data">正在更新天氣數據</string>
     <string name="feedback_updated_in_background">已在後台完成更新</string>
 
-    <string name="feedback_interpret_background_notification_content">關閉後台純净後，部分設備的通知欄中可能會出現一個無法清除的通知</string>
     <string name="feedback_interpret_notification_group_title">關閉相應通知頻道</string>
     <string name="feedback_interpret_notification_group_content">關閉後台純净後，會出現一個標示後台服務正在運行的通知，你可以在app相關頁面中找到通知設定，在其中關閉“後台信息”這個頻道來隱藏這個通知</string>
 
@@ -317,8 +285,6 @@
 
     <string name="feedback_cannot_start_live_wallpaper_activity">無法啟動動態壁紙預覽程序</string>
 
-    <string name="feedback_unusable_geocoder">本設備不包含有效的地址解析服務，已將位置提供商更改為百度定位</string>
-    <string name="feedback_about_geocoder">地址解析服務，是一種將Android原生定位結果從經緯度格式轉換至XX省XX市XX區格式的服務組件。若缺少這項服務，在使用原生API作為位置提供商時，只能通過AccuWeather獲取數據。</string>
 
     <string name="feedback_today_precipitation_alert">今日可能出現降水</string>
     <string name="feedback_short_term_precipitation_alert">未來幾小時内可能出現降水</string>
@@ -349,15 +315,12 @@
     <string name="content_des_delete_flag">刪除此項</string>
     <string name="content_des_swipe_left_to_delete">你可以向左滑動以刪除該項</string>
     <string name="content_des_swipe_right_to_delete">你可以向右滑動以刪除該項</string>
-    <string name="content_desc_search_filter_on">僅顯示默認天氣源的地址</string>
-    <string name="content_desc_search_filter_off">顯示所有天氣源的地址</string>
     <string name="content_desc_powered_by">由$提供</string>
     <string name="content_desc_wechat_payment_code">微信付款二維碼</string>
     <string name="content_desc_weather_icon">天氣圖標</string>
     <string name="content_desc_weather_icon_light">亮色圖標</string>
     <string name="content_desc_weather_icon_grey">灰色圖標</string>
     <string name="content_desc_weather_icon_dark">暗色圖標</string>
-    <string name="content_desc_filter_weather_sources">篩選天氣源</string>
 
     <!-- action -->
     <string name="action_alert">預警</string>
@@ -396,15 +359,11 @@
     <string name="settings_summary_service_provider">選擇天氣數據和位置信息的數據提供商</string>
     <string name="settings_title_weather_source">天氣源</string>
     <string name="settings_title_location_service">位置服務</string>
-    <string name="settings_title_service_provider_advanced">設定服務提供商API KEY</string>
-    <string name="settings_summary_service_provider_advanced">請小心行事</string>
     <string name="settings_title_dark_mode">暗色模式</string>
     <string name="settings_title_appearance">外觀</string>
     <string name="settings_summary_appearance">UI風格，卡片順序，語言等…</string>
-    <string name="settings_title_ui_style">界面風格</string>
     <string name="settings_title_icon_provider">圖標風格</string>
     <string name="settings_title_card_display">卡片顯示</string>
-    <string name="settings_title_card_order">卡片順序</string>
     <string name="settings_title_daily_trend_display">每日趨勢順序</string>
     <string name="settings_title_hourly_trend_display">小時趨勢順序</string>
     <string name="settings_title_trend_horizontal_line_switch">趨勢圖橫綫</string>
@@ -423,7 +382,6 @@
     <string name="settings_title_refresh_rate">自動刷新頻率</string>
     <string name="settings_title_alert_notification_switch">推送預警通知</string>
     <string name="settings_title_precipitation_notification_switch">推送降水預報</string>
-    <string name="settings_title_permanent_service">後台服務常駐</string>
     <string name="settings_category_forecast">預報</string>
     <string name="settings_title_forecast_today">定時預報(今日天氣)</string>
     <string name="settings_title_forecast_today_time">設定預報時間(今日天氣)</string>
@@ -432,27 +390,10 @@
     <string name="settings_category_widget">小部件</string>
     <string name="settings_title_week_icon_mode">一週天氣圖標樣式</string>
     <string name="settings_title_minimal_icon">Minimal圖標</string>
-    <string name="settings_title_click_widget_to_refresh">點擊小部件時進行刷新</string>
     <string name="settings_category_notification">通知</string>
     <string name="settings_title_notification">開啟天氣通知</string>
     <string name="settings_title_notification_style">通知風格</string>
     <string name="settings_title_notification_temp_icon">將溫度作為通知小圖標</string>
-    <string name="settings_title_notification_color">通知顔色</string>
-    <string name="settings_title_notification_custom_color">自定義通知顔色</string>
-    <string name="settings_title_notification_text_color">天氣通知字體顔色</string>
-    <string name="settings_title_notification_background">天氣通知背景顔色</string>
-    <string name="settings_notification_background_off">跟隨系統默認</string>
     <string name="settings_title_notification_can_be_cleared">天氣通知可被清除</string>
-    <string name="settings_notification_can_be_cleared_on">可被清除</string>
-    <string name="settings_notification_can_be_cleared_off">常駐通知欄</string>
-    <string name="settings_title_notification_hide_icon">隱藏通知圖標</string>
-    <string name="settings_notification_hide_icon_on">隱藏通知圖標</string>
-    <string name="settings_notification_hide_icon_off">顯示通知圖標</string>
-    <string name="settings_title_notification_hide_in_lockScreen">隱藏鎖屏通知</string>
-    <string name="settings_notification_hide_in_lockScreen_on">在鎖屏界面隱藏(需在系統設定中隱藏敏感通知)</string>
-    <string name="settings_notification_hide_in_lockScreen_off">在鎖屏界面顯示</string>
-    <string name="settings_title_notification_hide_big_view">隱藏大視圖</string>
-    <string name="settings_notification_hide_big_view_on">隱藏</string>
-    <string name="settings_notification_hide_big_view_off">顯示</string>
 
 </resources>

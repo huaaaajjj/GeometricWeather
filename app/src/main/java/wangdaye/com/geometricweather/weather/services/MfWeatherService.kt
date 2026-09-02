@@ -85,15 +85,6 @@ class MfWeatherService @Inject constructor(
         }
     }
 
-    override fun requestLocation(context: Context, query: String): List<Location> {
-        val token = SettingsManager.getInstance(context).providerMfWsftKey
-        val results = requests.execute(
-            mfApi.callWeatherLocation(query, PARIS_LAT, PARIS_LON, token)
-        ) ?: return emptyList()
-        // The post code doubles as the cityId, so an entry without one is not addressable.
-        return results.filter { it.postCode != null }.map { MfResultConverter.convert(null, it) }
-    }
-
     override fun requestLocation(
         context: Context,
         location: Location,
@@ -127,10 +118,6 @@ class MfWeatherService @Inject constructor(
     override fun cancel() = requests.cancel()
 
     companion object {
-        // The place search is ranked by distance from a reference point; Paris keeps it national.
-        private const val PARIS_LAT = 48.86
-        private const val PARIS_LON = 2.34
-
         /** Warnings are keyed by department number ("75"); only the forecast reports it. */
         private fun departmentOf(forecast: MfForecastV2Result?, location: Location): String? {
             val reported = forecast?.properties?.frenchDepartment

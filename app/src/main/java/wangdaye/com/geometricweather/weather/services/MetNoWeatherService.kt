@@ -59,8 +59,6 @@ class MetNoWeatherService @Inject constructor(
         }
     }
 
-    override fun requestLocation(context: Context, query: String): List<Location> = emptyList()
-
     override fun requestLocation(
         context: Context,
         location: Location,

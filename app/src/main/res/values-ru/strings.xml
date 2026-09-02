@@ -6,17 +6,11 @@
     <!-- keyword. -->
     <string name="current_location">Текущее местоположение</string>
     <string name="resident_location">Домашнее местоположение</string>
-    <string name="default_location">Местоположение по умолчанию</string>
-    <string name="live">Сейчас</string>
     <string name="today">Сегодня</string>
     <string name="refresh_at">Обновлено в</string>
-    <string name="local_time">Местное время</string>
     <string name="precipitation">Осадки</string>
     <string name="precipitation_probability">Вероятность осадков</string>
     <string name="precipitation_duration">Продолжительность осадков</string>
-    <string name="maxi_temp">Днём</string>
-    <string name="mini_temp">Ночью</string>
-    <string name="time">Время</string>
     <string name="day">Днём</string>
     <string name="night">Ночью</string>
     <string name="temperature">Температура</string>
@@ -24,15 +18,12 @@
     <string name="wind_direction">Направление ветра</string>
     <string name="wind_speed">Скорость ветра</string>
     <string name="wind_level">Сила ветра</string>
-    <string name="sensible_temp">Ощущается как</string>
     <string name="humidity">Влажность</string>
     <string name="uv_index">УФ-индекс</string>
     <string name="hours_of_sun">Солнечных часов</string>
     <string name="forecast">Прогноз</string>
-    <string name="briefings">Обзор</string>
     <string name="daytime">Днём</string>
     <string name="nighttime">Ночью</string>
-    <string name="publish_at">Опубликовано в</string>
     <string name="feels_like">Ощущается как</string>
     <string name="follow_system">Как в системе</string>
     <string name="background_information">Фоновая информация</string>
@@ -42,8 +33,6 @@
     <string name="cloud_cover">Облачность</string>
     <string name="ceiling">Высота облачного покрова</string>
     <string name="get_more">Ещё</string>
-    <string name="get_more_store">Дополнительно в App Store</string>
-    <string name="get_more_github">Дополнительно на GitHub</string>
     <string name="refresh">Обновить</string>
     <string name="restart">Перезапуск</string>
     <string name="edit">Редактировать</string>
@@ -88,9 +77,7 @@
     <string name="wind_12">Ураган</string>
 
     <string name="precipitation_light">Изморось</string>
-    <string name="precipitation_middle">Дождь</string>
     <string name="precipitation_heavy">Сильный дождь</string>
-    <string name="precipitation_rainstorm">Ливень</string>
 
     <string name="aqi_1">Свежий воздух</string>
     <string name="aqi_2">Чистый воздух</string>
@@ -110,7 +97,6 @@
 
     <string name="daily_overview">Ежедневный</string>
     <string name="hourly_overview">Почасовой</string>
-    <string name="minutely_overview">Поминутный</string>
     <string name="precipitation_overview">Прогноз осадков</string>
     <string name="air_quality">Качество воздуха</string>
     <string name="allergen">Аллерген</string>
@@ -127,29 +113,15 @@
     <string name="learn_more">ЕЩЁ</string>
 
     <string name="about_app">О программе</string>
-    <string name="introduce">Введение</string>
     <string name="email">E-mail</string>
     <string name="donate">Donate</string>
-    <string name="gitHub">GitHub</string>
     <string name="translator">Переводчики</string>
-    <string name="thanks">Благодарности</string>
 
     <!-- about. -->
-    <string name="retrofit">Retrofit 2.0</string>
-    <string name="about_retrofit">Type-safe HTTP client for Android and Java by Square, Inc.</string>
-    <string name="glide">Glide</string>
-    <string name="about_glide">An image loading and caching library for Android focused on smooth scrolling.</string>
-    <string name="gson">Gson</string>
-    <string name="about_gson">A Java serialization/deserialization library that can convert Java Objects into JSON and back.</string>
-    <string name="greenDAO">GreenDAO</string>
-    <string name="about_greenDAO">greenDAO is a light and fast ORM solution for Android that maps objects to SQLite databases.</string>
 
     <!-- feedback. -->
-    <string name="feedback_request_permission">Разрешения</string>
     <string name="feedback_request_location">Местоположение</string>
     <string name="feedback_request_location_in_background">Запрос местоположения в фоне</string>
-    <string name="feedback_request_location_permission_success">Запрос местоположения успешно выполнен</string>
-    <string name="feedback_request_location_permission_failed">Ошибка запроса местоположения</string>
 
     <string name="feedback_location_failed">Ошибка определения местоположения</string>
     <string name="feedback_get_weather_failed">Ошибка получения прогноза</string>
@@ -216,8 +188,6 @@
     <string name="feedback_live_wallpaper_weather_kind">Погода</string>
     <string name="feedback_live_wallpaper_day_night_type">Время</string>
 
-    <string name="feedback_click_toggle">Нажмите на диаграмму для смены типа данных</string>
-    <string name="feedback_no_data">НЕТ ДАННЫХ</string>
 
     <string name="feedback_collect_failed">Это место уже присутствует в списке</string>
     <string name="feedback_collect_succeed">Место добавлено успешно</string>
@@ -227,20 +197,13 @@
     <string name="feedback_search_location">Поиск местоположения…</string>
     <string name="feedback_not_yet_location">Местоположение не задано…</string>
     <string name="feedback_search_nothing">Место не найдено </string>
-    <string name="feedback_initializing">Инициализация…</string>
 
-    <string name="feedback_refresh_notification_after_back">Изменения вступят в силу после возврата на главную страницу</string>
-    <string name="feedback_refresh_notification_now">Обновить сейчас</string>
-    <string name="feedback_refresh_ui_after_refresh">Изменения вступят в силу после обновления данных</string>
     <string name="feedback_restart">Изменения вступят в силу после перезапуска</string>
-    <string name="feedback_readd_location">Пожалуйста добавьте место повторно</string>
-    <string name="feedback_readd_location_after_changing_source">Пожалуйста добавьте место повторно после изменения источника данных</string>
 
     <string name="feedback_running_in_background">Запущено в фоне для постоянного обновления</string>
     <string name="feedback_updating_weather_data">Обновление погодных данных</string>
     <string name="feedback_updated_in_background">Обновлено в фоне</string>
 
-    <string name="feedback_interpret_background_notification_content">На некоторых устройствах, после выключения \'Запрет работы в фоне\', в панели уведомлений может быть уведомление, которое не удаляется.</string>
     <string name="feedback_interpret_notification_group_title">Настройка уведомлений</string>
     <string name="feedback_interpret_notification_group_content">После выключения \"Запрет работы в фоне\", на панели уведомлений появится уведомление о том, что служба запущена в фоне. Вы можете отключить уведомление о работе в фоне в настройках уведомлений приложения, чтобы скрыть это уведомление.</string>
 
@@ -249,8 +212,6 @@
 
     <string name="feedback_cannot_start_live_wallpaper_activity">Невозможно начать предпросмотр живых обоев</string>
 
-    <string name="feedback_unusable_geocoder">Это устройство не имеет необходимого геокодера - сервиса определения местоположения. Провайдер местоположения будет изменён на Baidu Location.</string>
-    <string name="feedback_about_geocoder">Геокодер это компонент, который преобразует результаты местоположения из формата "широта-долгота" в формат \'XX город, YY область \'. В отсутствие этого компонента вы можете получать данные о погоде только через AccuWeather при использовании собственного API в качестве провайдера местоположения..</string>
 
     <string name="feedback_today_precipitation_alert">Сегодня возможны осадки.</string>
     <string name="feedback_short_term_precipitation_alert">В ближайшее время возможны осадки.</string>
@@ -296,12 +257,9 @@
     <string name="settings_summary_live_wallpaper">Установить погодную Material анимацию как живые обои</string>
     <string name="settings_title_service_provider">Провайдер данных</string>
     <string name="settings_summary_service_provider">Выберите провайдера погодных данных, и данных о местоположении</string>
-    <string name="settings_title_service_provider_advanced">Расширенные настройки провайдера</string>
-    <string name="settings_summary_service_provider_advanced">Использовать с осторожностью</string>
     <string name="settings_title_weather_source">Погодный провайдер</string>
     <string name="settings_title_location_service">Провайдер местоположения</string>
     <string name="settings_title_dark_mode">Тёмная тема</string>
-    <string name="settings_title_ui_style">Стиль интерфейса</string>
     <string name="settings_title_icon_provider">Иконки</string>
     <string name="settings_title_appearance">Вид</string>
     <string name="settings_summary_appearance">Стиль интерфейса, сортировка карточек, язык…</string>
@@ -310,7 +268,6 @@
     <string name="settings_title_hourly_trend_display">Показывать часовой тренд</string>
     <string name="settings_title_trend_horizontal_line_switch">Горизонтальные линии в тренде</string>
     <string name="settings_title_exchange_day_night_temp_switch">Поменять местами мин/макс температуру</string>
-    <string name="settings_title_card_order">Порядок карточек</string>
     <string name="settings_title_gravity_sensor_switch">Датчик гравитации</string>
     <string name="settings_title_list_animation_switch">Анимация списка</string>
     <string name="settings_title_item_animation_switch">Анимация элементов</string>
@@ -325,7 +282,6 @@
     <string name="settings_title_refresh_rate">Частота автоматического обновления</string>
     <string name="settings_title_alert_notification_switch">Включить погодные оповещения</string>
     <string name="settings_title_precipitation_notification_switch">Включить оповещения об осадках</string>
-    <string name="settings_title_permanent_service">Работать в фоне</string>
     <string name="settings_category_forecast">Прогноз погоды</string>
     <string name="settings_title_forecast_today">Погода на сегодня</string>
     <string name="settings_title_forecast_today_time">Время получения прогноза на сегодня</string>
@@ -334,28 +290,10 @@
     <string name="settings_category_widget">Виджет</string>
     <string name="settings_title_week_icon_mode">Иконки прогноза на неделю</string>
     <string name="settings_title_minimal_icon">Минималистичные иконки</string>
-    <string name="settings_title_click_widget_to_refresh">Обновлять виджет при нажатии</string>
-    <string name="settings_title_widget_config">Настройки виджета</string>
     <string name="settings_category_notification">Уведомления</string>
     <string name="settings_title_notification">Уведомление в строке состояния</string>
     <string name="settings_title_notification_style">Стиль уведомления</string>
     <string name="settings_title_notification_temp_icon">Показывать температуру в строке состояния</string>
-    <string name="settings_title_notification_color">Цвет уведомления</string>
-    <string name="settings_title_notification_custom_color">Свой цвет уведомления</string>
-    <string name="settings_title_notification_text_color">Цвет текста</string>
-    <string name="settings_title_notification_background">Цвет фона</string>
-    <string name="settings_notification_background_off">По умолчанию</string>
     <string name="settings_title_notification_can_be_cleared">Постоянное уведомление в шторке</string>
-    <string name="settings_notification_can_be_cleared_on">Удаляемое</string>
-    <string name="settings_notification_can_be_cleared_off">Постоянное</string>
-    <string name="settings_title_notification_hide_icon">Скрыть иконку в строке состояния</string>
-    <string name="settings_notification_hide_icon_on">Скрывать</string>
-    <string name="settings_notification_hide_icon_off">Показывать</string>
-    <string name="settings_title_notification_hide_in_lockScreen">Скрывать на экране блокировки</string>
-    <string name="settings_notification_hide_in_lockScreen_on">Скрывать (необходимо включить в системных настройках)</string>
-    <string name="settings_notification_hide_in_lockScreen_off">Показывать</string>
-    <string name="settings_title_notification_hide_big_view">Расширенный вид</string>
-    <string name="settings_notification_hide_big_view_on">Скрывать</string>
-    <string name="settings_notification_hide_big_view_off">Показывать</string>
 
 </resources>

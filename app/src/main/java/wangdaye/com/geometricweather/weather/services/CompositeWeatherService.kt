@@ -147,8 +147,6 @@ class CompositeWeatherService @Inject constructor(
      * them, so the composite serves whatever location it is handed (the resolved current position,
      * or one saved under another source) and never rewrites it.
      */
-    override fun requestLocation(context: Context, query: String): List<Location> = emptyList()
-
     override fun requestLocation(
         context: Context,
         location: Location,

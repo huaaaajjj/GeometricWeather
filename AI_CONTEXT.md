@@ -125,9 +125,8 @@
 
 **这次没做、下次可以直接开工的**（按性价比）
 
-1. **纯删除的清理**：搜索解耦留下的 `SEARCH_CONFIG` prefs、10 个语种里的死文案、Accu/OWM/MF/APIHZ/彩云 五个源已无生产调用方的 `requestLocation(Context, String)`；以及固定天数假设的两处残留（`ForecastNotificationIMP.get(1)`、`NotificationHelper.isShortTermLiquid` 的 hourly `i < 4`）。
-2. **卡片「· 来源」标注写的是指派而非实际供数方**（境外会显示「每日概览 · 中国天气网」而数据来自 Open-Meteo）。要做对得把逐块来源随 Weather 落库，schema 锁 v63，代价大于收益 —— 除非只在内存里传一次、缓存读回时退回指派。
-3. **ACCU 内置 Key 已过期**，要不要换 Key 属用户决定；它同时卡着最后一个未迁 Kotlin 的服务（`AccuWeatherService`，`cancel()` 仍是空操作，因抓不到固件没测试）。
+1. **卡片「· 来源」标注写的是指派而非实际供数方**（境外会显示「每日概览 · 中国天气网」而数据来自 Open-Meteo）。要做对得把逐块来源随 Weather 落库，schema 锁 v63，代价大于收益 —— 除非只在内存里传一次、缓存读回时退回指派。
+2. **ACCU 内置 Key 已过期**，要不要换 Key 属用户决定；它同时卡着最后一个未迁 Kotlin 的服务（`AccuWeatherService`，`cancel()` 仍是空操作，因抓不到固件没测试）。
 
 **一条已复核掉的旧约束**：「CI 不可靠（jitpack 403）」在 2026-09-01 的三次 tag 构建里全部 success（各 6~7 分钟）。本地构建 + 真机验证仍不能省（那是发版门槛，见 `/release`），但「CI 一定失败」这个前提不成立了；推不上去是本机网络问题，与 CI 无关。
 
@@ -345,11 +344,17 @@
 
 - **NOAA 太阳计算：METNO/CMA 的日出日落补齐，「三个源没有日出日落」至此了结**（3.6.8）。这两个源的上游响应不带 astro（METNO 整个 API 没有，CMA 一直没在响应里找到过），`Daily.sun()` 恒为空 → `Weather.isDaylight()` 退到写死的 06:00–18:00，而 METNO 恰是北欧源——奥斯陆 12 月实际日照 09:18–15:12，写死值每天错几小时，坑的正是它自己的目标用户。改法：新增 `weather/converters/SolarCalculator.kt`（NOAA 太阳位置方程，天顶角 90.833°，与历书同口径）：倾角/时差按当天**当地正午**评估；日出日落以「当地正午所在的 UTC 日」的 UTC 午夜为锚做**绝对时刻**加减——天津的日出在 UTC 前一日 21:21Z，锚定进「当天 0 点内」就是 24 小时级错误而非分钟级；hour-angle 无解（极昼/极夜）返回 **null** 保持空 astro，绝不硬凑。METNO 在日折叠处逐日填 sun（`convertDailyList` 改收 `location`），CMA 在 daily 转换处逐日填。测试 +5（242 例/变体，六变体 1452，全绿）：`SolarCalculatorTest` 4 例对照 sunrise-sunset.org 历书值（奥斯陆 DST、天津跨 UTC 日、悉尼南半球防纬度符号、特罗姆瑟双至日 null），±3 分钟容差；METNO 测试原「sun 恒空」断言整体反转为「sun 必须是历书时刻」，CMA 新增 1 例（固件坐标正好是天津、日期正好在固件里，跨 UTC 日案例免费拿到）。**变异检验**：天顶角 90.833→90 → 5 例挂（极昼极夜例不受影响，正确）；METNO 接线拆掉 → 对应例挂。真机验证（MI 9 / Android 14，3.6.8 签名 release + R8，原地升级保留数据）：冷启动 0 崩溃；「天气源可用性」实测刷新 **挪威气象局日出 ✗→✓、中国气象局日出 ✗→✓**，日出列对每个可用源全 ✓；首轮彩云/中国天气网「不可用」复测即恢复（试用 Token/免费接口抖动，非本改动链路）。
 
+- **纯删除清理：query 版 requestLocation 全链 + 死文案 + 两处越界守卫**（3.6.8 之后，未发版）。46 文件 +48/−1642。
+  ① **删除 `WeatherService.requestLocation(Context, String)`** —— 搜索与天气源解耦后这条链路已无任何生产调用方（搜索走本地城市表 + Open-Meteo 地理编码；状态页实测用的是三参重载）。原记录「五个源有死重载」动手时核实为**十一个实现全死**：六家有真实逻辑（Accu/OWM/MF/APIHZ/彩云/CMA）、五家恒 `emptyList()`，全部删除。连带：三个 API 的搜索端点（Accu `locations/v1/cities/translate`、OWM `geo/1.0/direct`、MF `places`）、`MfResultConverter` 的 `MfLocationResult` 重载、`MfLocationResult.java` DTO、三个服务里只为搜索服务的常量、`WeatherHelperTest`/`LocationHelperTest` 两处测试桩。**CMA 是唯一例外**——`resolveStation` 的地名兜底还靠它，改名为 `internal fun searchStation`（加 `@JvmName` 保持 Java 测试可调——Kotlin internal 对 Java 是重整名）保留，其测试改调 `searchStation`。`OwmLocationResult` 一度误删——`geo/1.0/reverse`（三参重载用）还在引用，已恢复；教训：「单参 convert 只有搜索用」的判断要在删前 grep 三参路径。
+  ② **死文案 102 个名字 × 24 个 values 目录 = 1476 条**：6 条搜索解耦残留（`filter_weather_sources`/`content_desc_search_filter_*` 等）+ 96 条孤儿（旧 About 页、旧通知设置、已移除的「设置服务商 API KEY」入口、`sp_widget_android_s_weather_*` 等上游遗留）。判据：全仓库 `R.string.X`/`@string/X` 零引用——strings 没有按名字的动态解析（`getIdentifier` 只用于 drawable/animator，那类假阳性不适用），且若误删了仍被引用的条目，资源链接直接编译失败（安全网）。**「SEARCH_CONFIG 孤儿 prefs」核实为已在早前会话清掉**，全仓库零引用，接手须知该条过时。
+  ③ **固定天数假设两处残留补齐**：`ForecastNotificationIMP` 的「明日」通知在 `dailyForecast.size() < 2` 时直接不构建（此前 `get(1)` 无保护，源只给 1 天即崩）；`NotificationHelper.isShortTermLiquid` 的小时窗口改为 `i < 4 && i < size()`。
+  **验证**：`./gradlew test` 六变体全绿 242 例、`assemblePubDebug`/`assemblePubRelease` 通过；3.6.8 release 包原地重装真机冒烟——冷启动 0 崩溃、后台自动刷新正常、白天主题/主界面正常。
+
 ## 已知问题 / 约束
 
 - **中国专属源对境外地点一律报失败**（2026-09-01，3.6.6）：`ApihzWeatherService` 与 `CmaWeatherService` 在 `requestWeather` 入口就拦 `!location.isChina`，一个请求都不发。**不要把它改回去** —— 这两家不会答「没有」：APIHZ 退到 IP 端点会答请求来源地（北京），CMA 按坐标会匹配到最近的中国站点，看起来都是合法数据，而多源聚合把每日块（含日出日落）交给答话的那家，境外地点因此显示别处的天气。境外由 Open-Meteo/WeatherAPI/小米 供数。
 - **日期与时刻一律按地点时区渲染，三处例外是故意的**（2026-09-01，3.6.7）：`Daily`/`Hourly` 各带一个 `TimeZone` 字段，在 `WeatherHelper`（网络）与 `DatabaseHelper.readWeather`（缓存）两个汇聚点填入，`getWeek/getShortDate/getDate/getHour/getHourIn24Format/isToday` 全部按它算，为空退回设备时区。**新增构造 Weather 的路径要么走这两个汇聚点，要么自己调 `weather.setTimeZone()`**，否则那条数据的标签会回到设备时区。故意没改的三处：`Base.getTime`（「更新于」说的是**你**什么时候刷的，设备时区才对）、`Daily.getLunar`（农历按设备时区算）、`WidgetHelper.getWeek`（widget 自己的今天星期几，与地点无关）。
-- **搜索地点已与天气源解耦**（2026-08-31，见变更日志末条）：搜索页不再有天气源勾选框，结果一律按设置里的全局源落库。新增地点的坐标来自 本地城市表 / Open-Meteo 地理编码，**不再来自某个天气源的搜索接口**。一处残留：各源的 `WeatherService.requestLocation(Context, String)` 实现（Accu/OWM/MF/APIHZ/彩云）**已无生产调用方**，唯一还在用的是 CMA 内部按地名解析站点（`CmaWeatherService.kt:140`）——删它们要连带拆掉各自的接口方法、转换器与测试，属另一次清理，本次未做。搜索结果列表的滚动条仍按源着色、指示气泡仍显示源 URL（现在每行都一样），按「保持原 UI 风格」未动 —— 但它的越界崩溃已修，见变更日志。
+- **搜索地点已与天气源解耦**（2026-08-31，见变更日志末条）：搜索页不再有天气源勾选框，结果一律按设置里的全局源落库。新增地点的坐标来自 本地城市表 / Open-Meteo 地理编码，**不再来自某个天气源的搜索接口**。残留已清（2026-09-02，见变更日志）：各源的 `WeatherService.requestLocation(Context, String)` 整链删除，仅 CMA 内部保留为 `searchStation`。搜索结果列表的滚动条仍按源着色、指示气泡仍显示源 URL（现在每行都一样），按「保持原 UI 风格」未动 —— 但它的越界崩溃已修，见变更日志。
 - **Open-Meteo 地理编码对中文输入很差**（2026-08-31 实测）：`舒城` **0 条**、`长沙` 头三条是重庆/贵州/广东的同名村（湖南长沙市排不进前三）、`东京` 全是中国的村、`纽约` 0 条；换英文 `Changsha`/`Tokyo`/`Paris` 则第一条就对。所以中文查询**必须**先走本地 `chinese_city` 表，不要为了「少一个分支」把这一级去掉。另：`language` 参数只认**两位**语言码，`zh-CN`/`zh_CN`/乱码一律**不报错**、静默返回未本地化的名字，故传的是 `code.substringBefore('-')`。
 
 - **日出日落已全源覆盖，新源必须走 `SolarCalculator`**（2026-09-02，3.6.8 了结旧账）：WeatherAPI/Open-Meteo/彩云/小米/APIHZ/MF 用上游自带的 astro；OWM 自 3.6.7 读现成的 `sys.sunrise/sunset`；METNO/CMA 上游不带，自 3.6.8 起由 `SolarCalculator`（NOAA 方程，`weather/converters/SolarCalculator.kt`）按坐标逐日计算。**将来新增不带 astro 的源，调 `SolarCalculator.sunTimes(date, lat, lon, tz)`**：极昼极夜返回 null（保持空 astro 行为），不要硬凑时刻；返回的是**绝对时刻**（天津日出在 UTC 前一日），消费侧按地点时区渲染（3.6.7），不要按「当天 0 点」钳制。
@@ -387,8 +392,8 @@
 - [x] 发 3.6.8（2026-09-02，正式版）
 - [x] OWM 读现成的 `sys.sunrise/sunset`（3.6.7）
 - [x] NOAA 太阳计算（3.6.8，`SolarCalculator.kt`——METNO/CMA 日出日落补齐，极昼极夜返回 null）
-- [ ] 清理：`SEARCH_CONFIG` 孤儿 prefs、10 个语种的死文案、五个源无调用方的 `requestLocation(Context, String)`
-- [ ] 补齐固定天数假设的两处残留：`ForecastNotificationIMP.get(1)`、`NotificationHelper` 的 hourly `i < 4`
+- [x] 清理：`SEARCH_CONFIG` 孤儿 prefs（早前已清）、死文案 102 个名字（3.6.8 后）、十个源的 query 版 `requestLocation`（CMA 的保留为内部 `searchStation`）
+- [x] 补齐固定天数假设的两处残留：`ForecastNotificationIMP.get(1)`、`NotificationHelper` 的 hourly `i < 4`
 
 ## 重要文件引用
 

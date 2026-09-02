@@ -36,6 +36,11 @@ public class ForecastNotificationIMP extends AbstractRemoteViewsPresenter {
         if (weather == null) {
             return;
         }
+        // The "tomorrow" variant indexes day 1; sources that serve a single day (or a cache cut
+        // mid-day) have none, and a missing forecast must not become an IndexOutOfBounds crash.
+        if (!today && weather.getDailyForecast().size() < 2) {
+            return;
+        }
 
         ResourceProvider provider = ResourcesProviderFactory.getNewInstance();
 

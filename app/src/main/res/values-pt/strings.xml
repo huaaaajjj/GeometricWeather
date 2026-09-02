@@ -5,25 +5,17 @@
 
     <!-- keyword. -->
     <string name="current_location">localização atual</string>
-    <string name="default_location">localização padrão</string>
-    <string name="live">Ao vivo</string>
     <string name="today">Hoje</string>
     <string name="refresh_at">Atualizado em</string>
     <string name="precipitation">Precipitação</string>
-    <string name="maxi_temp">Min</string>
-    <string name="mini_temp">Max</string>
-    <string name="time">hora</string>
     <string name="day">dia</string>
     <string name="night">noite</string>
     <string name="wind">vento</string>
-    <string name="sensible_temp">Sensação térmica</string>
     <string name="humidity">Humidade</string>
     <string name="uv_index">Índice UV</string>
     <string name="forecast">Previsão</string>
-    <string name="briefings">Instruções</string>
     <string name="daytime">Dia</string>
     <string name="nighttime">Noite</string>
-    <string name="publish_at">Publicado em</string>
     <string name="feels_like">Parece</string>
     <string name="follow_system">Igual ao sistema</string>
     <string name="background_information">Informação em segundo plano</string>
@@ -89,12 +81,9 @@
     <string name="help">Ajuda</string>
 
     <string name="about_app">Sobre o aplicativo</string>
-    <string name="introduce">introdução</string>
     <string name="email">E-mail</string>
     <string name="donate">Doação</string>
-    <string name="gitHub">GitHub</string>
     <string name="translator">Tradutores</string>
-    <string name="thanks">Agradecimentos</string>
 
     <string name="date_format_short">dd/MM</string>
     <string name="date_format_long">dd\' de \'MMM</string>
@@ -103,11 +92,8 @@
     <string name="date_format_widget_oreo_style">EEEE, dd\' de \'MMM │ </string>
 
     <!-- feedback. -->
-    <string name="feedback_request_permission">Permissões</string>
     <string name="feedback_request_location">Localização</string>
     <string name="feedback_request_location_in_background">Localização em segundo plano.</string>
-    <string name="feedback_request_location_permission_success">Pedido de localização realizado com sucesso.</string>
-    <string name="feedback_request_location_permission_failed">Pedido de localização falhou.</string>
 
     <string name="feedback_location_failed">Localização falhou.</string>
     <string name="feedback_get_weather_failed">Atualização de clima falhou.</string>
@@ -123,8 +109,6 @@
     <string name="feedback_black_text">Texto escuro</string>
     <string name="feedback_clock_font">Fonte do relógio</string>
 
-    <string name="feedback_click_toggle">Toque no gráfico para alternar dados</string>
-    <string name="feedback_no_data">Sem dados</string>
 
     <string name="feedback_collect_failed">Este currentPosition já existe</string>
     <string name="feedback_collect_succeed">Local adicionado com sucesso</string>
@@ -134,19 +118,12 @@
     <string name="feedback_search_location">Pesquise um endereço…</string>
     <string name="feedback_not_yet_location">Ainda não localizado…</string>
     <string name="feedback_search_nothing">Nenhum resultado…</string>
-    <string name="feedback_initializing">Inicializando…</string>
 
-    <string name="feedback_refresh_notification_after_back">Terá efeito quando retornar à página inicial.</string>
-    <string name="feedback_refresh_notification_now">Atualize agora</string>
-    <string name="feedback_refresh_ui_after_refresh">Terá efeito quando atualizar dados.</string>
     <string name="feedback_restart">Terá efeito quando reiniciar.</string>
-    <string name="feedback_readd_location">Por favor, re-adicione locais.</string>
-    <string name="feedback_readd_location_after_changing_source">Por favor, re-adicione locais após alterar fonte de dados.</string>
 
     <string name="feedback_running_in_background">Rodando em segundo plano para manter atualizado.</string>
     <string name="feedback_updating_weather_data">Atualizando dados de clima.</string>
 
-    <string name="feedback_interpret_background_notification_content">Em alguns dispositivos, após desativando \"livre de segundo plano\", uma notificação poderá permanexer fixa na central de notificações.</string>
     <string name="feedback_interpret_notification_group_title">Bloquear grupo de notificações.</string>
     <string name="feedback_interpret_notification_group_content">Após desativar  \"livre de segundo plano\", uma notificação que serviço de segundo plano esta rodando irá aparecer na central de notificações, você pode desativar o canal de notificação do aplicativo nas configurações do dispositivo.</string>
 
@@ -176,17 +153,14 @@
     <string name="settings_summary_service_provider">Selecione provedor de serviço de clima e dados de currentPosition.</string>
     <string name="settings_title_location_service">Serviço de Localização</string>
     <string name="settings_title_dark_mode">Modo Escuro</string>
-    <string name="settings_title_ui_style">Estilo de Interface</string>
     <string name="settings_title_appearance">Aparência</string>
     <string name="settings_summary_appearance">Estilo de Interface, Ordem de cartões, Idioma…</string>
-    <string name="settings_title_card_order">Ordem de cartões</string>
     <string name="settings_title_gravity_sensor_switch">Sensor Open Gravity</string>
     <string name="settings_language">Idioma</string>
     <string name="settings_title_unit">Unidade</string>
     <string name="settings_summary_unit">Selecione unidade de clima.</string>
     <string name="settings_title_refresh_rate">Frequência de atualização automática</string>
     <string name="settings_title_alert_notification_switch">Enviar notificação de alerta</string>
-    <string name="settings_title_permanent_service">Serviço permanente</string>
     <string name="settings_category_forecast">Previsão do clima</string>
     <string name="settings_title_forecast_today">Previsão para hoje</string>
     <string name="settings_title_forecast_today_time">Hora da previsão para hoje</string>
@@ -194,24 +168,9 @@
     <string name="settings_title_forecast_tomorrow_time">Hora da previsão para amanhã</string>
     <string name="settings_category_widget">Widget</string>
     <string name="settings_title_icon_provider">Estilo do ícone</string>
-    <string name="settings_title_click_widget_to_refresh">Atualizar Widget quando clicado</string>
     <string name="settings_category_notification">Notificação</string>
     <string name="settings_title_notification">Enviar Notificação</string>
     <string name="settings_title_notification_temp_icon">Mini ícone de temperatura</string>
-    <string name="settings_title_notification_text_color">Cor do texto</string>
-    <string name="settings_title_notification_background">Cor de plano de fundo</string>
-    <string name="settings_notification_background_off">Igual ao sistema</string>
     <string name="settings_title_notification_can_be_cleared">Pode dispensar</string>
-    <string name="settings_notification_can_be_cleared_on">Pode dispensar arrastando.</string>
-    <string name="settings_notification_can_be_cleared_off">Não pode dispensar.</string>
-    <string name="settings_title_notification_hide_icon">Ocultar ícone de notificação</string>
-    <string name="settings_notification_hide_icon_on">Oculto</string>
-    <string name="settings_notification_hide_icon_off">Mostrando</string>
-    <string name="settings_title_notification_hide_in_lockScreen">Ocultar na tela de bloqueio</string>
-    <string name="settings_notification_hide_in_lockScreen_on">Ocultar (precisa abrir nas configurações do sistema)</string>
-    <string name="settings_notification_hide_in_lockScreen_off">Mostrando</string>
-    <string name="settings_title_notification_hide_big_view">Ocultar visão estendida</string>
-    <string name="settings_notification_hide_big_view_on">Oculto</string>
-    <string name="settings_notification_hide_big_view_off">Mostrando</string>
 
 </resources>

@@ -306,12 +306,6 @@ public class WeatherHelperTest {
             });
         }
 
-        @NonNull
-        @Override
-        public List<Location> requestLocation(Context context, String query) {
-            return new ArrayList<>();
-        }
-
         @Override
         public void requestLocation(Context context, Location location,
                                     @NonNull RequestLocationCallback callback) {

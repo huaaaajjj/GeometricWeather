@@ -4,7 +4,6 @@ import android.content.Context
 import kotlinx.coroutines.isActive
 import wangdaye.com.geometricweather.BuildConfig
 import wangdaye.com.geometricweather.common.basic.models.Location
-import wangdaye.com.geometricweather.common.utils.LanguageUtils
 import wangdaye.com.geometricweather.db.DatabaseHelper
 import wangdaye.com.geometricweather.weather.apis.CaiYunApi
 import wangdaye.com.geometricweather.weather.converters.CaiyunResultConverter
@@ -51,15 +50,6 @@ class CaiYunWeatherService @Inject constructor(
                 callback.requestWeatherFailed(location)
             }
         }
-    }
-
-    override fun requestLocation(context: Context, query: String): List<Location> {
-        if (!LanguageUtils.isChinese(query)) {
-            return emptyList()
-        }
-        val database = DatabaseHelper.getInstance(context)
-        database.ensureChineseCityList(context)
-        return database.readChineseCityList(query).map { it.toLocation() }
     }
 
     override fun requestLocation(

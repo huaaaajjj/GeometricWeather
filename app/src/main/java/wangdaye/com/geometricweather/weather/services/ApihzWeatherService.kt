@@ -64,15 +64,6 @@ class ApihzWeatherService @Inject constructor(
         }
     }
 
-    override fun requestLocation(context: Context, query: String): List<Location> {
-        val place = normalisePlace(query.trim())
-        if (place.isEmpty()) {
-            return emptyList()
-        }
-        val result = tryPlace(null, place)
-        return if (result != null && result.usable()) listOf(result.toLocation()) else emptyList()
-    }
-
     override fun requestLocation(
         context: Context,
         location: Location,

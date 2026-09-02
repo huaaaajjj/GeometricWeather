@@ -72,8 +72,13 @@ class CmaWeatherService @Inject constructor(
         }
     }
 
-    override fun requestLocation(context: Context, query: String): List<Location> {
-        val pinyin = toPinyinQuery(query)
+    /**
+     * Station search by pinyin autocomplete — no longer part of the app's search flow, but still
+     * how [resolveStation] falls back from GPS coordinates to a name.
+     */
+    @JvmName("searchStation")
+    internal fun searchStation(name: String): List<Location> {
+        val pinyin = toPinyinQuery(name)
         if (pinyin.isEmpty()) {
             return emptyList()
         }
@@ -143,7 +148,7 @@ class CmaWeatherService @Inject constructor(
         val name = listOf(location.district, location.city, location.province)
             .firstOrNull { it.isNotEmpty() }
         if (!name.isNullOrEmpty()) {
-            requestLocation(context, name).firstOrNull()?.let { return it }
+            searchStation(name).firstOrNull()?.let { return it }
         }
 
         // Last resort: an empty station id makes CMA pick one from the caller's IP.

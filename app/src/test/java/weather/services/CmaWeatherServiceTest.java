@@ -121,7 +121,7 @@ public class CmaWeatherServiceTest {
                 .serving(VIEW, "weather.json");
 
         List<Location> results = new CmaWeatherService(mServer.api(CmaApi.class))
-                .requestLocation(mContext, "changsha");
+                .searchStation("changsha");
 
         assertEquals(1, results.size());
         // The view fixture is station 54517 (39.08, 117.22): the re-anchor replaces the

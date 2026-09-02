@@ -30,7 +30,6 @@ import wangdaye.com.geometricweather.weather.json.atmoaura.AtmoAuraQAResult
 import wangdaye.com.geometricweather.weather.json.mf.MfCurrentResult
 import wangdaye.com.geometricweather.weather.json.mf.MfEphemerisResult
 import wangdaye.com.geometricweather.weather.json.mf.MfForecastV2Result
-import wangdaye.com.geometricweather.weather.json.mf.MfLocationResult
 import wangdaye.com.geometricweather.weather.json.mf.MfRainResult
 import wangdaye.com.geometricweather.weather.json.mf.MfWarningsResult
 import wangdaye.com.geometricweather.weather.services.WeatherService
@@ -71,31 +70,6 @@ object MfResultConverter {
             false,
             false,
             isChinese(properties.country)
-        )
-    }
-
-    /** Result of a query string search. */
-    @JvmStatic
-    fun convert(location: Location?, result: MfLocationResult): Location {
-        val address = keptAddress(location)
-        val postCodeSuffix = if (result.postCode == null) "" else " (${result.postCode})"
-
-        return Location(
-            result.postCode, // cityId
-            result.lat.toFloat(),
-            result.lon.toFloat(),
-            // Météo France serves France only; MfLocationResult has no tz (the real one comes with
-            // the forecast).
-            TimeZone.getTimeZone("Europe/Paris"),
-            result.country ?: "",
-            address?.province ?: result.admin2 ?: "", // Domain (département)
-            address?.city ?: result.name?.plus(postCodeSuffix) ?: "",
-            address?.district ?: "",
-            null,
-            WeatherSource.MF,
-            false,
-            false,
-            isChinese(result.country)
         )
     }
 

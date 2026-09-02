@@ -46,9 +46,6 @@ public abstract class WeatherService {
                                         @NonNull RequestWeatherCallback callback);
 
     @WorkerThread
-    @NonNull
-    public abstract List<Location> requestLocation(Context context, String query);
-
     public abstract void requestLocation(Context context, Location location,
                                          @NonNull RequestLocationCallback callback);
 

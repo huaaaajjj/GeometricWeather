@@ -26,8 +26,8 @@ import wangdaye.com.geometricweather.common.basic.models.weather.Wind
 import wangdaye.com.geometricweather.common.basic.models.weather.WindDegree
 import wangdaye.com.geometricweather.weather.json.owm.OwmAirPollutionResult
 import wangdaye.com.geometricweather.weather.json.owm.OwmCurrentResult
-import wangdaye.com.geometricweather.weather.json.owm.OwmForecastResult
 import wangdaye.com.geometricweather.weather.json.owm.OwmLocationResult
+import wangdaye.com.geometricweather.weather.json.owm.OwmForecastResult
 import wangdaye.com.geometricweather.weather.services.WeatherService
 
 /**
@@ -52,6 +52,33 @@ object OwmResultConverter {
     )
 
     private val CHINA_COUNTRY_CODES = setOf("CN", "cn", "HK", "hk", "TW", "tw")
+
+    /**
+     * Reverse geocoding for the provider's own location resolution. The Java version branched on
+     * whether the caller already had province/city/district filled in, but both branches built a
+     * byte-identical Location, and the zip code it also took was never read.
+     */
+    @JvmStatic
+    fun convert(result: OwmLocationResult?): Location? {
+        if (result == null) {
+            return null
+        }
+        return Location(
+            "${result.lat},${result.lon}",
+            result.lat.toFloat(),
+            result.lon.toFloat(),
+            TimeZone.getTimeZone("UTC"),
+            result.country,
+            "",
+            result.name,
+            "",
+            null,
+            WeatherSource.OWM,
+            false,
+            false,
+            result.country in CHINA_COUNTRY_CODES
+        )
+    }
 
     @JvmStatic
     fun convert(
@@ -360,33 +387,6 @@ object OwmResultConverter {
             components.no2.toFloat(),
             components.o3.toFloat(),
             components.co.toFloat()
-        )
-    }
-
-    /**
-     * The Java version branched on whether the caller already had province/city/district filled in,
-     * but both branches built a byte-identical Location, and the zip code it also took was never
-     * read. Both parameters are gone rather than carried over as dead weight.
-     */
-    @JvmStatic
-    fun convert(result: OwmLocationResult?): Location? {
-        if (result == null) {
-            return null
-        }
-        return Location(
-            "${result.lat},${result.lon}",
-            result.lat.toFloat(),
-            result.lon.toFloat(),
-            TimeZone.getTimeZone("UTC"),
-            result.country,
-            "",
-            result.name,
-            "",
-            null,
-            WeatherSource.OWM,
-            false,
-            false,
-            result.country in CHINA_COUNTRY_CODES
         )
     }
 

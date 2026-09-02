@@ -6,17 +6,11 @@
     <!-- keyword. -->
     <string name="current_location">Locația curentă</string>
     <string name="resident_location">Acasă</string>
-    <string name="default_location">Locația implicită</string>
-    <string name="live">În prezent</string>
     <string name="today">Azi</string>
     <string name="refresh_at">Actualizat la</string>
-    <string name="local_time">Ora locală</string>
     <string name="precipitation">Precipitaţii</string>
     <string name="precipitation_probability">Probabilitate precipitaţii</string>
     <string name="precipitation_duration">Durată Precipitaţii</string>
-    <string name="maxi_temp">zi</string>
-    <string name="mini_temp">noapte</string>
-    <string name="time">ora</string>
     <string name="day">zi</string>
     <string name="night">noapte</string>
     <string name="temperature">Temperatură</string>
@@ -24,15 +18,12 @@
     <string name="wind_direction">Direcția vântului</string>
     <string name="wind_speed">Viteza vântului</string>
     <string name="wind_level">Vânt</string>
-    <string name="sensible_temp">Temp. resimțită</string>
     <string name="humidity">Umiditate</string>
     <string name="uv_index">Indice UV</string>
     <string name="hours_of_sun">Ore cu soare</string>
     <string name="forecast">Prognoză</string>
-    <string name="briefings">Pe scurt</string>
     <string name="daytime">Zi</string>
     <string name="nighttime">Noapte</string>
-    <string name="publish_at">Publicat la</string>
     <string name="feels_like">Se simt</string>
     <string name="follow_system">La fel ca sistemul</string>
     <string name="background_information">Informații generale</string>
@@ -42,8 +33,6 @@
     <string name="cloud_cover">Acoperire nori</string>
     <string name="ceiling">Plafon</string>
     <string name="get_more">Mai mult…</string>
-    <string name="get_more_store">Mai multe din magazinul de aplicații</string>
-    <string name="get_more_github">Mai multe de pe GitHub</string>
     <string name="refresh">Reactualizează</string>
     <string name="restart">Repornește</string>
     <string name="edit">Editează</string>
@@ -89,9 +78,7 @@
     <string name="wind_12">Uragan</string>
 
     <string name="precipitation_light">Ploi uşoare</string>
-    <string name="precipitation_middle">Ploi moderate</string>
     <string name="precipitation_heavy">Ploi intense</string>
-    <string name="precipitation_rainstorm">Ploi violente (Furtună)</string>
 
     <string name="aqi_1">Aer proaspăt</string>
     <string name="aqi_2">Aer curat</string>
@@ -116,7 +103,6 @@
 
     <string name="daily_overview">Prognoza zilnică</string>
     <string name="hourly_overview">Prognoza pe ore</string>
-    <string name="minutely_overview">Prognoza pe minut</string>
     <string name="precipitation_overview">Prognoza precipitații</string>
     <string name="air_quality">Calitatea aerului</string>
     <string name="allergen">Alergeni</string>
@@ -133,12 +119,9 @@
     <string name="learn_more">AFLĂ MAI MULTE</string>
 
     <string name="about_app">Despre aplicație</string>
-    <string name="introduce">introdu</string>
     <string name="email">E-mail</string>
     <string name="donate">Donează</string>
-    <string name="gitHub">GitHub</string>
     <string name="translator">Traducători</string>
-    <string name="thanks">Mulțumiri</string>
 
     <string name="alipay">Alipay</string>
     <string name="wechat">Wechat</string>
@@ -155,25 +138,10 @@
 
     <!-- about. -->
     <!-- Optional, the following set of strings are not necessarily translated. -->
-    <string name="retrofit">Retrofit 2.0</string>
-    <string name="about_retrofit">Type-safe HTTP client for Android and Java by Square, Inc.</string>
-    <string name="glide">Glide</string>
-    <string name="about_glide">An image loading and caching library for Android focused on smooth scrolling.</string>
-    <string name="gson">Gson</string>
-    <string name="about_gson">A Java serialization/deserialization library that can convert Java Objects into JSON and back.</string>
-    <string name="greenDAO">GreenDAO</string>
-    <string name="about_greenDAO">greenDAO is a light and fast ORM solution for Android that maps objects to SQLite databases.</string>
-    <string name="page_indicator">InkPageIndicator</string>
-    <string name="about_page_indicator">InkPageIndicator created by @nickbutcher for Plaid https://github.com/nickbutcher/plaid and backported by David Pacioianu for API 14+ (4.0+).</string>
-    <string name="circular_progress_view">CircularProgressView</string>
-    <string name="about_circular_progress_view">Material style circular progress bar for Android.</string>
 
     <!-- feedback. -->
-    <string name="feedback_request_permission">Permisiuni</string>
     <string name="feedback_request_location">Locație</string>
     <string name="feedback_request_location_in_background">Localizare în fundal</string>
-    <string name="feedback_request_location_permission_success">Cerere acces localizare - Succes</string>
-    <string name="feedback_request_location_permission_failed">Cerere acces localizare - Eșuat</string>
 
     <string name="feedback_location_permissions_title">Accesare informații despre locație.</string>
     <string name="feedback_location_permissions_statement">Geometric Weather are nevoie de informațiile despre locația dumenavoastră când rulează sau în fundal pentru a furniza datele meteo din locația in care vă aflați. Pentru aceasta sunt necesare câteva permisiuni. Informațiile despre locația dumenavoastră vor fi utilizate doar pentru a obține datele meteo pentru locația curentă. Dacă nu doriți permiterea accesului la informațiile despre locație, puteți respinge aceste cerințe și seta manual locația dorită în pagina de gestionare.</string>
@@ -245,8 +213,6 @@
     <string name="feedback_live_wallpaper_weather_kind">Vremea</string>
     <string name="feedback_live_wallpaper_day_night_type">Ora</string>
 
-    <string name="feedback_click_toggle">Atingeți tabelul pentru a selecta datele</string>
-    <string name="feedback_no_data">DATE LIPSĂ</string>
 
     <string name="feedback_collect_failed">Această locație a fost deja adaugată</string>
     <string name="feedback_collect_succeed">Locația a fost adăugată cu succes</string>
@@ -256,14 +222,8 @@
     <string name="feedback_search_location">Caută locația…</string>
     <string name="feedback_not_yet_location">Fără locații momentan…</string>
     <string name="feedback_search_nothing">Locația nu a fost gasită</string>
-    <string name="feedback_initializing">Inițializare…</string>
 
-    <string name="feedback_refresh_notification_after_back">Modificările vor fi vizibile când reveniți la pagina principală</string>
-    <string name="feedback_refresh_notification_now">Reactualizează acum</string>
-    <string name="feedback_refresh_ui_after_refresh">Modificările vor fi vizibile odata cu actualizarea datelor</string>
     <string name="feedback_restart">Modificările vor fi vizibile după repornirea aplicației</string>
-    <string name="feedback_readd_location">Vă rugăm să adăugați din nou locațiile </string>
-    <string name="feedback_readd_location_after_changing_source">Vă rugăm să re-adăugați locațiile după modificarea sursei de date</string>
 
     <string name="feedback_running_in_background">Datele se actualizează în fundal</string>
     <string name="feedback_updating_weather_data">Se actualizează datele meteo</string>
@@ -272,7 +232,6 @@
     <!-- there should be a "\" before single or double quotes. -->
     <!-- Correct : ... after turning off \'Background free\', ... After turning off \"Free background\" ... -->
     <!-- Wrong   : ... after turning off 'Background free', ... After turning off "Free background" ... -->
-    <string name="feedback_interpret_background_notification_content">În unele dispozitive, după deselectarea opțiunii \'Activitate fundal gestionată de sistem\', ar putea apărea o notificare ce nu poate fi ștearsă din bara de notificări.</string>
     <string name="feedback_interpret_notification_group_title">Blochează  notificarea de fundal</string>
     <string name="feedback_interpret_notification_group_content">După deselectarea opțiunii \"Activitate fundal gestionată de sistem\", o notificare ce indică faptul că serviciul rulează in fundal va apărea în bara de notificări. Puteți dezactiva Informațiile despre activitatea din fundal în pagina de informații a aplicației pentru a bloca aceste notificări. </string>
 
@@ -281,8 +240,6 @@
 
     <string name="feedback_cannot_start_live_wallpaper_activity">Pornirea previzualizării Tapetului dinamic (live wallpaper) a eșuat.</string>
 
-    <string name="feedback_unusable_geocoder">Acest dispozitiv nu are un geocoder valid. Furnizorul de locație a fost înlocuit cu  Baidu.</string>
-    <string name="feedback_about_geocoder">Geocoderul este o componentă care convertește rezultatul locației din formatul lat-lon într-un format precum \'XX oraș, YY județ \'. În absența acestei componente, puteți obține date despre vreme doar prin AccuWeather atunci când utilizați API-ul nativ ca furnizor de locație.</string>
 
     <string name="feedback_today_precipitation_alert">Posibile precipitații in decursul zilei</string>
     <string name="feedback_short_term_precipitation_alert">Posibile precipitații în următoarele ore.</string>
@@ -329,7 +286,6 @@
     <string name="settings_title_weather_source">Sursa Meteo</string>
     <string name="settings_title_location_service">Serviciu locație</string>
     <string name="settings_title_dark_mode">Mod întunecat (Temă)</string>
-    <string name="settings_title_ui_style">Tip interfață</string>
     <string name="settings_title_icon_provider">Pachet de pictograme (icoane)</string>
     <string name="settings_title_appearance">Aspect interfață</string>
     <string name="settings_summary_appearance">Tip interfeță, ordine file, limbă…</string>
@@ -337,7 +293,6 @@
     <string name="settings_title_daily_trend_display">Afișează tendința zilnică</string>
     <string name="settings_title_trend_horizontal_line_switch">Linii orizontale în grafic</string>
     <string name="settings_title_exchange_day_night_temp_switch">Inversează temperaturile pentru zi și noapte</string>
-    <string name="settings_title_card_order">Ordinea filelor</string>
     <string name="settings_title_gravity_sensor_switch">Senzor de gravitație </string>
     <string name="settings_title_list_animation_switch">Animare listă</string>
     <string name="settings_title_item_animation_switch">Animare elemente</string>
@@ -352,7 +307,6 @@
     <string name="settings_title_refresh_rate">Interval actualizare automată</string>
     <string name="settings_title_alert_notification_switch">Alerte meteo</string>
     <string name="settings_title_precipitation_notification_switch">Notificare precipitații</string>
-    <string name="settings_title_permanent_service">Serviciu permanent</string>
     <string name="settings_category_forecast">Prognoza meteo</string>
     <string name="settings_title_forecast_today">Prognoza pt. azi</string>
     <string name="settings_title_forecast_today_time">Oră notif azi</string>
@@ -361,28 +315,10 @@
     <string name="settings_category_widget">Widget</string>
     <string name="settings_title_week_icon_mode">Mod icoane sapt.</string>
     <string name="settings_title_minimal_icon">Pictograme tip minimal</string>
-    <string name="settings_title_click_widget_to_refresh">Atinge pt. actualizare</string>
-    <string name="settings_title_widget_config">Configurare Widget</string>
     <string name="settings_category_notification">Notificări</string>
     <string name="settings_title_notification">Trimite notificări</string>
     <string name="settings_title_notification_style">Tip notificări</string>
     <string name="settings_title_notification_temp_icon">Temperatura în bara de stare</string>
-    <string name="settings_title_notification_color">Culoare notificări</string>
-    <string name="settings_title_notification_custom_color">Culoare personalizată</string>
-    <string name="settings_title_notification_text_color">Culoare text</string>
-    <string name="settings_title_notification_background">Culoare fundal</string>
-    <string name="settings_notification_background_off">La fel ca sistemul</string>
     <string name="settings_title_notification_can_be_cleared">Persistență</string>
-    <string name="settings_notification_can_be_cleared_on">Poate fi ștearsă prin glisare</string>
-    <string name="settings_notification_can_be_cleared_off">Notif. persistentă</string>
-    <string name="settings_title_notification_hide_icon">Ascunde icoana notificării</string>
-    <string name="settings_notification_hide_icon_on">Ascuns</string>
-    <string name="settings_notification_hide_icon_off">Afișat</string>
-    <string name="settings_title_notification_hide_in_lockScreen">Ascunde pe ecranul de blocare</string>
-    <string name="settings_notification_hide_in_lockScreen_on">Ascus (trebuie modificat în setările de sistem) </string>
-    <string name="settings_notification_hide_in_lockScreen_off">Afișat</string>
-    <string name="settings_title_notification_hide_big_view">Notif. extinsă</string>
-    <string name="settings_notification_hide_big_view_on">Ascuns</string>
-    <string name="settings_notification_hide_big_view_off">Afișat</string>
 
 </resources>

@@ -286,12 +286,6 @@ public class LocationHelperTest {
                                    @NonNull RequestWeatherCallback callback) {
         }
 
-        @NonNull
-        @Override
-        public List<Location> requestLocation(Context context, String query) {
-            return resolved;
-        }
-
         @Override
         public void requestLocation(Context context, Location location,
                                     @NonNull RequestLocationCallback callback) {

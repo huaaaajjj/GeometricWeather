@@ -276,7 +276,9 @@ public class NotificationHelper {
     }
 
     private static boolean isShortTermLiquid(Weather weather) {
-        for (int i = 0; i < 4; i ++) {
+        // Hourly lists vary in length (3h-step sources carry fewer near the forecast tail), so
+        // bound the window by the data actually present.
+        for (int i = 0; i < 4 && i < weather.getHourlyForecast().size(); i ++) {
             if (weather.getHourlyForecast().get(i).getWeatherCode().isPrecipitation()) {
                 return true;
             }

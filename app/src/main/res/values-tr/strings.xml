@@ -5,25 +5,17 @@
 
     <!-- keyword. -->
     <string name="current_location">Bulunduğunuz konumu</string>
-    <string name="default_location">varsayılan konum</string>
-    <string name="live">Rüzgar</string>
     <string name="today">Bugün</string>
     <string name="refresh_at">Son güncelleme</string>
     <string name="precipitation">Yağış ihtimali</string>
-    <string name="maxi_temp">Gündüz</string>
-    <string name="mini_temp">Gece</string>
-    <string name="time">Zaman</string>
     <string name="day">Tüm gün</string>
     <string name="night">Gece</string>
     <string name="wind">Rüzgar</string>
-    <string name="sensible_temp">Hissedilen sıcaklık</string>
     <string name="humidity">Nem</string>
     <string name="uv_index">UV indeksi</string>
     <string name="forecast">Tahmin</string>
-    <string name="briefings">Durum</string>
     <string name="daytime">Gündüz</string>
     <string name="nighttime">Gece</string>
-    <string name="publish_at">Yayın</string>
     <string name="feels_like">Hissedilen</string>
     <string name="follow_system">Sistem Dili</string>
 
@@ -73,17 +65,11 @@
     <string name="off">KAPAT</string>
 
     <string name="about_app">HAKKINDA</string>
-    <string name="introduce">Giriş</string>
     <string name="email">E-posta</string>
-    <string name="gitHub">GitHub</string>
-    <string name="thanks">TŞK</string>
     <string name="translator">Çevirmenler</string>
 
     <!-- feedback. -->
-    <string name="feedback_request_permission">İzinler</string>
     <string name="feedback_request_location">Konum</string>
-    <string name="feedback_request_location_permission_success">Konum izin isteği başarılı.</string>
-    <string name="feedback_request_location_permission_failed">Konum izin isteği başarısız.</string>
 
     <string name="feedback_location_failed">Konum başarısız.</string>
     <string name="feedback_get_weather_failed">Hava Durumu isteği başarısız.</string>
@@ -92,8 +78,6 @@
     <string name="feedback_show_widget_card">Kart görünümü.</string>
     <string name="feedback_black_text">Koyu yazı.</string>
 
-    <string name="feedback_click_toggle">Verileri değiştirmek için grafiği tıklayın.</string>
-    <string name="feedback_no_data">VERİ YOK</string>
 
     <string name="feedback_collect_failed">Bu konum mevcut.</string>
     <string name="feedback_collect_succeed">Konum ekleme başarılı.</string>
@@ -103,11 +87,7 @@
     <string name="feedback_search_location">Konum ara…</string>
     <string name="feedback_not_yet_location">Henüz konum yok…</string>
     <string name="feedback_search_nothing">Hiçbir şey aranmadı…</string>
-    <string name="feedback_initializing">Başlatılıyor…</string>
 
-    <string name="feedback_refresh_notification_after_back">Ana sayfaya geri döndüğünüzde etkili olacak.</string>
-    <string name="feedback_refresh_notification_now">Şimdi güncelle.</string>
-    <string name="feedback_refresh_ui_after_refresh">Veri güncellendiğinde etkili olacak.</string>
     <string name="feedback_restart">Yeniden başlatınca etkili olacak.</string>
 
     <!-- action -->
@@ -130,7 +110,6 @@
     <!-- settings -->
     <string name="settings_category_basic">Temel</string>
     <string name="settings_language">Dil.</string>
-    <string name="settings_title_permanent_service">kalıcı servis.</string>
     <string name="settings_category_forecast">Tahmin</string>
     <string name="settings_title_forecast_today">Bugün için tahmin.</string>
     <string name="settings_title_forecast_today_time">Bugün için tahmin zamanı.</string>
@@ -139,17 +118,6 @@
     <string name="settings_category_widget">Widget</string>
     <string name="settings_category_notification">Uyarı</string>
     <string name="settings_title_notification">Uyarı gönder.</string>
-    <string name="settings_title_notification_text_color">Yazı rengi.</string>
-    <string name="settings_title_notification_background">Arkaplan rengi.</string>
-    <string name="settings_notification_background_off">Sistem varsayılanı.</string>
     <string name="settings_title_notification_can_be_cleared">Kaldırılabilir.</string>
-    <string name="settings_notification_can_be_cleared_on">Kaldırılabilir.</string>
-    <string name="settings_notification_can_be_cleared_off">Kaldırılamaz.</string>
-    <string name="settings_title_notification_hide_icon">Uyarı ikonunu gizle.</string>
-    <string name="settings_notification_hide_icon_on">Gizle.</string>
-    <string name="settings_notification_hide_icon_off">Göster.</string>
-    <string name="settings_title_notification_hide_in_lockScreen">Kilit ekranında gizle.</string>
-    <string name="settings_notification_hide_in_lockScreen_on">Gizle (Sistem ayarlarında açmanız gerekir).</string>
-    <string name="settings_notification_hide_in_lockScreen_off">Göster.</string>
 
 </resources>

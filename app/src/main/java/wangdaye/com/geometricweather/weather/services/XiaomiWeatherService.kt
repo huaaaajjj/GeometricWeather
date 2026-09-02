@@ -116,8 +116,6 @@ class XiaomiWeatherService @Inject constructor(
     private fun gridKey(lat: Double, lon: Double): String =
         "key_" + (lat * 100).roundToInt() + "_" + (lon * 100).roundToInt()
 
-    override fun requestLocation(context: Context, query: String): List<Location> = emptyList()
-
     override fun requestLocation(
         context: Context,
         location: Location,
