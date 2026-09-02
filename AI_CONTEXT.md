@@ -112,23 +112,22 @@
   - 子实体 weatherSource 用 String（写入时 source.getId()）；LocationEntity 用 WeatherSource/TimeZone 强类型（RoomTypeConverters）
   - 本地 Microsoft JDK 17 kapt 的 InvocationTargetException → 加 `kapt.useWorkerApi=false` 解决
 
-## 接手须知（2026-09-02 交接，3.6.7 发版后更新）
+## 接手须知（2026-09-02 交接，3.6.8 发版后更新）
 
 **当前状态**
 
-- `master` 与远端同步（560a267…），最新 release 是 **v3.6.7**（正式版，已发；资产是本地真机验证过的 APK，sha256 `034dadff…553ff`，CI 自建 release 的资产已换掉）。手机上装的就是 3.6.7。
-- 用例数 **237/变体**（六变体 1422），`./gradlew test` 全绿。
+- `master` 与远端同步（提交级一致性由 REST API 重建推送保证，见下），最新 release 是 **v3.6.8**（正式版；资产是本地真机验证过的 APK，CI 自建 release 的资产已换掉）。手机上装的就是 3.6.8。
+- 用例数 **242/变体**（六变体 1452），`./gradlew test` 全绿。
 - **`git push` 在这台机器上依旧不通**（github.com:443 连接被重置，api.github.com 正常），推送走 REST API 重建：blob/tree/commit 逐级 POST 并每步校验 SHA。**两个坑**：① GitHub 建 commit 会**剥掉消息末尾的换行**，普通 `git commit` 的 SHA 永远对不上——本地先按同样规范用 `git commit-tree` 重建（消息 rstrip 掉尾换行、作者/时间戳原样），远端本地即逐字节一致；② 分支 API 返回的是 `commit.sha` 而非 refs API 的 `object.sha`。一次性脚本在 `C:\Users\HUAJI\AppData\Local\Temp\rebuild_and_push.py`（思路如上，随时可重写）。
 - 修复 push 的正道仍是把本机 SSH key 挂到账号（`gh ssh-key add` + remote 换 SSH），**属改用户账号设置，要先征得同意**。
-- CI 持续可靠：v3.6.6 三次 + v3.6.7 tag 构建（7m30s）全部 success；本地构建 + 真机验证仍是发版门槛。
-- 3.6.7 的 R8 mapping 已备份到 `D:\Documents\geoweather-release-mappings\v3.6.7-pubRelease-mapping.txt.gz`（覆盖了此前未发版的同名 3.6.7 旧 mapping——那个构建已被本次取代）。
+- CI 持续可靠：v3.6.6/v3.6.7/v3.6.8 的 tag 构建全部 success；本地构建 + 真机验证仍是发版门槛。
+- R8 mapping 按版本备份在 `D:\Documents\geoweather-release-mappings\v<版本>-pubRelease-mapping.txt.gz`（发版后立刻备份，`app/build` 一清就没了）。
 
 **这次没做、下次可以直接开工的**（按性价比）
 
-1. **给 `CommonConverter` 加 NOAA 太阳计算**：METNO（整个 API 无 astro）与 CMA（上游未核实）的日出日落依旧缺失，`isDaylight()` 在这两个源仍退写死的 06:00–18:00，高纬度每天错几小时。OWM 已于 3.6.7 接上现成字段，就剩这条；极昼极夜必须返回 null 而非硬凑。
-2. **纯删除的清理**：搜索解耦留下的 `SEARCH_CONFIG` prefs、10 个语种里的死文案、Accu/OWM/MF/APIHZ/彩云 五个源已无生产调用方的 `requestLocation(Context, String)`；以及固定天数假设的两处残留（`ForecastNotificationIMP.get(1)`、`NotificationHelper.isShortTermLiquid` 的 hourly `i < 4`）。
-3. **卡片「· 来源」标注写的是指派而非实际供数方**（境外会显示「每日概览 · 中国天气网」而数据来自 Open-Meteo）。要做对得把逐块来源随 Weather 落库，schema 锁 v63，代价大于收益 —— 除非只在内存里传一次、缓存读回时退回指派。
-4. **ACCU 内置 Key 已过期**，要不要换 Key 属用户决定；它同时卡着最后一个未迁 Kotlin 的服务（`AccuWeatherService`，`cancel()` 仍是空操作，因抓不到固件没测试）。
+1. **纯删除的清理**：搜索解耦留下的 `SEARCH_CONFIG` prefs、10 个语种里的死文案、Accu/OWM/MF/APIHZ/彩云 五个源已无生产调用方的 `requestLocation(Context, String)`；以及固定天数假设的两处残留（`ForecastNotificationIMP.get(1)`、`NotificationHelper.isShortTermLiquid` 的 hourly `i < 4`）。
+2. **卡片「· 来源」标注写的是指派而非实际供数方**（境外会显示「每日概览 · 中国天气网」而数据来自 Open-Meteo）。要做对得把逐块来源随 Weather 落库，schema 锁 v63，代价大于收益 —— 除非只在内存里传一次、缓存读回时退回指派。
+3. **ACCU 内置 Key 已过期**，要不要换 Key 属用户决定；它同时卡着最后一个未迁 Kotlin 的服务（`AccuWeatherService`，`cancel()` 仍是空操作，因抓不到固件没测试）。
 
 **一条已复核掉的旧约束**：「CI 不可靠（jitpack 403）」在 2026-09-01 的三次 tag 构建里全部 success（各 6~7 分钟）。本地构建 + 真机验证仍不能省（那是发版门槛，见 `/release`），但「CI 一定失败」这个前提不成立了；推不上去是本机网络问题，与 CI 无关。
 
@@ -344,6 +343,8 @@
 
 - **发版（2026-09-02）**：v3.6.7 正式版（含上两条：时区渲染 + OWM 日出日落）。`git push` 依旧不通，走 REST API 重建推送——blob/tree/commit 逐级 POST 并校验 SHA；坑：**GitHub 建 commit 会剥掉消息末尾换行**，本地提交先用 `git commit-tree` 按 API 规范重建（消息去尾换行、作者/时间戳不变）后远端与本地逐字节一致（`master` = `560a267`）。CI 自建的 release 换上真机验证过的 APK（资产 sha256 `034dadff…553ff` 与本地一致），tag 构建本身 success（7m30s）。mapping 已备份到仓库外（覆盖了未发版时的同名旧文件）。
 
+- **NOAA 太阳计算：METNO/CMA 的日出日落补齐，「三个源没有日出日落」至此了结**（3.6.8）。这两个源的上游响应不带 astro（METNO 整个 API 没有，CMA 一直没在响应里找到过），`Daily.sun()` 恒为空 → `Weather.isDaylight()` 退到写死的 06:00–18:00，而 METNO 恰是北欧源——奥斯陆 12 月实际日照 09:18–15:12，写死值每天错几小时，坑的正是它自己的目标用户。改法：新增 `weather/converters/SolarCalculator.kt`（NOAA 太阳位置方程，天顶角 90.833°，与历书同口径）：倾角/时差按当天**当地正午**评估；日出日落以「当地正午所在的 UTC 日」的 UTC 午夜为锚做**绝对时刻**加减——天津的日出在 UTC 前一日 21:21Z，锚定进「当天 0 点内」就是 24 小时级错误而非分钟级；hour-angle 无解（极昼/极夜）返回 **null** 保持空 astro，绝不硬凑。METNO 在日折叠处逐日填 sun（`convertDailyList` 改收 `location`），CMA 在 daily 转换处逐日填。测试 +5（242 例/变体，六变体 1452，全绿）：`SolarCalculatorTest` 4 例对照 sunrise-sunset.org 历书值（奥斯陆 DST、天津跨 UTC 日、悉尼南半球防纬度符号、特罗姆瑟双至日 null），±3 分钟容差；METNO 测试原「sun 恒空」断言整体反转为「sun 必须是历书时刻」，CMA 新增 1 例（固件坐标正好是天津、日期正好在固件里，跨 UTC 日案例免费拿到）。**变异检验**：天顶角 90.833→90 → 5 例挂（极昼极夜例不受影响，正确）；METNO 接线拆掉 → 对应例挂。真机验证（MI 9 / Android 14，3.6.8 签名 release + R8，原地升级保留数据）：冷启动 0 崩溃；「天气源可用性」实测刷新 **挪威气象局日出 ✗→✓、中国气象局日出 ✗→✓**，日出列对每个可用源全 ✓；首轮彩云/中国天气网「不可用」复测即恢复（试用 Token/免费接口抖动，非本改动链路）。
+
 ## 已知问题 / 约束
 
 - **中国专属源对境外地点一律报失败**（2026-09-01，3.6.6）：`ApihzWeatherService` 与 `CmaWeatherService` 在 `requestWeather` 入口就拦 `!location.isChina`，一个请求都不发。**不要把它改回去** —— 这两家不会答「没有」：APIHZ 退到 IP 端点会答请求来源地（北京），CMA 按坐标会匹配到最近的中国站点，看起来都是合法数据，而多源聚合把每日块（含日出日落）交给答话的那家，境外地点因此显示别处的天气。境外由 Open-Meteo/WeatherAPI/小米 供数。
@@ -351,7 +352,7 @@
 - **搜索地点已与天气源解耦**（2026-08-31，见变更日志末条）：搜索页不再有天气源勾选框，结果一律按设置里的全局源落库。新增地点的坐标来自 本地城市表 / Open-Meteo 地理编码，**不再来自某个天气源的搜索接口**。一处残留：各源的 `WeatherService.requestLocation(Context, String)` 实现（Accu/OWM/MF/APIHZ/彩云）**已无生产调用方**，唯一还在用的是 CMA 内部按地名解析站点（`CmaWeatherService.kt:140`）——删它们要连带拆掉各自的接口方法、转换器与测试，属另一次清理，本次未做。搜索结果列表的滚动条仍按源着色、指示气泡仍显示源 URL（现在每行都一样），按「保持原 UI 风格」未动 —— 但它的越界崩溃已修，见变更日志。
 - **Open-Meteo 地理编码对中文输入很差**（2026-08-31 实测）：`舒城` **0 条**、`长沙` 头三条是重庆/贵州/广东的同名村（湖南长沙市排不进前三）、`东京` 全是中国的村、`纽约` 0 条；换英文 `Changsha`/`Tokyo`/`Paris` 则第一条就对。所以中文查询**必须**先走本地 `chinese_city` 表，不要为了「少一个分支」把这一级去掉。另：`language` 参数只认**两位**语言码，`zh-CN`/`zh_CN`/乱码一律**不报错**、静默返回未本地化的名字，故传的是 `code.substringBefore('-')`。
 
-- **两个源没有日出日落，退到写死的 06:00–18:00**（2026-08-24 查明；**OWM 已于 3.6.7 修掉**，剩 METNO/CMA 暂不修）：`METNO`（整个 API 无 astro 字段）、`CMA`（DTO/转换器里 `sun` 零匹配；上游响应里有没有**未能核实** —— WAF 掐本机 TLS 握手）。OWM 原属此列（`sys.sunrise/sunset` 在 DTO 里但转换器只读 `sys.pod`），已于 3.6.7 填进当天 astro，见变更日志。后果不只是「日月升落」卡被 `MainAdapter.java:88` 整块跳过：`Weather.isDaylight()` 在 astro 为空时退到 `DisplayUtils.isDaylight(timeZone)`，那是**写死的 06:00–18:00**（`DisplayUtils.java:210-217`），而它喂主界面配色、动态背景、全部 widget、通知、磁贴、快捷方式、AQI/城市卡明暗（`location.isDaylight` 十余处消费点）。**中低纬度看不出来**（北京/舒城误差半小时内），**高纬度每天错几小时** —— 奥斯陆 12 月 09:18–15:12、6 月 03:54–22:54，而 METNO 正是北欧源。下一步给 `CommonConverter` 加 NOAA 太阳计算（收益归 CMA/METNO 与将来的新源，极昼极夜必须返回 null 而非硬凑）。COMPOSITE 不受影响 —— `WeatherMerger.fillDaily` 会从别的成员补一个有效 `Astro`。
+- **日出日落已全源覆盖，新源必须走 `SolarCalculator`**（2026-09-02，3.6.8 了结旧账）：WeatherAPI/Open-Meteo/彩云/小米/APIHZ/MF 用上游自带的 astro；OWM 自 3.6.7 读现成的 `sys.sunrise/sunset`；METNO/CMA 上游不带，自 3.6.8 起由 `SolarCalculator`（NOAA 方程，`weather/converters/SolarCalculator.kt`）按坐标逐日计算。**将来新增不带 astro 的源，调 `SolarCalculator.sunTimes(date, lat, lon, tz)`**：极昼极夜返回 null（保持空 astro 行为），不要硬凑时刻；返回的是**绝对时刻**（天津日出在 UTC 前一日），消费侧按地点时区渲染（3.6.7），不要按「当天 0 点」钳制。
 - **FPAS（FOSS Public Alert Server）已决定不接**（2026-08-24）：理由与更省的替代路径记在 `docs/PORT_PLAN_breezy.md` 阶段 3/4 的裁决一节。
 - **`AccuWeatherService` 的 `cancel()` 仍是空操作**：其余 7 个服务已迁 Kotlin 并通过 `RequestScope` 真正实现取消（取消在途 `Call` + 回调前查 `isActive`），只有 Accu 还是旧的 `AsyncHelper.Controller` 写法 —— `Job.cancel()` 打不断阻塞的 `execute()`，回调照常送达。因 Key 过期抓不到固件、无法写服务测试，按「无测试不迁」保留。它同时是 `weather/services/` 最后一个 Java 文件（`WeatherService` 基类除外）。（其 `requestLocation(Context, String, RequestLocationCallback)` 三参死重载已于 README 之后那次清理中删除，见变更日志末条。）
 
@@ -384,7 +385,7 @@
 - [ ] Java → Kotlin 逐步迁移（`weather/services` 只剩 `AccuWeatherService`，卡在 Key 过期抓不到固件）
 - [x] 发 3.6.7（2026-09-02，正式版）
 - [x] OWM 读现成的 `sys.sunrise/sunset`（3.6.7）
-- [ ] 给 `CommonConverter` 加 NOAA 太阳计算（收益归 CMA/METNO，极昼极夜返回 null）
+- [x] NOAA 太阳计算（3.6.8，`SolarCalculator.kt`——METNO/CMA 日出日落补齐，极昼极夜返回 null）
 - [ ] 清理：`SEARCH_CONFIG` 孤儿 prefs、10 个语种的死文案、五个源无调用方的 `requestLocation(Context, String)`
 - [ ] 补齐固定天数假设的两处残留：`ForecastNotificationIMP.get(1)`、`NotificationHelper` 的 hourly `i < 4`
 

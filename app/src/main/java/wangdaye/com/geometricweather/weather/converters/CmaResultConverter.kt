@@ -76,7 +76,7 @@ object CmaResultConverter {
                 Base(cityId, now, Date(), now, Date(), now),
                 convertCurrent(context, data),
                 null,
-                convertDailyList(context, data),
+                convertDailyList(context, data, location),
                 convertHourlyList(context, hourlyHtml, iconCodeMap),
                 ArrayList<Minutely>(),
                 convertAlertList(data)
@@ -128,7 +128,11 @@ object CmaResultConverter {
         )
     }
 
-    private fun convertDailyList(context: Context, data: CmaWeatherResult.Data): List<Daily> {
+    private fun convertDailyList(
+        context: Context,
+        data: CmaWeatherResult.Data,
+        location: Location
+    ): List<Daily> {
         val list = ArrayList<Daily>()
         val dailyList = data.daily ?: return list
 
@@ -147,7 +151,15 @@ object CmaResultConverter {
                         context, "Night", d.nightText, d.nightWindDirection, d.nightWindScale,
                         d.low?.toInt() ?: 0
                     ),
-                    null, null, null, null, null,
+                    // 上游响应不带 astro；日出日落按地点坐标与当天日期计算（极昼极夜返回 null，
+                    // 保持与「无数据」同样的空 astro 行为）。
+                    SolarCalculator.sunTimes(
+                        date,
+                        location.latitude.toDouble(),
+                        location.longitude.toDouble(),
+                        location.timeZone
+                    ),
+                    null, null, null, null,
                     UV(null, null, null),
                     0f
                 )

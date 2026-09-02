@@ -27,6 +27,7 @@ import java.util.TimeZone;
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource;
 import wangdaye.com.geometricweather.common.basic.models.weather.Alert;
+import wangdaye.com.geometricweather.common.basic.models.weather.Astro;
 import wangdaye.com.geometricweather.common.basic.models.weather.Daily;
 import wangdaye.com.geometricweather.common.basic.models.weather.Hourly;
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
@@ -70,6 +71,30 @@ public class CmaResultConverterTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    public void dailyCarriesAComputedSunrise() {
+        // Upstream has no astro block; the sun is computed from the location's coordinates.
+        // Reference for Tianjin (39.08N 117.22E) on 2026-08-14 — sunrise 05:21:53 CST, which is
+        // 21:21:53Z the *previous* UTC day, so a UTC-midnight clamp in the calculator shows up
+        // here as a 24-hour error rather than a rounding one. (sunrise-sunset.org almanac.)
+        Weather weather = CmaResultConverter.convert(mContext, mLocation, loadWeather(), loadHtml());
+        assertNotNull(weather);
+        assertTrue(weather.getDailyForecast().size() > 0);
+
+        Astro sun = weather.getDailyForecast().get(0).sun();
+        assertTrue(sun.isValid());
+        assertEquals(utcMillis(2026, 8, 13, 21, 21, 53), sun.getRiseDate().getTime(), 180_000.0);
+        assertEquals(utcMillis(2026, 8, 14, 11, 9, 51), sun.getSetDate().getTime(), 180_000.0);
+    }
+
+    private long utcMillis(int year, int month, int day, int hour, int minute, int second) {
+        java.util.Calendar c = java.util.Calendar.getInstance(
+                java.util.TimeZone.getTimeZone("UTC"));
+        c.clear();
+        c.set(year, month - 1, day, hour, minute, second);
+        return c.getTimeInMillis();
     }
 
     @Test

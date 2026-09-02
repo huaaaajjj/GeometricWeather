@@ -36,11 +36,11 @@ import wangdaye.com.geometricweather.weather.json.metno.MetNoForecastResult
  *
  * 1. **No daily block.** locationforecast answers one flat timeseries — hourly for ~2.5 days, then
  *    6-hourly — so the daily list is folded out of it by local calendar day.
- * 2. **No sunrise/sunset, anywhere in the API.** So `Daily.sun()` stays null, which
- *    `Weather.isDaylight()` already degrades to `DisplayUtils.isDaylight(timeZone)` (Weather.java:146)
- *    instead of crashing. The cost is an empty 日出 column and a coarser day/night background.
- *    Per-hour daylight is read off `symbol_code`'s `_day`/`_night` suffix instead — the API's own
- *    answer, and better than a clock.
+ * 2. **No sunrise/sunset, anywhere in the API.** So the sun for each folded day is computed with
+ *    [SolarCalculator] (NOAA equations) from the location's coordinates — real times for the card
+ *    and `Weather.isDaylight()`, no hardcoded 06:00-18:00 fallback. Polar day and night have no
+ *    such events and stay an empty astro. Per-hour daylight is read off `symbol_code`'s
+ *    `_day`/`_night` suffix — the API's own answer, and better than a clock.
  */
 object MetNoResultConverter {
 
@@ -66,7 +66,7 @@ object MetNoResultConverter {
                 Base(location.cityId, now, Date(), now, Date(), now),
                 convertCurrent(context, series[0], airQuality),
                 null,
-                convertDailyList(context, series, location.timeZone),
+                convertDailyList(context, series, location),
                 convertHourlyList(context, series, location.timeZone),
                 convertMinutelyList(pointsOf(nowcast), location.timeZone),
                 convertAlertList(alerts)
@@ -199,8 +199,9 @@ object MetNoResultConverter {
     private fun convertDailyList(
         context: Context,
         series: List<Point>,
-        zone: TimeZone
+        location: Location
     ): List<Daily> {
+        val zone = location.timeZone
         val calendar = Calendar.getInstance(zone)
         val buckets = LinkedHashMap<Long, DayBucket>()
 
@@ -237,8 +238,15 @@ object MetNoResultConverter {
                     bucket.date, bucket.date.time,
                     halfDayOf(context, dayPoints, "Day", true),
                     halfDayOf(context, nightPoints, "Night", false),
-                    // sun/moon/moonPhase/airQuality/pollen: not reported. Daily coerces the nulls.
-                    null, null, null, null, null,
+                    // sun: computed per folded day from the coordinates (the API has no astro);
+                    // moon/moonPhase/airQuality/pollen: not reported. Daily coerces the nulls.
+                    SolarCalculator.sunTimes(
+                        bucket.date,
+                        location.latitude.toDouble(),
+                        location.longitude.toDouble(),
+                        zone
+                    ),
+                    null, null, null, null,
                     UV(uvIndex, null, null),
                     0f
                 )

@@ -131,13 +131,29 @@ class MetNoResultConverterTest {
     }
 
     @Test
-    fun convert_leavesSunriseEmptyBecauseTheApiHasNone() {
-        // Documented degradation, not a bug: MET Norway reports no astro data anywhere, so
-        // Weather.isDaylight() falls back to the timezone clock. The 日出 column stays empty.
-        requireNotNull(convertAll()).dailyForecast.forEach {
-            assertFalse(it.sun().isValid)
-        }
+    fun convert_computesSunriseForEveryFoldedDay() {
+        // The API carries no astro block anywhere; the sun comes from SolarCalculator instead of
+        // leaving isDaylight() on the hardcoded 06:00-18:00 clock. Reference times for Oslo on
+        // 2026-08-23 (rise 05:49:00 / set 20:50:16 CEST) are from the sunrise-sunset.org almanac,
+        // same 90.833° zenith convention — a 3-minute tolerance keeps the test about real errors.
+        val daily = requireNotNull(convertAll()).dailyForecast
+
+        daily.forEach { assertTrue(it.sun().isValid) }
+        assertNear(daily[0].sun().riseDate, utcMillis(2026, 8, 23, 3, 49, 0), "rise")
+        assertNear(daily[0].sun().setDate, utcMillis(2026, 8, 23, 18, 50, 16), "set")
     }
+
+    private fun assertNear(actual: java.util.Date?, expectedMillis: Long, label: String) {
+        assertNotNull(label, actual)
+        val delta = Math.abs(requireNotNull(actual).time - expectedMillis)
+        assertEquals(label, 0.0, delta / 1000.0, 180.0)
+    }
+
+    private fun utcMillis(year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int): Long =
+        java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC")).apply {
+            clear()
+            set(year, month - 1, day, hour, minute, second)
+        }.timeInMillis
 
     @Test
     fun convert_readsCurrentFromTheFirstTimeseriesPoint() {
