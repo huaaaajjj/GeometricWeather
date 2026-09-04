@@ -34,30 +34,32 @@ public abstract class AbstractMainCardViewHolder extends AbstractMainViewHolder 
                            boolean listAnimationEnabled, boolean itemAnimationEnabled, boolean firstCard) {
         super.onBindView(activity, location, provider, listAnimationEnabled, itemAnimationEnabled);
 
-        WeatherThemeDelegate delegate = ThemeManager
-                .getInstance(activity)
-                .getWeatherThemeDelegate();
-
         CardView card = (CardView) itemView;
-        card.setRadius(delegate.getHomeCardRadius(activity));
-        card.setElevation(delegate.getHomeCardElevation(activity));
-        card.setCardBackgroundColor(
-                MainThemeColorProvider.getColor(location, R.attr.colorMainCardBackground)
-        );
-
-        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) card.getLayoutParams();
-        params.setMargins(
-                delegate.getHomeCardMargins(context),
-                0,
-                delegate.getHomeCardMargins(context),
-                delegate.getHomeCardMargins(context)
-        );
-        card.setLayoutParams(params);
+        styleAsHomeCard(card, location);
 
         if (firstCard) {
             mFirstCardHeaderController = new FirstCardHeaderController(activity, location);
             mFirstCardHeaderController.bind((LinearLayout) card.getChildAt(0));
         }
+    }
+
+    /** Also used for the alert / minutely cards, which the header block hosts rather than the list. */
+    public static void styleAsHomeCard(CardView card, @NonNull Location location) {
+        Context context = card.getContext();
+        WeatherThemeDelegate delegate = ThemeManager
+                .getInstance(context)
+                .getWeatherThemeDelegate();
+
+        card.setRadius(delegate.getHomeCardRadius(context));
+        card.setElevation(delegate.getHomeCardElevation(context));
+        card.setCardBackgroundColor(
+                MainThemeColorProvider.getColor(location, R.attr.colorMainCardBackground)
+        );
+
+        int margins = delegate.getHomeCardMargins(context);
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) card.getLayoutParams();
+        params.setMargins(margins, 0, margins, margins);
+        card.setLayoutParams(params);
     }
 
     @SuppressLint("MissingSuperCall")

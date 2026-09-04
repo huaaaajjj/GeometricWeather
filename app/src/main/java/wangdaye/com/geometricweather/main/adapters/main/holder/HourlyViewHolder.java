@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,13 +18,10 @@ import wangdaye.com.geometricweather.common.basic.GeoActivity;
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.options.appearance.HourlyTrendDisplay;
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource;
-import wangdaye.com.geometricweather.common.basic.models.weather.Base;
 import wangdaye.com.geometricweather.common.basic.models.weather.Hourly;
-import wangdaye.com.geometricweather.common.basic.models.weather.Minutely;
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
 import wangdaye.com.geometricweather.common.ui.adapters.TagAdapter;
 import wangdaye.com.geometricweather.common.ui.decotarions.GridMarginsDecoration;
-import wangdaye.com.geometricweather.common.ui.widgets.PrecipitationBar;
 import wangdaye.com.geometricweather.common.ui.widgets.trend.TrendRecyclerView;
 import wangdaye.com.geometricweather.common.utils.DisplayUtils;
 import wangdaye.com.geometricweather.main.adapters.main.MainTag;
@@ -52,12 +48,6 @@ public class HourlyViewHolder extends AbstractMainCardViewHolder {
     private final HourlyTrendAdapter mTrendAdapter;
     private final TrendRecyclerViewScrollBar mScrollBar;
 
-    private final LinearLayout mMinutelyContainer;
-    private final TextView mMinutelyTitle;
-    private final PrecipitationBar mPrecipitationBar;
-    private final TextView mMinutelyStartText;
-    private final TextView mMinutelyEndText;
-
     @SuppressLint("NotifyDataSetChanged")
     public HourlyViewHolder(ViewGroup parent) {
         super(
@@ -73,19 +63,9 @@ public class HourlyViewHolder extends AbstractMainCardViewHolder {
         mTrendRecyclerView = itemView.findViewById(R.id.container_main_hourly_trend_card_trendRecyclerView);
         mTrendRecyclerView.setHasFixedSize(true);
 
-        mMinutelyContainer = itemView.findViewById(R.id.container_main_hourly_trend_card_minutely);
-        mMinutelyTitle = itemView.findViewById(R.id.container_main_hourly_trend_card_minutelyTitle);
-        mPrecipitationBar = itemView.findViewById(R.id.container_main_hourly_trend_card_minutelyBar);
-        mMinutelyStartText = itemView.findViewById(R.id.container_main_hourly_trend_card_minutelyStartText);
-        mMinutelyEndText = itemView.findViewById(R.id.container_main_hourly_trend_card_minutelyEndText);
-
         mTrendAdapter = new HourlyTrendAdapter();
         mScrollBar = new TrendRecyclerViewScrollBar();
         mTrendRecyclerView.addItemDecoration(mScrollBar);
-
-        mMinutelyContainer.setOnClickListener(v -> {
-
-        });
     }
 
     @Override
@@ -179,53 +159,6 @@ public class HourlyViewHolder extends AbstractMainCardViewHolder {
         setTrendAdapterByTag(hourlyLocation, (MainTag) tagList.get(0));
 
         mScrollBar.resetColor(location);
-
-        List<Minutely> minutelyList = weather.getMinutelyForecast();
-        if (minutelyList.size() != 0 && needToShowMinutelyForecast(minutelyList)) {
-            mMinutelyContainer.setVisibility(View.VISIBLE);
-
-            mPrecipitationBar.setMinutelyList(minutelyList);
-
-            int size = minutelyList.size();
-            mMinutelyStartText.setText(Base.getTime(context, minutelyList.get(0).getDate()));
-            mMinutelyEndText.setText(Base.getTime(context, minutelyList.get(size - 1).getDate()));
-
-            mMinutelyContainer.setContentDescription(
-                    activity.getString(R.string.content_des_minutely_precipitation)
-                            .replace("$1", Base.getTime(context, minutelyList.get(0).getDate()))
-                            .replace("$2", Base.getTime(context, minutelyList.get(size - 1).getDate()))
-            );
-        } else {
-            mMinutelyContainer.setVisibility(View.GONE);
-        }
-
-        mMinutelyTitle.setTextColor(MainThemeColorProvider.getColor(location, R.attr.colorBodyText));
-
-        mPrecipitationBar.setFrameColor(MainThemeColorProvider.getColor(location, R.attr.colorOutline));
-        mPrecipitationBar.setPrecipitationColor(
-                ThemeManager
-                        .getInstance(context)
-                        .getWeatherThemeDelegate()
-                        .getThemeColors(
-                                context,
-                                WeatherViewController.getWeatherKind(weather),
-                                location.isDaylight()
-                        )[0]
-        );
-
-        mMinutelyStartText.setTextColor(MainThemeColorProvider.getColor(location, R.attr.colorCaptionText));
-        mMinutelyEndText.setTextColor(MainThemeColorProvider.getColor(location, R.attr.colorCaptionText));
-        // The 大/中/小 axis reads like a caption, so it takes the caption colour.
-        mPrecipitationBar.setAxisColor(MainThemeColorProvider.getColor(location, R.attr.colorCaptionText));
-    }
-
-    private static boolean needToShowMinutelyForecast(List<Minutely> minutelyList) {
-        for (Minutely m : minutelyList) {
-            if (m.isPrecipitation()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @SuppressLint("NotifyDataSetChanged")

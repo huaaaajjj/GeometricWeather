@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.graphics.ColorUtils
@@ -188,7 +187,6 @@ class HomeFragment : MainModuleFragment() {
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = MainLayoutManager()
         binding.recyclerView.addOnScrollListener(OnScrollListener().also { scrollListener = it })
-        binding.recyclerView.setOnTouchListener(indicatorStateListener)
 
         viewModel.currentLocation.observe(viewLifecycleOwner) {
             it?.let { updateViews(it.location) }
@@ -207,6 +205,9 @@ class HomeFragment : MainModuleFragment() {
             }
 
             binding.indicator.visibility = if (it.total > 1) View.VISIBLE else View.GONE
+            // The dots used to fade in only while a finger was down; with several locations they
+            // now simply stay, like the alert card's.
+            binding.indicator.setDisplayState(it.total > 1)
         }
 
         previewOffset.observe(viewLifecycleOwner) {
@@ -351,26 +352,11 @@ class HomeFragment : MainModuleFragment() {
         this.callback = callback
     }
 
-    // on touch listener.
-
-    @SuppressLint("ClickableViewAccessibility")
-    private val indicatorStateListener = OnTouchListener { _, event ->
-        when (event.action) {
-            MotionEvent.ACTION_MOVE ->
-                binding.indicator.setDisplayState(true)
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL ->
-                binding.indicator.setDisplayState(false)
-        }
-        false
-    }
-
     // on swipe listener (swipe switch layout).
 
     private val switchListener: OnSwitchListener = object : OnSwitchListener {
 
         override fun onSwiped(swipeDirection: Int, progress: Float) {
-            binding.indicator.setDisplayState(progress != 0f)
-
             if (progress >= 1) {
                 previewOffset.setValue(
                     if (swipeDirection == SwipeSwitchLayout.SWIPE_DIRECTION_LEFT) 1 else -1
@@ -381,8 +367,6 @@ class HomeFragment : MainModuleFragment() {
         }
 
         override fun onSwitched(swipeDirection: Int) {
-            binding.indicator.setDisplayState(false)
-
             viewModel.offsetLocation(
                 if (swipeDirection == SwipeSwitchLayout.SWIPE_DIRECTION_LEFT) 1 else -1
             )

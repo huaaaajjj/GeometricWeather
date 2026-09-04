@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container_main_alert"
+    android:layout_margin="0dp"
+    style="@style/material_card">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/container_main_alert_title"
+            android:text="@string/action_alert"
+            android:textStyle="bold"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:layout_marginStart="@dimen/normal_margin"
+            android:layout_marginEnd="@dimen/normal_margin"
+            android:maxLines="1"
+            android:ellipsize="end"
+            style="@style/title_text"
+            tools:ignore="RtlHardcoded" />
+
+        <!-- One alert per page, swiped sideways. Pages are all the same height by construction
+             (one line of headline, one of date), so the card cannot grow with the alert count and
+             does not jump as you swipe. HorizontalRecyclerView is what keeps the drag out of
+             SwipeSwitchLayout's hands, the way the hourly card's tag row already does. -->
+        <wangdaye.com.geometricweather.common.ui.widgets.horizontal.HorizontalRecyclerView
+            android:id="@+id/container_main_alert_pager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginStart="@dimen/normal_margin"
+            android:layout_marginEnd="@dimen/normal_margin"
+            android:layout_marginBottom="@dimen/normal_margin" />
+
+        <!-- Which alert you are on: the same dots the location switcher uses, same size. Gone with
+             a single alert, so the card keeps its normal bottom margin when there is nowhere to
+             swipe to. -->
+        <wangdaye.com.geometricweather.common.ui.widgets.InkPageIndicator
+            android:id="@+id/container_main_alert_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/little_margin"
+            app:dotDiameter="8dp"
+            app:dotGap="8dp"
+            app:animationDuration="300" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

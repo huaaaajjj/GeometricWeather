@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One page of the alert card. Full width so exactly one alert is on screen at a time, and
+     exactly two single lines tall so every page measures the same. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/item_main_alert_description"
+        android:maxLines="1"
+        android:ellipsize="end"
+        style="@style/content_text"
+        tools:text="台江发布地质灾害气象风险橙色预警"
+        tools:ignore="RtlHardcoded" />
+
+    <TextView
+        android:id="@+id/item_main_alert_date"
+        android:maxLines="1"
+        android:ellipsize="end"
+        style="@style/subtitle_text"
+        tools:text="2026年9月3日 17:37:00"
+        tools:ignore="RtlHardcoded" />
+
+</LinearLayout>

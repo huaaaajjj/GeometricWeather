@@ -124,12 +124,20 @@ fun FitNavigationBarBottomAppBar(
     }
 }
 
-enum class BottomInsetKey { INSTANCE }
+// `item` takes the key itself, not a producer of one, so a `{ … }` literal here hands the list a
+// Function0 — and every lazy item key goes through SaveableStateHolder, which rejects anything
+// Android cannot put in a Bundle. It slips through debug builds only because
+// kotlin.jvm.internal.Lambda declares Serializable; R8 prunes that marker interface away (nothing
+// in the program casts to it), so the minified build threw
+// "Type of the key interface kotlin.jvm.functions.Function0 is not supported" on the first measure
+// of every screen using this item. A plain String has no such interface to lose.
+private const val BOTTOM_INSET_KEY = "bottom_inset"
+
 fun LazyListScope.bottomInsetItem(
     extraHeight: Dp = 0.dp,
 ) = item(
-    key = { BottomInsetKey.INSTANCE },
-    contentType = { BottomInsetKey.INSTANCE },
+    key = BOTTOM_INSET_KEY,
+    contentType = BOTTOM_INSET_KEY,
 ) {
     Column {
         Spacer(modifier = Modifier.height(extraHeight))

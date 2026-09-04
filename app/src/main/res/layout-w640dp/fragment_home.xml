@@ -49,14 +49,17 @@
 
     </wangdaye.com.geometricweather.common.ui.widgets.insets.FitSystemBarAppBarLayout>
 
+    <!-- Which location you are on, right under the city name. 72dp clears the navigation icon this
+         layout's toolbar carries, so the dots line up with the title rather than the icon. -->
     <wangdaye.com.geometricweather.common.ui.widgets.InkPageIndicator
         android:id="@+id/indicator"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/normal_margin"
+        android:layout_gravity="top|start"
+        android:layout_marginStart="72dp"
         android:alpha="0"
-        android:layout_gravity="bottom|center_horizontal"
-        app:layout_behavior=".common.ui.behaviors.FloatingAboveSnackbarBehavior"
+        app:layout_anchor="@id/app_bar"
+        app:layout_anchorGravity="bottom|start"
         app:dotDiameter="8dp"
         app:dotGap="8dp"
         app:animationDuration="300" />

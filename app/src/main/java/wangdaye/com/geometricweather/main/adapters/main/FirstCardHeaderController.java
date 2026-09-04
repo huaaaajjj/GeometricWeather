@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.widget.ImageViewCompat;
 
-import java.text.DateFormat;
 import java.util.TimeZone;
 
 import wangdaye.com.geometricweather.R;
@@ -43,8 +42,6 @@ public class FirstCardHeaderController
         AppCompatImageView timeIcon = mView.findViewById(R.id.container_main_first_card_header_timeIcon);
         TextView refreshTime = mView.findViewById(R.id.container_main_first_card_header_timeText);
         TextClock localTime = mView.findViewById(R.id.container_main_first_card_header_localTimeText);
-        TextView alert = mView.findViewById(R.id.container_main_first_card_header_alert);
-        View line = mView.findViewById(R.id.container_main_first_card_header_line);
 
         if (location.getWeather() != null) {
             Weather weather = location.getWeather();
@@ -92,33 +89,6 @@ public class FirstCardHeaderController
                 );
                 localTime.setTextColor(MainThemeColorProvider.getColor(location, R.attr.colorCaptionText));
             }
-
-            if (weather.getAlertList().size() == 0) {
-                alert.setVisibility(View.GONE);
-                line.setVisibility(View.GONE);
-            } else {
-                alert.setVisibility(View.VISIBLE);
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < weather.getAlertList().size(); i ++) {
-                    builder.append(weather.getAlertList().get(i).getDescription())
-                            .append(", ")
-                            .append(
-                                    DateFormat.getDateTimeInstance(
-                                            DateFormat.LONG,
-                                            DateFormat.DEFAULT
-                                    ).format(weather.getAlertList().get(i).getDate())
-                            );
-                    if (i != weather.getAlertList().size() - 1) {
-                        builder.append("\n");
-                    }
-                }
-                alert.setText(builder.toString());
-                alert.setTextColor(MainThemeColorProvider.getColor(location, R.attr.colorBodyText));
-
-                line.setVisibility(View.VISIBLE);
-                line.setBackgroundColor(MainThemeColorProvider.getColor(location, R.attr.colorSurface));
-            }
-            alert.setOnClickListener(this);
         }
     }
 
@@ -141,7 +111,6 @@ public class FirstCardHeaderController
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.container_main_first_card_header_timeIcon:
-            case R.id.container_main_first_card_header_alert:
                 IntentHelper.startAlertActivity(mActivity, mFormattedId);
                 break;
         }

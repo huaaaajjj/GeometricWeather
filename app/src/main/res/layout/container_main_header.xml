@@ -7,44 +7,69 @@
     android:orientation="vertical"
     android:background="@android:color/transparent"
     android:foreground="@drawable/selectable_item_background"
-    android:gravity="bottom"
-    android:padding="@dimen/normal_margin"
+    android:gravity="top"
+    android:paddingTop="?attr/actionBarSize"
     tools:layout_height="256dp"
     tools:background="@android:color/black"
     tools:ignore="UnusedAttribute">
 
-    <wangdaye.com.geometricweather.common.ui.widgets.NumberAnimTextView
-        android:id="@+id/container_main_header_tempTxt"
+    <LinearLayout
+        android:id="@+id/container_main_header_textBlock"
         android:layout_width="match_parent"
-        android:textSize="@dimen/main_title_text_size"
-        android:includeFontPadding="false"
-        android:textAlignment="viewStart"
-        android:textFontWeight="200"
-        style="@style/large_title_text"
-        tools:text="30°"
-        tools:ignore="RelativeOverlap,RtlHardcoded" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/normal_margin"
+        android:paddingEnd="@dimen/normal_margin">
 
-    <TextView
-        android:id="@+id/container_main_header_weatherTxt"
-        android:textSize="@dimen/title_text_size"
-        android:textStyle="bold"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:layout_marginTop="-4dp"
-        android:layout_marginBottom="4dp"
-        android:layout_marginStart="2dp"
-        style="@style/large_title_text"
-        tools:text="晴, 体感37°"
-        tools:ignore="RelativeOverlap,RtlHardcoded" />
+        <wangdaye.com.geometricweather.common.ui.widgets.NumberAnimTextView
+            android:id="@+id/container_main_header_tempTxt"
+            android:layout_width="match_parent"
+            android:textSize="@dimen/main_title_text_size"
+            android:includeFontPadding="false"
+            android:textAlignment="viewStart"
+            android:textFontWeight="200"
+            style="@style/large_title_text"
+            tools:text="30°"
+            tools:ignore="RelativeOverlap,RtlHardcoded" />
 
-    <TextView
-        android:id="@+id/container_main_header_aqiOrWindTxt"
-        android:textSize="@dimen/content_text_size"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:layout_marginStart="2dp"
-        style="@style/large_title_text"
-        tools:text="空气质量 轻度污染"
-        tools:ignore="RelativeOverlap,RtlHardcoded" />
+        <TextView
+            android:id="@+id/container_main_header_weatherTxt"
+            android:textSize="@dimen/title_text_size"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_marginTop="-4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginStart="2dp"
+            style="@style/large_title_text"
+            tools:text="晴, 体感37°"
+            tools:ignore="RelativeOverlap,RtlHardcoded" />
+
+        <TextView
+            android:id="@+id/container_main_header_aqiOrWindTxt"
+            android:textSize="@dimen/content_text_size"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_marginStart="2dp"
+            style="@style/large_title_text"
+            tools:text="空气质量 轻度污染"
+            tools:ignore="RelativeOverlap,RtlHardcoded" />
+
+    </LinearLayout>
+
+    <!-- Eats the space the temperature block leaves, so the two cards below hang at the
+         bottom of the header and the first real card still starts at getHeaderHeight(). -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <include
+        layout="@layout/container_main_alert"
+        android:visibility="gone" />
+
+    <include
+        layout="@layout/container_main_minutely"
+        android:visibility="gone" />
 
 </LinearLayout>

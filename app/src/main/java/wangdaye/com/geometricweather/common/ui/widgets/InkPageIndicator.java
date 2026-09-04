@@ -236,8 +236,12 @@ public class InkPageIndicator extends View
         }
     }
 
-    private void setPageCount(int pages) {
+    /** Public so a plain pager (the alert card's) can drive the dots without a switch layout. */
+    public void setPageCount(int pages) {
         mPageCount = pages;
+        // New content starts on the first page. A switch layout, if there is one, overrides this
+        // with its own position in setCurrentPageImmediate() below.
+        mCurrentPage = 0;
         resetState();
         requestLayout();
     }
@@ -277,10 +281,12 @@ public class InkPageIndicator extends View
     private void setCurrentPageImmediate() {
         if (mSwitchView != null) {
             mCurrentPage = mSwitchView.getPosition();
-        } else {
-            mCurrentPage = 0;
         }
-        if (mDotCenterX != null && mDotCenterX.length > 0 && (mMoveAnimation == null || !mMoveAnimation.isStarted())) {
+        // Without a switch layout the caller owns the current page (it reports changes through
+        // onPageSelected), so it must not be reset here: this runs at the end of every page-change
+        // animation, and forcing 0 would drag the filled dot straight back to the first page.
+        if (mDotCenterX != null && mCurrentPage < mDotCenterX.length
+                && (mMoveAnimation == null || !mMoveAnimation.isStarted())) {
             mSelectedDotX = mDotCenterX[mCurrentPage];
         }
     }
@@ -362,7 +368,9 @@ public class InkPageIndicator extends View
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (mSwitchView == null || mPageCount == 0) return;
+        // Only the page count matters here: a caller that sets it and reports page changes gets
+        // dots without owning a SwipeSwitchLayout.
+        if (mPageCount == 0) return;
         if (mPageCount > 7) {
             int cx = getMeasuredWidth() / 2;
             int cy = getMeasuredHeight() / 2;
