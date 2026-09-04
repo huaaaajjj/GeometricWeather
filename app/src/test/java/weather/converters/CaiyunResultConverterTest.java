@@ -319,6 +319,67 @@ public class CaiyunResultConverterTest {
         assertEquals("ENE", weather.getDailyForecast().get(1).day().getWind().getDirection());
     }
 
+    /**
+     * v2.6 grades 霾 into LIGHT_/MODERATE_/HEAVY_HAZE and the text table only knew the bare "HAZE",
+     * so on a hazy day 南开区's header read "未知, 体感 30°" while the icon and the animated
+     * background were correctly hazy — WeatherCode.getInstance matches by substring, the table
+     * matched exactly. One helper feeds the now / daily / hourly blocks, so all three read 未知 at
+     * once and all three have to be named here.
+     */
+    @Test
+    public void hazeLevelsAreNamedRatherThanUnknown() {
+        CaiYunWeatherResult result = load();
+        result.result.realtime.skycon = "LIGHT_HAZE";
+        result.result.daily.skycon.get(0).value = "MODERATE_HAZE";
+        result.result.daily.skycon_20h_32h.get(0).value = "HEAVY_HAZE";
+        result.result.hourly.skycon.get(0).value = "LIGHT_HAZE";
+
+        Weather weather = convert(result);
+        assertNotNull(weather);
+
+        assertEquals("轻度雾霾", weather.getCurrent().getWeatherText());
+        assertEquals(WeatherCode.HAZE, weather.getCurrent().getWeatherCode());
+
+        Daily first = weather.getDailyForecast().get(0);
+        assertEquals("中度雾霾", first.day().getWeatherText());
+        assertEquals("重度雾霾", first.night().getWeatherText());
+        assertEquals(WeatherCode.HAZE, first.day().getWeatherCode());
+
+        assertEquals("轻度雾霾", weather.getHourlyForecast().get(0).getWeatherText());
+        assertEquals(WeatherCode.HAZE, weather.getHourlyForecast().get(0).getWeatherCode());
+    }
+
+    /**
+     * The graded HAZE values were not a one-off: an unlisted skycon still carries its family in its
+     * name, and the icon is already derived that way. Naming the family keeps text and icon in step;
+     * only a genuinely alien value is left as 未知.
+     */
+    @Test
+    public void anUnlistedSkyconFallsBackToItsFamily() {
+        assertEquals("霾", currentTextFor("EXTREME_HAZE"));
+        assertEquals("雨", currentTextFor("EXTREME_RAIN"));
+        assertEquals("雪", currentTextFor("EXTREME_SNOW"));
+        // "PARTLY_CLOUDY_DAWN" contains "CLOUDY" too: the narrower family has to win.
+        assertEquals("多云", currentTextFor("PARTLY_CLOUDY_DAWN"));
+        assertEquals("阴", currentTextFor("VERY_CLOUDY"));
+        assertEquals("晴", currentTextFor("CLEAR_DAWN"));
+        assertEquals("未知", currentTextFor("SPACE_WEATHER"));
+        assertEquals("未知", currentTextFor(""));
+
+        // A daily entry may carry a null value outright; realtime cannot, the converter defaults it.
+        CaiYunWeatherResult result = load();
+        result.result.daily.skycon.get(0).value = null;
+        assertEquals("未知", convert(result).getDailyForecast().get(0).day().getWeatherText());
+    }
+
+    private String currentTextFor(String skycon) {
+        CaiYunWeatherResult result = load();
+        result.result.realtime.skycon = skycon;
+        Weather weather = convert(result);
+        assertNotNull(weather);
+        return weather.getCurrent().getWeatherText();
+    }
+
     @Test
     public void missingRealtimeIsRejected() {
         CaiYunWeatherResult result = load();

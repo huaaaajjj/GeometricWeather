@@ -319,6 +319,25 @@ public class OwmResultConverterTest {
         assertNull(withoutSun.getDailyForecast().get(0).sun().getRiseDate());
     }
 
+    /**
+     * id 200 (thunderstorm with light rain) sat in neither table while every other 2xx was mapped:
+     * the row read 未知 and the code fell through to the `else`, which is CLEAR — a thunderstorm
+     * drawn as a clear sky.
+     */
+    @Test
+    public void thunderstormWithLightRainIsMapped() {
+        OwmCurrentResult current = load("current.json", OwmCurrentResult.class);
+        current.weather.get(0).id = 200;
+
+        Weather weather = OwmResultConverter.convert(
+                mContext, mLocation, current,
+                load("forecast.json", OwmForecastResult.class), null).getResult();
+        assertNotNull(weather);
+
+        assertEquals("雷阵雨", weather.getCurrent().getWeatherText());
+        assertEquals(WeatherCode.THUNDERSTORM, weather.getCurrent().getWeatherCode());
+    }
+
     private String format(Date date, String pattern) {
         return new SimpleDateFormat(pattern, Locale.US).format(date);
     }

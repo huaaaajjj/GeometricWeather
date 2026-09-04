@@ -390,7 +390,7 @@ object CaiyunResultConverter {
     }
 
     private fun getWeatherText(skycon: String?): String {
-        if (TextUtils.isEmpty(skycon)) {
+        if (skycon.isNullOrEmpty()) {
             return "未知"
         }
         return when (skycon) {
@@ -410,10 +410,42 @@ object CaiyunResultConverter {
             "THUNDERSTORM" -> "雷阵雨"
             "THUNDER" -> "雷雨"
             "FOG" -> "雾"
+            // v2.6 grades 霾 into three levels; the bare "HAZE" stays for older payloads.
             "HAZE" -> "霾"
+            "LIGHT_HAZE" -> "轻度雾霾"
+            "MODERATE_HAZE" -> "中度雾霾"
+            "HEAVY_HAZE" -> "重度雾霾"
             "WIND" -> "大风"
             "DUST" -> "扬沙"
             "SAND" -> "沙尘暴"
+            else -> getWeatherFamilyText(skycon)
+        }
+    }
+
+    /**
+     * Names an unlisted skycon by its family instead of printing "未知".
+     *
+     * The table above matches exactly, [WeatherCode.getInstance] matches by substring — so when
+     * v2.6 graded 霾 into LIGHT_/MODERATE_/HEAVY_HAZE, 南开区's header read "未知, 体感 30°" over a
+     * correctly hazy icon and background. Matching the same way here keeps the two in step the next
+     * time a level is added. Order matters where one family's name contains another's.
+     */
+    private fun getWeatherFamilyText(skycon: String): String {
+        val value = skycon.uppercase(Locale.ROOT)
+        return when {
+            value.contains("HAZE") -> "霾"
+            value.contains("FOG") -> "雾"
+            value.contains("SLEET") -> "雨夹雪"
+            value.contains("HAIL") -> "冰雹"
+            value.contains("THUNDER") -> "雷雨"
+            value.contains("RAIN") -> "雨"
+            value.contains("SNOW") -> "雪"
+            value.contains("PARTLY_CLOUDY") -> "多云"
+            value.contains("CLOUDY") -> "阴"
+            value.contains("CLEAR") -> "晴"
+            value.contains("WIND") -> "大风"
+            value.contains("DUST") -> "扬沙"
+            value.contains("SAND") -> "沙尘暴"
             else -> "未知"
         }
     }

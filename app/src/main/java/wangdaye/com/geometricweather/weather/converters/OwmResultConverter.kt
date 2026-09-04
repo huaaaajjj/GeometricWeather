@@ -391,7 +391,9 @@ object OwmResultConverter {
     }
 
     private fun getWeatherText(icon: Int): String = when (icon) {
-        201, 202, 210, 211, 212, 221, 230, 231, 232 -> "雷阵雨"
+        // 200 (thunderstorm with light rain) is the commonest of the 2xx and was missing from both
+        // tables: the row read "未知" and the icon fell through to the default, a clear sky.
+        200, 201, 202, 210, 211, 212, 221, 230, 231, 232 -> "雷阵雨"
         300, 301, 302, 310, 311, 312, 313, 314, 321 -> "毛毛雨"
         500 -> "小雨"
         501 -> "中雨"
@@ -418,7 +420,7 @@ object OwmResultConverter {
     }
 
     private fun getWeatherCode(icon: Int): WeatherCode = when (icon) {
-        201, 202, 210, 211, 212, 221, 230, 231, 232 -> WeatherCode.THUNDERSTORM
+        200, 201, 202, 210, 211, 212, 221, 230, 231, 232 -> WeatherCode.THUNDERSTORM
         300, 301, 302, 310, 311, 312, 313, 314, 321,
         500, 501, 502, 503, 504, 511, 520, 521, 522, 531 -> WeatherCode.RAIN
         600, 601, 602, 611, 612, 613, 614, 615, 616, 620, 621, 622 -> WeatherCode.SNOW
