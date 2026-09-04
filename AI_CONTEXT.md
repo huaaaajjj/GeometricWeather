@@ -14,7 +14,7 @@
 
 ## 实现状态
 
-- 当前发布版本：**3.6.9**（versionCode 30609，正式版，2026-09-04 发）。上一发布版 3.6.8（30608，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
+- 当前发布版本：**3.6.9**（versionCode 30609，正式版，2026-09-04 发）；**工作区已 bump 到 3.6.10（30610）、本地包与真机都验完，尚未提交/发版**。上一发布版 3.6.8（30608，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
 - 10 个天气源：WEATHERAPI（默认）、OPEN_METEO、METNO（挪威气象局，免 key 全球）、XIAOMI（小米天气，免 key，中国区最全 + 海外走 Accu 后端）、CAIYUN、APIHZ（中国天气网）、CMA（中国气象局）、MF（仅法国）、OWM 可用；**ACCU 的内置 Key 已过期，当前不可用**（见「已知问题」）。加上 COMPOSITE（多源聚合）共 11 项可选。
 - 工具链已现代化（见版本矩阵）；RxJava 已全部迁移到 Coroutines；GreenDAO 已迁移到 Room。
 
@@ -112,12 +112,12 @@
   - 子实体 weatherSource 用 String（写入时 source.getId()）；LocationEntity 用 WeatherSource/TimeZone 强类型（RoomTypeConverters）
   - 本地 Microsoft JDK 17 kapt 的 InvocationTargetException → 加 `kapt.useWorkerApi=false` 解决
 
-## 接手须知（2026-09-04 交接，3.6.9 发版后更新）
+## 接手须知（2026-09-04 交接，3.6.10 做完待发版时更新）
 
 **当前状态**
 
-- `master` 与远端同步（提交级一致性由 REST API 重建推送保证，见下），最新 release 是 **v3.6.9**（正式版；资产是本地真机验证过的 APK）。手机上装的就是 3.6.9（30609）。
-- 用例数 **259/变体**（六变体 1554），`./gradlew test` 全绿。
+- `master` 与远端同步（提交级一致性由 REST API 重建推送保证，见下），最新 release 是 **v3.6.9**（正式版；资产是本地真机验证过的 APK）。**3.6.10 的改动还全在工作区、没提交**（`app/build.gradle` 版本号、`AlertActivity.kt`、`AllergenActivity.kt`、新增 `ScaffoldInsetsTest.kt`）；但手机上装的已经是 **3.6.10（30610）** 签名 release。
+- 用例数 **260/变体**（六变体 1560），`./gradlew test` 全绿。
 - **`git push` 在这台机器上时通时不通**（github.com:443 会被重置，api.github.com 一直正常）。**先试普通 `git push`** —— 2026-09-04 发 3.6.9 时 `git ls-remote` 与 `git push origin master` / `push origin v3.6.9` 一次成功（远端 SHA、tree SHA 与本地逐一核对一致），不需要重建。不通时才走 REST API 重建：blob/tree/commit 逐级 POST 并每步校验 SHA。**两个坑**：① GitHub 建 commit 会**剥掉消息末尾的换行**，普通 `git commit` 的 SHA 永远对不上——本地先按同样规范用 `git commit-tree` 重建（消息 rstrip 掉尾换行、作者/时间戳原样），远端本地即逐字节一致；② 分支 API 返回的是 `commit.sha` 而非 refs API 的 `object.sha`。一次性脚本在 `C:\Users\HUAJI\AppData\Local\Temp\rebuild_and_push.py`（思路如上，随时可重写）。
 - 修复 push 的正道仍是把本机 SSH key 挂到账号（`gh ssh-key add` + remote 换 SSH），**属改用户账号设置，要先征得同意**。
 - CI 持续可靠：v3.6.6 ~ **v3.6.9** 的 tag 构建全部 success（v3.6.9 用了 8m11s）；本地构建 + 真机验证仍是发版门槛。
@@ -131,7 +131,7 @@
 
 **已了结（2026-09-04）**：分支 `feat/center-header-block` 的整套首页重排已作为 **3.6.9** 发版 —— 「预警卡一点就闪退」（`bottomInsetItem` 的 key 是 lambda，release-only）的三个共用方 **预警页 / 关于页 / 过敏原页全部在 3.6.9 的 R8 包上验过**（上一轮欠的后两页已补完，见变更日志「3.6.9 发版冒烟」条）；改动已提交并打 tag。
 
-**设备状态备注**：手机上装的是 **3.6.9 签名 release**（30609）。地点列表为 **当前位置(南开区) / 舒城 / 台江 / 福州 / 永泰**（福州、永泰是用户自己加的；东京、歙县、镜湖、晋安此前已被用户删掉），当前页停在台江；南开的常驻标记未变。冒烟时为验过敏原页临时加的「奥斯陆」**已删除**。
+**设备状态备注**：手机上装的是 **3.6.10 签名 release**（30610）。地点列表为 **当前位置(南开区) / 舒城 / 台江 / 福州 / 永泰**（福州、永泰是用户自己加的；东京、歙县、镜湖、晋安此前已被用户删掉），当前页停在**南开区**；南开的常驻标记未变。3.6.10 冒烟时为验过敏原页临时加的「奥斯陆」**已再次删除**，`/sdcard` 上的临时截图与 dump 也已清掉。
 
 **一条已复核掉的旧约束**：「CI 不可靠（jitpack 403）」在 2026-09-01 的三次 tag 构建里全部 success（各 6~7 分钟）。本地构建 + 真机验证仍不能省（那是发版门槛，见 `/release`），但「CI 一定失败」这个前提不成立了；推不上去是本机网络问题，与 CI 无关。
 
@@ -156,6 +156,12 @@
 - **冒烟时看到两处与本版无关的既有现象（未改，只记录）**。① **过敏原页在 Open-Meteo 空气质量端点的 7 天视野之外，四行全是 `0 /米³ - null`** —— 「下次可以直接开工的」第 1 条记的是「霉菌那一行」，实测范围更大：第 8 天起 草地/豚草/树木/霉菌 四项都没有数据，档位文案为空时 null 被直接拼进字符串（`forecast_days` 上限 7，见 3.6.2 条）。修法不变（无数据整行不显示或写「无数据」），但要按「整天无数据」处理，不只是霉菌一项。② **日夜配色与地点的实际昼夜不符** —— 奥斯陆当地 09:56（设备 15:56）整页是**夜间**配色；台江当地 19:13（日落约 18:3x 之后）却是**白天**配色，而同一页的小时图标已经画的是月亮。`Weather.isDaylight(TimeZone)` 比的是绝对时刻（`rise < now < set`，`Weather.java:228`）这本身是对的，**根因在调用侧**：`MainThemeColorProvider.kt:125` 在 `DarkMode.AUTO` 下走 `instance?.host?.isDaylight ?: daylight`，把传进来的 per-location `daylight` 让给了宿主的那一个值；而 `MainActivity.kt:390` 的 `isDaylight` = `viewModel.currentLocation.value?.daylight ?: true`，是**地区资源生成那一刻的快照**，既不随时间推移重算、换页也只跟着资源走（台江那份是 17:40 刷新时算的，当时福州还是白天）。**本版改动没碰主题代码**（diff 只有 header 块、`InkPageIndicator`、`bottomInsetItem` 与几个布局），故不拦发版。
 
 - **发版（2026-09-04）**：v3.6.9 **正式版**。分支 `feat/center-header-block` 的整套改动一次提交（21 文件 +966/−266）后**快进合并**进 `master`，tag `v3.6.9`。**`git push` 这次是通的** —— `git ls-remote` 秒回，master 与 tag 直接推上去，远端 commit `1efcf10983dca668e5129dd9ea566e17ebf2eb1a` 与 tree `da7288fd…b615` 都与本地逐一核对一致（不必再走 REST 重建，那条路留作备用）。tag 构建 success（8m11s），Action 自建的 release 正是**正式版**（`prerelease: false`），但资产是 CI 自己构建的那份 —— 已用 `gh release upload --clobber` 换成本地真机验过的 APK 并重写正文（改动 / 验证两节），**下载回来核对 sha256 = `c4e72b206326432ec4acf0a3008b63596c430a7e8b5d4d1a58e95369c6c4a135`、16,783,173 字节，与本地逐字节一致**。R8 mapping 已备份到仓库外（`v3.6.9-pubRelease-mapping.txt.gz`，14.7 MB）。
+
+- **修「预警页 / 过敏原页首条内容被 toolbar 压住」——`Material3Scaffold` 递来的 inset padding 被丢掉（3.6.10）**。两处调用点收尾写成 `) {` 而不是 `) { innerPadding ->`，LazyColumn 于是从屏幕顶端起画，第一条内容整块钻到固定 app bar 后面：真机 dump 里 3.6.9 上台江那条红色预警的标题在 `[66,66][776,87]`（y=66~87，而 toolbar 占 y=223~300），高度被压成 21px，发布时间那行**根本没渲染**。改法是把 scaffold 递给内容 lambda 的 `PaddingValues` 接住并 `.padding(innerPadding)`（`AlertActivity.kt:82/91/97`、`AllergenActivity.kt:92/101/107`）——与 3.4.1 修动态壁纸设置页、3.5.12 修关于页是**同一个漏，这是第三次**，且三次都出在「没对的数据就看不见」的页面上。所以补了结构性守卫 `app/src/test/java/common/ui/widgets/ScaffoldInsetsTest.kt`（纯 JVM；本仓库没有 Compose UI 测试设施，像素断言也活不过一次布局微调）：扫 `src/main/java` 下每个 `Material3Scaffold(` 调用点，**按缩进**定位它的收尾 `) {`（不能取第一个 `) {` —— `SettingsActivity.kt` 的 `topBar` 里有个 24 空格缩进的 `IconButton(onClick = { … }) {` 会骗过去，真收尾在 8 空格），要求 padding 形参**既命名、又在 60 行内被引用**；再加反空转断言 `sites >= 4`，改名或搬家导致扫不到目标时必须红。钉的是**调用的形状**而不是像素。现有 6 个调用点（`LiveWallpaperConfigActivity.kt:71`、`SettingsActivity.kt:79`、`SelectProviderActivity.kt:44`、`AboutActivity.kt:353`、`AlertActivity.kt:82`、`AllergenActivity.kt:92`）全部合格。三次变异按预期红：删掉 `.padding(innerPadding)` → 「AlertActivity.kt:91 — names `innerPadding` but never applies it」；再把该行还原成修复前的 `) {` → 「AlertActivity.kt:91 — `) {` drops the inset padding」；把扫描常量改名 → 「only 0 Material3ScaffoldRenamed( call sites found — the scan lost its target」。`./gradlew test` **260 例/变体、六变体 1560 全绿**（3.6.9 是 259/1554，正好 +1）。
+
+- **3.6.10 真机验证（MI 9 / Android 14，`assemblePubRelease` 签名包 versionCode 30610 原地升级，保留数据，R8 开启）**。① **预警页 A/B 铁证**（同一条台江红色预警，`uiautomator dump` 前后对比）：3.6.9 是标题 `[66,66][776,87]`、无发布时间行、正文 `[66,350][1014,1222]`；3.6.10 是标题 `[66,416][776,471]`（整高 55px）、发布时间「2026年9月4日 15:15:00」现身于 `[66,471][435,512]`、正文 `[66,534][1014,1572]`；toolbar 两次都是 `[44,229][110,295]`（返回）/ `[154,223][274,300]`（标题），即只有内容下移，别的没动。② **过敏原页**（临时加奥斯陆才有花粉数据，中国区没有）：首日卡头「9月4日 星期五」落在 `[66,416][350,471]` —— 与修好的预警页**同一个 y=416**，说明两处接的是同一份 inset；可滚容器上沿 `[0,350]`，压在 toolbar 下沿 300 之下；从 9月4日 一路滑到 9月18日（15 天）无崩溃。③ 全程 `adb logcat -b crash -d` 为空。④ **首页 dump 不了**：主天气页的 `WeatherView` 一直在动，`uiautomator dump` 恒报 `ERROR: could not get idle state.`，那一页只能截图；预警页 / 过敏原页 / 地点管理页（静态）都能 dump。⑤ Git Bash 会把 `adb shell` 的 `/sdcard/...` 参数改写成 `D:/software/Git/sdcard/...`，命令前加 `MSYS_NO_PATHCONV=1` 解决。⑥ 顺手复核两条既有问题**仍在**（未改）：过敏原页第 8 天起四行全 `0 /米³ - null`（9月11日 之后；霉菌那行连第 1 天也是 null），奥斯陆当地 15:21（白天）首页仍是夜间配色 —— 与「下次可以直接开工的」第 1、2 条对得上。
+
+- **3.6.10 本地发版包已就绪，但尚未发版**。`app/build/outputs/apk/pub/release/GeometricWeather-v3.6.10_pub.apk` 16,783,326 字节、sha256 `d6b28fc8d66f139db5ad818e590e1d0faf666467d33871dda3fe7b41ff14df5c`，已签名（META-INF/CERT.SF + CERT.RSA）、3 个 dex、1779 个条目，`output-metadata.json` 为 30610 / `3.6.10_pub`；因 `compilePubReleaseKotlin` 与 `minifyPubReleaseWithR8` 都判 UP-TO-DATE（Gradle 按**内容哈希**判定、不看 mtime），可证这个包就是这份已修源码编出来的。mapping 已按版本备份到 `D:\Documents\geoweather-release-mappings\v3.6.10-pubRelease-mapping.txt.gz`（14,713,166 字节）。**提交 / 打 tag / 推送 / 传资产都还没做** —— 发版是对外且难撤销的动作，等用户确认。
 
 ### 3.3.6 回退线（分支 rollback/3.3.6，HEAD=v3.3.6）
 
@@ -430,6 +436,7 @@
 - [x] 发 3.6.7（2026-09-02，正式版）
 - [x] 发 3.6.8（2026-09-02，正式版）
 - [x] 发 3.6.9（2026-09-04，正式版——首页重排 + 预警卡闪退修复）
+- [ ] 发 3.6.10（`Material3Scaffold` inset padding 修复 + 结构性守卫测试；本地包与真机已验，待确认后提交 / 打 tag / 推送 / 传资产）
 - [x] OWM 读现成的 `sys.sunrise/sunset`（3.6.7）
 - [x] NOAA 太阳计算（3.6.8，`SolarCalculator.kt`——METNO/CMA 日出日落补齐，极昼极夜返回 null）
 - [x] 清理：`SEARCH_CONFIG` 孤儿 prefs（早前已清）、死文案 102 个名字（3.6.8 后）、十个源的 query 版 `requestLocation`（CMA 的保留为内部 `searchStation`）

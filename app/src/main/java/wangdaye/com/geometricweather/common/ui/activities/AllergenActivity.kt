@@ -98,8 +98,14 @@ class AllergenActivity : GeoActivity() {
                     scrollBehavior = scrollBehavior,
                 )
             },
-        ) {
-            LazyColumn(modifier = Modifier.fillMaxHeight()) {
+        ) { innerPadding ->
+            // The scaffold's inset, or the list starts *behind* the pinned app bar and the first
+            // day's card is clipped under it (same miss as AboutActivity had before 3.5.12).
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(innerPadding),
+            ) {
                 items(w.dailyForecast) { daily ->
                     val pollen = daily.pollen
 
