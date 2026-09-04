@@ -14,7 +14,7 @@
 
 ## 实现状态
 
-- 当前发布版本：**3.6.9**（versionCode 30609，正式版，2026-09-04 发）；**工作区已 bump 到 3.6.10（30610）、本地包与真机都验完，尚未提交/发版**。上一发布版 3.6.8（30608，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
+- 当前发布版本：**3.6.10**（versionCode 30610，正式版，2026-09-04 发）。上一发布版 3.6.9（30609，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
 - 10 个天气源：WEATHERAPI（默认）、OPEN_METEO、METNO（挪威气象局，免 key 全球）、XIAOMI（小米天气，免 key，中国区最全 + 海外走 Accu 后端）、CAIYUN、APIHZ（中国天气网）、CMA（中国气象局）、MF（仅法国）、OWM 可用；**ACCU 的内置 Key 已过期，当前不可用**（见「已知问题」）。加上 COMPOSITE（多源聚合）共 11 项可选。
 - 工具链已现代化（见版本矩阵）；RxJava 已全部迁移到 Coroutines；GreenDAO 已迁移到 Room。
 
@@ -112,11 +112,11 @@
   - 子实体 weatherSource 用 String（写入时 source.getId()）；LocationEntity 用 WeatherSource/TimeZone 强类型（RoomTypeConverters）
   - 本地 Microsoft JDK 17 kapt 的 InvocationTargetException → 加 `kapt.useWorkerApi=false` 解决
 
-## 接手须知（2026-09-04 交接，3.6.10 做完待发版时更新）
+## 接手须知（2026-09-04 交接，3.6.10 已发版）
 
 **当前状态**
 
-- `master` 与远端同步（提交级一致性由 REST API 重建推送保证，见下），最新 release 是 **v3.6.9**（正式版；资产是本地真机验证过的 APK）。**3.6.10 的改动还全在工作区、没提交**（`app/build.gradle` 版本号、`AlertActivity.kt`、`AllergenActivity.kt`、新增 `ScaffoldInsetsTest.kt`）；但手机上装的已经是 **3.6.10（30610）** 签名 release。
+- `master` 与远端同步（这次 `git push` 直接通，master 与 tag 两个 ref 都逐一核对；REST API 重建推送留作备用，见下），最新 release 是 **v3.6.10**（正式版；资产是本地真机验证过的那份 APK，sha256 `d6b28fc8…df5c`，手机上装的就是它）。工作区除 gitignore 掉的 `.tmpshots/` 外干净。
 - 用例数 **260/变体**（六变体 1560），`./gradlew test` 全绿。
 - **`git push` 在这台机器上时通时不通**（github.com:443 会被重置，api.github.com 一直正常）。**先试普通 `git push`** —— 2026-09-04 发 3.6.9 时 `git ls-remote` 与 `git push origin master` / `push origin v3.6.9` 一次成功（远端 SHA、tree SHA 与本地逐一核对一致），不需要重建。不通时才走 REST API 重建：blob/tree/commit 逐级 POST 并每步校验 SHA。**两个坑**：① GitHub 建 commit 会**剥掉消息末尾的换行**，普通 `git commit` 的 SHA 永远对不上——本地先按同样规范用 `git commit-tree` 重建（消息 rstrip 掉尾换行、作者/时间戳原样），远端本地即逐字节一致；② 分支 API 返回的是 `commit.sha` 而非 refs API 的 `object.sha`。一次性脚本在 `C:\Users\HUAJI\AppData\Local\Temp\rebuild_and_push.py`（思路如上，随时可重写）。
 - 修复 push 的正道仍是把本机 SSH key 挂到账号（`gh ssh-key add` + remote 换 SSH），**属改用户账号设置，要先征得同意**。
@@ -161,7 +161,7 @@
 
 - **3.6.10 真机验证（MI 9 / Android 14，`assemblePubRelease` 签名包 versionCode 30610 原地升级，保留数据，R8 开启）**。① **预警页 A/B 铁证**（同一条台江红色预警，`uiautomator dump` 前后对比）：3.6.9 是标题 `[66,66][776,87]`、无发布时间行、正文 `[66,350][1014,1222]`；3.6.10 是标题 `[66,416][776,471]`（整高 55px）、发布时间「2026年9月4日 15:15:00」现身于 `[66,471][435,512]`、正文 `[66,534][1014,1572]`；toolbar 两次都是 `[44,229][110,295]`（返回）/ `[154,223][274,300]`（标题），即只有内容下移，别的没动。② **过敏原页**（临时加奥斯陆才有花粉数据，中国区没有）：首日卡头「9月4日 星期五」落在 `[66,416][350,471]` —— 与修好的预警页**同一个 y=416**，说明两处接的是同一份 inset；可滚容器上沿 `[0,350]`，压在 toolbar 下沿 300 之下；从 9月4日 一路滑到 9月18日（15 天）无崩溃。③ 全程 `adb logcat -b crash -d` 为空。④ **首页 dump 不了**：主天气页的 `WeatherView` 一直在动，`uiautomator dump` 恒报 `ERROR: could not get idle state.`，那一页只能截图；预警页 / 过敏原页 / 地点管理页（静态）都能 dump。⑤ Git Bash 会把 `adb shell` 的 `/sdcard/...` 参数改写成 `D:/software/Git/sdcard/...`，命令前加 `MSYS_NO_PATHCONV=1` 解决。⑥ 顺手复核两条既有问题**仍在**（未改）：过敏原页第 8 天起四行全 `0 /米³ - null`（9月11日 之后；霉菌那行连第 1 天也是 null），奥斯陆当地 15:21（白天）首页仍是夜间配色 —— 与「下次可以直接开工的」第 1、2 条对得上。
 
-- **3.6.10 本地发版包已就绪，但尚未发版**。`app/build/outputs/apk/pub/release/GeometricWeather-v3.6.10_pub.apk` 16,783,326 字节、sha256 `d6b28fc8d66f139db5ad818e590e1d0faf666467d33871dda3fe7b41ff14df5c`，已签名（META-INF/CERT.SF + CERT.RSA）、3 个 dex、1779 个条目，`output-metadata.json` 为 30610 / `3.6.10_pub`；因 `compilePubReleaseKotlin` 与 `minifyPubReleaseWithR8` 都判 UP-TO-DATE（Gradle 按**内容哈希**判定、不看 mtime），可证这个包就是这份已修源码编出来的。mapping 已按版本备份到 `D:\Documents\geoweather-release-mappings\v3.6.10-pubRelease-mapping.txt.gz`（14,713,166 字节）。**提交 / 打 tag / 推送 / 传资产都还没做** —— 发版是对外且难撤销的动作，等用户确认。
+- **发版（2026-09-04）**：v3.6.10 **正式版**。包 `app/build/outputs/apk/pub/release/GeometricWeather-v3.6.10_pub.apk` 16,783,326 字节、sha256 `d6b28fc8d66f139db5ad818e590e1d0faf666467d33871dda3fe7b41ff14df5c`，已签名（META-INF/CERT.SF + CERT.RSA）、3 个 dex、1779 个条目，`output-metadata.json` 为 30610 / `3.6.10_pub`；因 `compilePubReleaseKotlin` 与 `minifyPubReleaseWithR8` 都判 UP-TO-DATE（Gradle 按**内容哈希**判定、不看 mtime），可证这个包就是这份已修源码编出来的。mapping 已按版本备份到 `D:\Documents\geoweather-release-mappings\v3.6.10-pubRelease-mapping.txt.gz`（14,713,166 字节）。提交 `722c772`（5 文件 +117/−11，含 `AI_CONTEXT.md`），lightweight tag `v3.6.10`（沿用旧习惯），**`git push` 这次直接通** —— master 与 tag 一次推上，`git ls-remote` 回来两个 ref 都是 `722c77251cdf86078d29bf209aaef899fedcd537`。release 用 `gh release create --verify-tag` 建成**正式版**（标题 `v3.6.10`，正文取 `.tmpshots/notes_3610.md`）。**又撞上 tag 触发的 Action 抢资产**，这次顺序反过来：本地先建 release 传包，12 秒后 CI 的 `softprops/action-gh-release` 把同名资产删掉换成 CI 自建包（正文没被动），下载回来核 sha256 不对才发现。**两份包的差异只在 `META-INF/version-control-info.textproto`（AGP 内嵌的 git SHA，本地那份编译时 HEAD 还是 f74f63b）、`assets/city_list.txt` 与两个 `META-INF/services/*`（CRLF↔LF：427,024 − 3,217 行 = 423,807 正好对上，`core.autocrlf=true`）、以及重签名的 MANIFEST.MF / CERT.SF / CERT.RSA；1781 个条目里 3 个 dex、resources.arsc、so 的 CRC 与长度全都一致** —— 代码本身一模一样，备份的 mapping 对两份都成立。已 `gh release upload --clobber` 换回本地包，重新下载核对 **sha256 = `d6b28fc8…df5c`、16,783,326 字节、`cmp` 与本地逐字节无差异**，资产 uploader 也回到 `huaaaajjj`。
 
 ### 3.3.6 回退线（分支 rollback/3.3.6，HEAD=v3.3.6）
 
@@ -436,7 +436,8 @@
 - [x] 发 3.6.7（2026-09-02，正式版）
 - [x] 发 3.6.8（2026-09-02，正式版）
 - [x] 发 3.6.9（2026-09-04，正式版——首页重排 + 预警卡闪退修复）
-- [ ] 发 3.6.10（`Material3Scaffold` inset padding 修复 + 结构性守卫测试；本地包与真机已验，待确认后提交 / 打 tag / 推送 / 传资产）
+- [x] 发 3.6.10（2026-09-04，正式版——`Material3Scaffold` inset padding 修复 + 结构性守卫测试）
+- [ ] 待定：`.github/workflows/android.yml` 里 tag 触发的 `softprops/action-gh-release` 会用 CI 自建包覆盖同名资产（3.6.6 / 3.6.9 / 3.6.10 都得手动 `--clobber` 换回本地包）——要么删掉这步（正式版本来就是手动建的），要么发版顺序改成等 Action 跑完再传；属改 CI 配置，等确认
 - [x] OWM 读现成的 `sys.sunrise/sunset`（3.6.7）
 - [x] NOAA 太阳计算（3.6.8，`SolarCalculator.kt`——METNO/CMA 日出日落补齐，极昼极夜返回 null）
 - [x] 清理：`SEARCH_CONFIG` 孤儿 prefs（早前已清）、死文案 102 个名字（3.6.8 后）、十个源的 query 版 `requestLocation`（CMA 的保留为内部 `searchStation`）
