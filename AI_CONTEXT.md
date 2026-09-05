@@ -14,7 +14,7 @@
 
 ## 实现状态
 
-- 当前发布版本：**3.6.10**（versionCode 30610，正式版，2026-09-04 发）。上一发布版 3.6.9（30609，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
+- 当前发布版本：**3.6.11**（versionCode 30611，正式版，2026-09-05 发）。上一发布版 3.6.10（30610，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
 - 10 个天气源：WEATHERAPI（默认）、OPEN_METEO、METNO（挪威气象局，免 key 全球）、XIAOMI（小米天气，免 key，中国区最全 + 海外走 Accu 后端）、CAIYUN、APIHZ（中国天气网）、CMA（中国气象局）、MF（仅法国）、OWM 可用；**ACCU 的内置 Key 已过期，当前不可用**（见「已知问题」）。加上 COMPOSITE（多源聚合）共 11 项可选。
 - 工具链已现代化（见版本矩阵）；RxJava 已全部迁移到 Coroutines；GreenDAO 已迁移到 Room。
 
@@ -112,15 +112,15 @@
   - 子实体 weatherSource 用 String（写入时 source.getId()）；LocationEntity 用 WeatherSource/TimeZone 强类型（RoomTypeConverters）
   - 本地 Microsoft JDK 17 kapt 的 InvocationTargetException → 加 `kapt.useWorkerApi=false` 解决
 
-## 接手须知（2026-09-04 交接，3.6.10 已发版）
+## 接手须知（2026-09-05 交接，3.6.11 已发版）
 
 **当前状态**
 
-- `master` 与远端同步（这次 `git push` 直接通，master 与 tag 两个 ref 都逐一核对；REST API 重建推送留作备用，见下），最新 release 是 **v3.6.10**（正式版；资产是本地真机验证过的那份 APK，sha256 `d6b28fc8…df5c`，手机上装的就是它）。工作区除 gitignore 掉的 `.tmpshots/` 外干净。
-- 用例数 **260/变体**（六变体 1560），`./gradlew test` 全绿。
+- `master` 与远端同步（3.6.11 这次 `git push` 也直接通，master 与 tag 两个 ref 都核对为 `2518ed4`；REST API 重建推送留作备用，见下），最新 release 是 **v3.6.11**（正式版；资产是本地真机验证过的那份 APK，sha256 `61711786cc78…42b5`，手机上装的就是它）。工作区除 gitignore 掉的 `.tmpshots/` 外干净。
+- 用例数 **263/变体**（六变体 1578），`./gradlew test` 全绿。
 - **`git push` 在这台机器上时通时不通**（github.com:443 会被重置，api.github.com 一直正常）。**先试普通 `git push`** —— 2026-09-04 发 3.6.9 时 `git ls-remote` 与 `git push origin master` / `push origin v3.6.9` 一次成功（远端 SHA、tree SHA 与本地逐一核对一致），不需要重建。不通时才走 REST API 重建：blob/tree/commit 逐级 POST 并每步校验 SHA。**两个坑**：① GitHub 建 commit 会**剥掉消息末尾的换行**，普通 `git commit` 的 SHA 永远对不上——本地先按同样规范用 `git commit-tree` 重建（消息 rstrip 掉尾换行、作者/时间戳原样），远端本地即逐字节一致；② 分支 API 返回的是 `commit.sha` 而非 refs API 的 `object.sha`。一次性脚本在 `C:\Users\HUAJI\AppData\Local\Temp\rebuild_and_push.py`（思路如上，随时可重写）。
 - 修复 push 的正道仍是把本机 SSH key 挂到账号（`gh ssh-key add` + remote 换 SSH），**属改用户账号设置，要先征得同意**。
-- CI 持续可靠：v3.6.6 ~ **v3.6.9** 的 tag 构建全部 success（v3.6.9 用了 8m11s）；本地构建 + 真机验证仍是发版门槛。
+- CI 持续可靠：v3.6.6 ~ **v3.6.11** 的 tag 构建全部 success；本地构建 + 真机验证仍是发版门槛。**发版顺序已改**：先推 tag、等 tag 构建跑完（它会自己建正式版 release 并附 CI 自建包）、再 `gh release edit --notes-file` 换正文 + `gh release upload --clobber` 换成本地验过的包并核 sha256 —— 3.6.11 用这个顺序一次到位，不再像 3.6.6/3.6.9/3.6.10 那样被 Action 抢掉资产后回头补救。
 - R8 mapping 按版本备份在 `D:\Documents\geoweather-release-mappings\v<版本>-pubRelease-mapping.txt.gz`（发版后立刻备份，`app/build` 一清就没了）。
 
 **这次没做、下次可以直接开工的**（按性价比）
@@ -129,9 +129,9 @@
 2. **日夜配色与地点实际昼夜不符**（2026-09-04 冒烟时看到）—— 奥斯陆当地 09:56 是夜间配色、台江当地 19:13（已过日落）是白天配色而小时图标已是月亮。`Weather.isDaylight(TimeZone)`（`Weather.java:228`）比的是绝对时刻、本身没错；**排查已定位到两处，改法留给下次**：① `MainThemeColorProvider.kt:125` —— `DarkMode.AUTO` 下走的是 `instance?.host?.isDaylight ?: daylight`，即**优先用宿主 Activity 的那一个值，传进来的 per-location `daylight` 被忽略**；② `MainActivity.kt:390` —— `isDaylight = viewModel.currentLocation.value?.daylight ?: true`，是**当前地区资源生成那一刻的快照**，不随时间推移或换页重算（台江那份是 17:40 刷新时算的，那时福州还是白天，故 19:13 仍显示白天）。
 3. **ACCU 内置 Key 已过期**，要不要换 Key 属用户决定；它同时卡着最后一个未迁 Kotlin 的服务（`AccuWeatherService`，`cancel()` 仍是空操作，因抓不到固件没测试）。
 
-**已了结（2026-09-04）**：分支 `feat/center-header-block` 的整套首页重排已作为 **3.6.9** 发版 —— 「预警卡一点就闪退」（`bottomInsetItem` 的 key 是 lambda，release-only）的三个共用方 **预警页 / 关于页 / 过敏原页全部在 3.6.9 的 R8 包上验过**（上一轮欠的后两页已补完，见变更日志「3.6.9 发版冒烟」条）；改动已提交并打 tag。
+**已了结（2026-09-05）**：3.6.11 已发版（彩云三档霾入文案表 + 认不出的天况按子串退到大类 + OWM id 200；见变更日志末两条）。此前 3.6.9 的整套首页重排、3.6.10 的 `Material3Scaffold` inset 修复都已发版并在 R8 包上验过。**3.6.11 唯一没验到屏上的是霾分支本身** —— 当天南开放晴，彩云那格 `LIGHT_HAZE` 又落在 COMPOSITE 不采用的位置（daily 由 APIHZ 领衔），只由单测 + 4 项变异检验担保；下回真起霾时看一眼首页第一行即可确认。
 
-**设备状态备注**：手机上装的是 **3.6.10 签名 release**（30610）。地点列表为 **当前位置(南开区) / 舒城 / 台江 / 福州 / 永泰**（福州、永泰是用户自己加的；东京、歙县、镜湖、晋安此前已被用户删掉），当前页停在**南开区**；南开的常驻标记未变。3.6.10 冒烟时为验过敏原页临时加的「奥斯陆」**已再次删除**，`/sdcard` 上的临时截图与 dump 也已清掉。
+**设备状态备注**：手机上装的是 **3.6.11 签名 release**（30611，`adb install -r` 原地升级，数据保留）。地点列表为 **当前位置(南开区) / 舒城 / 台江 / 福州 / 永泰**（福州、永泰是用户自己加的；东京、歙县、镜湖、晋安此前已被用户删掉），当前页停在**南开区**；南开的常驻标记未变。3.6.11 冒烟用的临时截图（`/sdcard/s*.png`）已清掉，本地副本在 gitignore 掉的 `.tmpshots/`。**首页仍 dump 不了**（`WeatherView` 一直在动，`uiautomator dump` 恒报 `ERROR: could not get idle state.`），那一页只能截图；预警页等静态页能 dump。锁屏时 `adb shell input swipe` 会先拉出通知栏，先 `KEYCODE_WAKEUP` 再从 y=2100 往上滑才解得开。
 
 **一条已复核掉的旧约束**：「CI 不可靠（jitpack 403）」在 2026-09-01 的三次 tag 构建里全部 success（各 6~7 分钟）。本地构建 + 真机验证仍不能省（那是发版门槛，见 `/release`），但「CI 一定失败」这个前提不成立了；推不上去是本机网络问题，与 CI 无关。
 
@@ -163,6 +163,8 @@
 
 - **发版（2026-09-04）**：v3.6.10 **正式版**。包 `app/build/outputs/apk/pub/release/GeometricWeather-v3.6.10_pub.apk` 16,783,326 字节、sha256 `d6b28fc8d66f139db5ad818e590e1d0faf666467d33871dda3fe7b41ff14df5c`，已签名（META-INF/CERT.SF + CERT.RSA）、3 个 dex、1779 个条目，`output-metadata.json` 为 30610 / `3.6.10_pub`；因 `compilePubReleaseKotlin` 与 `minifyPubReleaseWithR8` 都判 UP-TO-DATE（Gradle 按**内容哈希**判定、不看 mtime），可证这个包就是这份已修源码编出来的。mapping 已按版本备份到 `D:\Documents\geoweather-release-mappings\v3.6.10-pubRelease-mapping.txt.gz`（14,713,166 字节）。提交 `722c772`（5 文件 +117/−11，含 `AI_CONTEXT.md`），lightweight tag `v3.6.10`（沿用旧习惯），**`git push` 这次直接通** —— master 与 tag 一次推上，`git ls-remote` 回来两个 ref 都是 `722c77251cdf86078d29bf209aaef899fedcd537`。release 用 `gh release create --verify-tag` 建成**正式版**（标题 `v3.6.10`，正文取 `.tmpshots/notes_3610.md`）。**又撞上 tag 触发的 Action 抢资产**，这次顺序反过来：本地先建 release 传包，12 秒后 CI 的 `softprops/action-gh-release` 把同名资产删掉换成 CI 自建包（正文没被动），下载回来核 sha256 不对才发现。**两份包的差异只在 `META-INF/version-control-info.textproto`（AGP 内嵌的 git SHA，本地那份编译时 HEAD 还是 f74f63b）、`assets/city_list.txt` 与两个 `META-INF/services/*`（CRLF↔LF：427,024 − 3,217 行 = 423,807 正好对上，`core.autocrlf=true`）、以及重签名的 MANIFEST.MF / CERT.SF / CERT.RSA；1781 个条目里 3 个 dex、resources.arsc、so 的 CRC 与长度全都一致** —— 代码本身一模一样，备份的 mapping 对两份都成立。已 `gh release upload --clobber` 换回本地包，重新下载核对 **sha256 = `d6b28fc8…df5c`、16,783,326 字节、`cmp` 与本地逐字节无差异**，资产 uploader 也回到 `huaaaajjj`。
 - **修「南开区天气未知」——彩云 v2.6 把霾分了三级，文案表只认光秃秃的 `HAZE`（3.6.11）**。现场：首页第一行「未知, 体感 30°」，第二行空气质量 - 轻度污染，而图标与动画背景是正确的霾色。全仓库搜 `未知` 只有两处，都在 `weather/converters/`（其余源直接透传上游中文文案），所以这五个字只可能出自转换器。拿应用同一条 URL（`v2.6/{token}/{lon},{lat}/weather?alert=true`）实测回来的实时块是 `skycon: LIGHT_HAZE`、`aqi.chn 108`、`description.chn 轻度污染`，与屏幕完全对得上；COMPOSITE 把「当前 + 空气质量」这一块指派给彩云，于是 `CaiyunResultConverter.getWeatherText` 的**精确匹配** `when` 落到 `else -> "未知"`，而 `WeatherCode.getInstance` 是**按子串**匹配（`contains("haze")` → HAZE）——这就是「文案未知、图标却对」的由来。同一个 helper 还喂 daily 与 hourly，当天 payload 的 `daily.skycon[0]`、`daily.skycon_20h_32h[2]`、`hourly.skycon[0]` 都是 `LIGHT_HAZE`，三块一起未知。**改法**：① 表里补 `LIGHT_HAZE/MODERATE_HAZE/HEAVY_HAZE` → 轻度雾霾/中度雾霾/重度雾霾（彩云自家文档的说法），保留 `"HAZE" -> "霾"` 给旧 payload；② 兜底不再印「未知」，新增 `getWeatherFamilyText()` **按子串退到家族**（HAZE→霾、FOG→雾、SLEET→雨夹雪、HAIL→冰雹、THUNDER→雷雨、RAIN→雨、SNOW→雪、PARTLY_CLOUDY→多云、CLOUDY→阴、CLEAR→晴、WIND→大风、DUST→扬沙、SAND→沙尘暴；**顺序上窄的家族先判** —— `PARTLY_CLOUDY_*` 必须排在 `CLOUDY` 前），与图标同一种匹配方式，上游再加档位不会再打脸，只有真认不出的值才留「未知」。入口守卫从 `TextUtils.isEmpty` 换成 `isNullOrEmpty()`（Kotlin contract 会智能转换，才能把非空 `skycon` 交给 helper）。**顺手同类**：`OwmResultConverter` 两张表都漏了 OWM id **200**（thunderstorm with light rain，2xx 里最常见的一个）——文案「未知」，code 落到 `else -> CLEAR`，雷雨画成晴天；两处都补进 `200, 201, …`。**测试**：`CaiyunResultConverterTest` +2 例（三档霾在 now / daily 白天 / daily 夜间 / hourly 四处的文案 + `WeatherCode.HAZE`；家族兜底含 `PARTLY_CLOUDY_DAWN` 压 `VERY_CLOUDY` 的顺序、空串与 daily 的 null 值仍为「未知」），`OwmResultConverterTest` +1 例（id 200 → 雷阵雨 + THUNDERSTORM）。**变异检验 4 项全被抓**：删三档霾行、兜底改回 `else -> "未知"`、`PARTLY_CLOUDY` 与 `CLOUDY` 调序、两表各删 `200`。`./gradlew test` 六变体全绿（pubDebug 41 类 263 例 0 失败），`assemblePubDebug` 通过。**装机验收（pubRelease 签名包原地升级）**：`assemblePubRelease` 出包后 `adb install -r` 覆盖已装的 3.6.10（同一仓内 keystore，地点数据保留），设备上 base.apk 与本地包 sha256 一致（`e7ceb719…`），三档霾文案在 `classes3.dex` 里、R8 没剪掉。下拉刷新后首页第一行读作「晴, 体感 30°」、第二行「空气质量 - 良」，与同一时刻实测的 `skycon: CLEAR_NIGHT`／`apparent 30.2`／`aqi.chn 100` 对得上，「未知」不再出现，`logcat -b crash` 干净。**但屏上没跑到霾分支**：天已放晴，而 `CLEAR_NIGHT` 本来就在原表里；当天 payload 唯一的 `LIGHT_HAZE` 落在彩云 `daily.skycon_20h_32h[2]`，可 COMPOSITE 的 daily 由 APIHZ 领衔（9/6 详情页夜间读作「多云」，日历跨 16 天而彩云试用 token 只给 3 天），彩云那一格根本不上屏。所以霾分支眼下仍只由单测 + 4 项变异检验担保，等下回真起霾再看现场。
+
+- **发版（2026-09-05）**：v3.6.11 **正式版**。包 `app/build/outputs/apk/pub/release/GeometricWeather-v3.6.11_pub.apk` 16,783,615 字节、sha256 `61711786cc7814443256bbdf06ce8f949e29492f8354739582f61f7eca6142b5`，已签名（META-INF/CERT.SF + CERT.RSA）、3 个 dex、1779 个条目，`output-metadata.json` 为 30611 / `3.6.11_pub`；「轻度/中度/重度雾霾」与「雷阵雨 / 扬沙 / 沙尘暴」实测都在 `classes3.dex` 里，**R8 没剪**。`./gradlew test` 判 UP-TO-DATE（按内容哈希，即这份结果就是当前源码的）：**263 例/变体 × 六变体 = 1578，0 失败 0 错误、41 个测试类**。mapping 已备份到 `D:\Documents\geoweather-release-mappings\v3.6.11-pubRelease-mapping.txt.gz`（14,375,347 字节）。**真机冒烟（MI 9 / Android 14，`adb install -r` 原地升级 30610→30611，地点数据保留）**：设备上 base.apk 的 sha256 与本地包一致；冷启动正常；下拉刷新「更新于 09:53 → **09:56**」——这一步是在验 Gson DTO 没被 shrink 掉；南开区第一行读作「晴, 体感 32°」、福州「多云, 体感 35°」，**「未知」不再出现**；定位到区县（南开区）；顺手回归了福州两条预警的卡片 + 圆点（3.6.9）与预警页首条不被 toolbar 压（3.6.10），两处都还在；`adb logcat -b crash -d` 全程为空。**这次没被 Action 抢资产** —— 记着 3.6.6/3.6.9/3.6.10 的账，顺序改成「先推 tag → 等 tag 构建跑完 → 再换资产」：tag run `33937808638` success，CI 自己建的 release 是**正式版**（工作流 `generate_release_notes: true`、没有 `prerelease` 键，release 步骤 `if: startsWith(github.ref, 'refs/tags/v')`，所以 master 那条 run 不碰 release），附的是 CI 自建包（16,783,569 字节，比本地少 46 字节）；随后 `gh release edit --notes-file` 换正文、`gh release upload --clobber` 换包，下载回来核对 **sha256 与本地逐字节无差异**。`git push` 直接通，master 与 tag 两个 ref 都是 `2518ed4`。**霾分支仍未在屏上跑到**（当天南开是晴天）。
 
 
 ### 3.3.6 回退线（分支 rollback/3.3.6，HEAD=v3.3.6）
@@ -440,7 +442,8 @@
 - [x] 发 3.6.8（2026-09-02，正式版）
 - [x] 发 3.6.9（2026-09-04，正式版——首页重排 + 预警卡闪退修复）
 - [x] 发 3.6.10（2026-09-04，正式版——`Material3Scaffold` inset padding 修复 + 结构性守卫测试）
-- [ ] 待定：`.github/workflows/android.yml` 里 tag 触发的 `softprops/action-gh-release` 会用 CI 自建包覆盖同名资产（3.6.6 / 3.6.9 / 3.6.10 都得手动 `--clobber` 换回本地包）——要么删掉这步（正式版本来就是手动建的），要么发版顺序改成等 Action 跑完再传；属改 CI 配置，等确认
+- [x] 发 3.6.11（2026-09-05，正式版——彩云三档霾入文案表 + 认不出的天况退到大类 + OWM id 200）
+- [ ] 待定：`.github/workflows/android.yml` 里 tag 触发的 `softprops/action-gh-release` 会用 CI 自建包覆盖同名资产（3.6.6 / 3.6.9 / 3.6.10 都是发完才发现被换掉、回头 `--clobber` 补救）——**3.6.11 起改用「先推 tag、等 tag 构建跑完、再换正文与资产」的顺序，一次到位，已写进「接手须知」**，所以这条不再是坑；剩下的只是「要不要顺手把这步从 CI 里删掉」（正式版本来就是手动建的），属改 CI 配置，等确认
 - [ ] 待定：`WeatherCode.getInstance` 补 `fog` 分支（彩云 `FOG`/`DUST`/`SAND` 目前图标画成晴天，详见「已知问题」）——共用入口，动它影响所有源的图标与背景，等确认
 - [x] OWM 读现成的 `sys.sunrise/sunset`（3.6.7）
 - [x] NOAA 太阳计算（3.6.8，`SolarCalculator.kt`——METNO/CMA 日出日落补齐，极昼极夜返回 null）
