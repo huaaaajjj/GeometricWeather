@@ -418,6 +418,10 @@ class HomeFragment : MainModuleFragment() {
                         (pinDistance - mScrollY).toFloat()
                     else -> -binding.appBar.measuredHeight.toFloat()
                 }
+                // The page dots anchor to the app bar's layout position, which a translation does
+                // not move — carry them along by hand or they hang in mid-air over the pinned
+                // text once the bar starts riding up.
+                binding.indicator.translationY = binding.appBar.translationY
             }
 
             // set system bar style.
