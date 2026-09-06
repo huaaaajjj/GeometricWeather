@@ -2,6 +2,7 @@ package wangdaye.com.geometricweather.main.adapters.main.holder;
 
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,9 +70,9 @@ public class HourlyViewHolder extends AbstractMainCardViewHolder {
     }
 
     @Override
-    public void onBindView(GeoActivity activity, @NonNull Location location, @NonNull ResourceProvider provider,
-                           boolean listAnimationEnabled, boolean itemAnimationEnabled, boolean firstCard) {
-        super.onBindView(activity, location, provider, listAnimationEnabled, itemAnimationEnabled, firstCard);
+    public void onBindView(Context context, @NonNull Location location, @NonNull ResourceProvider provider,
+                           boolean listAnimationEnabled, boolean itemAnimationEnabled) {
+        super.onBindView(context, location, provider, listAnimationEnabled, itemAnimationEnabled);
 
         Weather weather = location.getWeather();
         assert weather != null;

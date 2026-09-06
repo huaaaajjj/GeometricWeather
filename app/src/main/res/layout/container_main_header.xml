@@ -55,6 +55,29 @@
             tools:text="空气质量 轻度污染"
             tools:ignore="RelativeOverlap,RtlHardcoded" />
 
+        <TextView
+            android:id="@+id/container_main_header_refreshTxt"
+            android:textSize="@dimen/content_text_size"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="2dp"
+            style="@style/large_title_text"
+            tools:text="更新于 09:06"
+            tools:ignore="RelativeOverlap,RtlHardcoded" />
+
+        <TextClock
+            android:id="@+id/container_main_header_localTimeText"
+            android:textSize="@dimen/subtitle_text_size"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_marginTop="2dp"
+            android:layout_marginStart="2dp"
+            android:visibility="gone"
+            style="@style/large_title_text"
+            tools:text="9月4日 星期五, 06:00"
+            tools:ignore="RelativeOverlap,RtlHardcoded" />
+
     </LinearLayout>
 
     <!-- Eats the space the temperature block leaves, so the two cards below hang at the

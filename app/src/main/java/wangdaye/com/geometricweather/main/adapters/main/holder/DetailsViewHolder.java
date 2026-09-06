@@ -1,5 +1,6 @@
 package wangdaye.com.geometricweather.main.adapters.main.holder;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -9,7 +10,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import wangdaye.com.geometricweather.R;
-import wangdaye.com.geometricweather.common.basic.GeoActivity;
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.ui.decotarions.GridMarginsDecoration;
 import wangdaye.com.geometricweather.main.adapters.DetailsAdapter;
@@ -35,10 +35,10 @@ public class DetailsViewHolder extends AbstractMainCardViewHolder {
     }
 
     @Override
-    public void onBindView(GeoActivity activity, @NonNull Location location, @NonNull ResourceProvider provider,
-                           boolean listAnimationEnabled, boolean itemAnimationEnabled, boolean firstCard) {
-        super.onBindView(activity, location, provider,
-                listAnimationEnabled, itemAnimationEnabled, firstCard);
+    public void onBindView(Context context, @NonNull Location location, @NonNull ResourceProvider provider,
+                           boolean listAnimationEnabled, boolean itemAnimationEnabled) {
+        super.onBindView(context, location, provider,
+                listAnimationEnabled, itemAnimationEnabled);
 
         if (location.getWeather() != null) {
             mTitle.setText(CompositeBlock.title(

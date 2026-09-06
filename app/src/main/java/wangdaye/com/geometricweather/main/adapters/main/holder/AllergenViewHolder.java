@@ -96,11 +96,11 @@ public class AllergenViewHolder extends AbstractMainCardViewHolder {
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindView(GeoActivity activity, @NonNull Location location,
+    public void onBindView(Context context, @NonNull Location location,
                            @NonNull ResourceProvider provider,
-                           boolean listAnimationEnabled, boolean itemAnimationEnabled, boolean firstCard) {
-        super.onBindView(activity, location, provider,
-                listAnimationEnabled, itemAnimationEnabled, firstCard);
+                           boolean listAnimationEnabled, boolean itemAnimationEnabled) {
+        super.onBindView(context, location, provider,
+                listAnimationEnabled, itemAnimationEnabled);
 
         assert location.getWeather() != null;
 
@@ -119,7 +119,7 @@ public class AllergenViewHolder extends AbstractMainCardViewHolder {
         mPager.setAdapter(new DailyPollenPagerAdapter(location));
         mPager.setCurrentItem(0);
 
-        mCallback = new DailyPollenPageChangeCallback(activity, location);
+        mCallback = new DailyPollenPageChangeCallback(context, location);
         mPager.registerOnPageChangeCallback(mCallback);
 
         itemView.setContentDescription(mTitle.getText());

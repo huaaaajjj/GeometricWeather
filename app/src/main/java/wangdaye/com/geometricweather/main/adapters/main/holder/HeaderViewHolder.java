@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextClock;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.DateFormat;
 import java.util.List;
+import java.util.TimeZone;
 
 import wangdaye.com.geometricweather.R;
 import wangdaye.com.geometricweather.common.basic.GeoActivity;
@@ -50,6 +52,8 @@ public class HeaderViewHolder extends AbstractMainViewHolder {
     private final NumberAnimTextView mTemperature;
     private final TextView mWeather;
     private final TextView mAqiOrWind;
+    private final TextView mRefreshTime;
+    private final TextClock mLocalTime;
 
     private final CardView mAlertCard;
     private final TextView mAlertTitle;
@@ -78,6 +82,8 @@ public class HeaderViewHolder extends AbstractMainViewHolder {
         mTemperature = itemView.findViewById(R.id.container_main_header_tempTxt);
         mWeather = itemView.findViewById(R.id.container_main_header_weatherTxt);
         mAqiOrWind = itemView.findViewById(R.id.container_main_header_aqiOrWindTxt);
+        mRefreshTime = itemView.findViewById(R.id.container_main_header_refreshTxt);
+        mLocalTime = itemView.findViewById(R.id.container_main_header_localTimeText);
 
         mAlertCard = itemView.findViewById(R.id.container_main_alert);
         mAlertTitle = itemView.findViewById(R.id.container_main_alert_title);
@@ -134,6 +140,11 @@ public class HeaderViewHolder extends AbstractMainViewHolder {
         mTemperature.setTextColor(textColor);
         mWeather.setTextColor(textColor);
         mAqiOrWind.setTextColor(textColor);
+        // The two meta lines read as captions against the weather background, so they take the
+        // header text colour dimmed instead of a card-level theme colour.
+        int captionColor = ColorUtils.setAlphaComponent(textColor, (int) (0.7 * 255));
+        mRefreshTime.setTextColor(captionColor);
+        mLocalTime.setTextColor(captionColor);
 
         mTemperatureUnit = SettingsManager.getInstance(context).getTemperatureUnit();
         if (location.getWeather() != null) {
@@ -169,6 +180,28 @@ public class HeaderViewHolder extends AbstractMainViewHolder {
                         context.getString(R.string.air_quality)
                                 + " - "
                                 + location.getWeather().getCurrent().getAirQuality().getAqiText()
+                );
+            }
+
+            // Base.getTime reads the device clock on purpose: 「更新于」 says when *you* refreshed.
+            mRefreshTime.setText(
+                    context.getString(R.string.refresh_at)
+                            + " "
+                            + Base.getTime(context, location.getWeather().getBase().getUpdateDate())
+            );
+
+            // The location's own clock, only worth a line when it differs from the device's.
+            long time = System.currentTimeMillis();
+            if (TimeZone.getDefault().getOffset(time) == location.getTimeZone().getOffset(time)) {
+                mLocalTime.setVisibility(View.GONE);
+            } else {
+                mLocalTime.setVisibility(View.VISIBLE);
+                mLocalTime.setTimeZone(location.getTimeZone().getID());
+                mLocalTime.setFormat12Hour(
+                        context.getString(R.string.date_format_widget_long) + ", h:mm aa"
+                );
+                mLocalTime.setFormat24Hour(
+                        context.getString(R.string.date_format_widget_long) + ", HH:mm"
                 );
             }
 

@@ -5,6 +5,7 @@ import android.animation.FloatEvaluator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,6 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import wangdaye.com.geometricweather.R;
-import wangdaye.com.geometricweather.common.basic.GeoActivity;
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.weather.Daily;
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
@@ -80,11 +80,11 @@ public class AstroViewHolder extends AbstractMainCardViewHolder {
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindView(GeoActivity activity, @NonNull Location location,
+    public void onBindView(Context context, @NonNull Location location,
                            @NonNull ResourceProvider provider,
-                           boolean listAnimationEnabled, boolean itemAnimationEnabled, boolean firstCard) {
-        super.onBindView(activity, location, provider,
-                listAnimationEnabled, itemAnimationEnabled, firstCard);
+                           boolean listAnimationEnabled, boolean itemAnimationEnabled) {
+        super.onBindView(context, location, provider,
+                listAnimationEnabled, itemAnimationEnabled);
 
         mWeather = location.getWeather();
         mTimeZone = location.getTimeZone();
@@ -168,9 +168,9 @@ public class AstroViewHolder extends AbstractMainCardViewHolder {
             assert sunriseTime != null && sunsetTime != null;
             talkBackBuilder
                     .append(", ")
-                    .append(activity.getString(R.string.content_des_sunrise).replace("$", sunriseTime))
+                    .append(context.getString(R.string.content_des_sunrise).replace("$", sunriseTime))
                     .append(", ")
-                    .append(activity.getString(R.string.content_des_sunset).replace("$", sunsetTime));
+                    .append(context.getString(R.string.content_des_sunset).replace("$", sunsetTime));
         } else {
             mSunContainer.setVisibility(View.GONE);
         }
@@ -184,9 +184,9 @@ public class AstroViewHolder extends AbstractMainCardViewHolder {
             assert moonriseTime != null && moonsetTime != null;
             talkBackBuilder
                     .append(", ")
-                    .append(activity.getString(R.string.content_des_moonrise).replace("$", moonriseTime))
+                    .append(context.getString(R.string.content_des_moonrise).replace("$", moonriseTime))
                     .append(", ")
-                    .append(activity.getString(R.string.content_des_moonset).replace("$", moonsetTime));
+                    .append(context.getString(R.string.content_des_moonset).replace("$", moonsetTime));
         } else {
             mMoonContainer.setVisibility(View.GONE);
         }

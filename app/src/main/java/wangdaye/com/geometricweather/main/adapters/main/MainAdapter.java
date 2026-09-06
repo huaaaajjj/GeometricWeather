@@ -15,7 +15,6 @@ import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.options.appearance.CardDisplay;
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
 import wangdaye.com.geometricweather.theme.weatherView.WeatherView;
-import wangdaye.com.geometricweather.main.adapters.main.holder.AbstractMainCardViewHolder;
 import wangdaye.com.geometricweather.main.adapters.main.holder.AbstractMainViewHolder;
 import wangdaye.com.geometricweather.main.adapters.main.holder.AirQualityViewHolder;
 import wangdaye.com.geometricweather.main.adapters.main.holder.AllergenViewHolder;
@@ -37,7 +36,6 @@ public class MainAdapter extends RecyclerView.Adapter<AbstractMainViewHolder> {
     private ResourceProvider mProvider;
 
     private List<Integer> mViewTypeList;
-    private @Nullable Integer mFirstCardPosition;
     private List<Animator> mPendingAnimatorList;
     private int mHeaderCurrentTemperatureTextHeight;
     private boolean mListAnimationEnabled;
@@ -61,7 +59,6 @@ public class MainAdapter extends RecyclerView.Adapter<AbstractMainViewHolder> {
         mProvider = provider;
 
         mViewTypeList = new ArrayList<>();
-        mFirstCardPosition = null;
         mPendingAnimatorList = new ArrayList<>();
         mHeaderCurrentTemperatureTextHeight = -1;
         mListAnimationEnabled = listAnimationEnabled;
@@ -92,14 +89,11 @@ public class MainAdapter extends RecyclerView.Adapter<AbstractMainViewHolder> {
                 mViewTypeList.add(getViewType(c));
             }
             mViewTypeList.add(ViewType.FOOTER);
-
-            ensureFirstCard();
         }
     }
 
     public void setNullWeather() {
         mViewTypeList = new ArrayList<>();
-        ensureFirstCard();
     }
 
     @NonNull
@@ -135,18 +129,8 @@ public class MainAdapter extends RecyclerView.Adapter<AbstractMainViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull AbstractMainViewHolder holder, int position) {
         assert mLocation != null;
-        if (holder instanceof AbstractMainCardViewHolder) {
-            ((AbstractMainCardViewHolder) holder).onBindView(
-                    mActivity,
-                    mLocation,
-                    mProvider,
-                    mListAnimationEnabled,
-                    mItemAnimationEnabled,
-                    mFirstCardPosition != null && mFirstCardPosition == position
-            );
-        } else {
-            holder.onBindView(mActivity, mLocation, mProvider, mListAnimationEnabled, mItemAnimationEnabled);
-        }
+        holder.onBindView(mActivity, mLocation, mProvider,
+                mListAnimationEnabled, mItemAnimationEnabled);
         mHost.post(() -> holder.checkEnterScreen(mHost, mPendingAnimatorList, mListAnimationEnabled));
     }
 
@@ -163,22 +147,6 @@ public class MainAdapter extends RecyclerView.Adapter<AbstractMainViewHolder> {
     @Override
     public int getItemViewType(int position) {
         return mViewTypeList.get(position);
-    }
-
-    private void ensureFirstCard() {
-        mFirstCardPosition = null;
-        for (int i = 0; i < getItemCount(); i ++) {
-            int type = getItemViewType(i);
-            if (type == ViewType.DAILY
-                    || type == ViewType.HOURLY
-                    || type == ViewType.AIR_QUALITY
-                    || type == ViewType.ALLERGEN
-                    || type == ViewType.ASTRO
-                    || type == ViewType.DETAILS) {
-                mFirstCardPosition = i;
-                return;
-            }
-        }
     }
 
     public int getCurrentTemperatureTextHeight() {

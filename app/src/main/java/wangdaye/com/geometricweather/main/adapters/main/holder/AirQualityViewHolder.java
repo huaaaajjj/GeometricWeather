@@ -5,6 +5,7 @@ import android.animation.ArgbEvaluator;
 import android.animation.FloatEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
@@ -20,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.TimeZone;
 
 import wangdaye.com.geometricweather.R;
-import wangdaye.com.geometricweather.common.basic.GeoActivity;
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
 import wangdaye.com.geometricweather.common.ui.widgets.ArcProgress;
@@ -60,11 +60,11 @@ public class AirQualityViewHolder extends AbstractMainCardViewHolder {
 
     @SuppressLint("DefaultLocale")
     @Override
-    public void onBindView(GeoActivity activity, @NonNull Location location,
+    public void onBindView(Context context, @NonNull Location location,
                            @NonNull ResourceProvider provider,
-                           boolean listAnimationEnabled, boolean itemAnimationEnabled, boolean firstCard) {
-        super.onBindView(activity, location, provider,
-                listAnimationEnabled, itemAnimationEnabled, firstCard);
+                           boolean listAnimationEnabled, boolean itemAnimationEnabled) {
+        super.onBindView(context, location, provider,
+                listAnimationEnabled, itemAnimationEnabled);
 
         mWeather = location.getWeather();
         mTimeZone = location.getTimeZone();
