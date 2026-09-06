@@ -410,6 +410,7 @@ class HomeFragment : MainModuleFragment() {
             // card reaches it, so the toolbar holds still just as long, then rides up with the
             // text at the very same speed — the gap between them never changes. Once it is fully
             // out of the way it stays put (the header is gone by then, pin distance reads -1).
+            // The page dots live inside the app bar now, so they ride along on their own.
             val pinDistance = adapter?.headerPinDistance ?: -1
             if (pinDistance >= 0) {
                 binding.appBar.translationY = when {
@@ -418,10 +419,6 @@ class HomeFragment : MainModuleFragment() {
                         (pinDistance - mScrollY).toFloat()
                     else -> -binding.appBar.measuredHeight.toFloat()
                 }
-                // The page dots anchor to the app bar's layout position, which a translation does
-                // not move — carry them along by hand or they hang in mid-air over the pinned
-                // text once the bar starts riding up.
-                binding.indicator.translationY = binding.appBar.translationY
             }
 
             // set system bar style.

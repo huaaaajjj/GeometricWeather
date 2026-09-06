@@ -47,21 +47,24 @@
             app:titleTextColor="@android:color/white"
             app:titleTextAppearance="?attr/textAppearanceHeadline6" />
 
-    </wangdaye.com.geometricweather.common.ui.widgets.insets.FitSystemBarAppBarLayout>
+        <!-- Which location you are on, right under the city name. A child of the app bar rather
+             than an anchored sibling: anchoring follows the bar's layout position, not its
+             translation, so the dots drift relative to the title once the bar starts riding up
+             with the pinned text. 72dp clears the navigation icon this layout's toolbar carries.
+             The negative top margin tucks the row over the toolbar's bottom padding, keeping the
+             dots exactly where the anchor put them. -->
+        <wangdaye.com.geometricweather.common.ui.widgets.InkPageIndicator
+            android:id="@+id/indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|bottom"
+            android:layout_marginStart="72dp"
+            android:layout_marginTop="-8dp"
+            android:alpha="0"
+            app:dotDiameter="8dp"
+            app:dotGap="8dp"
+            app:animationDuration="300" />
 
-    <!-- Which location you are on, right under the city name. 72dp clears the navigation icon this
-         layout's toolbar carries, so the dots line up with the title rather than the icon. -->
-    <wangdaye.com.geometricweather.common.ui.widgets.InkPageIndicator
-        android:id="@+id/indicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:layout_marginStart="72dp"
-        android:alpha="0"
-        app:layout_anchor="@id/app_bar"
-        app:layout_anchorGravity="bottom|start"
-        app:dotDiameter="8dp"
-        app:dotGap="8dp"
-        app:animationDuration="300" />
+    </wangdaye.com.geometricweather.common.ui.widgets.insets.FitSystemBarAppBarLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
