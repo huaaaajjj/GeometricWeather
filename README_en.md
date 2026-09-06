@@ -79,7 +79,9 @@ Each card's title credits the provider behind it. A provider that fails or times
 
 - A run of crashes: null-safety fallbacks (coordinate-based providers return null where the model asserts non-null), Room off the main thread, live wallpaper
 - Location: county-level resolution inside China (the CaiYun source used to collapse every county onto its prefecture city), MIUI compatibility
-- UI: the details card is now a two-column grid of gauges, daily/hourly overviews start at the current time, and the Chinese translations were completed
+- UI: the details card is now a two-column grid of gauges, daily/hourly overviews start at the current time, and the home screen was rearranged — the temperature block sits top-left, with the alert and minutely-precipitation cards hanging beneath it
+- Text: the Chinese translations were completed, and weather-condition text from the international sources (Open-Meteo / WeatherAPI / MET Norway) is localized now instead of read verbatim
+- Refresh: the app refreshes once every time it is opened; paging between locations still follows the refresh-interval gate
 
 The full per-version record lives in the changelog inside [`AI_CONTEXT.md`](AI_CONTEXT.md) (Chinese).
 
@@ -126,6 +128,8 @@ Provider keys are base64-encoded in `app/build.gradle`. To use your own, set the
 - WeatherAPI's free tier only returns 3 days
 - Forecasts past day 7 are of limited reliability from anyone — pick a source by quality, not by range; the in-app hourly card therefore shows only the last 3 days
 - CMA sits behind a WAF that can refuse a development machine (real devices are fine)
+- The sun/moon card hides its moon half on days with no moonrise or moonset (about once each per lunar month — real astronomy, not missing data)
+- Météo France's weather description is the provider's own wording (French); there are no codes to map from (France locations only)
 - The database schema is pinned at v63; no migrations
 - minSdk is still 21
 
