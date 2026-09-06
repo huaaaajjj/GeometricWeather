@@ -492,28 +492,34 @@ object MetNoResultConverter {
         }
     }
 
-    /** Empty rather than "Unknown" when there is no symbol, so the UI shows nothing, not a guess. */
+    /**
+     * The Chinese counterpart of [weatherCodeOf]: the same substrings in the same order, so text
+     * and icon can never disagree (the 3.6.11 principle), over the OWM/caiyun vocabulary — a block
+     * any source leads must read the same word. "Fair" (MET's grade between clearsky and
+     * partlycloudy) reads 晴, the same collapse OWM makes for its few-clouds id 801.
+     */
     private fun weatherTextOf(symbol: String?): String {
+        // Empty rather than "Unknown" when there is no symbol, so the UI shows nothing, not a guess.
         val base = baseOf(symbol) ?: return ""
-        val intensity = when {
-            base.startsWith("heavy") -> "Heavy "
-            base.startsWith("light") -> "Light "
-            else -> ""
+        return when {
+            base.contains("thunder") -> "雷阵雨"
+            base.contains("sleet") -> "雨夹雪"
+            base.contains("snowshowers") -> "阵雪"
+            base.startsWith("heavy") && base.contains("snow") -> "大雪"
+            base.startsWith("light") && base.contains("snow") -> "小雪"
+            base.contains("snow") -> "雪"
+            base.contains("rainshowers") -> if (base.startsWith("heavy")) "大阵雨" else "阵雨"
+            base.startsWith("heavy") && base.contains("rain") -> "大雨"
+            base.startsWith("light") && base.contains("rain") -> "小雨"
+            base.contains("rain") -> "雨"
+            base.contains("fog") -> "雾"
+            base.contains("partlycloudy") -> "多云"
+            base.contains("cloudy") -> "阴"
+            base.contains("fair") -> "晴"
+            base.contains("clearsky") -> "晴"
+            // An unlisted base matches neither chain; weatherCodeOf answers CLEAR for it.
+            else -> "未知"
         }
-        val core = when {
-            base.contains("sleet") -> "sleet"
-            base.contains("snow") -> "snow"
-            base.contains("rain") -> "rain"
-            base.contains("fog") -> "fog"
-            base.contains("partlycloudy") -> "partly cloudy"
-            base.contains("cloudy") -> "cloudy"
-            base.contains("fair") -> "fair"
-            base.contains("clearsky") -> "clear sky"
-            else -> base
-        }
-        val showers = if (base.contains("showers")) " showers" else ""
-        val thunder = if (base.contains("thunder")) " and thunder" else ""
-        return (intensity + core + showers + thunder).replaceFirstChar { it.uppercaseChar() }
     }
 
     private fun baseOf(symbol: String?): String? =

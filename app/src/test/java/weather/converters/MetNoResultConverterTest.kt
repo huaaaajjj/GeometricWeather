@@ -167,7 +167,7 @@ class MetNoResultConverterTest {
         assertEquals(8, current.dewPoint)
         assertEquals(27, current.cloudCover)
         assertEquals(1, current.uv.index)
-        assertEquals("Fair", current.weatherText)
+        assertEquals("晴", current.weatherText)
         assertEquals(WeatherCode.PARTLY_CLOUDY, current.weatherCode)
         assertEquals(0f, requireNotNull(current.precipitation.total), 0.01f)
     }
@@ -226,6 +226,51 @@ class MetNoResultConverterTest {
         assertEquals(0, minutely[0].minuteInterval)
         assertEquals(5, minutely[1].minuteInterval)
         assertEquals(WeatherCode.PARTLY_CLOUDY, minutely[0].weatherCode)
+    }
+
+    /**
+     * The text builder used to compose English ("Light sleet showers and thunder") from the same
+     * symbol parts the icon chain matches. Both must stay in step and read the shared Chinese
+     * vocabulary — the text by the very substrings [weatherCodeOf] matches, so neither can drift
+     * from the other. MET's own published list carries one typo'd symbol, which the substring
+     * matching must absorb.
+     */
+    @Test
+    fun convert_buildsChineseTextFromTheSameSubstringsAsTheIcon() {
+        val forecast = read<MetNoForecastResult>("forecast_oslo.json")
+        val air = read<MetNoAirQualityResult>("airquality_oslo.json")
+        val alerts = read<MetNoAlertResult>("alerts_oslo.json")
+        val nowcast = read<MetNoForecastResult>("nowcast_oslo.json")
+        val summary = requireNotNull(
+            requireNotNull(forecast.properties.timeseries.first().data.next1Hours).summary
+        )
+
+        val cases = mapOf(
+            "clearsky_day" to ("晴" to WeatherCode.CLEAR),
+            "fair_day" to ("晴" to WeatherCode.PARTLY_CLOUDY),
+            "partlycloudy_day" to ("多云" to WeatherCode.PARTLY_CLOUDY),
+            "cloudy" to ("阴" to WeatherCode.CLOUDY),
+            "fog" to ("雾" to WeatherCode.FOG),
+            "rain" to ("雨" to WeatherCode.RAIN),
+            "lightrain" to ("小雨" to WeatherCode.RAIN),
+            "heavyrain" to ("大雨" to WeatherCode.RAIN),
+            "rainshowers_day" to ("阵雨" to WeatherCode.RAIN),
+            "heavyrainshowersandthunder" to ("雷阵雨" to WeatherCode.THUNDERSTORM),
+            "sleet" to ("雨夹雪" to WeatherCode.SLEET),
+            "lightsnow" to ("小雪" to WeatherCode.SNOW),
+            "heavysnow" to ("大雪" to WeatherCode.SNOW),
+            "snowshowers_night" to ("阵雪" to WeatherCode.SNOW),
+            // MET Norway's published typo, absorbed by the substring matching (see weatherCodeOf).
+            "lightssleetshowersandthunder" to ("雷阵雨" to WeatherCode.THUNDERSTORM),
+        )
+        for ((symbol, expected) in cases) {
+            summary.symbolCode = symbol
+            val weather = requireNotNull(
+                MetNoResultConverter.convert(context, location, forecast, air, alerts, nowcast)
+            ) { "convert failed for symbol $symbol" }
+            assertEquals("text of $symbol", expected.first, weather.current.weatherText)
+            assertEquals("icon of $symbol", expected.second, weather.current.weatherCode)
+        }
     }
 
     @Test

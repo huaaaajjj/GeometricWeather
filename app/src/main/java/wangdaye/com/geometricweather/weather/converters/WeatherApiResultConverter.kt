@@ -74,7 +74,7 @@ object WeatherApiResultConverter {
         val windDegree = (c.windDegree ?: 0).toFloat()
 
         return Current(
-            c.condition?.text ?: "Unknown",
+            getWeatherText(c.condition?.code),
             convertWeatherCode(c.condition?.code),
             Temperature(
                 c.tempC?.toInt() ?: 0,
@@ -117,7 +117,7 @@ object WeatherApiResultConverter {
             val precipitation = d.totalprecipMm?.toFloat()
             val precipitationProbability = d.dailyChanceOfRain?.toFloat()
             val windSpeed = d.maxwindKph?.toFloat() ?: 0f
-            val conditionText = d.condition?.text ?: "Unknown"
+            val conditionText = getWeatherText(d.condition?.code)
             val weatherCode = convertWeatherCode(d.condition?.code)
 
             val day = buildHalfDay(
@@ -202,7 +202,7 @@ object WeatherApiResultConverter {
                         date,
                         date.time,
                         h.isDay == 1,
-                        h.condition?.text ?: "Unknown",
+                        getWeatherText(h.condition?.code),
                         convertWeatherCode(h.condition?.code),
                         Temperature(
                             h.tempC?.toInt() ?: 0,
@@ -316,6 +316,13 @@ object WeatherApiResultConverter {
 
     // Current/HalfDay declare weatherCode @NonNull, so a missing code cannot stay null the way the
     // Java version left it — it falls through to the same CLEAR default as any unmapped code.
+    /**
+     * condition.code -> icon family, over the documented set in conditions.json. 1066/1069/1072
+     * used to fall into the 1063..1069 RAIN range or the CLEAR default while the text table named
+     * them snow/sleet — a text-vs-icon fight is the exact 3.6.11 failure mode, so each rides its
+     * real family now. Freezing rain joins sleet (as freezing drizzle always did) and 1261/1264
+     * ice pellets join 1237 in HAIL.
+     */
     private fun convertWeatherCode(code: Int?): WeatherCode {
         if (code == null) {
             return WeatherCode.CLEAR
@@ -323,17 +330,55 @@ object WeatherApiResultConverter {
         return when {
             code == 1000 -> WeatherCode.CLEAR
             code in 1003..1009 -> WeatherCode.CLOUDY
-            code in 1030..1035 || code in 1135..1147 -> WeatherCode.FOG
-            code in 1063..1069 || code in 1150..1153
-                    || code in 1180..1198 || code in 1240..1246 -> WeatherCode.RAIN
+            code == 1012 || code == 1015 || code in 1033..1042 || code in 1045..1048 -> WeatherCode.HAZE
+            code in 1018..1027 -> WeatherCode.WIND
+            code == 1030 || code == 1135 || code == 1147 -> WeatherCode.FOG
+            code == 1063 || code in 1150..1153 || code in 1180..1195 || code in 1240..1246 -> WeatherCode.RAIN
+            code == 1066 || code in 1114..1117 || code in 1210..1225 || code in 1255..1258 -> WeatherCode.SNOW
+            code in 1069..1072 || code in 1168..1171 || code in 1198..1207 || code in 1249..1252 -> WeatherCode.SLEET
+            code == 1237 || code in 1261..1264 -> WeatherCode.HAIL
             code == 1087 || code in 1273..1282 -> WeatherCode.THUNDERSTORM
-            code in 1114..1117 || code in 1210..1225
-                    || code in 1255..1264 -> WeatherCode.SNOW
-            code in 1168..1171 || code in 1201..1207
-                    || code in 1249..1252 -> WeatherCode.SLEET
-            code == 1237 -> WeatherCode.HAIL
             else -> WeatherCode.CLEAR
         }
+    }
+
+    /**
+     * condition.text is the provider's English wording, which used to pass through verbatim — any
+     * block this source led read English on the home screen. The text now comes from
+     * condition.code, in the same vocabulary as the OWM and caiyun tables, so a phenomenon reads
+     * the same word whichever source leads the block. Every documented code (conditions.json, 60
+     * of them, 1237 = "Ice pellets") maps here; an unmapped one stays 未知 — an integer carries no
+     * substring to degrade by family the way a caiyun skycon does.
+     */
+    private fun getWeatherText(code: Int?): String = when (code) {
+        1000 -> "晴"
+        1003, 1006 -> "多云"
+        1009 -> "阴"
+        1012, 1015, 1033, 1036, 1039, 1042, 1045, 1048 -> "霾"
+        1018 -> "扬沙"
+        1021, 1024 -> "沙尘暴"
+        1027 -> "强沙尘暴"
+        1030, 1135, 1147 -> "雾"
+        1063 -> "雨"
+        1066 -> "雪"
+        1069 -> "雨夹雪"
+        1072, 1168, 1171, 1198, 1201 -> "冻雨"
+        1087, 1273, 1276, 1279, 1282 -> "雷阵雨"
+        1114 -> "雪"
+        1117 -> "暴雪"
+        1150, 1153 -> "毛毛雨"
+        1180, 1183 -> "小雨"
+        1186, 1189 -> "中雨"
+        1192, 1195 -> "大雨"
+        1204, 1207, 1249, 1252 -> "雨夹雪"
+        1210, 1213 -> "小雪"
+        1216, 1219 -> "中雪"
+        1222, 1225 -> "大雪"
+        1237, 1261, 1264 -> "冰雹"
+        1240 -> "阵雨"
+        1243, 1246 -> "大阵雨"
+        1255, 1258 -> "阵雪"
+        else -> "未知"
     }
 
     private fun convertMoonPhase(mp: String?): MoonPhase? = when (mp?.lowercase()) {

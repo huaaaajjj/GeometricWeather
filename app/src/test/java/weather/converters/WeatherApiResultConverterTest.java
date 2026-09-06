@@ -121,7 +121,7 @@ public class WeatherApiResultConverterTest {
         // converter must take the kph field verbatim and not scale it.
         assertEquals(12.2f, weather.getCurrent().getWind().getSpeed(), 0.01f);
         assertEquals("SSW", weather.getCurrent().getWind().getDirection());
-        assertEquals("Patchy rain nearby", weather.getCurrent().getWeatherText());
+        assertEquals("雨", weather.getCurrent().getWeatherText());
         assertEquals(WeatherCode.RAIN, weather.getCurrent().getWeatherCode());
 
         // aqi=yes. Upstream us-epa-index is 2, but that is a 1..6 category, not an AQI; the model's
@@ -255,7 +255,7 @@ public class WeatherApiResultConverterTest {
 
         assertNotNull(weather);
         assertEquals(WeatherCode.CLEAR, weather.getCurrent().getWeatherCode());
-        assertEquals("Unknown", weather.getCurrent().getWeatherText());
+        assertEquals("未知", weather.getCurrent().getWeatherText());
     }
 
     @Test
@@ -265,6 +265,40 @@ public class WeatherApiResultConverterTest {
         assertNull(WeatherApiResultConverter.convert(mContext, mLocation, result));
 
         assertNull(WeatherApiResultConverter.convert(mContext, mLocation, null));
+    }
+
+    /**
+     * condition.text used to pass through verbatim, so any block this source led read English.
+     * Text must come from condition.code in the shared Chinese vocabulary, and text and icon must
+     * stay in the same family (the 3.6.11 lesson): 1066/1069/1072 used to map to RAIN or the CLEAR
+     * default while meaning snow/sleet. The fixture's text field is left at its English original on
+     * purpose — it must not be read any more.
+     */
+    @Test
+    public void conditionCodeDrivesTextAndIconTogether() {
+        Integer[] codes = {1000, 1003, 1009, 1012, 1018, 1021, 1027, 1030, 1063, 1066, 1069, 1072,
+                1135, 1153, 1183, 1195, 1198, 1213, 1237, 1240, 1246, 1255, 1261, 1276, 9999};
+        String[] texts = {"晴", "多云", "阴", "霾", "扬沙", "沙尘暴", "强沙尘暴", "雾", "雨", "雪",
+                "雨夹雪", "冻雨", "雾", "毛毛雨", "小雨", "大雨", "冻雨", "小雪", "冰雹", "阵雨",
+                "大阵雨", "阵雪", "冰雹", "雷阵雨", "未知"};
+        WeatherCode[] icons = {WeatherCode.CLEAR, WeatherCode.CLOUDY, WeatherCode.CLOUDY,
+                WeatherCode.HAZE, WeatherCode.WIND, WeatherCode.WIND, WeatherCode.WIND,
+                WeatherCode.FOG, WeatherCode.RAIN, WeatherCode.SNOW, WeatherCode.SLEET,
+                WeatherCode.SLEET, WeatherCode.FOG, WeatherCode.RAIN, WeatherCode.RAIN,
+                WeatherCode.RAIN, WeatherCode.SLEET, WeatherCode.SNOW, WeatherCode.HAIL,
+                WeatherCode.RAIN, WeatherCode.RAIN, WeatherCode.SNOW, WeatherCode.HAIL,
+                WeatherCode.THUNDERSTORM, WeatherCode.CLEAR};
+
+        for (int i = 0; i < codes.length; i++) {
+            WeatherApiResult result = load("forecast.json");
+            result.current.condition.code = codes[i];
+            Weather weather = WeatherApiResultConverter.convert(mContext, mLocation, result);
+            assertNotNull("convert failed for code " + codes[i], weather);
+            assertEquals("text of code " + codes[i], texts[i],
+                    weather.getCurrent().getWeatherText());
+            assertEquals("icon of code " + codes[i], icons[i],
+                    weather.getCurrent().getWeatherCode());
+        }
     }
 
     private String format(Date date, String pattern) {

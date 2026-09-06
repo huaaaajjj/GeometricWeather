@@ -126,7 +126,7 @@ public class OpenMeteoResultConverterTest {
         // Open-Meteo already reports km/h, so the speed must pass through unscaled.
         assertEquals(9.9f, weather.getCurrent().getWind().getSpeed(), 0.01f);
         assertEquals("S", weather.getCurrent().getWind().getDirection());
-        assertEquals("Mainly clear", weather.getCurrent().getWeatherText());
+        assertEquals("晴", weather.getCurrent().getWeatherText());
 
         Daily first = weather.getDailyForecast().get(0);
         assertEquals("2026-08-11", format(first.getDate()));
@@ -135,7 +135,7 @@ public class OpenMeteoResultConverterTest {
         // WMO 55 (dense drizzle) is rain, not clear — the default branch of the code map returns
         // CLEAR, so an unmapped code would silently read as sunshine.
         assertEquals(WeatherCode.RAIN, first.day().getWeatherCode());
-        assertEquals("Drizzle", first.day().getWeatherText());
+        assertEquals("毛毛雨", first.day().getWeatherText());
         assertEquals(92f, first.day().getPrecipitationProbability().getTotal(), 0.01f);
         assertEquals(7, first.getUV().getIndex().intValue());
 
@@ -182,6 +182,29 @@ public class OpenMeteoResultConverterTest {
     @Test
     public void nullResultIsRejected() {
         assertNull(OpenMeteoResultConverter.convert(mContext, mLocation, null));
+    }
+
+    /**
+     * The text table used to be the provider's English WMO wording, read verbatim wherever this
+     * source led a block. Every documented code must come out of the one Chinese table in the same
+     * vocabulary as the OWM/caiyun tables, and an undocumented code degrades by its WMO tens digit
+     * (60 -> 雨) rather than printing English or a bare 未知.
+     */
+    @Test
+    public void weatherTextFollowsTheChineseTableWhateverTheCode() {
+        OpenMeteoResult result = load("forecast.json");
+
+        Integer[] codes = {0, 1, 2, 3, 45, 55, 56, 61, 63, 65, 66, 71, 75, 77, 80, 85, 95, 96, 62, 10};
+        String[] texts = {"晴", "晴", "多云", "阴", "雾", "毛毛雨", "冻雨", "小雨", "中雨", "大雨",
+                "冻雨", "小雪", "大雪", "小雪", "阵雨", "阵雪", "雷阵雨", "雷阵雨伴有冰雹", "雨", "未知"};
+
+        for (int i = 0; i < codes.length; i++) {
+            result.current.weatherCode = codes[i];
+            Weather weather = OpenMeteoResultConverter.convert(mContext, mLocation, result);
+            assertNotNull("convert failed for code " + codes[i], weather);
+            assertEquals("text of code " + codes[i], texts[i],
+                    weather.getCurrent().getWeatherText());
+        }
     }
 
     /**

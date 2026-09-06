@@ -315,7 +315,8 @@ object OpenMeteoResultConverter {
     // Java version left it — it falls through to the same CLEAR default as any unmapped code.
     private fun convertWeatherCode(code: Int?): WeatherCode = when (code) {
         0 -> WeatherCode.CLEAR
-        1, 2, 3 -> WeatherCode.CLOUDY
+        1, 2 -> WeatherCode.PARTLY_CLOUDY
+        3 -> WeatherCode.CLOUDY
         45, 48 -> WeatherCode.FOG
         51, 53, 55, 61, 63, 65, 80, 81, 82 -> WeatherCode.RAIN
         56, 57, 66, 67 -> WeatherCode.SLEET
@@ -325,22 +326,44 @@ object OpenMeteoResultConverter {
         else -> WeatherCode.CLEAR
     }
 
+    /** WMO 4677 / Open-Meteo's weather_code. Same vocabulary as the OWM and caiyun tables — the
+     * multi-source merge means any of them can lead a block, and one phenomenon must read the
+     * same word everywhere. 0 and 1 both read 晴, the same collapse OWM makes for 800/801. */
     private fun getWeatherText(code: Int?): String = when (code) {
-        0 -> "Clear sky"
-        1 -> "Mainly clear"
-        2 -> "Partly cloudy"
-        3 -> "Overcast"
-        45, 48 -> "Fog"
-        51, 53, 55 -> "Drizzle"
-        56, 57 -> "Freezing drizzle"
-        61, 63, 65 -> "Rain"
-        66, 67 -> "Freezing rain"
-        71, 73, 75, 77 -> "Snow"
-        80, 81, 82 -> "Rain showers"
-        85, 86 -> "Snow showers"
-        95 -> "Thunderstorm"
-        96, 99 -> "Thunderstorm with hail"
-        else -> "Unknown"
+        0, 1 -> "晴"
+        2 -> "多云"
+        3 -> "阴"
+        45, 48 -> "雾"
+        51, 53, 55 -> "毛毛雨"
+        56, 57 -> "冻雨"
+        61 -> "小雨"
+        63 -> "中雨"
+        65 -> "大雨"
+        66, 67 -> "冻雨"
+        71 -> "小雪"
+        73 -> "中雪"
+        75 -> "大雪"
+        77 -> "小雪"
+        80, 81, 82 -> "阵雨"
+        85, 86 -> "阵雪"
+        95 -> "雷阵雨"
+        96, 99 -> "雷阵雨伴有冰雹"
+        else -> getWeatherFamilyText(code)
+    }
+
+    /** Undocumented codes degrade by family, the caiyun table's fallback in spirit: the WMO
+     * tens digit IS the family, so a code the source adds later still reads Chinese. */
+    private fun getWeatherFamilyText(code: Int?): String = when (code) {
+        null -> "未知"
+        else -> when (code / 10) {
+            4 -> "雾"
+            5 -> "毛毛雨"
+            6 -> "雨"
+            7 -> "雪"
+            8 -> "阵雨"
+            9 -> "雷阵雨"
+            else -> "未知"
+        }
     }
 
     private fun getWindDirection(degree: Int): String = when {
