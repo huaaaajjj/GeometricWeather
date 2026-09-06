@@ -37,7 +37,6 @@ public class MainAdapter extends RecyclerView.Adapter<AbstractMainViewHolder> {
 
     private List<Integer> mViewTypeList;
     private List<Animator> mPendingAnimatorList;
-    private int mHeaderCurrentTemperatureTextHeight;
     private boolean mListAnimationEnabled;
     private boolean mItemAnimationEnabled;
 
@@ -60,7 +59,6 @@ public class MainAdapter extends RecyclerView.Adapter<AbstractMainViewHolder> {
 
         mViewTypeList = new ArrayList<>();
         mPendingAnimatorList = new ArrayList<>();
-        mHeaderCurrentTemperatureTextHeight = -1;
         mListAnimationEnabled = listAnimationEnabled;
         mItemAnimationEnabled = itemAnimationEnabled;
 
@@ -149,15 +147,27 @@ public class MainAdapter extends RecyclerView.Adapter<AbstractMainViewHolder> {
         return mViewTypeList.get(position);
     }
 
-    public int getCurrentTemperatureTextHeight() {
-        if (mHeaderCurrentTemperatureTextHeight <= 0 && getItemCount() > 0) {
-            AbstractMainViewHolder holder = (AbstractMainViewHolder) mHost.findViewHolderForAdapterPosition(0);
-            if (holder instanceof HeaderViewHolder) {
-                mHeaderCurrentTemperatureTextHeight
-                        = ((HeaderViewHolder) holder).getCurrentTemperatureHeight();
-            }
+    /** Scroll offset at which the first card reaches the header's pinned text block; -1 when the
+     *  header is not attached (it is fully scrolled away or there is no weather to show). */
+    public int getHeaderPinDistance() {
+        AbstractMainViewHolder holder = findHeaderHolder();
+        return holder == null ? -1 : ((HeaderViewHolder) holder).getTextPinDistance();
+    }
+
+    public void pinHeaderText(int scrollY) {
+        AbstractMainViewHolder holder = findHeaderHolder();
+        if (holder != null) {
+            ((HeaderViewHolder) holder).pinTextBlock(scrollY);
         }
-        return mHeaderCurrentTemperatureTextHeight;
+    }
+
+    private AbstractMainViewHolder findHeaderHolder() {
+        if (getItemCount() == 0) {
+            return null;
+        }
+        AbstractMainViewHolder holder =
+                (AbstractMainViewHolder) mHost.findViewHolderForAdapterPosition(0);
+        return holder instanceof HeaderViewHolder ? holder : null;
     }
 
     public void onScroll() {

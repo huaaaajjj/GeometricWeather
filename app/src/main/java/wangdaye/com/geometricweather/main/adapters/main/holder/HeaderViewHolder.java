@@ -122,6 +122,8 @@ public class HeaderViewHolder extends AbstractMainViewHolder {
                            boolean listAnimationEnabled, boolean itemAnimationEnabled) {
         super.onBindView(context, location, provider, listAnimationEnabled, itemAnimationEnabled);
 
+        mTextBlock.setTranslationY(0f);
+
         // The card list starts where this block ends, so the height stays the full header height
         // even with the alert / minutely cards hanging at the bottom: they eat the empty space
         // under the temperature instead of pushing the first card off the first screen. Only when
@@ -434,12 +436,28 @@ public class HeaderViewHolder extends AbstractMainViewHolder {
     }
 
     /**
-     * Distance from the top of the temperature text to the bottom of the header block — how far
-     * {@link wangdaye.com.geometricweather.main.fragments.HomeFragment} may scroll before the
-     * toolbar has to get out of the text's way. The text lives in the padded block, so its own
-     * top is relative to that, not to the header.
+     * Pins the text block on screen while the list scrolls: the cards slide up underneath it until
+     * one of them — the alert or minutely card when present, else the card list itself — reaches
+     * the block's bottom and carries it away. Up to that point the translation grows with the
+     * scroll to hold the block still; from then on it holds at the collision distance and the
+     * block, being part of the same item, simply scrolls with the list again.
      */
-    public int getCurrentTemperatureHeight() {
-        return mContainer.getMeasuredHeight() - mTextBlock.getTop() - mTemperature.getTop();
+    public void pinTextBlock(int scrollY) {
+        mTextBlock.setTranslationY(
+                Math.min(Math.max(scrollY, 0), getTextPinDistance())
+        );
+    }
+
+    /** Scroll offset at which the first card below touches the text block's bottom. */
+    public int getTextPinDistance() {
+        int textBottom = mTextBlock.getBottom();
+        int distance = mContainer.getMeasuredHeight() - textBottom;
+        if (mAlertCard.getVisibility() == View.VISIBLE) {
+            distance = Math.min(distance, mAlertCard.getTop() - textBottom);
+        }
+        if (mMinutelyCard.getVisibility() == View.VISIBLE) {
+            distance = Math.min(distance, mMinutelyCard.getTop() - textBottom);
+        }
+        return Math.max(distance, 0);
     }
 }

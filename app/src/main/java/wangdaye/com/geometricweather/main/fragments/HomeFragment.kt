@@ -380,7 +380,6 @@ class HomeFragment : MainModuleFragment() {
 
         private var mTopChanged: Boolean? = null
         var topOverlap = false
-        private var mFirstCardMarginTop = 0
         private var mScrollY = 0
         private var mLastAppBarTranslationY = 0f
 
@@ -391,7 +390,6 @@ class HomeFragment : MainModuleFragment() {
                 }
                 mTopChanged = null
                 topOverlap = false
-                mFirstCardMarginTop = 0
                 mScrollY = 0
                 mLastAppBarTranslationY = 0f
                 onScrolled(recyclerView, 0, 0)
@@ -399,55 +397,32 @@ class HomeFragment : MainModuleFragment() {
         }
 
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            mFirstCardMarginTop = if (recyclerView.childCount > 0) {
-                recyclerView.getChildAt(0).measuredHeight
-            } else {
-                -1
-            }
-
             mScrollY = recyclerView.computeVerticalScrollOffset()
             mLastAppBarTranslationY = binding.appBar.translationY
             weatherView.onScroll(mScrollY)
 
             if (adapter != null) {
                 adapter!!.onScroll()
+                adapter!!.pinHeaderText(mScrollY)
             }
 
-            // set translation y of toolbar.
-            if (adapter != null && mFirstCardMarginTop > 0) {
-                if (mFirstCardMarginTop >= binding.appBar.measuredHeight
-                    + adapter!!.currentTemperatureTextHeight) {
-                    when {
-                        mScrollY < (mFirstCardMarginTop
-                                - binding.appBar.measuredHeight
-                                - adapter!!.currentTemperatureTextHeight) -> {
-                            binding.appBar.translationY = 0f
-                        }
-                        mScrollY > mFirstCardMarginTop - binding.appBar.y -> {
-                            binding.appBar.translationY = -binding.appBar.measuredHeight.toFloat()
-                        }
-                        else -> {
-                            binding.appBar.translationY = (
-                                    mFirstCardMarginTop
-                                            - adapter!!.currentTemperatureTextHeight
-                                            - mScrollY
-                                            - binding.appBar.measuredHeight
-                            ).toFloat()
-                        }
-                    }
-                } else {
-                    binding.appBar.translationY = -mScrollY.toFloat()
+            // set translation y of toolbar. The text block stays pinned under the toolbar until a
+            // card reaches it, so the toolbar holds still just as long, then rides up with the
+            // text at the very same speed — the gap between them never changes. Once it is fully
+            // out of the way it stays put (the header is gone by then, pin distance reads -1).
+            val pinDistance = adapter?.headerPinDistance ?: -1
+            if (pinDistance >= 0) {
+                binding.appBar.translationY = when {
+                    mScrollY <= pinDistance -> 0f
+                    mScrollY <= pinDistance + binding.appBar.measuredHeight ->
+                        (pinDistance - mScrollY).toFloat()
+                    else -> -binding.appBar.measuredHeight.toFloat()
                 }
             }
 
             // set system bar style.
-            if (mFirstCardMarginTop <= 0) {
-                mTopChanged = true
-                topOverlap = false
-            } else {
-                mTopChanged = (binding.appBar.translationY != 0f) != (mLastAppBarTranslationY != 0f)
-                topOverlap = binding.appBar.translationY != 0f
-            }
+            mTopChanged = (binding.appBar.translationY != 0f) != (mLastAppBarTranslationY != 0f)
+            topOverlap = binding.appBar.translationY != 0f
             if (mTopChanged!!) {
                 checkToSetSystemBarStyle()
             }

@@ -4,6 +4,7 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +17,8 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import wangdaye.com.geometricweather.R
+import wangdaye.com.geometricweather.main.adapters.main.holder.HeaderViewHolder
+import wangdaye.com.geometricweather.theme.weatherView.materialWeatherView.MaterialWeatherView
 
 /**
  * The header block is the first list item and the card list starts where it ends, so its measured
@@ -154,5 +157,65 @@ class HeaderBlockLayoutTest {
         assertTrue("the pager should have laid out a page", page != null)
         assertEquals(pager.measuredWidth, page.measuredWidth)
         assertEquals(0, page.left)
+    }
+
+    /** Builds a real holder (the pin lives on it), laid out the way the existing harness does. */
+    private fun pinnedHolder(minHeight: Int, alert: Boolean, minutely: Boolean): HeaderViewHolder {
+        val holder = HeaderViewHolder(
+            FrameLayout(context),
+            MaterialWeatherView(context)
+        )
+        val header = holder.itemView as LinearLayout
+        header.minimumHeight = minHeight
+        header.findViewById<View>(R.id.container_main_alert).visibility =
+            if (alert) View.VISIBLE else View.GONE
+        header.findViewById<View>(R.id.container_main_minutely).visibility =
+            if (minutely) View.VISIBLE else View.GONE
+
+        val pager = header.findViewById<RecyclerView>(R.id.container_main_alert_pager)
+        pager.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+        pager.adapter = Pages(3)
+
+        header.measure(
+            View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        header.layout(0, 0, header.measuredWidth, header.measuredHeight)
+        return holder
+    }
+
+    /**
+     * The text block pins while the list scrolls: its translation grows with the scroll so it
+     * holds still on screen, and once the card list reaches its bottom the translation freezes at
+     * exactly that distance — the block being part of the same item then simply scrolls away with
+     * the list, glued to the card that touched it.
+     */
+    @Test
+    fun `the text block pins until the card list reaches it`() {
+        val holder = pinnedHolder(minHeight = 1200, alert = false, minutely = false)
+        val textBlock = holder.itemView.findViewById<View>(R.id.container_main_header_textBlock)
+
+        val distance = holder.getTextPinDistance()
+        assertEquals(1200 - textBlock.bottom, distance)
+
+        holder.pinTextBlock(100)
+        assertEquals("pinning grows with the scroll", 100f, textBlock.translationY)
+        holder.pinTextBlock(distance + 1000)
+        assertEquals("past the collision the translation freezes", distance.toFloat(), textBlock.translationY)
+    }
+
+    /** Whichever card comes first defines the collision: an alert card sits closer than the card
+     *  list, so it must shorten the pin distance rather than slide over the pinned text. */
+    @Test
+    fun `an alert card reaches the text block before the card list does`() {
+        val holder = pinnedHolder(minHeight = 1200, alert = true, minutely = false)
+        val textBlock = holder.itemView.findViewById<View>(R.id.container_main_header_textBlock)
+        val alert = holder.itemView.findViewById<View>(R.id.container_main_alert)
+
+        assertEquals(alert.top - textBlock.bottom, holder.getTextPinDistance())
+        assertTrue(
+            "the alert card must shorten the pin distance",
+            holder.getTextPinDistance() < 1200 - textBlock.bottom
+        )
     }
 }
