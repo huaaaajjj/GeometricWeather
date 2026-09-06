@@ -44,6 +44,14 @@ class MainActivityViewModel @Inject constructor(
     private var initCompleted = false
     private var updating = false
 
+    /**
+     * Set by [checkToUpdate] (MainActivity.onStart): the app is open in front of the user, so the
+     * current location refreshes no matter how young the cache is. Swiping between locations runs
+     * the same check through [setCurrentLocation] with the flag clear and keeps the interval gate,
+     * so paging never refetches fresh pages.
+     */
+    private var foregroundRefreshPending = false
+
     companion object {
         private const val KEY_FORMATTED_ID = "formatted_id"
     }
@@ -189,8 +197,11 @@ class MainActivityViewModel @Inject constructor(
     private fun checkToUpdateCurrentLocation() {
         // is not loading
         if (!updating) {
-            // if already valid, just return.
-            if (currentLocationIsValid()) {
+            val foregrounded = foregroundRefreshPending
+
+            // if already valid, just return — unless the app was just opened, which always
+            // refreshes whatever the cache age.
+            if (!foregrounded && currentLocationIsValid()) {
                 return
             }
 
@@ -198,18 +209,22 @@ class MainActivityViewModel @Inject constructor(
             // update if init completed.
             // otherwise, mark a loading state and wait the init progress complete.
             if (initCompleted) {
+                foregroundRefreshPending = false
                 updateWithUpdatingChecking(
                     triggeredByUser = false,
                     checkPermissions = true,
                 )
             } else {
+                // keep the flag pending: init completes into setCurrentLocation, which re-enters
+                // here with initCompleted true and the flag still honouring the open.
                 loading.setValue(true)
                 updating = false
             }
             return
         }
 
-        // is loading, do nothing.
+        // is loading: the in-flight update already delivers fresh data.
+        foregroundRefreshPending = false
     }
 
     private fun currentLocationIsValid() = currentLocation.value?.location?.weather?.isValid(
@@ -293,6 +308,7 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun checkToUpdate() {
+        foregroundRefreshPending = true
         checkToUpdateCurrentLocation()
     }
 
