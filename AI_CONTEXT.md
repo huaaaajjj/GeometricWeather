@@ -14,7 +14,7 @@
 
 ## 实现状态
 
-- 当前发布版本：**3.6.11**（versionCode 30611，正式版，2026-09-05 发）。上一发布版 3.6.10（30610，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
+- 当前发布版本：**3.6.16**（versionCode 30616，正式版，2026-09-09 发）。上一发布版 3.6.15（30615，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
 - 10 个天气源：WEATHERAPI（默认）、OPEN_METEO、METNO（挪威气象局，免 key 全球）、XIAOMI（小米天气，免 key，中国区最全 + 海外走 Accu 后端）、CAIYUN、APIHZ（中国天气网）、CMA（中国气象局）、MF（仅法国）、OWM 可用；**ACCU 的内置 Key 已过期，当前不可用**（见「已知问题」）。加上 COMPOSITE（多源聚合）共 11 项可选。
 - 工具链已现代化（见版本矩阵）；RxJava 已全部迁移到 Coroutines；GreenDAO 已迁移到 Room。
 
@@ -136,6 +136,10 @@
 **一条已复核掉的旧约束**：「CI 不可靠（jitpack 403）」在 2026-09-01 的三次 tag 构建里全部 success（各 6~7 分钟）。本地构建 + 真机验证仍不能省（那是发版门槛，见 `/release`），但「CI 一定失败」这个前提不成立了；推不上去是本机网络问题，与 CI 无关。
 
 ## 变更日志（按版本）
+
+- **详情卡点击涟漪补齐（3.6.16）**。用户：小时卡点击有涟漪，给每个区块都加上；追加「只补没有的，亮度保持」。**真机实测澄清现状**：所有卡都挂 `material_card`（自带 v21 ripple foreground + clickable），按压时整卡有淡高亮（灰度 28→48）——弧形/日月视图/标题/空白区都能涟漪；小时/每日趋势卡的「涟漪」主要来自**柱子/标签子元素各自的涟漪**（还能点开详情）。真正点不出涟漪的**只有详情卡**：它的仪表格 `RecyclerView` 铺满整卡且**吃掉触摸**（RecyclerView 消费 DOWN，卡的 foreground ripple 不触发），成了整卡死区。**修法（只此一卡，亮度不变）**：给 `container_main_details_recyclerView` 加 `android:clickable="true"` + `android:foreground="@drawable/selectable_item_background"`（与 material_card 同一 ripple drawable）。详情格是固定 6 格 `wrap_content` 网格、永不滚动，故 clickable 的 RV 不为滚动消费触摸、能正常出 ripple。**AQI 卡试过同款改动但列表区不出涟漪**（LinearLayout 列表可能报可滚→RV 消费触摸吞掉按压态；且 AQI 大弧形按下整卡本就涟漪，属「已有」）——故**回退 AQI 改动、只留详情卡**。**真机验证（pubRelease）**：按住详情格，格间缝隙从底色 28,27,31 抬到 42,39,42（ripple 从触点扩散覆盖 RV）；在格子上**向下拖拽页面照常滚动**（diff 15.5，clickable 未夺走滚动手势）；`logcat -b crash` 空。**闪烁同步改为「只闪一下」**（`AlertFlashBackground` 去掉 `repeat(2)` 明灭，snap 0.4 → 1.2s 淡出一次；真机实测 0.55s 有色、1.1s 归零、无二次变亮）。
+
+- **预警详情页三项 + 一处 Compose 加载 bug（3.6.16）**。① **短预警卡片不满宽、右侧留白**：`Material3CardListItem`（Compose `Surface`）在 LazyColumn item 里默认**包裹内容宽度**——长预警文字折行撑满、短预警缩到文字宽度留白。根修：共享卡片加 `Modifier.fillMaxWidth()`，预警页/过敏原页/关于页/设置项统一满宽。② **首条被顶栏挡**：沿用 3.6.10 的 `innerPadding`；列表加 `rememberLazyListState`，跳转用 `scrollToItem(alertIndex)` 落位顶栏下。③ **点哪条跳哪条 + 闪烁**：`IntentHelper.startAlertActivity` 加带 index 重载；`AlertPagerAdapter` 回调改 `AlertClickCallback.onClick(index)`（`getAdapterPosition() % size` 映射循环页→真实下标）；`AlertActivity` 读 `KEY_ALERT_INDEX`，加载后 `scrollToItem`，目标卡叠 `primary.copy(alpha 0.4)` 的 `Animatable` 背景闪烁（初版闪两下，后按用户要求改「只闪一下」——见上条），列表加稳定 key `alert.alertId`。④ **真机验证时揪出真 bug**：数据加载原写在 composable body 里，**每次重组都重新 `runOnIO`**、反复把 `alertList.value` 设成新 list 实例，与 `scrollToItem` 打架、重置滚动 → 改为 `LaunchedEffect(Unit)` **只加载一次**（body 内 `this` 变 CoroutineScope，DB 调用改用 `this@AlertActivity`）。**真机验证（MI 9 / Android 14，pubRelease 签名包）**：因 ADB 合成 `input swipe` 无法驱动嵌套 `HorizontalRecyclerView`（父 `SwipeSwitchLayout` 恒抢手势、真手指可翻页），改临时给 `AlertActivity` 加 `exported=true` + 标题探针，用 `am start --ei alert_index N` 直喂 index 验证：探针实测 `idx=N`、`flashIndex=N`、宝塔 4 条长预警下 index 1 把目标滚到顶部且**该卡粉色闪烁**、index 3（末条）钳到最大位但目标可见+闪烁——全部正确。验毕**还原 exported/探针/临时 fallback**，干净重建；`am start` 复测被 SecurityException 拦（确认已还原进包）；真实路径（主页点预警卡→详情页 index 0）首条不被顶栏挡、卡满宽、顶部卡闪烁、`logcat -b crash` 空。`./gradlew test` 六变体全绿。**遗留**：主页 pager「点哪条→传哪条 index」（`getAdapterPosition()%size`）因 ADB 翻不动 pager 未能真机点验，靠代码 + AlertActivity 侧 am 实测（任意 index 收发正确）担保。
 
 - **发版（2026-09-06）**：v3.6.15 **正式版**。包 `app/build/outputs/apk/pub/release/GeometricWeather-v3.6.15_pub.apk`，sha256 `bf5c4d60de4c71dd9ae25243d74efc7459b9007d5b798870e38b1a3b1195566c`，已签名、R8 开启，`output-metadata.json` 为 30615 / `3.6.15_pub`。mapping 已备份到 `D:\Documents\geoweather-release-mappings\v3.6.15-pubRelease-mapping.txt.gz`。本版单项：**修小白点与城市名不同速**（小白点挪进 app bar 内随其一体移动，结构消除锚定漂移，见对应条目），源码相对 3.6.14 仅此修复。`./gradlew test` 六变体全绿 **268 例/变体 × 6 = 1608**。**真机冒烟（MI 9 / Android 14，`adb install -r` 原地升级 30614→30615）**：`dumpsys package` 确认 versionName=3.6.15_pub；冷启动自动刷新正常；`logcat -b crash` 全程空。**流程**：master 与 tag 一次推通（`b373e00..c065437`）；tag run `34019860028` success；`gh release edit`（标题 "3.6.15"）+ `--clobber` 换本地包，**回传 sha256 与本地逐字节一致**（连续第五次）。notes 存 `.tmpshots/release-notes-3.6.15.md`。**设备状态**：装包后当前页南开区。
 
