@@ -3,14 +3,19 @@ package wangdaye.com.geometricweather.common.ui.activities
 import android.os.Bundle
 import android.text.TextUtils
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -39,6 +44,7 @@ class AlertActivity : GeoActivity() {
 
     companion object {
         const val KEY_FORMATTED_ID = "formatted_id"
+        const val KEY_ALERT_INDEX = "alert_index"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,26 +61,48 @@ class AlertActivity : GeoActivity() {
     @Composable
     private fun ContentView() {
         val alertList = remember { mutableStateOf(emptyList<Alert>()) }
+        val listState = rememberLazyListState()
+        // Which alert to highlight: the one the user tapped on the home screen, if any.
+        val flashIndex = remember { mutableStateOf<Int?>(null) }
 
         val formattedId = intent.getStringExtra(KEY_FORMATTED_ID)
-        AsyncHelper.runOnIO({ emitter ->
-            var location: Location? = null
-            if (!TextUtils.isEmpty(formattedId)) {
-                location = DatabaseHelper.getInstance(this).readLocation(formattedId!!)
+        val alertIndex = intent.getIntExtra(KEY_ALERT_INDEX, 0)
+        // Load once. Reading in the composition body reran on every recomposition, handing the
+        // LazyColumn a fresh list instance each time and resetting the scroll — which fought
+        // scrollToItem below so the tapped alert never settled at the top.
+        LaunchedEffect(Unit) {
+            AsyncHelper.runOnIO({ emitter ->
+                var location: Location? = null
+                if (!TextUtils.isEmpty(formattedId)) {
+                    location = DatabaseHelper.getInstance(this@AlertActivity).readLocation(formattedId!!)
+                }
+                if (location == null) {
+                    location = DatabaseHelper.getInstance(this@AlertActivity).readLocationList()[0]
+                }
+                val weather = DatabaseHelper.getInstance(this@AlertActivity).readWeather(
+                    location!!
+                )
+                if (weather != null) {
+                    emitter.send(weather.alertList, true)
+                } else {
+                    emitter.send(ArrayList(), true)
+                }
+            }) { alerts: List<Alert>?, _ ->
+                alerts?.let {
+                    alertList.value = it
+                    if (alertIndex in it.indices) {
+                        flashIndex.value = alertIndex
+                    }
+                }
             }
-            if (location == null) {
-                location = DatabaseHelper.getInstance(this).readLocationList()[0]
+        }
+
+        // Put the tapped alert at the top of the list, below the pinned app bar, once it has
+        // loaded. Index 0 (no specific alert tapped) is already there, so this is a no-op.
+        LaunchedEffect(alertList.value) {
+            if (alertIndex in alertList.value.indices) {
+                listState.scrollToItem(alertIndex)
             }
-            val weather = DatabaseHelper.getInstance(this).readWeather(
-                location!!
-            )
-            if (weather != null) {
-                emitter.send(weather.alertList, true)
-            } else {
-                emitter.send(ArrayList(), true)
-            }
-        }) { alerts: List<Alert>?, _ ->
-            alerts?.let { alertList.value = it }
         }
 
         val scrollBehavior = generateCollapsedScrollBehavior()
@@ -95,31 +123,37 @@ class AlertActivity : GeoActivity() {
                 modifier = Modifier
                     .fillMaxHeight()
                     .padding(innerPadding),
+                state = listState,
             ) {
-                items(alertList.value) { alert ->
+                itemsIndexed(alertList.value, key = { _, alert -> alert.alertId }) { index, alert ->
                     Material3CardListItem {
-                        Column(
-                            modifier = Modifier.padding(dimensionResource(R.dimen.normal_margin)),
-                        ) {
-                            Text(
-                                text = alert.description,
-                                color = DayNightTheme.colors.titleColor,
-                                fontWeight = FontWeight.Bold,
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                            Text(
-                                text = DateFormat
-                                    .getDateTimeInstance(DateFormat.LONG, DateFormat.DEFAULT)
-                                    .format(alert.date),
-                                color = DayNightTheme.colors.captionColor,
-                                style = MaterialTheme.typography.labelMedium,
-                            )
-                            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.little_margin)))
-                            Text(
-                                text = alert.content,
-                                color = DayNightTheme.colors.bodyColor,
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            if (flashIndex.value == index) {
+                                AlertFlashBackground(Modifier.matchParentSize())
+                            }
+                            Column(
+                                modifier = Modifier.padding(dimensionResource(R.dimen.normal_margin)),
+                            ) {
+                                Text(
+                                    text = alert.description,
+                                    color = DayNightTheme.colors.titleColor,
+                                    fontWeight = FontWeight.Bold,
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                                Text(
+                                    text = DateFormat
+                                        .getDateTimeInstance(DateFormat.LONG, DateFormat.DEFAULT)
+                                        .format(alert.date),
+                                    color = DayNightTheme.colors.captionColor,
+                                    style = MaterialTheme.typography.labelMedium,
+                                )
+                                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.little_margin)))
+                                Text(
+                                    text = alert.content,
+                                    color = DayNightTheme.colors.bodyColor,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
                         }
                     }
                 }
@@ -129,5 +163,24 @@ class AlertActivity : GeoActivity() {
                 )
             }
         }
+    }
+
+    /**
+     * A brief tint behind the text that marks the alert the user jumped to: flashes on once, then
+     * fades out. It paints over the card's content area (the Surface's own background is
+     * underneath), so text stays legible.
+     */
+    @Composable
+    private fun AlertFlashBackground(modifier: Modifier = Modifier) {
+        val alpha = remember { Animatable(0f) }
+        LaunchedEffect(Unit) {
+            alpha.snapTo(0.4f)
+            alpha.animateTo(0f, animationSpec = tween(durationMillis = 1200))
+        }
+        Box(
+            modifier = modifier.background(
+                MaterialTheme.colorScheme.primary.copy(alpha = alpha.value)
+            )
+        )
     }
 }

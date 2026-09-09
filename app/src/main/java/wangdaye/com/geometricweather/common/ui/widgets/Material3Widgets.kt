@@ -3,6 +3,7 @@ package wangdaye.com.geometricweather.common.ui.widgets
 import android.content.Context
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -81,7 +82,11 @@ fun Material3CardListItem(
     elevation: Dp = defaultCardListItemElevation,
     content: @Composable () -> Unit,
 ) = Surface(
+    // A Surface without an explicit width wraps its content; in a LazyColumn item that makes a
+    // short alert's card shrink to the text width, leaving the right side of the row blank.
+    // List items are meant to span the row, so fill it before the margin padding.
     modifier = Modifier
+        .fillMaxWidth()
         .padding(
             start = dimensionResource(R.dimen.little_margin),
             end = dimensionResource(R.dimen.little_margin),

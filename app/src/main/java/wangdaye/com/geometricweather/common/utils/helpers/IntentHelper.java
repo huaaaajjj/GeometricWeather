@@ -110,8 +110,13 @@ public class IntentHelper {
     }
 
     public static void startAlertActivity(Activity activity, @Nullable String formattedId) {
+        startAlertActivity(activity, formattedId, 0);
+    }
+
+    public static void startAlertActivity(Activity activity, @Nullable String formattedId, int index) {
         Intent intent = new Intent(activity, AlertActivity.class);
         intent.putExtra(AlertActivity.KEY_FORMATTED_ID, formattedId);
+        intent.putExtra(AlertActivity.KEY_ALERT_INDEX, index);
         activity.startActivity(intent);
     }
 

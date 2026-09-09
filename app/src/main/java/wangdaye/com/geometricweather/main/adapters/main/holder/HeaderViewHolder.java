@@ -244,12 +244,13 @@ public class HeaderViewHolder extends AbstractMainViewHolder {
                 v -> IntentHelper.startAlertActivity((GeoActivity) context, formattedId);
 
         // A fresh adapter, then a jump into the middle of the loop so the very first alert can be
-        // swiped backwards to the last one.
+        // swiped backwards to the last one. Which page was tapped goes to the detail page too, so
+        // it can jump to that alert and flash it.
         AlertPagerAdapter adapter = new AlertPagerAdapter(
                 alertList,
                 MainThemeColorProvider.getColor(location, R.attr.colorBodyText),
                 MainThemeColorProvider.getColor(location, R.attr.colorCaptionText),
-                open
+                index -> IntentHelper.startAlertActivity((GeoActivity) context, formattedId, index)
         );
         mAlertCount = alertList.size();
         mAlertPager.setAdapter(adapter);
@@ -297,10 +298,14 @@ public class HeaderViewHolder extends AbstractMainViewHolder {
     /** One page per alert: the headline on one line, its publish time under it. */
     public static class AlertPagerAdapter extends RecyclerView.Adapter<AlertPagerAdapter.PageHolder> {
 
+        public interface AlertClickCallback {
+            void onClick(int index);
+        }
+
         private final List<Alert> mAlertList;
         private final int mDescriptionColor;
         private final int mDateColor;
-        private final View.OnClickListener mClickListener;
+        private final AlertClickCallback mClickListener;
 
         /**
          * The list is repeated this many times so a swipe never reaches an end: it carries on from
@@ -310,7 +315,7 @@ public class HeaderViewHolder extends AbstractMainViewHolder {
         private static final int LOOPS = 200;
 
         public AlertPagerAdapter(List<Alert> alertList, int descriptionColor, int dateColor,
-                                 View.OnClickListener clickListener) {
+                                 AlertClickCallback clickListener) {
             mAlertList = alertList;
             mDescriptionColor = descriptionColor;
             mDateColor = dateColor;
@@ -357,7 +362,13 @@ public class HeaderViewHolder extends AbstractMainViewHolder {
                             .format(alert.getDate())
             );
             holder.date.setTextColor(mDateColor);
-            holder.itemView.setOnClickListener(mClickListener);
+            // The adapter loops the list, so map the tapped position back to the real alert index.
+            holder.itemView.setOnClickListener(v -> {
+                int adapterPosition = holder.getAdapterPosition();
+                if (adapterPosition != RecyclerView.NO_POSITION && mClickListener != null) {
+                    mClickListener.onClick(adapterPosition % mAlertList.size());
+                }
+            });
         }
 
         @Override
