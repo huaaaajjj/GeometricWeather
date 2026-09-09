@@ -19,11 +19,17 @@
             android:textStyle="bold"
             style="@style/title_text" />
 
+        <!-- The gauge grid fills the whole card, and a RecyclerView eats the touch so the card's
+             own ripple never fires there — the one card that felt un-tappable. It never scrolls
+             (fixed wrap_content grid), so making it clickable with the same ripple foreground gives
+             click feedback over the grid at the shared brightness, without blocking the page scroll. -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/container_main_details_recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
+            android:clickable="true"
+            android:foreground="@drawable/selectable_item_background"
             tools:ignore="UnusedAttribute" />
 
     </LinearLayout>
