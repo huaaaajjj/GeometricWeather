@@ -39,6 +39,14 @@ enum class WeatherCode(val id: String) {
             if (value.lowercase().contains("haze")) {
                 return HAZE
             }
+            if (value.lowercase().contains("fog")) {
+                return FOG
+            }
+            // ponytail: no dust/sand code exists — fall back to the nearest low-visibility sky
+            // (same as CmaResultConverter's 尘→HAZE). Only Caiyun feeds raw DUST/SAND.
+            if (value.lowercase().contains("dust") || value.lowercase().contains("sand")) {
+                return HAZE
+            }
             if (value.lowercase().contains("sleet")) {
                 return SLEET
             }
