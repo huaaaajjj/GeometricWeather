@@ -3,10 +3,13 @@ package wangdaye.com.geometricweather.location;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 import androidx.core.app.ActivityCompat;
 
 import java.util.List;
@@ -19,6 +22,7 @@ import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.options.provider.LocationProvider;
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource;
 import wangdaye.com.geometricweather.common.utils.NetworkUtils;
+import wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper;
 import wangdaye.com.geometricweather.db.DatabaseHelper;
 import wangdaye.com.geometricweather.location.services.AMapLocationService;
 import wangdaye.com.geometricweather.location.services.AndroidLocationService;
@@ -154,22 +158,77 @@ public class LocationHelper {
                         return;
                     }
 
-                    requestAvailableWeatherLocation(
-                            context,
-                            location.copy(
-                                    null,
-                                    result.getLatitude(),
-                                    result.getLongitude(),
-                                    TimeZone.getDefault(),
-                                    result.getCountry(),
-                                    result.getProvince(),
-                                    result.getCity(),
-                                    result.getDistrict()
-                            ),
-                            usableCheckListener
-                    );
+                    // The native service (the default provider) and the IP fallback return bare
+                    // coordinates, AMap now and then an empty address, and most weather sources
+                    // echo the location back unnamed — so nothing named the place and the header
+                    // read 「当前位置」. Ask the platform geocoder then; on IO, since it blocks and
+                    // the SDK services all call back on the main thread.
+                    AsyncHelper.runOnIO(() -> {
+                        LocationService.Result named = hasAddress(result)
+                                ? result
+                                : reverseGeocode(context, result);
+                        boolean hasAddress = hasAddress(named);
+                        requestAvailableWeatherLocation(
+                                context,
+                                location.copy(
+                                        null,
+                                        result.getLatitude(),
+                                        result.getLongitude(),
+                                        TimeZone.getDefault(),
+                                        // An address replaces the old one whole: copy() reads null
+                                        // as "keep", which would pair a new city with the old
+                                        // district. No address at all keeps the last-known name.
+                                        hasAddress ? orEmpty(named.getCountry()) : null,
+                                        hasAddress ? orEmpty(named.getProvince()) : null,
+                                        hasAddress ? orEmpty(named.getCity()) : null,
+                                        hasAddress ? orEmpty(named.getDistrict()) : null
+                                ),
+                                usableCheckListener
+                        );
+                    });
                 }
         );
+    }
+
+    /**
+     * The platform geocoder's address for a bare fix, or the fix unchanged when it has none: no
+     * geocoder on the device, no network, or no answer. Blocks.
+     */
+    @WorkerThread
+    @SuppressWarnings("deprecation") // the listener overload is API 33+
+    private static LocationService.Result reverseGeocode(Context context,
+                                                         LocationService.Result fix) {
+        try {
+            if (Geocoder.isPresent()) {
+                List<Address> list = new Geocoder(context).getFromLocation(
+                        fix.getLatitude(), fix.getLongitude(), 1);
+                if (list != null && !list.isEmpty()) {
+                    Address a = list.get(0);
+                    return new LocationService.Result(
+                            fix.getLatitude(),
+                            fix.getLongitude(),
+                            a.getCountryName(),
+                            a.getAdminArea(),
+                            a.getLocality(),
+                            a.getSubLocality()
+                    );
+                }
+            }
+        } catch (Exception ignored) {
+            // IOException: offline, or the provider gave up.
+        }
+        return fix;
+    }
+
+    private static boolean hasAddress(LocationService.Result r) {
+        return !orEmpty(r.getCountry()).isEmpty()
+                || !orEmpty(r.getProvince()).isEmpty()
+                || !orEmpty(r.getCity()).isEmpty()
+                || !orEmpty(r.getDistrict()).isEmpty();
+    }
+
+    private static String orEmpty(String s) {
+        return s == null ? "" : s;
     }
 
     private void requestAvailableWeatherLocation(Context context,

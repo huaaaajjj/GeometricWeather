@@ -181,6 +181,25 @@ public class LocationHelperTest {
         assertEquals("54517_tj", listener.result.getCityId());
     }
 
+    /**
+     * A good fix — real coordinates — but the location service returned no address, as AMap
+     * intermittently does. The slot's previously-known name must survive rather than being
+     * overwritten with emptiness (which is what flips the header to 「当前位置」).
+     */
+    @Test
+    public void anEmptyAddressKeepsThePreviousName() {
+        mLocationService.result = new LocationService.Result(39.9f, 116.4f);
+        mWeatherService.resolved = Collections.singletonList(tianjin());
+
+        request(tianjin());
+
+        assertNotNull("the weather source must be handed a location", mWeatherService.received);
+        assertEquals("an empty-address fix must keep the previous city",
+                "天津市", mWeatherService.received.getCity());
+        assertEquals("...and the previous district",
+                "南开区", mWeatherService.received.getDistrict());
+    }
+
     // ---- threading ----
 
     /**
@@ -280,6 +299,7 @@ public class LocationHelperTest {
     private static final class FakeWeatherService extends WeatherService {
 
         volatile List<Location> resolved = new ArrayList<>();
+        volatile Location received;
 
         @Override
         public void requestWeather(Context context, Location location,
@@ -289,6 +309,7 @@ public class LocationHelperTest {
         @Override
         public void requestLocation(Context context, Location location,
                                     @NonNull RequestLocationCallback callback) {
+            received = location;
             AsyncHelper.runOnIO(() -> {
                 if (resolved.isEmpty()) {
                     callback.requestLocationFailed(location.getFormattedId());
