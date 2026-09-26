@@ -398,18 +398,40 @@ public class HeaderViewHolder extends AbstractMainViewHolder {
         // The 大/中/小 axis reads like a caption, so it takes the caption colour.
         mPrecipitationBar.setAxisColor(MainThemeColorProvider.getColor(location, R.attr.colorCaptionText));
 
-        String start = Base.getTime(context, minutelyList.get(0).getDate());
-        String end = Base.getTime(context, minutelyList.get(minutelyList.size() - 1).getDate());
-
-        // On the title row rather than a row of its own, so the chart keeps its height.
-        mMinutelyTime.setText(start + " - " + end);
+        // The chart now carries its own :00/:30 bottom axis, so the title row shows a one-line
+        // nowcast summary (starts / eases / lasts through) instead of the raw start-end times.
+        mMinutelyTime.setText(minutelySummary(context, minutelyList));
         mMinutelyTime.setTextColor(MainThemeColorProvider.getColor(location, R.attr.colorCaptionText));
 
+        String start = Base.getTime(context, minutelyList.get(0).getDate());
+        String end = Base.getTime(context, minutelyList.get(minutelyList.size() - 1).getDate());
         mMinutelyCard.setContentDescription(
                 context.getString(R.string.content_des_minutely_precipitation)
                         .replace("$1", start)
                         .replace("$2", end)
         );
+    }
+
+    /** A one-line nowcast from the wet/dry sequence: rain starting, easing, or lasting the window. */
+    private static String minutelySummary(Context context, List<Minutely> minutelyList) {
+        int size = minutelyList.size();
+        boolean rainingNow = minutelyList.get(0).isPrecipitation();
+        if (rainingNow) {
+            for (int i = 1; i < size; i++) {
+                if (!minutelyList.get(i).isPrecipitation()) {
+                    return context.getString(R.string.precipitation_summary_stopping)
+                            .replace("$1", String.valueOf(i));
+                }
+            }
+            return context.getString(R.string.precipitation_summary_continuous);
+        }
+        for (int i = 1; i < size; i++) {
+            if (minutelyList.get(i).isPrecipitation()) {
+                return context.getString(R.string.precipitation_summary_starting)
+                        .replace("$1", String.valueOf(i));
+            }
+        }
+        return context.getString(R.string.precipitation_summary_within);
     }
 
     /** An empty list answers false, so the card stays away when the source has no minutely block. */

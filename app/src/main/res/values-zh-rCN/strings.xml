@@ -137,6 +137,10 @@
     <string name="daily_overview">每日概览</string>
     <string name="hourly_overview">小时概览</string>
     <string name="precipitation_overview">降水概览</string>
+    <string name="precipitation_summary_starting">约 $1 分钟后开始降水</string>
+    <string name="precipitation_summary_stopping">约 $1 分钟后雨渐停</string>
+    <string name="precipitation_summary_continuous">未来两小时持续有降水</string>
+    <string name="precipitation_summary_within">未来两小时有降水</string>
     <string name="air_quality">空气质量</string>
     <string name="allergen">过敏原</string>
     <string name="life_details">详情数据</string>

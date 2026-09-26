@@ -140,6 +140,10 @@
     <string name="daily_overview">Daily forecast</string>
     <string name="hourly_overview">Hourly forecast</string>
     <string name="precipitation_overview">Precipitation forecast</string>
+    <string name="precipitation_summary_starting">Rain in about $1 min</string>
+    <string name="precipitation_summary_stopping">Rain easing in about $1 min</string>
+    <string name="precipitation_summary_continuous">Rain over the next 2 hours</string>
+    <string name="precipitation_summary_within">Precipitation within 2 hours</string>
     <string name="air_quality">Air quality</string>
     <string name="allergen">Allergen</string>
     <string name="life_details">Details</string>
