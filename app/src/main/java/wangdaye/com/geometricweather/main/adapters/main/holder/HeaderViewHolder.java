@@ -70,6 +70,18 @@ public class HeaderViewHolder extends AbstractMainViewHolder {
     private TemperatureUnit mTemperatureUnit;
     private int mAlertCount;
 
+    // The minutely nowcast: which kind of line to show and, for the countdown kinds, the absolute
+    // time the rain starts / eases. The count-down text is recomputed against the clock every minute
+    // (mMinutelyTicker) so it stays live; the kind and the transition time are frozen until a refresh
+    // rebinds — the wet/dry sequence is a forecast, only the clock moves between refreshes.
+    private static final int SUMMARY_STARTING = 0;
+    private static final int SUMMARY_STOPPING = 1;
+    private static final int SUMMARY_CONTINUOUS = 2;
+    private static final int SUMMARY_WITHIN = 3;
+    private int mMinutelySummaryType;
+    private long mMinutelyTransitionTime;
+    private final Runnable mMinutelyTicker;
+
     public HeaderViewHolder(ViewGroup parent, WeatherView weatherView) {
         super(
                 LayoutInflater
@@ -114,6 +126,7 @@ public class HeaderViewHolder extends AbstractMainViewHolder {
         mTemperatureUnit = null;
 
         mContainer.setOnClickListener(v -> weatherView.onClick());
+        mMinutelyTicker = this::updateMinutelySummary;
     }
 
     @SuppressLint("SetTextI18n")
@@ -382,6 +395,9 @@ public class HeaderViewHolder extends AbstractMainViewHolder {
     /** Same idea as the alert card: only there when there is rain to draw. */
     @SuppressLint("SetTextI18n")
     private void bindMinutely(@NonNull Location location, @NonNull Weather weather, int themeColor) {
+        // Any previous card's live countdown must stop before this holder is rebound to new data.
+        mMinutelyTime.removeCallbacks(mMinutelyTicker);
+
         List<Minutely> minutelyList = weather.getMinutelyForecast();
         if (!hasPrecipitation(minutelyList)) {
             mMinutelyCard.setVisibility(View.GONE);
@@ -398,9 +414,11 @@ public class HeaderViewHolder extends AbstractMainViewHolder {
         // The 大/中/小 axis reads like a caption, so it takes the caption colour.
         mPrecipitationBar.setAxisColor(MainThemeColorProvider.getColor(location, R.attr.colorCaptionText));
 
-        // The chart now carries its own :00/:30 bottom axis, so the title row shows a one-line
-        // nowcast summary (starts / eases / lasts through) instead of the raw start-end times.
-        mMinutelyTime.setText(minutelySummary(context, minutelyList));
+        // The chart carries its own :00/:30 bottom axis, so the title row shows a one-line nowcast
+        // summary (starts / eases / lasts through). Its countdown ticks against the clock — see
+        // prepareMinutelySummary / updateMinutelySummary.
+        prepareMinutelySummary(minutelyList);
+        updateMinutelySummary();
         mMinutelyTime.setTextColor(MainThemeColorProvider.getColor(location, R.attr.colorCaptionText));
 
         String start = Base.getTime(context, minutelyList.get(0).getDate());
@@ -412,26 +430,74 @@ public class HeaderViewHolder extends AbstractMainViewHolder {
         );
     }
 
-    /** A one-line nowcast from the wet/dry sequence: rain starting, easing, or lasting the window. */
-    private static String minutelySummary(Context context, List<Minutely> minutelyList) {
+    /**
+     * Reads the wet/dry sequence once into {@link #mMinutelySummaryType} and, for the two countdown
+     * kinds, the absolute time the rain starts / eases into {@link #mMinutelyTransitionTime}. Frozen
+     * until the next rebind; {@link #updateMinutelySummary} turns it into live text.
+     */
+    private void prepareMinutelySummary(List<Minutely> minutelyList) {
         int size = minutelyList.size();
         boolean rainingNow = minutelyList.get(0).isPrecipitation();
         if (rainingNow) {
             for (int i = 1; i < size; i++) {
                 if (!minutelyList.get(i).isPrecipitation()) {
-                    return context.getString(R.string.precipitation_summary_stopping)
-                            .replace("$1", String.valueOf(i));
+                    mMinutelySummaryType = SUMMARY_STOPPING;
+                    mMinutelyTransitionTime = minutelyList.get(i).getDate().getTime();
+                    return;
                 }
             }
-            return context.getString(R.string.precipitation_summary_continuous);
+            mMinutelySummaryType = SUMMARY_CONTINUOUS;
+            return;
         }
         for (int i = 1; i < size; i++) {
             if (minutelyList.get(i).isPrecipitation()) {
-                return context.getString(R.string.precipitation_summary_starting)
-                        .replace("$1", String.valueOf(i));
+                mMinutelySummaryType = SUMMARY_STARTING;
+                mMinutelyTransitionTime = minutelyList.get(i).getDate().getTime();
+                return;
             }
         }
-        return context.getString(R.string.precipitation_summary_within);
+        mMinutelySummaryType = SUMMARY_WITHIN;
+    }
+
+    /**
+     * Writes the nowcast line for the current clock and, while a start/ease is still ahead, schedules
+     * itself to run again exactly when the whole-minute count next changes — so the countdown stays
+     * live without a refresh. Stops on its own once the transition time has passed.
+     */
+    private void updateMinutelySummary() {
+        mMinutelyTime.removeCallbacks(mMinutelyTicker);
+        switch (mMinutelySummaryType) {
+            case SUMMARY_STARTING:
+            case SUMMARY_STOPPING: {
+                long deltaMs = mMinutelyTransitionTime - System.currentTimeMillis();
+                int res = mMinutelySummaryType == SUMMARY_STARTING
+                        ? R.string.precipitation_summary_starting
+                        : R.string.precipitation_summary_stopping;
+                mMinutelyTime.setText(
+                        context.getString(res).replace("$1", String.valueOf(minutesUntil(deltaMs))));
+                if (deltaMs > 0) {
+                    // Next whole-minute boundary: one tick per minute, not a busy poll.
+                    mMinutelyTime.postDelayed(mMinutelyTicker, nextMinuteTickDelay(deltaMs));
+                }
+                break;
+            }
+            case SUMMARY_CONTINUOUS:
+                mMinutelyTime.setText(context.getString(R.string.precipitation_summary_continuous));
+                break;
+            default:
+                mMinutelyTime.setText(context.getString(R.string.precipitation_summary_within));
+                break;
+        }
+    }
+
+    /** Whole minutes until the transition, clamped to 1 so a passed forecast never shows 0 / negative. */
+    static int minutesUntil(long deltaMs) {
+        return (int) Math.max(1, Math.ceil(deltaMs / 60000.0));
+    }
+
+    /** ms until the ceil-minute countdown next changes value; a full minute when exactly on a boundary. */
+    static long nextMinuteTickDelay(long deltaMs) {
+        return ((deltaMs - 1) % 60000L) + 1L;
     }
 
     /** An empty list answers false, so the card stays away when the source has no minutely block. */
@@ -466,6 +532,7 @@ public class HeaderViewHolder extends AbstractMainViewHolder {
 
     @Override
     public void onRecycleView() {
+        mMinutelyTime.removeCallbacks(mMinutelyTicker);
     }
 
     /**
