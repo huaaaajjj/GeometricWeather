@@ -177,6 +177,11 @@ class MainActivity : GeoActivity(),
         viewModel.checkToUpdate()
     }
 
+    override fun onStop() {
+        super.onStop()
+        viewModel.onLeaveForeground()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         supportFragmentManager.unregisterFragmentLifecycleCallbacks(fragmentsLifecycleCallback)

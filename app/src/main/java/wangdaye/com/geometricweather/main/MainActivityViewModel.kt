@@ -45,12 +45,12 @@ class MainActivityViewModel @Inject constructor(
     private var updating = false
 
     /**
-     * Set by [checkToUpdate] (MainActivity.onStart): the app is open in front of the user, so the
-     * current location refreshes no matter how young the cache is. Swiping between locations runs
-     * the same check through [setCurrentLocation] with the flag clear and keeps the interval gate,
-     * so paging never refetches fresh pages.
+     * True between [checkToUpdate] (MainActivity.onStart) and [onLeaveForeground] (onStop): while the
+     * app is in front of the user, the location being viewed refreshes no matter how young the cache
+     * is — opening the app or switching cities never leaves you on stale data needing a manual pull.
+     * Background / widget updates run with this clear and keep the interval gate.
      */
-    private var foregroundRefreshPending = false
+    private var foregrounded = false
 
     companion object {
         private const val KEY_FORMATTED_ID = "formatted_id"
@@ -197,26 +197,20 @@ class MainActivityViewModel @Inject constructor(
     private fun checkToUpdateCurrentLocation() {
         // is not loading
         if (!updating) {
-            val foregrounded = foregroundRefreshPending
-
-            // if already valid, just return — unless the app was just opened, which always
-            // refreshes whatever the cache age.
+            // While foregrounded, the viewed location always refreshes whatever the cache age;
+            // otherwise keep the interval gate (background paging never refetches fresh pages).
             if (!foregrounded && currentLocationIsValid()) {
                 return
             }
 
-            // if is not valid, we need:
-            // update if init completed.
-            // otherwise, mark a loading state and wait the init progress complete.
+            // update if init completed; otherwise mark loading and wait for init, which re-enters
+            // here through setCurrentLocation.
             if (initCompleted) {
-                foregroundRefreshPending = false
                 updateWithUpdatingChecking(
                     triggeredByUser = false,
                     checkPermissions = true,
                 )
             } else {
-                // keep the flag pending: init completes into setCurrentLocation, which re-enters
-                // here with initCompleted true and the flag still honouring the open.
                 loading.setValue(true)
                 updating = false
             }
@@ -224,7 +218,6 @@ class MainActivityViewModel @Inject constructor(
         }
 
         // is loading: the in-flight update already delivers fresh data.
-        foregroundRefreshPending = false
     }
 
     private fun currentLocationIsValid() = currentLocation.value?.location?.weather?.isValid(
@@ -308,8 +301,13 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun checkToUpdate() {
-        foregroundRefreshPending = true
+        foregrounded = true
         checkToUpdateCurrentLocation()
+    }
+
+    /** MainActivity.onStop: the app left the foreground, so drop the always-refresh behaviour. */
+    fun onLeaveForeground() {
+        foregrounded = false
     }
 
     fun updateLocationFromBackground(location: Location) {
