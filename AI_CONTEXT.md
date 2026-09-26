@@ -14,7 +14,7 @@
 
 ## 实现状态
 
-- 当前发布版本：**3.6.16**（versionCode 30616，正式版，2026-09-09 发）。上一发布版 3.6.15（30615，正式版）。主分支 `master`（基于 v3.3.6 重建线）。
+- 当前发布版本：**3.6.18**（versionCode 30618，正式版，2026-09-26 发）。上一发布版 3.6.17（30617，正式版，2026-09-10 由 tag CI 自动建、含 fog 修复）。主分支 `master`（基于 v3.3.6 重建线）。
 - 10 个天气源：WEATHERAPI（默认）、OPEN_METEO、METNO（挪威气象局，免 key 全球）、XIAOMI（小米天气，免 key，中国区最全 + 海外走 Accu 后端）、CAIYUN、APIHZ（中国天气网）、CMA（中国气象局）、MF（仅法国）、OWM 可用；**ACCU 的内置 Key 已过期，当前不可用**（见「已知问题」）。加上 COMPOSITE（多源聚合）共 11 项可选。
 - 工具链已现代化（见版本矩阵）；RxJava 已全部迁移到 Coroutines；GreenDAO 已迁移到 Room。
 
@@ -136,6 +136,8 @@
 **一条已复核掉的旧约束**：「CI 不可靠（jitpack 403）」在 2026-09-01 的三次 tag 构建里全部 success（各 6~7 分钟）。本地构建 + 真机验证仍不能省（那是发版门槛，见 `/release`），但「CI 一定失败」这个前提不成立了；推不上去是本机网络问题，与 CI 无关。
 
 ## 变更日志（按版本）
+
+- **发版（2026-09-26）**：v3.6.18 **正式版**。包 `app/build/outputs/apk/pub/release/GeometricWeather-v3.6.18_pub.apk`，sha256 `dab0635b6974aa3532cd862bc499b622b5b35a3c9417d9eafc143c97529ffe2a`，已签名、R8 开启，`output-metadata.json` 为 30618 / `3.6.18_pub`。mapping 备份到 `D:\Documents\geoweather-release-mappings\v3.6.18-pubRelease-mapping.txt.gz`。本版两项：**分钟级降水图 :00/:30 竖虚线时间提示**、**定位无地名补平台反查**（见下两条）。`./gradlew test` 六变体全绿。**真机冒烟（MI 9 / Android 14，pubRelease 签名包，`install -r` 升级）**：`dumpsys package` 确认 versionName=3.6.18_pub / 30618；冷启动不崩、联网拉天气正常显示（29° 多云、每日概览 Open-Meteo 有预报，Gson DTO 未被 R8 删）、定位到区县（南开区）、`logcat -b crash` 空（同期 GMS keystore 崩溃与本应用无关）。**踩坑：v3.6.17 其实已发**——9/10 推 3.6.17 tag 时 CI Action 自动建了正式版 release（`prerelease:false`、附 CI 自建包、就是含 fog 修复那版，已被下载 8 次），本仓库日志此前漏记、误以为「未发版」；故本次两项新改动改从 **3.6.18** 发（30618 递增、老用户能收到更新），未去覆盖已公开的 3.6.17。**流程**：feature×2 + docs + 版本 + 日志修正五提交一并推（`65473d7..438132e`）；tag `v3.6.18` run `36227481627` success；Action 自动建正式版（CI 包 sha256 `b835b9ab…`），`gh release edit`（标题 "3.6.18" + 本地 notes）+ `gh release upload --clobber` 换本地包，**回传 sha256 与本地 `dab0635b…` 逐字节一致**。notes 存 `.tmpshots/release-notes-3.6.18.md`。
 
 - **分钟级降水图加 :00/:30 竖虚线时间提示（3.6.18）**。`降水概览`（`PrecipitationBar`，2 小时逐分钟柱状图）此前横轴只有位置、无时间刻度，卡标题只给「起-止」两点。现每个整点/半点（每小时 :00 与 :30）画一条竖虚线 + 顶部居中的时刻文案。**实现**（`PrecipitationBar.java`）：`setMinutelyList` 里一次性算标记（`computeTimeMarks`：复用一个 `Calendar`、按**设备默认时区**取每条 `Minutely` 的分钟，==0||30 的槽记下 index + 格式化时刻，缓存进 `int[]/String[]`）——**不在 `onDraw` 里分配**（该方法逐帧跑动画，注释已警示）。`onDraw`：竖虚线复用现成的 `mAxisLinePaint`（`DashPathEffect{4,4}`，与大/中/小阈值线同款）、画在柱子**下方**保持柱子视觉主导；时刻文案用 `mAxisTextPaint`（10sp、`colorCaptionText`）在 `restore` 后于顶部**居中并夹在绘图区内**，避开右侧大/中/小 gutter。`markX` 按槽中心映射、兼容 LTR/RTL。时区/12-24 时跟卡标题的 `Base.getTime` 保持一致（都用设备默认区、`DisplayUtils.is12Hour`）；跨 30/45 分偏移时区（印度/尼泊尔）本地钟仍有 :00/:30，无碍；`minuteInterval>1` 的源缺某个整点则跳过、不崩。**不引依赖、不改 UI 结构、不碰 schema**（`Minutely.intensity` 本就不入库，标记只依赖 `date`）。**测试**：新增 `app/src/test/java/common/ui/widgets/PrecipitationBarTest.kt`（Robolectric，反射读 `mMarkIndices/mMarkLabels`，同 `InkPageIndicatorTest` 风格）——非整点起始（13:17 起 90 分钟 → 标 13:30/14:00/14:30，index 13/43/73）钉住「按真实钟点而非索引选槽」，另加空窗口零标记；`TimeZone`+`Locale` 双固定防环境泄漏。**对抗式审查**（工作流 5 维 → 逐条对抗验证）：仅 1 条 low——测试未固定 Locale、断言正则假设 ASCII 数字（阿拉伯-印度数字下会假失败），已修（补 `Locale.setDefault(Locale.US)` 于同一 guard）。`./gradlew test` 六变体全绿。**真机验证（MI 9 / Android 14，pubDebug）**：`adb shell screencap` 对动画首页照样出图（只有 uiautomator dump/手势注入被动画卡住，像素抓取不受影响）；因当前定位南开区无分钟级雨，离线注入法验证——飞行模式关网后把已缓存的朝阳降水序列 pattern 拷到当前位（`cityId 101924`）的 minutely 缓存、删 wal/shm 让 Room 读改后库，重启截图：`降水概览` 窗口 14:45-16:44 上准确出现 **15:00 / 15:30 / 16:00 / 16:30** 四条竖虚线 + 顶部时刻文案，竖虚线与阈值横虚线同款、柱子压其上，本应用 crash buffer 空（同期 177 条崩溃全是 GMS keystore 噪声、非本应用）。验毕关飞行模式，注入数据下次联网刷新自愈。
 
