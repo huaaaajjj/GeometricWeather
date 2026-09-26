@@ -108,7 +108,9 @@ class SettingsManager private constructor(context: Context) {
             notifySettingsChanged()
         }
         get() = WeatherSource.getInstance(
-            config.getString("weather_source", "weatherapi") ?: ""
+            // 多源聚合(COMPOSITE)作为默认：新装 / 新加城市默认走聚合（分钟级在中国由小米提供）。
+            // 现有用户已存的 weather_source 不受影响。
+            config.getString("weather_source", "composite") ?: ""
         )
 
     var locationProvider: LocationProvider

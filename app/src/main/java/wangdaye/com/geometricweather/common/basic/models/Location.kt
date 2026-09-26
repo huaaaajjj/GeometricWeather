@@ -53,7 +53,7 @@ class Location(
 
         @JvmStatic
         @JvmOverloads
-        fun buildLocal(weatherSource: WeatherSource = WeatherSource.WEATHERAPI): Location {
+        fun buildLocal(weatherSource: WeatherSource = WeatherSource.COMPOSITE): Location {
             return Location(
                 cityId =  NULL_ID,
                 latitude = 0f,
