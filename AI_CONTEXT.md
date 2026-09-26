@@ -14,7 +14,7 @@
 
 ## 实现状态
 
-- 当前发布版本：**3.6.19**（versionCode 30619，正式版，2026-09-26 发）。上一发布版 3.6.18（30618，正式版，2026-09-26 发）。主分支 `master`（基于 v3.3.6 重建线）。
+- 当前发布版本：**3.6.20**（versionCode 30620，正式版，2026-09-26 发）。上一发布版 3.6.19（30619，正式版，2026-09-26 发）。主分支 `master`（基于 v3.3.6 重建线）。
 - 10 个天气源：COMPOSITE（多源聚合，**新装/新加城市默认**，中国区分钟级由小米供）、WEATHERAPI、OPEN_METEO、METNO（挪威气象局，免 key 全球）、XIAOMI（小米天气，免 key，中国区最全 + 海外走 Accu 后端）、CAIYUN、APIHZ（中国天气网）、CMA（中国气象局）、MF（仅法国）、OWM 可用；**ACCU 的内置 Key 已过期，当前不可用**（见「已知问题」）。加上 COMPOSITE 共 11 项可选。
 - 工具链已现代化（见版本矩阵）；RxJava 已全部迁移到 Coroutines；GreenDAO 已迁移到 Room。
 
@@ -136,6 +136,8 @@
 **一条已复核掉的旧约束**：「CI 不可靠（jitpack 403）」在 2026-09-01 的三次 tag 构建里全部 success（各 6~7 分钟）。本地构建 + 真机验证仍不能省（那是发版门槛，见 `/release`），但「CI 一定失败」这个前提不成立了；推不上去是本机网络问题，与 CI 无关。
 
 ## 变更日志（按版本）
+
+- **分钟级降水概述改成实时倒计时（3.6.20）**。3.6.19 的降水概述「约 X 分钟后开始/渐停降水」把 wet/dry 序列的**索引**当分钟数，绑定后就冻住、非刷新不变（用户：「时间不会改变除非刷新，改成实时的」）。改法（`HeaderViewHolder`）：`prepareMinutelySummary` 只在绑定时定下**种类**（开始/渐停/持续/两小时内）与转折点的**绝对时刻**（`minutelyList.get(i).getDate()`，冻结至下次刷新）；`updateMinutelySummary` 按当前钟算 `minutesUntil = max(1, ceil((转折时刻 - now)/60000))` 写文案，并用 `mMinutelyTicker`（`View.postDelayed`）在**下一个整分边界** `nextMinuteTickDelay = ((deltaMs-1)%60000)+1` 处自调一次——每分钟一跳、非忙轮询，转折时刻过后（`deltaMs<=0`）自动停。**只有时间在动，内容（种类/转折点）等手动刷新**（符合用户要求）。顺带修了 3.6.19 用索引当分钟的隐性错——绝对时刻对 `minuteInterval>1` 的源也对。清理：`onRecycleView` + 每次 `bindMinutely` 开头 `removeCallbacks` 防泄漏/重复。**测试**：`HeaderViewHolderCountdownTest`（纯 JVM）钉住 ceil 取整、`max(1,…)` 钳位、整分边界的 tick 延迟（错了会忙轮询或跳分），以及「等一个延迟后分钟数恰好减一」的不变式。`./gradlew test` 六变体全绿。
 
 - **发版（2026-09-26）**：v3.6.19 **正式版**。包 `app/build/outputs/apk/pub/release/GeometricWeather-v3.6.19_pub.apk`，sha256 `1eb34d9ee1f0f9a8e8c09abdb3912ee50a0efa837fd35557859f2506653ce664`，已签名、R8 开启，`output-metadata.json` 为 30619 / `3.6.19_pub`。mapping 备份到 `D:\Documents\geoweather-release-mappings\v3.6.19-pubRelease-mapping.txt.gz`。本版三项：**默认源改 COMPOSITE**、**前台强制刷新**、**分钟级降水图重做 + 标题降水概述**（见下三条）。`./gradlew test` 六变体全绿（一度因残留 daemon 把机器逼到剩 652MB 触发 G1 mmap 崩溃，`./gradlew --stop` 释放到 5.5GB 后重跑即绿——非代码问题）。**真机冒烟（MI 9 / Android 14，pubRelease 签名包，先卸载再装的全新安装）**：`dumpsys package` 确认 versionName=3.6.19_pub / 30619；走完定位授权引导→冷启动不崩、**默认 COMPOSITE 源**联网拉天气正常显示（南开区 25° 多云、体感 27°、AQI 良、每日概览 Open-Meteo 有预报，Gson DTO 未被 R8 删）、定位到区县（南开区）、`logcat -b crash` 空；「更新于 20:23」跟到打开时刻，顺带验到前台强刷。**流程**：feat×3 + build + docs 五提交一并推（`76fce42..98f02d1`，`git push` 直通、未走 REST 兜底）；tag `v3.6.19` run `36242566068` success；Action 自动建**正式版**（`prerelease:false`、附 CI 包 size 16788653），`gh release edit`（标题 "3.6.19" + 本地 notes）+ `gh release upload --clobber` 换本地包（size 16788688），**回传 sha256 与本地 `1eb34d9e…` 逐字节一致**（连续第七次）。notes 存 `.tmpshots/release-notes-3.6.19.md`。
 
