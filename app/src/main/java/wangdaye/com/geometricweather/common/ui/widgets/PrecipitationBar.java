@@ -12,10 +12,15 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import wangdaye.com.geometricweather.R;
 import wangdaye.com.geometricweather.common.basic.models.weather.Minutely;
+import wangdaye.com.geometricweather.common.utils.DisplayUtils;
 
 /**
  * The two-hour minute-by-minute precipitation window as a bar chart against an absolute scale:
@@ -45,6 +50,10 @@ public class PrecipitationBar extends View {
     private static final float UNKNOWN_COLUMN_FRACTION = 0.5f;
 
     @Nullable private List<Minutely> mMinutelyList;
+    /** Precomputed :00 / :30 marks: the slot index each falls on, and its clock-time label. */
+    private int[] mMarkIndices = new int[0];
+    private String[] mMarkLabels = new String[0];
+    private final SimpleDateFormat mMarkTimeFormat;
     private final Paint mBarPaint;
     private final Paint mFramePaint;
     private final Paint mAxisLinePaint;
@@ -76,6 +85,9 @@ public class PrecipitationBar extends View {
         mAxisTextPaint = new Paint();
         mAxisTextPaint.setAntiAlias(true);
         mAxisTextPaint.setTextSize(getResources().getDisplayMetrics().scaledDensity * 10f);
+        // Match the card's start/end times (Base.getTime): the device 12/24h setting, device zone.
+        mMarkTimeFormat = new SimpleDateFormat(
+                DisplayUtils.is12Hour(context) ? "h:mm" : "HH:mm", Locale.getDefault());
         // Cached once: onDraw runs per frame during animations and must not touch resources.
         mLabelHeavy = context.getString(R.string.precipitation_level_heavy);
         mLabelModerate = context.getString(R.string.precipitation_level_moderate);
@@ -98,6 +110,8 @@ public class PrecipitationBar extends View {
         float height = getMeasuredHeight();
         float plotLeft = gutter;
         float plotWidth = width - gutter * 2;
+        float itemWidth = plotWidth / mMinutelyList.size();
+        boolean rtl = getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
 
         // The light frame, then the guide lines and columns clipped inside it.
         RectF frame = new RectF(plotLeft, 0, plotLeft + plotWidth, height);
@@ -112,12 +126,13 @@ public class PrecipitationBar extends View {
         drawThresholdLine(canvas, plotLeft, plotWidth, THRESHOLD_HEAVY);
         drawThresholdLine(canvas, plotLeft, plotWidth, THRESHOLD_MODERATE);
         drawThresholdLine(canvas, plotLeft, plotWidth, THRESHOLD_LIGHT);
+        // Under the bars, like the threshold lines, so columns stay visually dominant.
+        drawTimeMarks(canvas, plotLeft, plotWidth, itemWidth, height, rtl);
 
         mBarPaint.setColor(mPrecipitationColor);
-        float itemWidth = plotWidth / mMinutelyList.size();
         float barWidth = itemWidth * BAR_WIDTH_FRACTION;
         float barMargin = (itemWidth - barWidth) / 2f;
-        if (getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
+        if (rtl) {
             float right = plotLeft + plotWidth;
             for (Minutely m : mMinutelyList) {
                 float left = right - itemWidth;
@@ -139,6 +154,7 @@ public class PrecipitationBar extends View {
         }
         canvas.restore();
 
+        drawTimeMarkLabels(canvas, plotLeft, plotWidth, itemWidth, rtl);
         drawAxisLabels(canvas, width);
     }
 
@@ -146,6 +162,36 @@ public class PrecipitationBar extends View {
                                    float threshold) {
         float y = pxOf(threshold);
         canvas.drawLine(plotLeft, y, plotLeft + plotWidth, y, mAxisLinePaint);
+    }
+
+    /** Vertical dashed guides at each :00 / :30 slot, dashed like the threshold lines. */
+    private void drawTimeMarks(Canvas canvas, float plotLeft, float plotWidth,
+                               float itemWidth, float height, boolean rtl) {
+        for (int index : mMarkIndices) {
+            float x = markX(index, plotLeft, plotWidth, itemWidth, rtl);
+            canvas.drawLine(x, 0, x, height, mAxisLinePaint);
+        }
+    }
+
+    /** The clock-time label for each :00 / :30 mark, near the top, centered on its line. */
+    private void drawTimeMarkLabels(Canvas canvas, float plotLeft, float plotWidth,
+                                    float itemWidth, boolean rtl) {
+        mAxisTextPaint.setColor(mAxisColor);
+        float baseline = mAxisTextPaint.getTextSize() * 1.2f;
+        float plotRight = plotLeft + plotWidth;
+        for (int k = 0; k < mMarkIndices.length; k++) {
+            float x = markX(mMarkIndices[k], plotLeft, plotWidth, itemWidth, rtl);
+            String label = mMarkLabels[k];
+            float w = mAxisTextPaint.measureText(label);
+            float left = Math.max(plotLeft, Math.min(x - w / 2f, plotRight - w));
+            canvas.drawText(label, left, baseline, mAxisTextPaint);
+        }
+    }
+
+    /** Center x of a slot, left→right or right→left, matching how the columns are laid out. */
+    private float markX(int index, float plotLeft, float plotWidth, float itemWidth, boolean rtl) {
+        return rtl ? plotLeft + plotWidth - (index + 0.5f) * itemWidth
+                : plotLeft + (index + 0.5f) * itemWidth;
     }
 
     /** 大/中/小 right-aligned inside the right-hand gutter, at their threshold heights. */
@@ -183,7 +229,36 @@ public class PrecipitationBar extends View {
 
     public void setMinutelyList(@Nullable List<Minutely> minutelyList) {
         mMinutelyList = minutelyList;
+        computeTimeMarks();
         invalidate();
+    }
+
+    /**
+     * Find the slots whose wall-clock minute is :00 or :30 and cache their index + label, once per
+     * bind — onDraw runs per frame during animations and must not allocate a Calendar each pass.
+     */
+    private void computeTimeMarks() {
+        if (mMinutelyList == null || mMinutelyList.isEmpty()) {
+            mMarkIndices = new int[0];
+            mMarkLabels = new String[0];
+            return;
+        }
+        Calendar calendar = Calendar.getInstance();
+        List<Integer> indices = new ArrayList<>();
+        List<String> labels = new ArrayList<>();
+        for (int i = 0; i < mMinutelyList.size(); i++) {
+            calendar.setTime(mMinutelyList.get(i).getDate());
+            int minute = calendar.get(Calendar.MINUTE);
+            if (minute == 0 || minute == 30) {
+                indices.add(i);
+                labels.add(mMarkTimeFormat.format(mMinutelyList.get(i).getDate()));
+            }
+        }
+        mMarkIndices = new int[indices.size()];
+        for (int k = 0; k < indices.size(); k++) {
+            mMarkIndices[k] = indices.get(k);
+        }
+        mMarkLabels = labels.toArray(new String[0]);
     }
 
     public void setPrecipitationColor(@ColorInt int precipitationColor) {
