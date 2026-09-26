@@ -14,8 +14,8 @@
 
 ## 实现状态
 
-- 当前发布版本：**3.6.18**（versionCode 30618，正式版，2026-09-26 发）。上一发布版 3.6.17（30617，正式版，2026-09-10 由 tag CI 自动建、含 fog 修复）。主分支 `master`（基于 v3.3.6 重建线）。
-- 10 个天气源：WEATHERAPI（默认）、OPEN_METEO、METNO（挪威气象局，免 key 全球）、XIAOMI（小米天气，免 key，中国区最全 + 海外走 Accu 后端）、CAIYUN、APIHZ（中国天气网）、CMA（中国气象局）、MF（仅法国）、OWM 可用；**ACCU 的内置 Key 已过期，当前不可用**（见「已知问题」）。加上 COMPOSITE（多源聚合）共 11 项可选。
+- 当前发布版本：**3.6.19**（versionCode 30619，正式版，2026-09-26 发）。上一发布版 3.6.18（30618，正式版，2026-09-26 发）。主分支 `master`（基于 v3.3.6 重建线）。
+- 10 个天气源：COMPOSITE（多源聚合，**新装/新加城市默认**，中国区分钟级由小米供）、WEATHERAPI、OPEN_METEO、METNO（挪威气象局，免 key 全球）、XIAOMI（小米天气，免 key，中国区最全 + 海外走 Accu 后端）、CAIYUN、APIHZ（中国天气网）、CMA（中国气象局）、MF（仅法国）、OWM 可用；**ACCU 的内置 Key 已过期，当前不可用**（见「已知问题」）。加上 COMPOSITE 共 11 项可选。
 - 工具链已现代化（见版本矩阵）；RxJava 已全部迁移到 Coroutines；GreenDAO 已迁移到 Room。
 
 ### 版本矩阵
@@ -136,6 +136,12 @@
 **一条已复核掉的旧约束**：「CI 不可靠（jitpack 403）」在 2026-09-01 的三次 tag 构建里全部 success（各 6~7 分钟）。本地构建 + 真机验证仍不能省（那是发版门槛，见 `/release`），但「CI 一定失败」这个前提不成立了；推不上去是本机网络问题，与 CI 无关。
 
 ## 变更日志（按版本）
+
+- **默认天气源改为 COMPOSITE 多源聚合（3.6.19）**。此前新装/新加城市默认落 `WEATHERAPI`（免费档只给 3 天·72 时、且无分钟级），是全局体验最弱的一档。改法：`SettingsManager.weatherSource` 的 `getString` 默认值 `"weatherapi"`→`"composite"`，`Location.buildLocal` 的默认参数 `WEATHERAPI`→`COMPOSITE`。**只动默认值、不迁移已存设置**——老用户 `config` 里已写死 `weather_source`，读到的仍是各自旧源，只有从没设过的新装/新城走聚合（中国区分钟级由小米供、日 APIHZ、逐时小米、现况/AQI 彩云，超出部分 Open-Meteo 追加）。不碰 schema。真机冒烟见发版条：全新装默认 COMPOSITE，南开区正常出 25°/多云/AQI 良、每日概览 Open-Meteo 有预报（Gson DTO 未被 R8 删）。
+
+- **前台期间当前城市总是刷新，不再停在旧数据（3.6.19）**。此前 `foregroundRefreshPending` 是**一次性**标志：`checkToUpdate`（onStart）置真、`checkToUpdateCurrentLocation` 消费后立即清掉，于是只有「刚打开那一下」无视缓存龄强刷，其后在前台切城市/回到前台都退回间隔门控，可能停在旧页要手动下拉。改法：`foregroundRefreshPending`（一次性）→ `foregrounded`（布尔状态），在 `checkToUpdate`（onStart）置真、新增 `MainActivity.onStop()→viewModel.onLeaveForeground()` 置假；`checkToUpdateCurrentLocation` 只读不清。语义：**前台可见期间，当前查看的定位城市一律无视缓存龄强刷**（开 app / 切城市都不留旧数据）；后台/widget 更新 `foregrounded` 恒假、保留间隔门控（后台翻页不重复拉新页）。真机验证：开 app 后「更新于」跟到当前分钟（20:23 开、20:24 见），确认打开即刷。
+
+- **分钟级降水图重做成组合图 + 标题行改降水概述（3.6.19）**。`降水概览`（`PrecipitationBar`）从「纯柱状图 + 顶部时刻文案」重做为**组合图**：柔和渐变填充包络（`LinearGradient` 110→12 alpha，按 plotHeight/颜色缓存 `Shader`、不在 `onDraw` 里重建）+ 按雨级着色的圆角柱（小/中/大/暴 四档 alpha 130/180/215/255，未知强度 150）+ 掠过柱顶的趋势线（1.5dp 圆头描边），底部新增 :00/:30 时间轴刻度与时钟标签（从原来的顶部挪到底轴、腾出绘图高度），卡高 80→104dp。**标题行**由原来「起-止两点」改为一行**降水概述**（`HeaderViewHolder.minutelySummary`：扫 wet/dry 序列 → 约 X 分钟后开始 / 约 X 分钟后渐停 / 持续两小时 / 两小时内有降水），新增 4 条 string（中英）。纯自定义 View 绘制 + 文案，不引依赖、不碰 schema（`Minutely.intensity` 本就不入库，概述只依赖 wet/dry）。`./gradlew test` 六变体全绿。
 
 - **发版（2026-09-26）**：v3.6.18 **正式版**。包 `app/build/outputs/apk/pub/release/GeometricWeather-v3.6.18_pub.apk`，sha256 `dab0635b6974aa3532cd862bc499b622b5b35a3c9417d9eafc143c97529ffe2a`，已签名、R8 开启，`output-metadata.json` 为 30618 / `3.6.18_pub`。mapping 备份到 `D:\Documents\geoweather-release-mappings\v3.6.18-pubRelease-mapping.txt.gz`。本版两项：**分钟级降水图 :00/:30 竖虚线时间提示**、**定位无地名补平台反查**（见下两条）。`./gradlew test` 六变体全绿。**真机冒烟（MI 9 / Android 14，pubRelease 签名包，`install -r` 升级）**：`dumpsys package` 确认 versionName=3.6.18_pub / 30618；冷启动不崩、联网拉天气正常显示（29° 多云、每日概览 Open-Meteo 有预报，Gson DTO 未被 R8 删）、定位到区县（南开区）、`logcat -b crash` 空（同期 GMS keystore 崩溃与本应用无关）。**踩坑：v3.6.17 其实已发**——9/10 推 3.6.17 tag 时 CI Action 自动建了正式版 release（`prerelease:false`、附 CI 自建包、就是含 fog 修复那版，已被下载 8 次），本仓库日志此前漏记、误以为「未发版」；故本次两项新改动改从 **3.6.18** 发（30618 递增、老用户能收到更新），未去覆盖已公开的 3.6.17。**流程**：feature×2 + docs + 版本 + 日志修正五提交一并推（`65473d7..438132e`）；tag `v3.6.18` run `36227481627` success；Action 自动建正式版（CI 包 sha256 `b835b9ab…`），`gh release edit`（标题 "3.6.18" + 本地 notes）+ `gh release upload --clobber` 换本地包，**回传 sha256 与本地 `dab0635b…` 逐字节一致**。notes 存 `.tmpshots/release-notes-3.6.18.md`。
 
