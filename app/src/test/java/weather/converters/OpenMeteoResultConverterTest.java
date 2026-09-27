@@ -109,6 +109,29 @@ public class OpenMeteoResultConverterTest {
         assertEquals(mLocation.getCityId(), weather.getBase().getCityId());
     }
 
+    /**
+     * Open-Meteo's daily arrays can carry a trailing day past the model horizon with every value
+     * null (temperature and weather code). Built as-is it renders 0° under an "unknown" icon and —
+     * appended past a domestic leader's shorter range in the composite — becomes the last day of
+     * the overview showing 0°. A day with no data at all must be dropped, not shown.
+     */
+    @Test
+    public void aTrailingDayWithNoDataIsDropped() {
+        OpenMeteoResult result = load("forecast.json");
+        int before = result.daily.time.size();
+        result.daily.time.add("2026-08-14");
+        result.daily.weatherCode.add(null);
+        result.daily.temperatureMax.add(null);
+        result.daily.temperatureMin.add(null);
+
+        Weather weather = OpenMeteoResultConverter.convert(mContext, mLocation, result);
+
+        assertNotNull(weather);
+        assertEquals(before, weather.getDailyForecast().size());
+        assertEquals("2026-08-13", format(
+                weather.getDailyForecast().get(weather.getDailyForecast().size() - 1).getDate()));
+    }
+
     @Test
     public void fullResponseConvertsCompletely() {
         Weather weather = OpenMeteoResultConverter.convert(mContext, mLocation, load("forecast.json"));

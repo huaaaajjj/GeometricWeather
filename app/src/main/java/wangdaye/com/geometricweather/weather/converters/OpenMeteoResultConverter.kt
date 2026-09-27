@@ -131,6 +131,14 @@ object OpenMeteoResultConverter {
             val weatherCode = getVal(daily.weatherCode, i)
             val temperatureMax = getIntVal(daily.temperatureMax, i)
             val temperatureMin = getIntVal(daily.temperatureMin, i)
+            // The daily arrays can carry a trailing day past the model horizon with every value
+            // null; built as-is it renders 0° under an "unknown" icon (and, appended past a domestic
+            // leader's range, becomes the last day of the overview). Drop a day with no data at all.
+            if (weatherCode == null
+                    && getNullableIntVal(daily.temperatureMax, i) == null
+                    && getNullableIntVal(daily.temperatureMin, i) == null) {
+                continue
+            }
             val precipitation = getFloatVal(daily.precipitationSum, i)
             val precipitationProbability = getFloatVal(daily.precipitationProbabilityMax, i)
             val windSpeed = getFloatValOrZero(daily.windSpeedMax, i)
