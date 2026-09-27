@@ -447,6 +447,12 @@ public class MaterialLiveWallpaperService extends WallpaperService {
                     mAdaptiveSize[1] = height;
 
                     setWeatherImplementor();
+
+                    // Vote for the refresh rate here too: startDrawing() may run before the
+                    // surface is valid (the vote would be skipped), leaving a high-refresh panel
+                    // idling at 30/60Hz. surfaceChanged is the point the surface is guaranteed
+                    // valid, so the vote reliably lands.
+                    requestHighRefreshRate();
                 }
 
                 @Override
