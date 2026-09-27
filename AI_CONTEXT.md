@@ -14,7 +14,7 @@
 
 ## 实现状态
 
-- 当前发布版本：**3.6.22**（versionCode 30622，2026-09-27 发）。上一发布版 3.6.21（30621，Prerelease，2026-09-27 发）。主分支 `master`（基于 v3.3.6 重建线）。
+- 当前发布版本：**3.6.23**（versionCode 30623，2026-09-27 发）。上一发布版 3.6.22（30622，Prerelease，2026-09-27 发）。主分支 `master`（基于 v3.3.6 重建线）。
 - 10 个天气源：COMPOSITE（多源聚合，**新装/新加城市默认**，中国区分钟级由小米供）、WEATHERAPI、OPEN_METEO、METNO（挪威气象局，免 key 全球）、XIAOMI（小米天气，免 key，中国区最全 + 海外走 Accu 后端）、CAIYUN、APIHZ（中国天气网）、CMA（中国气象局）、MF（仅法国）、OWM 可用；**ACCU 的内置 Key 已过期，当前不可用**（见「已知问题」）。加上 COMPOSITE 共 11 项可选。
 - 工具链已现代化（见版本矩阵）；RxJava 已全部迁移到 Coroutines；GreenDAO 已迁移到 Room。
 
@@ -136,6 +136,13 @@
 **一条已复核掉的旧约束**：「CI 不可靠（jitpack 403）」在 2026-09-01 的三次 tag 构建里全部 success（各 6~7 分钟）。本地构建 + 真机验证仍不能省（那是发版门槛，见 `/release`），但「CI 一定失败」这个前提不成立了；推不上去是本机网络问题，与 CI 无关。
 
 ## 变更日志（按版本）
+
+- **发版（2026-09-27）**：v3.6.23 **Prerelease（日常版）**。包 `app/build/outputs/apk/pub/release/GeometricWeather-v3.6.23_pub.apk`，sha256 `182ba2eaecf01b2e208ec1f05cf2b1b15dea0df6444de20102edbebd8e5f0875`，已签名、R8 开启，30623 / `3.6.23_pub`。mapping 备份到 `D:\Documents\geoweather-release-mappings\v3.6.23-pubRelease-mapping.txt.gz`。本版四项（此前均已推 master）：**详情仪表盘配色跟随天气主题** + **GPS 当前定位 isChina 修复** + **多源聚合 Open-Meteo 降到国内源之后** + **每日概览领衔改小米**（见下四条）。**真机验证（MI 9，pubRelease 签名包，全新装）**：冷启动不崩；默认 COMPOSITE 定位到南开区、24° 阴/体感 25/AQI 优、预警正常、Gson DTO 未被 R8 删、`logcat -b crash` 空；**每日概览标题显示「· 小米天气」**——一次坐实两项：isChina 修复生效（COMPOSITE 能跑、APIHZ 不再拒当前定位）+ 每日领衔已是小米。**流程**：feat/fix×4 + build + docs 提交；tag `v3.6.23`。
+- **详情数据仪表盘配色跟随天气主题（3.6.23）**。`DetailsAdapter` 圆环进度色写死 `R.attr.colorPrimary`（静态蓝），与卡片标题/每日每小时趋势用的天气主题色（`getWeatherThemeDelegate().getThemeColors[0]`）不一致，暖色主题下仪表盘突兀发蓝。改为按天气主题色算（构造存 `mProgressColor`）。commit `2227e75`。
+- **GPS 当前定位 isChina 恒 false → 境内源被拒，已修（3.6.23）**。`Location.isChina` 只在 `buildLocal()=false`/`buildDefaultLocation()=true` 赋值；GPS 当前定位走 `buildLocal()` 后 `LocationHelper` 只 copy 地址、从不设 isChina → 一直 false，`ApihzWeatherService`/`CmaWeatherService` 的 `if(!isChina)` 让中国天气网/中国气象局对当前定位每次 1ms 失败（每日概览一直落 Open-Meteo）。改法：`LocationHelper` 用 `CoordinateUtils.isInChina(lat,lon)`（GCJ-02 同款经纬度框，locale 无关、无地址可判）设 isChina。新增 `common.CoordinateUtilsTest`。commit `8baef6e`。判定汇总见下方「国内地点判定」。
+- **多源聚合 Open-Meteo 降到国内源之后（3.6.23）**。Open-Meteo 是国外模型、境内不准，此前排 members 第一当骨架/兜底。改成员顺序为 中国天气网→彩云→小米→WeatherAPI→**Open-Meteo（最后）**：补缺/延伸优先国内源，Open-Meteo 只补没有任何国内源覆盖的部分（第 16 天、远端小时）或境外。范围不缩。权衡：境外每日领衔改国内源短程+Open-Meteo 追加。commit `2ad2c77`。
+- **多源聚合每日概览领衔改小米（3.6.23）**。`CompositeBlock.DAILY` 由 APIHZ(中国天气网) 改 **XIAOMI**：小米每日 15 天、原生带降水/概率/风（中国天气网 7 天且这些都缺、靠嫁接），当领衔可直接画全；第 16 天仍 Open-Meteo 追加，中国天气网等作 fallback。每小时本就是小米。真机验证每日概览标题「· 中国天气网」→「· 小米天气」。commit `c1eac8f`。**当前多源指派**：每日=小米、每小时=小米、实时/详情=彩云、空气质量=彩云；fallback 顺序 中国天气网→彩云→小米→WeatherAPI→Open-Meteo。
+- **内置中国城市表（`assets/city_list.txt`）现状（2026-09-27 抽查，未改动）**：约 2017–2018 年份（有西安鄠邑=2017 新名，但莱芜仍独立市=早于 2019 并入济南，雄安三县缺）。~3216 条、34 省含台港澳、市/区县两级、坐标准确。**只用于离线中国城市搜索（未命中落 Open-Meteo 在线地理编码）+ 彩云坐标→城市命名**，不参与每日概览等天气取数（那是按坐标/地名）。cityId(weathercn 码) 不用于取数。结论：**不需要更新**，过时只影响个别新区离线可搜性（在线兜底）与旧归属显示，不影响天气准确度。
 
 - **发版（2026-09-27）**：v3.6.22 **Prerelease（日常版）**。包 `app/build/outputs/apk/pub/release/GeometricWeather-v3.6.22_pub.apk`，sha256 `214c55a0bb44852cffc21d578569f5f7f082dc2d6f6bd9063e2421a4f696dede`，已签名、R8 开启，30622 / `3.6.22_pub`。mapping 备份到 `D:\Documents\geoweather-release-mappings\v3.6.22-pubRelease-mapping.txt.gz`。本版两项：**定位卡片「尚未定位」修复** + **卡片来源显示开关**（见下两条），另更新 README（默认源已是多源聚合）。**真机验证（联想 TB710FU / 8gen3，pubRelease 签名包，全新装）**：冷启动不崩；默认 COMPOSITE 联网正常（南开区 28° 晴、体感 28°、AQI 优、每日概览 Open-Meteo 七天、空气质量彩云 PM/O₃ 有值 —— Gson DTO 未被 R8 删）；定位到区县；`logcat -b crash` 空；更新于跟当前分钟（前台强刷）；**isUsable 修复生效**——当前位置卡片显示「中国 天津市 南开区」（非「尚未定位」）；**来源开关**：编辑页正常打开、开关默认开，关掉后「空气质量 · 彩云天气」→「空气质量」「日月升落 · Open-Meteo」→「日月升落」、底部 Powered by 消失，返回即时生效、无崩溃。**流程**：fix + feat（此前已推 master）+ build + docs + readme 提交；tag `v3.6.22`。
 - **定位卡片仍显示「尚未定位」修复（3.6.22）**。`Location.isUsable` 只看 `cityId != NULL_ID`，但 COMPOSITE 及所有坐标型天气源的 `requestLocation` 都只原样回传 location、从不分配 cityId。于是 GPS + 反向地理编码成功（有地址+天气）的「当前位置」cityId 仍是 NULL_ID → `isUsable=false`：左侧卡片显示「尚未定位」，且**后台轮询跳过当前位置刷新并弹 toast**（`PollingUpdateHelper`）、widget 配置回退默认北京、`needUpdate` 每次强刷。改为 `isUsable = cityId != NULL_ID || hasGeocodeInformation()`：有城市 id 或已地理编码出地址即可用；行为变化都朝「用真实定位、不回退默认城市」方向（契合从 3.3.6 重建就是为消除「显示默认位置」）。顺带把 `hasGeocodeInformation` 从 `TextUtils.isEmpty` 换成 Kotlin `isNotEmpty`（设备行为一致、可纯 JVM 单测）。新增 `basic.LocationTest` 三例。真机验证：定位到南开区后卡片显示「中国 天津市 南开区」。commit `d0ca7b3`。
