@@ -44,7 +44,12 @@ class Location(
         get() = weather?.isDaylight(timeZone) ?: DisplayUtils.isDaylight(timeZone)
 
     val isUsable: Boolean
-        get() = cityId != NULL_ID
+        // A place is usable once it has a provider city id, OR once it has been reverse-geocoded
+        // to a real address. Current-position locations resolved by coordinate-based sources
+        // (COMPOSITE and the other echo-sources) never get a city id, so the id check alone left
+        // a fully located "当前位置" reading as 尚未定位 and made polling/widgets fall back to the
+        // default city. hasGeocodeInformation() covers that case.
+        get() = cityId != NULL_ID || hasGeocodeInformation()
 
     companion object {
         private const val NULL_ID = "NULL_ID"
@@ -312,10 +317,12 @@ class Location(
     }
 
     fun hasGeocodeInformation(): Boolean {
-        return (!TextUtils.isEmpty(country)
-                || !TextUtils.isEmpty(province)
-                || !TextUtils.isEmpty(city)
-                || !TextUtils.isEmpty(district))
+        // Kotlin isEmpty (not TextUtils) so this is real logic under JVM unit tests; the fields
+        // are non-null String, behaviour is identical on device.
+        return (country.isNotEmpty()
+                || province.isNotEmpty()
+                || city.isNotEmpty()
+                || district.isNotEmpty())
     }
 
     private fun isCloseTo(c: Context, location: Location): Boolean {
