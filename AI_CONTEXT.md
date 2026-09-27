@@ -137,6 +137,7 @@
 
 ## 变更日志（按版本）
 
+- **首页当前温度字体加粗（未发版，master，待下次一起发）**。`container_main_header.xml` 里那个大号温度（`container_main_header_tempTxt`，`NumberAnimTextView`）原本 `android:textFontWeight="200"`（细体），改成 `android:textStyle="bold"`（全 API 通用加粗，`textFontWeight` 仅 26+ 生效）。纯 layout 属性。真机 MuMu 验证：大号温度明显变粗。
 - **多源聚合预警点进去闪退，已修（未发版，master，待下次一起发）**。多源把各源预警并集，但每个源的 `alertId` 都从 0 自增（彩云/中国天气网/WeatherAPI/APIHZ 均 `id++`）；`WeatherMerger.mergeAlerts` 并集后只按「描述\|内容」去重、不去重 id，于是两条不同预警共用 `alertId=0`。`AlertActivity` 的 `LazyColumn` 以 `alertId` 作 key，重复 key 直接抛 `IllegalArgumentException「Key "0" was already used」`（真机 MuMu 捕到此栈）。两处修：`mergeAlerts` 并集后按序重编号保证一次刷新内 id 唯一；`AlertActivity` 的 `LazyColumn` 改用下标作 key（列表一次性加载、不重排，下标即稳定身份），不再依赖 id 唯一——旧缓存或哈希碰撞也不会再崩。`WeatherMergerTest` 加 `mergedAlertsGetDistinctIds`。commit `85c4475`。
 - **无 GMS 设备/模拟器当前定位「尚未定位」+ 移动后地名不更新，已修（未发版，master，待下次一起发）**。当前定位取到坐标后 `LocationHelper` 靠平台 `Geocoder` 反查地名；无 GMS 的 ROM 或模拟器无 Geocoder 后端 → 反查为空 → 地址字段全空 → `isUsable=false` → 卡片「当前位置 / 尚未定位」，背后其实有有效坐标+完整天气（COMPOSITE 的 `requestLocation` 原样回传、不自己命名）。改法：反查无地址且坐标境内时，用内置中国城市表按最近点离线命名（复用 `DatabaseHelper.readChineseCity(lat,lon)`，彩云已在用）。**命名要跟着坐标走**——起初曾限定「仅当槽位本无地名时才兜底」，但当前定位会移动：命名过一次后换地方、Geocoder 又无后端时兜底被跳过、旧名被保留（坐标已到南开、标题还显示广州），故去掉该前提；境外（城市表只认中国城市，`isInChina` 拦截）才退回「保留旧名避免空白」。`LocationHelperTest` 用 `aMovedCurrentPositionInChinaIsRenamedFromTheCityList` + `anAbroadFixWithNoAddressKeepsThePreviousName` 两例担保。真机验证（MuMu）：坐标广州→「广州 黄埔」，改到南开(39.11,117.16)→「天津 南开」，皆非「尚未定位」。commit `ff15968`+`1295132`。
 

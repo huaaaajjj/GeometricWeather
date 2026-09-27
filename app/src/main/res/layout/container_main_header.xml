@@ -27,7 +27,7 @@
             android:textSize="@dimen/main_title_text_size"
             android:includeFontPadding="false"
             android:textAlignment="viewStart"
-            android:textFontWeight="200"
+            android:textStyle="bold"
             style="@style/large_title_text"
             tools:text="30°"
             tools:ignore="RelativeOverlap,RtlHardcoded" />
