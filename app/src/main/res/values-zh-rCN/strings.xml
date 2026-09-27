@@ -263,6 +263,7 @@
     <string name="feedback_live_wallpaper_weather_kind">天气</string>
     <string name="feedback_live_wallpaper_day_night_type">时间</string>
     <string name="feedback_live_wallpaper_frame_rate">帧率</string>
+    <string name="feedback_show_block_source">显示数据来源</string>
 
 
     <string name="feedback_collect_failed">地址已存在</string>

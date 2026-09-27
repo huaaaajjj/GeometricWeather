@@ -230,6 +230,16 @@ class SettingsManager private constructor(context: Context) {
         }
         get() = config.getBoolean("trend_horizontal_line_switch", true)
 
+    // Whether the main cards print their data source (the "· <provider>" title suffix and the
+    // footer "Powered by" credit). notifySettingsChanged() so toggling it in the card-manage
+    // screen rebuilds the main list on return, like the switches above.
+    var isBlockSourceEnabled: Boolean
+        set(value) {
+            config.edit().putBoolean("block_source_switch", value).apply()
+            notifySettingsChanged()
+        }
+        get() = config.getBoolean("block_source_switch", true)
+
     var isExchangeDayNightTempEnabled: Boolean
         set(value) {
             config.edit().putBoolean("exchange_day_night_temp_switch", value).apply()

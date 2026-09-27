@@ -113,6 +113,12 @@ public class CardDisplayManageActivity extends GeoActivity {
         );
         toolbar.setNavigationOnClickListener(view -> finish());
 
+        androidx.appcompat.widget.SwitchCompat sourceSwitch =
+                findViewById(R.id.activity_card_display_manage_sourceSwitch);
+        sourceSwitch.setChecked(SettingsManager.getInstance(this).isBlockSourceEnabled());
+        sourceSwitch.setOnCheckedChangeListener((buttonView, isChecked) ->
+                SettingsManager.getInstance(this).setBlockSourceEnabled(isChecked));
+
         List<CardDisplay> displayCards = SettingsManager.getInstance(this).getCardDisplayList();
         mCardDisplayAdapter = new CardDisplayAdapter(
                 displayCards,

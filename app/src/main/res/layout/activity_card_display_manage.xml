@@ -30,11 +30,38 @@
 
         </wangdaye.com.geometricweather.common.ui.widgets.insets.FitSystemBarAppBarLayout>
 
+        <LinearLayout
+            android:id="@+id/activity_card_display_manage_sourceSwitchBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/activity_card_display_manage_appBar"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/normal_margin"
+            android:paddingEnd="@dimen/normal_margin"
+            android:paddingTop="@dimen/normal_margin"
+            android:paddingBottom="@dimen/normal_margin">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="16sp"
+                android:textColor="?android:attr/textColorPrimary"
+                android:text="@string/feedback_show_block_source" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/activity_card_display_manage_sourceSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/activity_card_display_manage_recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/activity_card_display_manage_appBar"
+            android:layout_below="@id/activity_card_display_manage_sourceSwitchBar"
             android:clipToPadding="false"
             android:paddingBottom="128dp" />
 

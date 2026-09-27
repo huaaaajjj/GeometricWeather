@@ -61,7 +61,15 @@ public class FooterViewHolder extends AbstractMainViewHolder {
                         .getWeatherThemeDelegate()
                         .getHeaderTextColor(mTitle.getContext())
         );
-        mTitle.setText("* Powered by " + location.getWeatherSource().getSourceUrl());
+        // Hidden together with the per-card "· <provider>" suffixes when the user turns off the
+        // data-source display in the card-manage screen.
+        if (wangdaye.com.geometricweather.settings.SettingsManager.getInstance(context)
+                .isBlockSourceEnabled()) {
+            mTitle.setVisibility(android.view.View.VISIBLE);
+            mTitle.setText("* Powered by " + location.getWeatherSource().getSourceUrl());
+        } else {
+            mTitle.setVisibility(android.view.View.GONE);
+        }
 
         mEditButton.setTextColor(
                 ThemeManager

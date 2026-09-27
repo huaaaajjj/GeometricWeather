@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.annotation.StringRes
 import wangdaye.com.geometricweather.R
 import wangdaye.com.geometricweather.common.basic.models.Location
+import wangdaye.com.geometricweather.settings.SettingsManager
 
 /**
  * Which provider the multi-source ([WeatherSource.COMPOSITE]) option takes each block from.
@@ -39,7 +40,8 @@ enum class CompositeBlock(val source: WeatherSource) {
             @StringRes titleId: Int
         ): String {
             val title = context.getString(titleId)
-            if (location.weatherSource != WeatherSource.COMPOSITE) {
+            if (location.weatherSource != WeatherSource.COMPOSITE
+                || !SettingsManager.getInstance(context).isBlockSourceEnabled) {
                 return title
             }
             val from = location.weather?.getBlockSource(block) ?: block.source
