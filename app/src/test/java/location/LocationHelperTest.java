@@ -182,19 +182,46 @@ public class LocationHelperTest {
     }
 
     /**
-     * A good fix — real coordinates — but the location service returned no address, as AMap
-     * intermittently does. The slot's previously-known name must survive rather than being
-     * overwritten with emptiness (which is what flips the header to 「当前位置」).
+     * A GMS-less current position that has MOVED: the platform geocoder returns no address and the
+     * slot still carries the previous city's name. The name must follow the new coordinates (named
+     * offline from the bundled China city list), not stay stuck on where you were — the bug where a
+     * fix that moved to 南开 kept showing the earlier 广州.
      */
     @Test
-    public void anEmptyAddressKeepsThePreviousName() {
-        mLocationService.result = new LocationService.Result(39.9f, 116.4f);
+    public void aMovedCurrentPositionInChinaIsRenamedFromTheCityList() {
+        Location stale = new Location(
+                "NULL_ID", 23.10324f, 113.45076f, TimeZone.getTimeZone("Asia/Shanghai"),
+                "中国", "广东", "广州", "黄埔",
+                null, WeatherSource.COMPOSITE, true, false, true);
+        // A fix in 南开, with no address, as a GMS-less device / emulator returns.
+        mLocationService.result = new LocationService.Result(39.120476f, 117.16415f);
+        mWeatherService.resolved = Collections.singletonList(tianjin());
+
+        request(stale);
+
+        assertNotNull("the weather source must be handed a location", mWeatherService.received);
+        assertTrue("a moved fix must still be named, not left blank",
+                mWeatherService.received.hasGeocodeInformation());
+        assertEquals("the name must follow the new coordinates (Tianjin), not the stale 广州",
+                "天津", mWeatherService.received.getProvince());
+        assertEquals("南开", mWeatherService.received.getDistrict());
+    }
+
+    /**
+     * Abroad the offline city list can't name the place — it only knows Chinese cities — and the
+     * platform geocoder may give nothing either, so rather than blanking the header to 「当前位置」
+     * the previously-known name survives. (In China the name is re-derived from the coordinates
+     * instead; see the test above.)
+     */
+    @Test
+    public void anAbroadFixWithNoAddressKeepsThePreviousName() {
+        mLocationService.result = new LocationService.Result(35.6762f, 139.6503f); // Tokyo, no address
         mWeatherService.resolved = Collections.singletonList(tianjin());
 
         request(tianjin());
 
         assertNotNull("the weather source must be handed a location", mWeatherService.received);
-        assertEquals("an empty-address fix must keep the previous city",
+        assertEquals("an abroad fix with no address must keep the previous city",
                 "天津市", mWeatherService.received.getCity());
         assertEquals("...and the previous district",
                 "南开区", mWeatherService.received.getDistrict());

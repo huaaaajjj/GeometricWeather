@@ -169,12 +169,14 @@ public class LocationHelper {
                         LocationService.Result named = hasAddress(result)
                                 ? result
                                 : reverseGeocode(context, result);
-                        // Still unnamed and the slot has no name to keep: name it offline from the
-                        // bundled China city list. Only in that case — a slot that already has a name
-                        // keeps it (the null-means-keep copy below), so a re-locate that drops the
-                        // address does not get overwritten; abroad the list can't help either.
+                        // Still no address (a GMS-less phone / emulator has no platform geocoder
+                        // backend): name it offline from the bundled China city list so the name
+                        // tracks the fix's coordinates. NOT gated on "no previous name" — the current
+                        // position moves, and keeping the last name then showed a place you had left
+                        // (fix moved to 南开 but the header stuck on the earlier 广州). Abroad the list
+                        // can't help — it returns the nearest *Chinese* city for any coordinates — so
+                        // the isInChina gate leaves those to the last-known name (null-keep copy below).
                         if (!hasAddress(named)
-                                && !location.hasGeocodeInformation()
                                 && CoordinateUtils.isInChina(
                                         result.getLatitude(), result.getLongitude())) {
                             named = nameFromChineseCityList(context, result);
