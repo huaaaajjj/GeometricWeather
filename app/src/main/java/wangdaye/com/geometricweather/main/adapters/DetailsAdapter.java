@@ -32,6 +32,8 @@ import wangdaye.com.geometricweather.common.ui.widgets.ArcProgress;
 import wangdaye.com.geometricweather.common.utils.DisplayUtils;
 import wangdaye.com.geometricweather.main.utils.MainThemeColorProvider;
 import wangdaye.com.geometricweather.settings.SettingsManager;
+import wangdaye.com.geometricweather.theme.ThemeManager;
+import wangdaye.com.geometricweather.theme.weatherView.WeatherViewController;
 import wangdaye.com.geometricweather.weather.converters.CommonConverter;
 
 /**
@@ -45,6 +47,7 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
 
     private final boolean mLightTheme;
     private final int mTileColor;
+    private final int mProgressColor;
     private final List<Index> mIndexList;
 
     private static class Index {
@@ -101,7 +104,7 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
             mProgress = itemView.findViewById(R.id.item_details_progress);
         }
 
-        void onBindView(boolean lightTheme, int tileColor, Index index) {
+        void onBindView(boolean lightTheme, int tileColor, int progressColor, Index index) {
             itemView.setContentDescription(index.talkBack);
 
             mTile.setCardBackgroundColor(tileColor);
@@ -135,7 +138,7 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
             mProgress.setText(index.gaugeText);
             mProgress.setBottomText(index.gaugeBottomText);
             mProgress.setProgressColor(
-                    MainThemeColorProvider.getColor(lightTheme, R.attr.colorPrimary),
+                    progressColor,
                     lightTheme
             );
             mProgress.setArcBackgroundColor(
@@ -168,6 +171,18 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
         SpeedUnit speedUnit = settings.getSpeedUnit();
         Weather weather = location.getWeather();
         assert weather != null;
+
+        // The gauges follow the weather theme colour (same as the card title and the daily/hourly
+        // trends), not the static colorPrimary — otherwise the arcs read cold blue on an otherwise
+        // warm-themed card.
+        mProgressColor = ThemeManager
+                .getInstance(context)
+                .getWeatherThemeDelegate()
+                .getThemeColors(
+                        context,
+                        WeatherViewController.getWeatherKind(weather),
+                        location.isDaylight()
+                )[0];
 
         // Wind: the Beaufort level is the words, the speed is the number in the gauge, and the
         // compass abbreviation rides along with the label (the providers give "NNE", not prose).
@@ -329,7 +344,7 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.onBindView(mLightTheme, mTileColor, mIndexList.get(position));
+        holder.onBindView(mLightTheme, mTileColor, mProgressColor, mIndexList.get(position));
     }
 
     @Override
