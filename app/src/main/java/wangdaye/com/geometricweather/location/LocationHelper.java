@@ -22,6 +22,7 @@ import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.options.provider.LocationProvider;
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource;
 import wangdaye.com.geometricweather.common.utils.NetworkUtils;
+import wangdaye.com.geometricweather.common.utils.CoordinateUtils;
 import wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper;
 import wangdaye.com.geometricweather.db.DatabaseHelper;
 import wangdaye.com.geometricweather.location.services.AMapLocationService;
@@ -181,7 +182,18 @@ public class LocationHelper {
                                         hasAddress ? orEmpty(named.getCountry()) : null,
                                         hasAddress ? orEmpty(named.getProvince()) : null,
                                         hasAddress ? orEmpty(named.getCity()) : null,
-                                        hasAddress ? orEmpty(named.getDistrict()) : null
+                                        hasAddress ? orEmpty(named.getDistrict()) : null,
+                                        null, // weather — keep
+                                        null, // weatherSource — keep
+                                        null, // isCurrentPosition — keep
+                                        null, // isResidentPosition — keep
+                                        // isChina was never set for a GPS fix — it stayed false
+                                        // from buildLocal(), so the domestic sources (APIHZ/CMA)
+                                        // rejected the current location outright. Derive it from the
+                                        // coordinates (locale-independent, works even without a
+                                        // geocoded address), same box used for GCJ-02 conversion.
+                                        CoordinateUtils.isInChina(
+                                                result.getLatitude(), result.getLongitude())
                                 ),
                                 usableCheckListener
                         );
