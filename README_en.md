@@ -32,13 +32,13 @@ Versioning: the last component is a small fix or tweak, the middle one a larger 
 
 ## Weather providers
 
-The default is **WeatherAPI**; for the most complete data pick **Multi-source**.
+The default is **Multi-source** (most complete data); you can switch to any single source below in settings.
 
 | Provider | Key | Coverage | Data | Status |
 | --- | --- | --- | --- | --- |
-| **Multi-source** | bundled | worldwide (most complete inside China) | 16 days · 384 hours · AQI · alerts | ✅ recommended |
+| **Multi-source** | bundled | worldwide (most complete inside China) | 16 days · 384 hours · AQI · alerts | ✅ default · recommended |
 | Open-Meteo | free, no key | worldwide | 16 days · 384 hours · AQI · pollen (pollen Europe only; no alerts) | ✅ |
-| WeatherAPI | bundled | worldwide | 3 days · 72 hours · AQI · alerts | ✅ default |
+| WeatherAPI | bundled | worldwide | 3 days · 72 hours · AQI · alerts | ✅ |
 | MET Norway | free, no key | worldwide | ~11 days · ~90 points (no feels-like / sunrise) | ✅ |
 | Xiaomi Weather | free, no key | worldwide (richest inside China) | China 15 days · 23 hours · AQI · alerts · minutely; abroad 5 days | ✅ |
 | CaiYun | bundled (trial token) | China only | 3 days · 48 hours · AQI · UV | ✅ |
@@ -59,7 +59,7 @@ It asks several providers at once and takes each block from whoever is best at i
 - **Air quality and the "now" reading** → CaiYun: measured Chinese AQI, plus feels-like, humidity, pressure and visibility (abroad, where CaiYun has nothing, the block falls to WeatherAPI / Open-Meteo)
 - **Alerts** → the union of everyone; WeatherAPI is the one that reliably has them
 
-Each card's title credits the provider behind it. A provider that fails or times out simply drops through to the next one, and the refresh succeeds on whoever is left — so a place outside China, where the Chinese sources have nothing to say, still gets a full forecast from Open-Meteo and WeatherAPI. The cost is a few more requests per refresh.
+Each card's title credits the provider behind it (this can be turned off via the "Show data source" switch on the home screen's "Edit" page). A provider that fails or times out simply drops through to the next one, and the refresh succeeds on whoever is left — so a place outside China, where the Chinese sources have nothing to say, still gets a full forecast from Open-Meteo and WeatherAPI. The cost is a few more requests per refresh.
 
 ## Differences from upstream
 
