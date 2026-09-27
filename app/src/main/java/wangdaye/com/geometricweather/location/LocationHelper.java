@@ -18,6 +18,7 @@ import java.util.TimeZone;
 import javax.inject.Inject;
 
 import dagger.hilt.android.qualifiers.ApplicationContext;
+import wangdaye.com.geometricweather.common.basic.models.ChineseCity;
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.options.provider.LocationProvider;
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource;
@@ -168,6 +169,16 @@ public class LocationHelper {
                         LocationService.Result named = hasAddress(result)
                                 ? result
                                 : reverseGeocode(context, result);
+                        // Still unnamed and the slot has no name to keep: name it offline from the
+                        // bundled China city list. Only in that case — a slot that already has a name
+                        // keeps it (the null-means-keep copy below), so a re-locate that drops the
+                        // address does not get overwritten; abroad the list can't help either.
+                        if (!hasAddress(named)
+                                && !location.hasGeocodeInformation()
+                                && CoordinateUtils.isInChina(
+                                        result.getLatitude(), result.getLongitude())) {
+                            named = nameFromChineseCityList(context, result);
+                        }
                         boolean hasAddress = hasAddress(named);
                         requestAvailableWeatherLocation(
                                 context,
@@ -230,6 +241,31 @@ public class LocationHelper {
             // IOException: offline, or the provider gave up.
         }
         return fix;
+    }
+
+    /**
+     * The nearest place in the bundled China city list, or the fix unchanged if the list can't name
+     * it. Offline last resort for a fix the platform geocoder left unnamed — a GMS-less phone or an
+     * emulator has no geocoder backend, and without a name the current position sticks on
+     * 「当前位置 / 尚未定位」. Same coord→name lookup CaiYun already falls back on. Blocks.
+     */
+    @WorkerThread
+    private static LocationService.Result nameFromChineseCityList(Context context,
+                                                                 LocationService.Result fix) {
+        DatabaseHelper db = DatabaseHelper.getInstance(context);
+        db.ensureChineseCityList(context);
+        ChineseCity city = db.readChineseCity(fix.getLatitude(), fix.getLongitude());
+        if (city == null) {
+            return fix;
+        }
+        return new LocationService.Result(
+                fix.getLatitude(),
+                fix.getLongitude(),
+                "中国",
+                city.getProvince(),
+                city.getCity(),
+                "无".equals(city.getDistrict()) ? "" : city.getDistrict()
+        );
     }
 
     private static boolean hasAddress(LocationService.Result r) {
