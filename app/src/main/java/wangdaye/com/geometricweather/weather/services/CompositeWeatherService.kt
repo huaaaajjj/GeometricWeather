@@ -22,11 +22,13 @@ import kotlin.coroutines.resume
  * assignment itself lives in [CompositeBlock], shared with the cards that print it:
  *
  * - **hourly** → 小米天气: its ~23 hours carry a temperature, a condition text *and* a real wind
- *   vector measured together, which is what the hourly card draws; Open-Meteo's hours are appended
- *   after them, so the series still runs the full 384. 小米's hourly entries carry no chance of rain
- *   and no amount, and those two are grafted in from whoever does have them ([WeatherMerger]).
+ *   vector measured together, which is what the hourly card draws; the hours past its range are
+ *   appended from the other domestic sources first and only then Open-Meteo, so the series still
+ *   runs the full 384. 小米's hourly entries carry no chance of rain and no amount, and those two
+ *   are grafted in from whoever does have them ([WeatherMerger]).
  * - **daily overview** → 中国天气网 (APIHZ): a domestic forecast for a domestic place; it reaches
- *   7 days, and Open-Meteo's days 8..16 are appended after it so the range is not lost.
+ *   7 days, and the days past it are appended domestic-first (小米's 15-day list), Open-Meteo only
+ *   supplying day 16, so the range is not lost but stays domestic as far as a domestic source goes.
  * - **air quality** and the **"now" reading with its detail scalars** → 彩云: measured Chinese AQI
  *   (Open-Meteo carries none at all) plus feels-like, humidity, pressure and visibility.
  * - **warnings** → the union of everyone; WeatherAPI is the one that reliably has them.
@@ -52,19 +54,25 @@ class CompositeWeatherService @Inject constructor(
 
     /**
      * The members, keyed by the source they are, so [CompositeBlock] can hand out the same
-     * assignment the cards print. Iteration order is the fallback order for anything unassigned.
+     * assignment the cards print. Iteration order is the fallback order: for each block the assigned
+     * leader is tried first (see [CompositeBlock]), then these in order fill the leader's gaps and
+     * append the days/hours it does not reach.
      *
-     * 小米天气 sits last on purpose. It leads the hourly block by assignment, and putting it there
-     * too would have changed what fills everything *un*assigned — the days appended past 中国天气网's
-     * seventh would come from its 15-day list instead of Open-Meteo's 16-day one, which is not what
-     * this change was about.
+     * **Domestic sources first, Open-Meteo last.** Open-Meteo is a foreign model and reads
+     * inaccurately inside China, so it must not be the one that fills a domestic leader's gaps (the
+     * daily precip/wind 中国天气网 lacks) nor the one that extends the range while a domestic source
+     * still has days/hours to give. With it last, 中国天气网's seventh-day tail is extended first
+     * from 小米's 15-day list and the near hours from the other domestic sources; Open-Meteo only
+     * supplies what nothing domestic covers (day 16, the far hours) or a place abroad where the
+     * domestic sources decline. Trade-off: abroad the daily leader is now a domestic source's short
+     * range (小米 5 days / WeatherAPI 3) with Open-Meteo appended, rather than Open-Meteo leading.
      */
     private val members = linkedMapOf<WeatherSource, WeatherService>(
-        WeatherSource.OPEN_METEO to openMeteo,
         WeatherSource.APIHZ to apihz,
         WeatherSource.CAIYUN to caiyun,
+        WeatherSource.XIAOMI to xiaomi,
         WeatherSource.WEATHERAPI to weatherApi,
-        WeatherSource.XIAOMI to xiaomi
+        WeatherSource.OPEN_METEO to openMeteo
     )
 
     private val sources = members.values.toList()
