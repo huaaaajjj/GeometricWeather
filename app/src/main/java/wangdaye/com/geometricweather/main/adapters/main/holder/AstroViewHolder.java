@@ -299,6 +299,13 @@ public class AstroViewHolder extends AbstractMainCardViewHolder {
         } else {
             mStartTimes[1] = today.moon().getRiseDate().getTime();
             mEndTimes[1] = today.moon().getSetDate().getTime();
+            // A moon that rises in the evening sets the next morning, but providers report that set
+            // on the same calendar day — an earlier clock time than the rise. Left as-is the arc
+            // spans backwards and SunMoonView draws no moon at all, so carry the set into the next
+            // day. (The sun never inverts, so only the moon needs this.)
+            if (mEndTimes[1] < mStartTimes[1]) {
+                mEndTimes[1] += 24L * 60 * 60 * 1000;
+            }
         }
 
         mAnimCurrentTimes = new long[] {mCurrentTimes[0], mCurrentTimes[1]};
