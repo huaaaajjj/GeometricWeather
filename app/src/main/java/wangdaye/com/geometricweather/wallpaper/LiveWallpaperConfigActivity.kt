@@ -44,6 +44,10 @@ class LiveWallpaperConfigActivity : GeoActivity() {
     private lateinit var dayNightTypeKinds: Array<String>
     private lateinit var dayNightTypeValues: Array<String>
 
+    private lateinit var frameRateValueNow: MutableState<String>
+    private lateinit var frameRateNames: Array<String>
+    private lateinit var frameRateValues: Array<String>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -58,6 +62,25 @@ class LiveWallpaperConfigActivity : GeoActivity() {
         )
         dayNightTypeKinds = resources.getStringArray(R.array.live_wallpaper_day_night_types)
         dayNightTypeValues = resources.getStringArray(R.array.live_wallpaper_day_night_type_values)
+
+        // Frame-rate tiers, capped at the panel's max refresh rate (tiers above it are dropped).
+        // The chosen value is voted via Surface.setFrameRate (API 30+); the highest tier is the
+        // default. Empty stored value = follow the panel max, i.e. the last (highest) tier.
+        val maxRate = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            (getSystemService(android.content.Context.DISPLAY_SERVICE) as? android.hardware.display.DisplayManager)
+                ?.getDisplay(android.view.Display.DEFAULT_DISPLAY)
+                ?.supportedModes?.maxOfOrNull { it.refreshRate }
+                ?.let { Math.round(it) } ?: 60
+        } else {
+            60
+        }
+        val tiers = intArrayOf(30, 60, 90, 120, 144).filter { it <= maxRate }.ifEmpty { listOf(60) }
+        frameRateValues = tiers.map { it.toString() }.toTypedArray()
+        frameRateNames = tiers.map { "$it Hz" }.toTypedArray()
+        val storedRate = LiveWallpaperConfigManager.getInstance(this).frameRate
+        frameRateValueNow = mutableStateOf(
+            if (frameRateValues.contains(storedRate)) storedRate else frameRateValues.last()
+        )
 
         setContent {
             GeometricWeatherTheme(lightTheme = !isSystemInDarkTheme()) {
@@ -93,6 +116,12 @@ class LiveWallpaperConfigActivity : GeoActivity() {
                         values = dayNightTypeValues,
                         titleId = R.string.feedback_live_wallpaper_day_night_type,
                     )
+                    Spinner(
+                        currentVal = frameRateValueNow,
+                        names = frameRateNames,
+                        values = frameRateValues,
+                        titleId = R.string.feedback_live_wallpaper_frame_rate,
+                    )
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -105,6 +134,7 @@ class LiveWallpaperConfigActivity : GeoActivity() {
                                     this@LiveWallpaperConfigActivity,
                                     weatherKindValueNow.value,
                                     dayNightTypeValueNow.value,
+                                    frameRateValueNow.value,
                                 )
                                 finish()
                             },

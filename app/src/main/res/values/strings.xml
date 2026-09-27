@@ -274,6 +274,7 @@
 
     <string name="feedback_live_wallpaper_weather_kind">Weather</string>
     <string name="feedback_live_wallpaper_day_night_type">Time</string>
+    <string name="feedback_live_wallpaper_frame_rate">Frame rate</string>
 
 
     <string name="feedback_collect_failed">This location already exists</string>
