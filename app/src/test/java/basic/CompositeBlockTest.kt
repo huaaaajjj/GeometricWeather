@@ -44,7 +44,7 @@ class CompositeBlockTest {
     @Test
     fun eachBlockNamesItsAssignedProvider() {
         assertEquals(WeatherSource.XIAOMI, CompositeBlock.HOURLY.source)
-        assertEquals(WeatherSource.APIHZ, CompositeBlock.DAILY.source)
+        assertEquals(WeatherSource.XIAOMI, CompositeBlock.DAILY.source)
         assertEquals(WeatherSource.CAIYUN, CompositeBlock.CURRENT.source)
         assertEquals(WeatherSource.CAIYUN, CompositeBlock.AIR_QUALITY.source)
     }
@@ -57,7 +57,7 @@ class CompositeBlockTest {
         )
 
         assertTrue(title, title.startsWith(context.getString(R.string.daily_overview)))
-        assertTrue(title, title.contains(WeatherSource.APIHZ.getVoice(context)))
+        assertTrue(title, title.contains(WeatherSource.XIAOMI.getVoice(context)))
     }
 
     @Test

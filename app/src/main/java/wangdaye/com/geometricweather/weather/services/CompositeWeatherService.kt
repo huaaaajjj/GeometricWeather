@@ -26,9 +26,10 @@ import kotlin.coroutines.resume
  *   appended from the other domestic sources first and only then Open-Meteo, so the series still
  *   runs the full 384. 小米's hourly entries carry no chance of rain and no amount, and those two
  *   are grafted in from whoever does have them ([WeatherMerger]).
- * - **daily overview** → 中国天气网 (APIHZ): a domestic forecast for a domestic place; it reaches
- *   7 days, and the days past it are appended domestic-first (小米's 15-day list), Open-Meteo only
- *   supplying day 16, so the range is not lost but stays domestic as far as a domestic source goes.
+ * - **daily overview** → 小米天气: a domestic 15-day forecast that carries the daily precip, chance
+ *   of rain and wind natively (unlike 中国天气网, whose 7 days have none), so the card draws full
+ *   days without grafting. Day 16 (only Open-Meteo reaches it) is appended after; 中国天气网 and the
+ *   others are the fallback if 小米 declines.
  * - **air quality** and the **"now" reading with its detail scalars** → 彩云: measured Chinese AQI
  *   (Open-Meteo carries none at all) plus feels-like, humidity, pressure and visibility.
  * - **warnings** → the union of everyone; WeatherAPI is the one that reliably has them.

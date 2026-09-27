@@ -21,7 +21,7 @@ import wangdaye.com.geometricweather.settings.SettingsManager
  */
 enum class CompositeBlock(val source: WeatherSource) {
     HOURLY(WeatherSource.XIAOMI),
-    DAILY(WeatherSource.APIHZ),
+    DAILY(WeatherSource.XIAOMI),
     CURRENT(WeatherSource.CAIYUN),
     AIR_QUALITY(WeatherSource.CAIYUN);
 
