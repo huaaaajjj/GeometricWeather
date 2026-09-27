@@ -125,7 +125,10 @@ class AlertActivity : GeoActivity() {
                     .padding(innerPadding),
                 state = listState,
             ) {
-                itemsIndexed(alertList.value, key = { _, alert -> alert.alertId }) { index, alert ->
+                // Keyed by position, not alertId: this list loads once and never reorders, and the
+                // id is not guaranteed unique — the composite unions several providers, each of which
+                // numbers its own alerts from 0. A duplicate key crashes the LazyColumn outright.
+                itemsIndexed(alertList.value, key = { index, _ -> index }) { index, alert ->
                     Material3CardListItem {
                         Box(modifier = Modifier.fillMaxWidth()) {
                             if (flashIndex.value == index) {

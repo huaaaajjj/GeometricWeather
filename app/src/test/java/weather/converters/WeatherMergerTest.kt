@@ -18,6 +18,7 @@ import wangdaye.com.geometricweather.R
 import wangdaye.com.geometricweather.common.basic.models.Location
 import wangdaye.com.geometricweather.common.basic.models.options.provider.CompositeBlock
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource
+import wangdaye.com.geometricweather.common.basic.models.weather.Alert
 import wangdaye.com.geometricweather.common.basic.models.weather.Daily
 import wangdaye.com.geometricweather.common.basic.models.weather.HalfDay
 import wangdaye.com.geometricweather.common.basic.models.weather.Hourly
@@ -33,6 +34,7 @@ import wangdaye.com.geometricweather.weather.json.openmeteo.OpenMeteoResult
 import wangdaye.com.geometricweather.weather.json.weatherapi.WeatherApiResult
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
+import java.util.Date
 import java.util.TimeZone
 
 /**
@@ -138,6 +140,23 @@ class WeatherMergerTest {
         assertEquals(1, weatherApi.alertList.size)
 
         assertEquals(1, merge(openMeteo, weatherApi)!!.alertList.size)
+    }
+
+    /**
+     * Each provider numbers its own alerts from 0, so a union of two collides on alertId — and
+     * AlertActivity keys its LazyColumn on that id, which crashes on a duplicate ("预警点进去闪退").
+     * The merge must hand back ids that are distinct across the union.
+     */
+    @Test
+    fun mergedAlertsGetDistinctIds() {
+        val a = withAlert(openMeteo, "暴雨红色预警", "A")
+        val b = withAlert(weatherApi, "大风黄色预警", "B")
+        // Guard the guard: they really do collide going in.
+        assertEquals(a.alertList[0].alertId, b.alertList[0].alertId)
+
+        val ids = merge(a, b)!!.alertList.map { it.alertId }
+        assertEquals(2, ids.size)
+        assertEquals("merged alerts must not share an id", ids.size, ids.toSet().size)
     }
 
     /** The leader still wins where it has data of its own — UV here. */
@@ -578,6 +597,17 @@ class WeatherMergerTest {
 
     private fun merge(vararg results: Weather) =
         WeatherMerger.merge(results.toList(), TimeZone.getDefault())
+
+    /** The same capture carrying one synthetic alert at alertId 0 — the id every provider starts at. */
+    private fun withAlert(weather: Weather, description: String, content: String) = Weather(
+        weather.base,
+        weather.current,
+        weather.yesterday,
+        weather.dailyForecast,
+        weather.hourlyForecast,
+        weather.minutelyForecast,
+        listOf(Alert(0L, Date(0), 0L, description, content, "预警", 1, 0))
+    )
 
     private fun <T> fixture(path: String, type: Class<T>): T {
         val stream = javaClass.classLoader!!.getResourceAsStream(path)

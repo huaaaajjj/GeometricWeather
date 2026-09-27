@@ -283,6 +283,11 @@ object WeatherMerger {
         return results
             .flatMap { it.alertList }
             .filter { seen.add("${it.description}|${it.content}") }
+            // Each provider numbers its own alerts from 0, so the union collides on alertId;
+            // renumber so it stays distinct within the refresh — AlertActivity keys its list on it.
+            .mapIndexed { i, a ->
+                Alert(i.toLong(), a.date, a.time, a.description, a.content, a.type, a.priority, a.color)
+            }
     }
 
     /** The first candidate carrying data, falling back to the leader's own — empty or not. */
