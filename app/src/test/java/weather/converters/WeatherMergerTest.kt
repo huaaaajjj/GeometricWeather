@@ -212,6 +212,36 @@ class WeatherMergerTest {
     }
 
     /**
+     * 小米 puts "now" in its `current` reading and starts its hourly at the next o'clock, so the
+     * current hour is a bucket the leader does not carry — it is filled from another source. That
+     * fill must still get the chance of rain / amount grafted, or the current hour reads 0mm while
+     * it rains even though a source has the rain (the 卧龙区 report: 9 时 showed 0 under 中雨).
+     */
+    @Test
+    fun anHourTheLeaderLacksStillGetsRainGrafted() {
+        val rainyHour = openMeteo.hourlyForecast.first { it.precipitation.isValid }
+        val bucket = rainyHour.time / HOUR_MS
+        val leader = leaderStartingAfter(stripHourlyRain(openMeteo), rainyHour.time)
+        val dryDonor = stripHourlyRain(openMeteo)
+
+        // Guards: the leader really lacks that hour, and the source that leads it carries no rain.
+        assertNull("leader must not carry the hour", hourAt(leader, bucket))
+        assertTrue(
+            "the fill source carries the hour but no rain",
+            hourAt(dryDonor, bucket)?.precipitation?.isValid == false
+        )
+
+        val merged = merge(leader, dryDonor, openMeteo)!!
+
+        val hour = hourAt(merged, bucket)
+        assertNotNull("the current hour must survive the merge", hour)
+        assertEquals(
+            "its rain must be grafted from the source that has it, not left at 0",
+            rainyHour.precipitation.total, hour!!.precipitation.total
+        )
+    }
+
+    /**
      * Degenerate inputs: one provider answered, or none did.
      */
     @Test
@@ -563,6 +593,18 @@ class WeatherMergerTest {
                 hour.wind, hour.uv
             )
         },
+        weather.minutelyForecast,
+        weather.alertList
+    )
+
+    /** A leader that starts its hourly after the given instant — 小米's shape, whose hourly opens at
+     *  the next o'clock and leaves the current hour to another source. */
+    private fun leaderStartingAfter(weather: Weather, time: Long) = Weather(
+        weather.base,
+        weather.current,
+        weather.yesterday,
+        weather.dailyForecast,
+        weather.hourlyForecast.filter { it.time / HOUR_MS > time / HOUR_MS },
         weather.minutelyForecast,
         weather.alertList
     )

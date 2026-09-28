@@ -237,44 +237,43 @@ object WeatherMerger {
      * half day, and for the same reason: 小米天气 leads this block and its hourly entries carry
      * neither (`PrecipitationProbability(null, …)` and `Precipitation(null, …)`), so without this the
      * temperature tab would lose its probability bars and the precipitation tab would go flat for the
-     * ~23 hours it covers, while the appended hours beyond it — whole entries from Open-Meteo — drew
-     * both. The temperature, the condition text and the wind still come from the leader alone.
+     * ~23 hours it covers. The temperature, the condition text and the wind still come from the
+     * bucket's base alone.
+     *
+     * A bucket the leader does not carry is led by the first other source that has it — most visibly
+     * the current partial hour: 小米 puts "now" in its `current` reading and starts its hourly at the
+     * next o'clock, so 09:xx is filled from a domestic source. That fill gets the same graft as a
+     * leader hour, so the current hour is not left at 0mm / no-chance while it is raining (its base
+     * source may carry no rain even when another does).
      */
     private fun mergeHourly(results: List<Weather>): List<Hourly> {
         val others = results.drop(1).map { weather ->
             weather.hourlyForecast.associateBy { it.time / HOUR_MS }
         }
+        val leaderByHour = results[0].hourlyForecast.associateBy { it.time / HOUR_MS }
 
-        val merged = LinkedHashMap<Long, Hourly>()
-        for (hour in results[0].hourlyForecast) {
-            val key = hour.time / HOUR_MS
-            val alternatives = others.mapNotNull { it[key] }
-            merged[key] = Hourly(
-                hour.date,
-                hour.time,
-                hour.isDaylight,
-                hour.weatherText,
-                hour.weatherCode,
-                hour.temperature,
-                pick(listOf(hour.precipitation) + alternatives.map { it.precipitation },
-                    Precipitation::isValid) ?: hour.precipitation,
+        val keys = (leaderByHour.keys + others.flatMap { it.keys }).toSortedSet()
+        return keys.map { key ->
+            val base = leaderByHour[key] ?: others.firstNotNullOfOrNull { it[key] }!!
+            val alternatives = others.mapNotNull { it[key] }.filter { it !== base }
+            Hourly(
+                base.date,
+                base.time,
+                base.isDaylight,
+                base.weatherText,
+                base.weatherCode,
+                base.temperature,
+                pick(listOf(base.precipitation) + alternatives.map { it.precipitation },
+                    Precipitation::isValid) ?: base.precipitation,
                 pick(
-                    listOf(hour.precipitationProbability) +
+                    listOf(base.precipitationProbability) +
                         alternatives.map { it.precipitationProbability },
                     PrecipitationProbability::isValid
-                ) ?: hour.precipitationProbability,
-                hour.wind,
-                pick(listOf(hour.uv) + alternatives.map { it.uv }, UV::isValid)
+                ) ?: base.precipitationProbability,
+                base.wind,
+                pick(listOf(base.uv) + alternatives.map { it.uv }, UV::isValid) ?: base.uv
             )
         }
-        for (source in others) {
-            for ((key, hour) in source) {
-                if (!merged.containsKey(key)) {
-                    merged[key] = hour
-                }
-            }
-        }
-        return merged.values.sortedBy { it.time }
     }
 
     /** Union rather than pick-one: two providers rarely carry the same warning for a place. */
