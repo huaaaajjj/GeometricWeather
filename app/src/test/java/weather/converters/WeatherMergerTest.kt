@@ -509,6 +509,38 @@ class WeatherMergerTest {
     }
 
     /**
+     * A day the leader does not carry — today, when the leader source keys it a day off or simply
+     * does not reach it — is filled from another source and must still get the chance of rain
+     * grafted, or today's daily reads blank while it rains even though a source has it (the 卧龙区
+     * report: today's daily precipitation was empty under 小雨).
+     */
+    @Test
+    fun aDayTheLeaderLacksStillGetsRainGrafted() {
+        val rainyDay = openMeteo.dailyForecast.first { it.day().precipitationProbability.isValid }
+        val leader = dailyWithout(stripDailyRainAndWind(openMeteo), rainyDay.date)
+        val dryDonor = stripDailyRainAndWind(openMeteo)
+
+        // Guards: the leader really lacks that day, and the source that leads it carries no rain.
+        assertNull("leader must not carry the day",
+            leader.dailyForecast.firstOrNull { it.date == rainyDay.date })
+        assertFalse(
+            "the fill source carries the day but no rain",
+            dryDonor.dailyForecast.first { it.date == rainyDay.date }
+                .day().precipitationProbability.isValid
+        )
+
+        val merged = merge(leader, dryDonor, openMeteo)!!
+
+        val day = merged.dailyForecast.firstOrNull { it.date == rainyDay.date }
+        assertNotNull("the day must survive the merge", day)
+        assertEquals(
+            "its chance of rain must be grafted from the source that has it, not left blank",
+            rainyDay.day().precipitationProbability.total,
+            day!!.day().precipitationProbability.total
+        )
+    }
+
+    /**
      * 中国天气网's actual shape: no chance of rain, no amount, and a wind speed hard-coded to 0. All
      * three are filled from the provider that has them, while the day's own text and temperature —
      * what makes it that forecast — stay the leader's.
@@ -605,6 +637,18 @@ class WeatherMergerTest {
         weather.yesterday,
         weather.dailyForecast,
         weather.hourlyForecast.filter { it.time / HOUR_MS > time / HOUR_MS },
+        weather.minutelyForecast,
+        weather.alertList
+    )
+
+    /** The same weather with one day removed — a leader that keys today a day off or does not reach
+     *  it, leaving that day to another source. */
+    private fun dailyWithout(weather: Weather, date: java.util.Date) = Weather(
+        weather.base,
+        weather.current,
+        weather.yesterday,
+        weather.dailyForecast.filter { it.date != date },
+        weather.hourlyForecast,
         weather.minutelyForecast,
         weather.alertList
     )

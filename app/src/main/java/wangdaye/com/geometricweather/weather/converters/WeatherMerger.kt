@@ -158,27 +158,21 @@ object WeatherMerger {
             weather.dailyForecast.mapNotNull { d -> keyOf(d.date)?.let { it to d } }.toMap()
         }
 
+        val leaderByDay = byDay(results[0])
         val others = results.drop(1).map(byDay)
         val airByDay = air.map(byDay)
 
-        val merged = LinkedHashMap<String, Daily>()
-        for (day in results[0].dailyForecast) {
-            val key = keyOf(day.date) ?: continue
-            merged[key] = fillDaily(
-                day,
-                others.mapNotNull { it[key] },
-                airByDay.mapNotNull { it[key] }
-            )
-        }
-        // Days beyond the leader's range: take the whole entry from the best source that has one.
-        for (source in others) {
-            for ((key, day) in source) {
-                if (!merged.containsKey(key)) {
-                    merged[key] = day
-                }
-            }
-        }
-        return merged.values.sortedBy { it.time }
+        // Every day any source carries. A day the leader has, it leads; a day it does not — notably
+        // today, when the leader source keys it a day off or simply lacks it — is led by the first
+        // other source that has it. Either way the chance of rain, the amount and the wind are
+        // grafted from whoever measured them (see [fillDaily]/[fillHalfDay]), so today is not left
+        // blank while it rains just because the day fell outside the leader's clean range.
+        val keys = (leaderByDay.keys + others.flatMap { it.keys }).toSortedSet()
+        return keys.mapNotNull { key ->
+            val base = leaderByDay[key] ?: others.firstNotNullOfOrNull { it[key] } ?: return@mapNotNull null
+            val donorDays = others.mapNotNull { it[key] }.filter { it !== base }
+            fillDaily(base, donorDays, airByDay.mapNotNull { it[key] })
+        }.sortedBy { it.time }
     }
 
     private fun fillDaily(leader: Daily, others: List<Daily>, air: List<Daily>) = Daily(
