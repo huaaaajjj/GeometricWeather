@@ -209,19 +209,30 @@ object WeatherMerger {
      * failures, so completeness wins here; the condition text and the temperature, which are what a
      * forecast *is*, still always come from the leader alone.
      */
-    private fun fillHalfDay(leader: HalfDay, others: List<HalfDay>) = HalfDay(
-        leader.weatherText,
-        leader.weatherPhase,
-        leader.weatherCode,
-        leader.temperature,
-        pick(listOf(leader.precipitation) + others.map { it.precipitation }, Precipitation::isValid)
-            ?: leader.precipitation,
-        pick(listOf(leader.precipitationProbability) + others.map { it.precipitationProbability },
-            PrecipitationProbability::isValid) ?: leader.precipitationProbability,
-        leader.precipitationDuration,
-        pick(listOf(leader.wind) + others.map { it.wind }, Wind::isValidSpeed) ?: leader.wind,
-        firstNonNull(leader.cloudCover, others.map { it.cloudCover })
-    )
+    private fun fillHalfDay(leader: HalfDay, others: List<HalfDay>): HalfDay {
+        // Prefer a chance of rain from a source that also measured the amount. 小米 leads the daily
+        // overview and reports a probability but never an amount, and that lone probability can
+        // badly contradict the grafted amount — 南阳 today read 1% under 14.9 mm — so a source
+        // carrying both must win. Fall back to any valid probability, then the leader's own.
+        val halfDays = listOf(leader) + others
+        val probability = halfDays.firstOrNull {
+            it.precipitationProbability.isValid && it.precipitation.isValid
+        }?.precipitationProbability
+            ?: pick(halfDays.map { it.precipitationProbability }, PrecipitationProbability::isValid)
+            ?: leader.precipitationProbability
+        return HalfDay(
+            leader.weatherText,
+            leader.weatherPhase,
+            leader.weatherCode,
+            leader.temperature,
+            pick(listOf(leader.precipitation) + others.map { it.precipitation }, Precipitation::isValid)
+                ?: leader.precipitation,
+            probability,
+            leader.precipitationDuration,
+            pick(listOf(leader.wind) + others.map { it.wind }, Wind::isValidSpeed) ?: leader.wind,
+            firstNonNull(leader.cloudCover, others.map { it.cloudCover })
+        )
+    }
 
     /**
      * Hours are bucketed by absolute time, not by wall clock: providers all report on the hour, so

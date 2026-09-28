@@ -541,6 +541,39 @@ class WeatherMergerTest {
     }
 
     /**
+     * 小米 leads the daily overview and reports a chance of rain but never an amount, and that lone
+     * probability can badly contradict the grafted amount — 南阳区 today read 1% under 14.9 mm of
+     * rain. The probability from a source that carries both the chance and the amount must win over
+     * the leader's orphaned, wrong-looking one.
+     */
+    @Test
+    fun aLeaderProbabilityWithoutAmountYieldsToASourceCarryingBoth() {
+        // A 小米-shaped leader: a bogus 1% chance of rain and no amount at all.
+        val leader = mapDailyHalves(openMeteo) { half ->
+            HalfDay(
+                half.weatherText, half.weatherPhase, half.weatherCode, half.temperature,
+                Precipitation(null, null, null, null, null),
+                PrecipitationProbability(1f, null, null, null, null),
+                half.precipitationDuration, half.wind, half.cloudCover
+            )
+        }
+        val donorDay = openMeteo.dailyForecast.first {
+            it.day().precipitationProbability.isValid && it.day().precipitation.isValid
+        }
+        // Guard: the donor really carries both, and a chance well above the leader's 1%.
+        assertTrue(donorDay.day().precipitationProbability.total!! > 1f)
+
+        val merged = merge(leader, openMeteo)!!
+
+        val day = merged.dailyForecast.first { it.date == donorDay.date }
+        assertEquals(
+            "the 1% must yield to the source carrying both the chance and the amount",
+            donorDay.day().precipitationProbability.total,
+            day.day().precipitationProbability.total
+        )
+    }
+
+    /**
      * 中国天气网's actual shape: no chance of rain, no amount, and a wind speed hard-coded to 0. All
      * three are filled from the provider that has them, while the day's own text and temperature —
      * what makes it that forecast — stay the leader's.
