@@ -118,17 +118,21 @@ public class OpenMeteoWeatherServiceTest {
     }
 
     /**
-     * past_days must stay 0. The converter never splits a past day off, so asking for one puts
-     * yesterday at dailyForecast[0] and its 24 hours at the head of hourlyForecast — and the app
-     * reads index 0 as "today"/"now" everywhere, including the history row it writes to the DB.
+     * past_days=1 leads the response with yesterday, whose day row serves the trend cards'
+     * 昨天 column as an analysis of what actually happened — the locally saved history row is
+     * the first choice, this only fills in when it has none. OpenMeteoResultConverter must
+     * carve the past day and its 24 hours out (its tests cover that): without the carve a past
+     * day at index 0 mislabels every date in the app by one day, which is why this parameter
+     * used to be pinned at 0.
      */
     @Test
-    public void noPastDaysAreEverRequested() throws InterruptedException {
+    public void exactlyOnePastDayIsRequested() throws InterruptedException {
         request().awaitWeather();
 
         String path = mServer.requestedPath(FORECAST);
         assertNotNull(path);
-        assertTrue("past days leak into index 0: " + path, path.contains("past_days=0"));
+        assertTrue("yesterday's analysis is the fallback the 昨天 column needs: " + path,
+                path.contains("past_days=1"));
         assertTrue("the 16-day horizon is why this source leads: " + path,
                 path.contains("forecast_days=16"));
     }

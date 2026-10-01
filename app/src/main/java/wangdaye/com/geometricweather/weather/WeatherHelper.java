@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import javax.inject.Inject;
 
 import wangdaye.com.geometricweather.common.basic.models.Location;
+import wangdaye.com.geometricweather.common.basic.models.weather.History;
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
 import wangdaye.com.geometricweather.common.utils.NetworkUtils;
 import wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper;
@@ -48,10 +49,14 @@ public class WeatherHelper {
                     weather.setTimeZone(requestLocation.getTimeZone());
                     AsyncHelper.runOnIO(() -> {
                         DatabaseHelper.getInstance(c).writeWeather(requestLocation, weather);
-                        if (weather.getYesterday() == null) {
-                            weather.setYesterday(
-                                    DatabaseHelper.getInstance(c).readHistory(requestLocation, weather)
-                            );
+                        // The 昨天 column prefers the locally saved row — the leading daily
+                        // source's day 0 as saved by each refresh, which is what the user
+                        // already watched. The provider-supplied yesterday (Open-Meteo's
+                        // past-days analysis) only fills in when nothing was saved, e.g. on
+                        // the first day after a fresh install.
+                        History saved = DatabaseHelper.getInstance(c).readHistory(requestLocation, weather);
+                        if (saved != null) {
+                            weather.setYesterday(saved);
                         }
                         AsyncHelper.delayRunOnUI(() -> l.requestWeatherSuccess(requestLocation), 0);
                     });

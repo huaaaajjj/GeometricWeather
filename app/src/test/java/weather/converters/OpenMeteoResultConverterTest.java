@@ -1,6 +1,7 @@
 package weather.converters;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -31,6 +32,7 @@ import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource;
 import wangdaye.com.geometricweather.common.basic.models.weather.Daily;
 import wangdaye.com.geometricweather.common.basic.models.weather.Hourly;
+import wangdaye.com.geometricweather.common.basic.models.weather.History;
 import wangdaye.com.geometricweather.common.basic.models.weather.Pollen;
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
 import wangdaye.com.geometricweather.common.basic.models.weather.WeatherCode;
@@ -305,5 +307,53 @@ public class OpenMeteoResultConverterTest {
 
     private String format(java.util.Date date, String pattern) {
         return new SimpleDateFormat(pattern, Locale.US).format(date);
+    }
+
+private long parse(String value) throws Exception {
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.US).parse(value).getTime();
+    }
+
+    /**
+     * past_days=1 (OpenMeteoWeatherService) leads the response with yesterday so the trend cards'
+     * 昨天 column can show what actually happened. The past day — and its 24 hours — must be
+     * carved out of the public lists: every reader treats dailyForecast[0] as "today". Nothing
+     * else in the response may move.
+     */
+    @Test
+    public void aPastDayBecomesYesterdayAndLeavesThePublicLists() throws Exception {
+        // 2026-08-12 sits at daily[1]; noon of 2026-08-13 makes it yesterday without touching
+        // the midnight boundary.
+        Weather weather = OpenMeteoResultConverter.convert(
+                mContext, mLocation, load("forecast.json"), null, parse("2026-08-13T12:00"));
+
+        assertNotNull(weather);
+        assertNotNull(weather.getYesterday());
+        assertEquals("2026-08-12", format(weather.getYesterday().getDate()));
+        // 27.0/24.1 truncate like every other temperature in this converter.
+        assertEquals(27, weather.getYesterday().getDaytimeTemperature());
+        assertEquals(24, weather.getYesterday().getNighttimeTemperature());
+
+        assertEquals(2, weather.getDailyForecast().size());
+        assertEquals("2026-08-11", format(weather.getDailyForecast().get(0).getDate()));
+        assertEquals("2026-08-13", format(weather.getDailyForecast().get(1).getDate()));
+
+        assertEquals(2 * 24, weather.getHourlyForecast().size());
+        for (Hourly h : weather.getHourlyForecast()) {
+            assertNotEquals("2026-08-12", format(h.getDate()));
+        }
+    }
+
+    /** A past day without max/min temperatures must not become a fabricated 0° yesterday. */
+    @Test
+    public void aPastDayWithoutTemperaturesYieldsNoYesterday() throws Exception {
+        OpenMeteoResult result = load("forecast.json");
+        result.daily.temperatureMax.set(1, null);
+        result.daily.temperatureMin.set(1, null);
+
+        Weather weather = OpenMeteoResultConverter.convert(
+                mContext, mLocation, result, null, parse("2026-08-13T12:00"));
+
+        assertNotNull(weather);
+        assertNull(weather.getYesterday());
     }
 }

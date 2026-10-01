@@ -120,11 +120,12 @@ class OpenMeteoWeatherService @Inject constructor(
         // The air quality API rejects forecast_days > 7 outright instead of clamping.
         private const val AIR_QUALITY_FORECAST_DAYS = 7
 
-        // Never ask for past days. The day-over-day comparison this once claimed to serve is fed by
-        // the history table (DatabaseHelper.readWeather), not by the response — and the converter
-        // never split a past day off, so with past_days=1 yesterday sat at dailyForecast[0] and its
-        // 24 hours sat at the head of hourlyForecast. The whole app reads index 0 as "today"/"now"
-        // (76 sites, plus HistoryEntityGenerator, which dated yesterday's temperatures as today's).
-        private const val PAST_DAYS = 0
+        // past_days=1 leads the response with yesterday, whose day row serves the trend cards'
+        // 昨天 column as an analysis of what actually happened. The locally saved history row is
+        // the first choice (WeatherHelper reads it back and only falls through to this one when
+        // nothing was saved, e.g. on the first day). OpenMeteoResultConverter carves the past
+        // day and its 24 hours out before anything reads dailyForecast[0] as "today" — never
+        // raise this without that carve, or the whole app mislabels every date by one day.
+        private const val PAST_DAYS = 1
     }
 }

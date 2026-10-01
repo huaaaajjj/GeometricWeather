@@ -3,6 +3,7 @@ package wangdaye.com.geometricweather.weather.converters
 import android.content.Context
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -16,6 +17,7 @@ import wangdaye.com.geometricweather.common.basic.models.weather.Current
 import wangdaye.com.geometricweather.common.basic.models.weather.Daily
 import wangdaye.com.geometricweather.common.basic.models.weather.HalfDay
 import wangdaye.com.geometricweather.common.basic.models.weather.Hourly
+import wangdaye.com.geometricweather.common.basic.models.weather.History
 import wangdaye.com.geometricweather.common.basic.models.weather.Minutely
 import wangdaye.com.geometricweather.common.basic.models.weather.Pollen
 import wangdaye.com.geometricweather.common.basic.models.weather.Precipitation
@@ -38,19 +40,26 @@ object OpenMeteoResultConverter {
         context: Context,
         location: Location,
         result: OpenMeteoResult?,
-        airQualityResult: OpenMeteoAirQualityResult? = null
+        airQualityResult: OpenMeteoAirQualityResult? = null,
+        now: Long = System.currentTimeMillis()
     ): Weather? {
         if (result == null) {
             return null
         }
         return try {
-            val now = System.currentTimeMillis()
+            val dailyList = convertDailyList(context, result, convertPollenMap(context, airQualityResult))
+            val hourlyList = convertHourlyList(context, result)
+            // past_days=1 (OpenMeteoWeatherService) leads the response with yesterday so its day
+            // row can serve the trend cards' 昨天 column as an analysis of what actually happened.
+            // It must never stay in the public lists: every reader treats dailyForecast[0] as
+            // "today" and hourlyForecast as starting at today's midnight.
+            val yesterday = extractYesterday(result, dailyList, hourlyList, now)
             Weather(
                 Base(location.cityId, now, Date(), now, Date(), now),
                 convertCurrent(context, result, airQualityResult),
-                null,
-                convertDailyList(context, result, convertPollenMap(context, airQualityResult)),
-                convertHourlyList(context, result),
+                yesterday,
+                dailyList,
+                hourlyList,
                 ArrayList<Minutely>(),
                 ArrayList<Alert>()
             )
@@ -121,9 +130,9 @@ object OpenMeteoResultConverter {
         context: Context,
         result: OpenMeteoResult,
         pollenMap: Map<String, Pollen>
-    ): List<Daily> {
-        val daily = result.daily ?: return emptyList()
-        val times = daily.time ?: return emptyList()
+    ): MutableList<Daily> {
+        val daily = result.daily ?: return ArrayList()
+        val times = daily.time ?: return ArrayList()
         val list = ArrayList<Daily>()
 
         for (i in times.indices) {
@@ -279,9 +288,58 @@ object OpenMeteoResultConverter {
         return if (current == null || value > current) value else current
     }
 
-    private fun convertHourlyList(context: Context, result: OpenMeteoResult): List<Hourly> {
-        val hourly = result.hourly ?: return emptyList()
-        val times = hourly.time ?: return emptyList()
+    /**
+     * Removes the day before today — and its 24 hours — from the public lists and returns it as
+     * the [History] the trend cards' 昨天 column draws. Day keys are compared in the default
+     * zone: the zone OpenMeteoWeatherService requests the API's wall times in, and the same zone
+     * the times above were parsed in, so label and comparison always agree.
+     *
+     * Only the day whose key is exactly yesterday is carved. Older days never arrive with
+     * past_days=1; if a parser bug ever produced one, leaving it visible is the honest failure.
+     * A past day without max/min temperatures yields no History — a fabricated 0° would be
+     * worse than no yesterday at all.
+     */
+    private fun extractYesterday(
+        result: OpenMeteoResult,
+        daily: MutableList<Daily>,
+        hourly: MutableList<Hourly>,
+        now: Long
+    ): History? {
+        val dailyResult = result.daily ?: return null
+        val times = dailyResult.time ?: return null
+        val keyFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = now
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        calendar.add(Calendar.DAY_OF_YEAR, -1)
+        val yesterdayKey = keyFormat.format(calendar.time)
+
+        var history: History? = null
+        for (i in times.indices) {
+            if (times[i] == yesterdayKey) {
+                val max = getNullableIntVal(dailyResult.temperatureMax, i)
+                val min = getNullableIntVal(dailyResult.temperatureMin, i)
+                val date = parseDate(yesterdayKey)
+                if (max != null && min != null && date != null) {
+                    history = History(date, date.time, max, min)
+                }
+                break
+            }
+        }
+        if (history == null) {
+            return null
+        }
+        daily.removeAll { keyFormat.format(it.getDate()) == yesterdayKey }
+        hourly.removeAll { keyFormat.format(it.getDate()) == yesterdayKey }
+        return history
+    }
+
+    private fun convertHourlyList(context: Context, result: OpenMeteoResult): MutableList<Hourly> {
+        val hourly = result.hourly ?: return ArrayList()
+        val times = hourly.time ?: return ArrayList()
         val list = ArrayList<Hourly>()
 
         for (i in times.indices) {
