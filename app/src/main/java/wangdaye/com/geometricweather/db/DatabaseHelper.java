@@ -122,7 +122,19 @@ public class DatabaseHelper {
     // weather.
 
     public void writeWeather(@NonNull Location location, @NonNull Weather weather) {
-        deleteWeather(location);
+        deleteWeatherExceptHistory(location);
+
+        // The history table is what the trend cards' 昨天 column reads once the next refresh
+        // finds no provider-supplied yesterday (readHistory): keep yesterday's row so tomorrow's
+        // refresh can serve it, drop everything older, and drop today's rows — a fresh one is
+        // written below, so they would only pile up one per refresh.
+        java.util.Date day = startOfDay(weather.getBase().getPublishDate());
+        mDao.deleteHistoryOutOfWindow(
+                location.getCityId(),
+                location.getWeatherSource().getId(),
+                new java.util.Date(day.getTime() - 86400000),
+                day
+        );
 
         mDao.insertWeather(WeatherEntityGenerator.generate(location, weather));
         mDao.insertDailyList(DailyEntityGenerator.generate(
@@ -154,20 +166,13 @@ public class DatabaseHelper {
 
         HistoryEntity historyEntity = null;
         if (weatherEntity.publishDate != null) {
-            java.util.Calendar cal = java.util.Calendar.getInstance();
-            cal.setTime(weatherEntity.publishDate);
-            cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
-            cal.set(java.util.Calendar.MINUTE, 0);
-            cal.set(java.util.Calendar.SECOND, 0);
-            java.util.Date yesterday = new java.util.Date(cal.getTimeInMillis() - 86400000);
-            List<HistoryEntity> historyList = mDao.selectHistoryListByCityIdAndSource(cityId, sourceId);
-            for (HistoryEntity h : historyList) {
-                if (h.date != null && h.date.equals(yesterday)
-                        || h.date != null && Math.abs(h.date.getTime() - yesterday.getTime()) < 86400000) {
-                    historyEntity = h;
-                    break;
-                }
-            }
+            // The row dated the weather's own yesterday — the same window readHistory searches
+            // after a refresh, and the same one writeWeather's purge keeps.
+            java.util.Date day = startOfDay(weatherEntity.publishDate);
+            historyEntity = mDao.selectYesterdayHistory(
+                    cityId, sourceId,
+                    new java.util.Date(day.getTime() - 86400000), day
+            );
         }
 
         List<DailyEntity> dailyList = mDao.selectDailyListByCityIdAndSource(cityId, sourceId);
@@ -188,14 +193,23 @@ public class DatabaseHelper {
     }
 
     public void deleteWeather(@NonNull Location location) {
+        deleteWeatherExceptHistory(location);
+
+        String cityId = location.getCityId();
+        String source = location.getWeatherSource().getId();
+
+        List<HistoryEntity> historyList = mDao.selectHistoryListByCityIdAndSource(cityId, source);
+        if (!historyList.isEmpty()) mDao.deleteHistoryList(historyList);
+    }
+
+    // Everything deleteWeather clears except the history table, whose yesterday row writeWeather
+    // has to preserve across refreshes (the trend cards' 昨天 column).
+    private void deleteWeatherExceptHistory(@NonNull Location location) {
         String cityId = location.getCityId();
         String source = location.getWeatherSource().getId();
 
         List<WeatherEntity> weatherList = mDao.selectWeatherListByCityIdAndSource(cityId, source);
         if (!weatherList.isEmpty()) mDao.deleteWeatherList(weatherList);
-
-        List<HistoryEntity> historyList = mDao.selectHistoryListByCityIdAndSource(cityId, source);
-        if (!historyList.isEmpty()) mDao.deleteHistoryList(historyList);
 
         List<DailyEntity> dailyList = mDao.selectDailyListByCityIdAndSource(cityId, source);
         if (!dailyList.isEmpty()) mDao.deleteDailyList(dailyList);
@@ -219,14 +233,28 @@ public class DatabaseHelper {
     // history.
 
     public History readHistory(@NonNull Location location, @NonNull Weather weather) {
+        java.util.Date day = startOfDay(weather.getBase().getPublishDate());
         return HistoryEntityGenerator.generate(
                 mDao.selectYesterdayHistory(
                         location.getCityId(),
                         location.getWeatherSource().getId(),
-                        weather.getBase().getPublishDate(),
-                        new java.util.Date(weather.getBase().getPublishDate().getTime() + 86400000)
+                        new java.util.Date(day.getTime() - 86400000),
+                        day
                 )
         );
+    }
+
+    // The weather's publish day at 00:00 (device time, as everywhere else in this class). The
+    // history table keys its rows on the raw publish instant, so the day boundaries that decide
+    // which row is "yesterday" all truncate the same way.
+    private static java.util.Date startOfDay(java.util.Date date) {
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        cal.set(java.util.Calendar.MINUTE, 0);
+        cal.set(java.util.Calendar.SECOND, 0);
+        cal.set(java.util.Calendar.MILLISECOND, 0);
+        return cal.getTime();
     }
 
     // chinese city.

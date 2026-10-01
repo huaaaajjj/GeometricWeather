@@ -131,10 +131,20 @@ public interface WeatherDatabaseDao {
     @Delete
     void deleteHistoryList(List<HistoryEntity> entityList);
 
+    // The window can hold two rows for the same day: the one yesterday's own refresh saved (the
+    // locally led daily data the 昨天 column prefers) and the provider-supplied one writeWeather
+    // has just inserted. The oldest row — the saved one — must win deterministically.
     @Query("SELECT * FROM history WHERE date >= :yesterday AND date < :today " +
-           "AND cityId = :cityId AND weatherSource = :weatherSource LIMIT 1")
+           "AND cityId = :cityId AND weatherSource = :weatherSource ORDER BY id LIMIT 1")
     HistoryEntity selectYesterdayHistory(String cityId, String weatherSource,
                                          Date yesterday, Date today);
+
+    // Deletes rows outside [since, until): writeWeather keeps yesterday's row — the one
+    // selectYesterdayHistory serves to the trend cards' 昨天 column after the next refresh —
+    // drops everything older, and drops today's rows too since they are re-inserted right after.
+    @Query("DELETE FROM history WHERE cityId = :cityId AND weatherSource = :weatherSource " +
+           "AND (date < :since OR date >= :until)")
+    void deleteHistoryOutOfWindow(String cityId, String weatherSource, Date since, Date until);
 
     @Query("SELECT * FROM history WHERE cityId = :cityId AND weatherSource = :weatherSource")
     List<HistoryEntity> selectHistoryListByCityIdAndSource(String cityId, String weatherSource);

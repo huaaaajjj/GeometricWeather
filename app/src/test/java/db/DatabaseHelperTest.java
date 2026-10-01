@@ -3,6 +3,7 @@ package db;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import android.content.Context;
@@ -22,11 +23,14 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.TimeZone;
 
 import wangdaye.com.geometricweather.common.basic.models.ChineseCity;
 import wangdaye.com.geometricweather.common.basic.models.Location;
 import wangdaye.com.geometricweather.common.basic.models.options.provider.WeatherSource;
+import wangdaye.com.geometricweather.common.basic.models.weather.Base;
+import wangdaye.com.geometricweather.common.basic.models.weather.History;
 import wangdaye.com.geometricweather.common.basic.models.weather.Weather;
 import wangdaye.com.geometricweather.db.DatabaseHelper;
 import wangdaye.com.geometricweather.db.GeometricWeatherDatabase;
@@ -182,6 +186,52 @@ public class DatabaseHelperTest {
         assertEquals("101221501", found[3].getCityId());
     }
 
+    /**
+     * The trend cards' 昨天 column is filled by readHistory, whose window used to be
+     * [publishDate, publishDate+1d) — it matched the very row this refresh had just written from
+     * dailyForecast[0], so 昨天 showed today's temperatures. The window is [yesterday 00:00,
+     * today 00:00), and it only finds data because writeWeather now keeps yesterday's row
+     * instead of wiping the whole history table on every refresh.
+     */
+    @Test
+    public void yesterdayReadsTheRowYesterdayLeftBehind() {
+        Weather today = fixtureWeather();
+        Weather yesterday = withPublishDate(today,
+                today.getBase().getPublishDate().getTime() - 86_400_000L);
+
+        History[] found = new History[2];
+        offMainThread(() -> {
+            DatabaseHelper db = DatabaseHelper.getInstance(mContext);
+            // A fresh table has no yesterday yet, and today's own row must not be mistaken
+            // for one — this is the reported bug.
+            db.writeWeather(mLocation, today);
+            found[0] = db.readHistory(mLocation, today);
+
+            // Yesterday's refresh leaves its row behind; today's write must keep it.
+            db.writeWeather(mLocation, yesterday);
+            db.writeWeather(mLocation, today);
+            found[1] = db.readHistory(mLocation, today);
+        });
+
+        assertNull("a fresh table has no yesterday to show", found[0]);
+
+        assertNotNull(found[1]);
+        java.util.Calendar dayStart = java.util.Calendar.getInstance();
+        dayStart.setTime(today.getBase().getPublishDate());
+        dayStart.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        dayStart.set(java.util.Calendar.MINUTE, 0);
+        dayStart.set(java.util.Calendar.SECOND, 0);
+        dayStart.set(java.util.Calendar.MILLISECOND, 0);
+        long date = found[1].getDate().getTime();
+        assertTrue("the served row must be dated yesterday, got " + found[1].getDate(),
+                date >= dayStart.getTimeInMillis() - 86_400_000L
+                        && date < dayStart.getTimeInMillis());
+        assertEquals(today.getDailyForecast().get(0).day().getTemperature().getTemperature(),
+                found[1].getDaytimeTemperature());
+        assertEquals(today.getDailyForecast().get(0).night().getTemperature().getTemperature(),
+                found[1].getNighttimeTemperature());
+    }
+
     // ---- harness ----
 
     /** Room refuses main-thread access, and under Robolectric the test thread is the main thread. */
@@ -231,6 +281,22 @@ public class DatabaseHelperTest {
                 weather.getHourlyForecast(),
                 new ArrayList<>(),
                 new ArrayList<>()
+        );
+    }
+
+    /** The same weather published at another instant — the history row is dated by publishDate. */
+    private static Weather withPublishDate(Weather weather, long publishTime) {
+        Base base = weather.getBase();
+        return new Weather(
+                new Base(base.getCityId(), base.getTimeStamp(),
+                        new Date(publishTime), publishTime,
+                        base.getUpdateDate(), base.getUpdateTime()),
+                weather.getCurrent(),
+                null,
+                weather.getDailyForecast(),
+                weather.getHourlyForecast(),
+                weather.getMinutelyForecast(),
+                weather.getAlertList()
         );
     }
 }
