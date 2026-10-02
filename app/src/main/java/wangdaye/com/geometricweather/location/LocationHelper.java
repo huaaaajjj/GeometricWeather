@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -14,6 +16,7 @@ import androidx.core.app.ActivityCompat;
 
 import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 
@@ -41,8 +44,22 @@ import wangdaye.com.geometricweather.weather.services.WeatherService;
 
 public class LocationHelper {
 
+    /**
+     * The native service times itself out, and the IP service rides on OkHttp's socket timeouts —
+     * but the Baidu and AMap SDKs promise a callback they do not always deliver (seen on a device
+     * with no Wi-Fi to scan, cellular only): the locate step never answers, so the weather request
+     * behind it never starts and the pull-to-refresh spinner spins until the process dies. This is
+     * the hard ceiling for every provider; it sits above the native service's own 10 s so a slow
+     * first fix still wins, and tripping it falls into the same failure path as a real failure.
+     */
+    @VisibleForTesting
+    public static final long REQUEST_TIMEOUT_MILLIS = 15_000;
+
     private final LocationService[] mLocationServices;
     private final WeatherServiceSet mWeatherServiceSet;
+
+    private final Handler mTimeoutHandler = new Handler(Looper.getMainLooper());
+    private Runnable mTimeoutRunnable;
 
     public interface OnRequestLocationListener {
         void requestLocationSuccess(Location requestLocation);
@@ -94,33 +111,50 @@ public class LocationHelper {
 
     public void requestLocation(Context context, Location location, boolean background,
                                 @NonNull OnRequestLocationListener l) {
-        final OnRequestLocationListener usableCheckListener = new OnRequestLocationListener() {
+        // One exit for every outcome — provider callback or timeout — so a stalled provider and a
+        // late callback can never both reach the caller.
+        if (mTimeoutRunnable != null) {
+            mTimeoutHandler.removeCallbacks(mTimeoutRunnable);
+        }
+        AtomicBoolean finished = new AtomicBoolean(false);
+        OnRequestLocationListener guarded = new OnRequestLocationListener() {
             @Override
             public void requestLocationSuccess(Location requestLocation) {
-                l.requestLocationSuccess(requestLocation);
+                if (finished.compareAndSet(false, true)) {
+                    cancelTimeout();
+                    l.requestLocationSuccess(requestLocation);
+                }
             }
 
             @Override
             public void requestLocationFailed(Location requestLocation) {
-                if (requestLocation.isUsable()) {
-                    // Hop to the main thread like the other two outcomes below: this one is reached
-                    // from the weather service's IO thread, and callers set LiveData in here.
-                    wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.delayRunOnUI(
-                            () -> l.requestLocationFailed(requestLocation), 0);
-                } else {
-                    Location finalLocation = Location.copy(
-                            Location.buildDefaultLocation(
-                                    SettingsManager.getInstance(context).getWeatherSource()
-                            ),
-                            true,
-                            false
-                    );
-                    wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.runOnIO(() -> {
-                        DatabaseHelper.getInstance(context).writeLocation(finalLocation);
-                        wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.delayRunOnUI(
-                                () -> l.requestLocationFailed(finalLocation), 0);
-                    });
+                if (finished.compareAndSet(false, true)) {
+                    cancelTimeout();
+                    l.requestLocationFailed(requestLocation);
                 }
+            }
+        };
+
+        mTimeoutRunnable = () -> {
+            if (!finished.compareAndSet(false, true)) {
+                return;
+            }
+            // Stop the stalling provider first, so a late SDK callback cannot fire behind the
+            // fallback and start a second resolve.
+            cancel();
+            deliverFailure(context, location, l);
+        };
+        mTimeoutHandler.postDelayed(mTimeoutRunnable, REQUEST_TIMEOUT_MILLIS);
+
+        final OnRequestLocationListener usableCheckListener = new OnRequestLocationListener() {
+            @Override
+            public void requestLocationSuccess(Location requestLocation) {
+                guarded.requestLocationSuccess(requestLocation);
+            }
+
+            @Override
+            public void requestLocationFailed(Location requestLocation) {
+                deliverFailure(context, requestLocation, guarded);
             }
         };
 
@@ -310,7 +344,44 @@ public class LocationHelper {
         });
     }
 
+    /**
+     * The failed-outcome path shared by a real locate failure and the stall timeout: keep the
+     * caller's own coordinates when they are usable, else adopt the default city so the app always
+     * ends up with a place to show.
+     */
+    private void deliverFailure(Context context, Location location, OnRequestLocationListener l) {
+        if (location.isUsable()) {
+            // Hop to the main thread like the success outcome below: this one is reached from the
+            // weather service's IO thread, and callers set LiveData in here.
+            wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.delayRunOnUI(
+                    () -> l.requestLocationFailed(location), 0);
+        } else {
+            Location finalLocation = Location.copy(
+                    Location.buildDefaultLocation(
+                            SettingsManager.getInstance(context).getWeatherSource()
+                    ),
+                    true,
+                    false
+            );
+            wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.runOnIO(() -> {
+                DatabaseHelper.getInstance(context).writeLocation(finalLocation);
+                wangdaye.com.geometricweather.common.utils.helpers.AsyncHelper.delayRunOnUI(
+                        () -> l.requestLocationFailed(finalLocation), 0);
+            });
+        }
+    }
+
+    private void cancelTimeout() {
+        if (mTimeoutRunnable != null) {
+            mTimeoutHandler.removeCallbacks(mTimeoutRunnable);
+            mTimeoutRunnable = null;
+        }
+    }
+
     public void cancel() {
+        // The caller is giving up on this locate, so its timeout must not fire afterwards and
+        // report a failure nobody asked for.
+        mTimeoutHandler.removeCallbacks(mTimeoutRunnable);
         for (LocationService s : mLocationServices) {
             s.cancel();
         }

@@ -248,6 +248,73 @@ public class LocationHelperTest {
         assertTrue("failure must be delivered on the main thread too", failure.onMainThread);
     }
 
+    // ---- the stalled-provider timeout ----
+
+    /**
+     * A provider that never calls back (the Baidu/AMap SDK stall on a device with no Wi-Fi to
+     * scan) used to hang the whole refresh: no weather request, a spinning pull-to-refresh, and an
+     * updating flag that locked out every later pull. The helper must stop waiting on its own and
+     * take the ordinary failed-locate path — the caller's usable coordinates survive it.
+     */
+    @Test
+    public void aStalledProviderTimesOutAndKeepsTheUsableLocation() {
+        mLocationService.hangUp = true;
+
+        Recording listener = new Recording();
+        mHelper.requestLocation(mContext, tianjin(), false, listener);
+        shadowOf(Looper.getMainLooper()).runToEndOfTasks();
+        awaitOnMainLooper(() -> listener.done, 20_000);
+
+        assertTrue("a stalled provider must time out, not hang", listener.failed);
+        assertEquals("the caller's usable location must come back untouched",
+                "54517_tj", listener.result.getCityId());
+    }
+
+    /** The timeout's fallback is the same one a real failure uses: nothing usable → Beijing. */
+    @Test
+    public void aStalledTimeoutWithNothingUsableAdoptsTheDefaultCity() {
+        mLocationService.hangUp = true;
+
+        Recording listener = new Recording();
+        mHelper.requestLocation(mContext, Location.buildLocal(), false, listener);
+        shadowOf(Looper.getMainLooper()).runToEndOfTasks();
+        awaitOnMainLooper(() -> listener.done, 20_000);
+
+        assertTrue(listener.failed);
+        assertEquals("the documented default is Beijing", "101924", listener.result.getCityId());
+
+        List<Location> stored = new ArrayList<>();
+        offMainThread(() -> stored.addAll(
+                DatabaseHelper.getInstance(mContext).readLocationList()));
+        assertFalse("the fallback must be persisted, not just reported", stored.isEmpty());
+    }
+
+    /**
+     * A provider answering *after* the helper has given up must not reopen the request: the caller
+     * has already been told, and a second delivery would start a second resolve behind its back.
+     */
+    @Test
+    public void aLateCallbackAfterTheTimeoutIsIgnored() {
+        mLocationService.hangUp = true;
+
+        Recording listener = new Recording();
+        mHelper.requestLocation(mContext, tianjin(), false, listener);
+        shadowOf(Looper.getMainLooper()).runToEndOfTasks();
+        awaitOnMainLooper(() -> listener.done, 20_000);
+        assertTrue(listener.failed);
+
+        LocationService.LocationCallback pending = mLocationService.pendingCallback;
+        assertNotNull("the stalled provider must have been handed a callback", pending);
+        pending.onCompleted(new LocationService.Result(
+                31.2304f, 121.4737f, "中国", "上海市", "上海市", "黄浦区"));
+
+        shadowOf(Looper.getMainLooper()).idle();
+        assertFalse("the late answer must not re-deliver as success", listener.succeeded);
+        assertTrue("the failure from the timeout stands", listener.failed);
+        assertEquals("the reported location is still the timeout's",
+                "54517_tj", listener.result.getCityId());
+    }
+
     // ---- harness ----
 
     private Recording request(Location start) {
@@ -302,9 +369,17 @@ public class LocationHelperTest {
     private static final class FakeLocationService extends LocationService {
 
         volatile Result result;
+        /** True means the provider stalls the way the Baidu/Amap SDKs sometimes do: no callback. */
+        volatile boolean hangUp;
+        /** The callback handed over while hung up, so a test can fire it late. */
+        volatile LocationService.LocationCallback pendingCallback;
 
         @Override
         public void requestLocation(@NonNull Context context, @NonNull LocationCallback callback) {
+            if (hangUp) {
+                pendingCallback = callback;
+                return;
+            }
             callback.onCompleted(result);
         }
 
